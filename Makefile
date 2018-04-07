@@ -8,7 +8,7 @@ NAME_BASE  = yCALC
 # additional standard and outside libraries
 LIB_STD    = -lm
 # all heatherly libraries used, debug versions whenever available
-LIB_MINE   = 
+LIB_MINE   = -lySTR_debug
 # directory for production code, no trailing slash
 INST_DIR   = 
 

@@ -1,0 +1,62 @@
+.TH yCALC 3 2018-apr "linux" "heatherly custom tools manual"
+
+.SH NAME
+yCALC \- decision rationale, objectives, and overview
+
+.SH SUMMARY
+yCALC is a clean, highly debuggable shared library for creating byte-code
+execution chains from RPN notation formulas to make repeditive, tedious,
+and dangerous code testable, maintainable, and reliable.
+
+.SH SCOPE, REASONING and DECISION
+
+.B description (D).  
+a calculation engine accepts ad-hoc formulas as input, interprets, validates,
+fetches data, executes, and returns appropriate results.  these engines are
+absolutely required for spreadsheets, data analytics, hypercard-like apps,
+statistics, simulation, etc.
+
+.B what the hell (?).  
+on a scale of 0 to 100, this is really freaking hard to do right ;)) its
+one thing as a proof of concept or limited-use experiment; but, i will
+depend on this capability, so i must become proficient and knowledgeable.
+gotta get bloody.
+
+.B situation (S).  
+i started by building a solid, working, unit-tested, reasonable-size base
+for gyges-hekatonkheires, my spreadsheet system.  but, now i must improve
+its universaility and applicability to a wider breadth of applications.
+
+.B complication (C).  
+calculation engines tend to be application specific because of all the
+moving parts and how invasive and data intensive the logic can be.  my base
+is growing out of a spreadsheet-specific world and needs to not get resigned
+and buried there.
+
+.B my answer (A).  
+like with gyges, calculations are executed many, many times over; so,
+pre-compile calculations into very rapidly executing byte-code.  this will
+give me the ability to tailor the calculation interpretation while keeping
+the execution lightning fast.
+
+.B target user (T).  
+very technical, systems programmer.
+
+.B accepted functionality (a).  
+
+
+
+
+
+
+.SH SEE ALSO
+this documentation is layered to provide easier navigation.
+   yCALC  (3), library overview and calling
+   yCALC  (7), decision rationale, objectives, and overview
+
+.SH AUTHOR
+heatherly <jelloshrke at gmail dot com>
+
+.SH COLOPHON
+this page is part of a documentation package mean to make the use of the
+heatherly tools easier and faster
