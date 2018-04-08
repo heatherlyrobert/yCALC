@@ -13,7 +13,7 @@ int         cnt, cnta, cnts, cntb, cntr;
 double      entries     [1000];
 char       *q, *r, *s;
 char        t           [LEN_RECD];
-char        nada        [5] = "";
+char        g_nada       [5] = "";
 
 char        s_narg        = 0;
 int         s_nerror      = 0;
@@ -94,6 +94,13 @@ yCALC_version       (void)
 #endif
    snprintf (yCALC_ver, 100, "%s   %s : %s", t, YCALC_VER_NUM, YCALC_VER_TXT);
    return yCALC_ver;
+}
+
+char
+yCALC_init              (void)
+{
+   yCALC__build_init ();
+   yCALC__exec_init  ();
 }
 
 

@@ -4,15 +4,15 @@
 
 
 
- 
+
 static void*   (*s_thinger  )   (char *a_label);
-static char    (*s_valuer   )   (void *a_thing, char a_type, double *a_value, char *a_string);
-static char    (*s_detailer )   (void *a_thing, char *a_quality, char *a_string, double *a_value);
-static char    (*s_addresser)   (void *a_thing, int *x, int *y, int *z);
+static char    (*s_valuer   )   (void *a_thing, char *a_type   , double *a_value, char **a_string);
+static char    (*s_detailer )   (void *a_thing, char *a_quality, char *a_string , double *a_value);
+static char    (*s_addresser)   (void *a_thing, int  *x        , int *y         , int *z);
 
 static char    s_type    = '-';
 static double  s_value   = 0.0;
-static char    s_string  [LEN_RECD] = "";
+static char   *s_string  = NULL;
 static int     x, y, z;
 
 
@@ -100,7 +100,7 @@ static int     s_nstack  = 0;
 static void      o___PROGRAM_________________o (void) {;}
 
 char
-yCALC_init              (void)
+yCALC__exec_init         (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -138,7 +138,7 @@ yCALC_init              (void)
 }
 
 char
-yCALC_config            (void *a_thinger, void *a_valuer, void *a_detailer, void *a_addresser)
+yCALC_exec_config       (void *a_thinger, void *a_valuer, void *a_detailer, void *a_addresser)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -283,10 +283,12 @@ yCALC_popval            (char *a_func)
          myCALC.trouble = G_CONF_ERROR;
          return 0.0;
       }
+      s_valuer (s_stack [s_nstack].ref, &s_type, &s_value, s_string);
+      return  s_value;
       break;
    }
    /*---(complete)-----------------------*/
-   /*> ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_ARGS , "wrong argument type on stack");   <*/
+   myCALC.trouble = G_CONF_ERROR;
    return 0.0;
 }
 
@@ -306,103 +308,34 @@ yCALC_popstr            (char *a_func)
    /*---(prepare)------------------------*/
    if (s_nstack <= 0) {
       myCALC.trouble = G_STACK_ERROR;
-      return strndup (nada, LEN_RECD);
+      return strndup (g_nada, LEN_RECD);
    }
    --s_nstack;
    /*---(handle stack types)-------------*/
    switch (s_stack[s_nstack].typ) {
-   case 'v' :
-      return  strndup (nada, LEN_RECD);
+   case S_TYPE_NUM :
+      return  strndup (g_nada, LEN_RECD);
       break;
-   case 's' :
+   case S_TYPE_STR :
       return  s_stack[s_nstack].str;
       break;
-   case 'r' :
-      /*> switch (s_stack[s_nstack].ref->t) {                                         <* 
-       *> case  CTYPE_STR    :                                                        <* 
-       *>    return  strndup (s_stack[s_nstack].ref->s    , LEN_RECD);                <* 
-       *>    break;                                                                   <* 
-       *> case  CTYPE_MOD    :                                                        <* 
-       *>    return  strndup (s_stack[s_nstack].ref->v_str, LEN_RECD);                <* 
-       *>    break;                                                                   <* 
-       *> default            :                                                        <* 
-       *>    return  strndup (nada, LEN_RECD);                                        <* 
-       *>    break;                                                                   <* 
-       *> }                                                                           <*/
-      break;
-   default            :
-      return  strndup (nada, LEN_RECD);
-      break;
+   case S_TYPE_REF :
+      s_string = NULL;
+      if (s_valuer == NULL) {
+         myCALC.trouble = G_CONF_ERROR;
+         return  strndup (g_nada, LEN_RECD);
+      }
+      s_valuer (s_stack [s_nstack].ref, &s_type, &s_value, &s_string);
+      if (s_string == NULL) {
+         myCALC.trouble = G_CONF_ERROR;
+         return  strndup (g_nada, LEN_RECD);
+      }
+      return  strndup (s_string, LEN_RECD);
    }
    /*---(complete)-----------------------*/
    myCALC.trouble = G_STACK_ERROR;
-   return strndup (nada, LEN_RECD);
+   return strndup (g_nada, LEN_RECD);
 }
-
-char*        /*-> get a reference off the stack ------[ ------ [fp.420.203.21]*/ /*-[01.0000.04#.!]-*/ /*-[--.---.---.--]-*/
-yCALC_popprint          (char *a_func)
-{  /*---(design notes)-------------------*//*---------------------------------*/
-   /*---(prepare)------------------------*/
-   if (s_nstack <= 0) {
-      myCALC.trouble = G_STACK_ERROR;
-      return NULL;
-   }
-   --s_nstack;
-   /*---(handle stack types)-------------*/
-   switch (s_stack[s_nstack].typ) {
-   case 'r' :
-      /*> return  strndup (s_stack[s_nstack].ref->p, LEN_RECD);                       <*/
-      break;
-   }
-   /*---(complete)-----------------------*/
-   myCALC.trouble = G_STACK_ERROR;
-   return NULL;
-}
-
-void*        /*-> get a reference off the stack ------[ ------ [fp.420.203.21]*/ /*-[01.0000.0F#.!]-*/ /*-[--.---.---.--]-*/
-yCALC_popref            (char *a_func)
-{  /*---(design notes)-------------------*//*---------------------------------*/
-   /*---(prepare)------------------------*/
-   if (s_nstack <= 0) {
-      myCALC.trouble = G_STACK_ERROR;
-      return NULL;
-   }
-   --s_nstack;
-   /*---(handle stack types)-------------*/
-   switch (s_stack[s_nstack].typ) {
-   case 'r' :
-      return  s_stack[s_nstack].ref;
-      break;
-   }
-   /*---(complete)-----------------------*/
-   myCALC.trouble = G_STACK_ERROR;
-   return NULL;
-}
-
-
-
-/*====================------------------------------------====================*/
-/*===----                         unit testing                         ----===*/
-/*====================------------------------------------====================*/
-static void      o___UNITTEST________________o (void) {;}
-
-char          yCALC__unit_answer [LEN_STR ];
-
-char*        /*-> unit testing accessor --------------[ light  [us.IA0.2A5.X3]*/ /*-[02.0000.00#.#]-*/ /*-[--.---.---.--]-*/
-yCALC__unit_stack       (char *a_question, int a_num)
-{
-   /*---(initialize)---------------------*/
-   strlcpy (yCALC__unit_answer, "yCALC_unit, unknown request", 100);
-   /*---(string testing)-----------------*/
-   if      (strncmp (a_question, "top"       , 20)  == 0) {
-      if (s_nstack <= 0)   snprintf (yCALC__unit_answer, LEN_STR, "STACK top   (%2d) : %c %8.2lf %-10p %-.30s", s_nstack, S_TYPE_EMPTY, 0.0, NULL, "---");
-      else                 snprintf (yCALC__unit_answer, LEN_STR, "STACK top   (%2d) : %c %8.2lf %-10p %-.30s", s_nstack, s_stack [s_nstack - 1].typ, s_stack [s_nstack - 1].num, s_stack [s_nstack - 1].ref, (s_stack [s_nstack - 1].str == NULL) ? "---" : s_stack [s_nstack - 1].str);
-   }
-   /*---(complete)-----------------------*/
-   return yCALC__unit_answer;
-}
-
-char yCALC__unit_stackset    (int a_num) { s_nstack = a_num; return 0; }
 
 
 
@@ -420,42 +353,103 @@ struct  cMOCK {
    int         x;
    int         y;
    int         z;
-   char        rpn         [LEN_RECD ];
+   tCALC      *calc;
 };
 static tMOCK   s_mocks     [100] = {
-   { "0a1"       , 'n' ,     1.00, ""              ,   0,   0,   0 },
-   { "0a2"       , 'n' ,     2.00, ""              ,   0,   1,   0 },
-   { "0a3"       , 'n' ,     3.00, ""              ,   0,   2,   0 },
-   { "0a4"       , 'n' ,     4.00, ""              ,   0,   3,   0 },
-   { "0a5"       , 'n' ,     5.00, ""              ,   0,   4,   0 },
-   { "0a6"       , 'n' ,     6.00, ""              ,   0,   5,   0 },
-   { "0a10"      , 'n' ,    10.00, ""              ,   0,   9,   0 },
-   { "0a30"      , 'n' ,    30.00, ""              ,   0,  29,   0 },
-   { "0a42"      , 'n' ,    42.00, ""              ,   0,  41,   0 },
+   { "0a1"       , 'n' ,     1.00, ""              ,   0,   0,   0, NULL },
+   { "0a2"       , 'n' ,     2.00, ""              ,   0,   1,   0, NULL },
+   { "0a3"       , 'n' ,     3.00, ""              ,   0,   2,   0, NULL },
+   { "0a4"       , 'n' ,     4.00, ""              ,   0,   3,   0, NULL },
+   { "0a5"       , 'n' ,     5.00, ""              ,   0,   4,   0, NULL },
+   { "0a6"       , 'n' ,     6.00, ""              ,   0,   5,   0, NULL },
+   { "0a10"      , 'n' ,    10.00, ""              ,   0,   9,   0, NULL },
+   { "0a30"      , 'n' ,    30.00, ""              ,   0,  29,   0, NULL },
+   { "0a42"      , 'n' ,    42.00, ""              ,   0,  41,   0, NULL },
+   { "1a1"       , 's' ,     0.00, "one"           ,   0,   0,   1, NULL },
+   { "1a2"       , 's' ,     0.00, "onetwo"        ,   0,   1,   1, NULL },
+   { "1a3"       , 's' ,     0.00, "two"           ,   0,   2,   1, NULL },
+   { "1a4"       , 's' ,     0.00, "three"         ,   0,   3,   1, NULL },
+   { ""          , 'n' ,     0.00, ""              ,   0,   0,   0, NULL },
 };
 
 void*
-yCALC__unit_thinger          (char *a_label)
+yCALC__unit_thinger     (char *a_label)
 {
+   int         i           =    0;
+   int         n           =   -1;
+   if (a_label == NULL)  return NULL;
+   for (i = 0; i < 100; ++i) {
+      if (s_mocks [i].label [0] == 0)                break;
+      if (strcmp (s_mocks [i].label, a_label) != 0)  continue;
+      n = i;
+   }
+   if (n < 0)  return NULL;
+   return s_mocks + n;
 }
 
 char
-yCALC__unit_valuer           (void *a_thing, char a_type, double *a_value, char *a_string)
+yCALC__unit_valuer      (void *a_thing, char *a_type, double *a_value, char **a_string)
+{
+   tMOCK      *x_thing     = NULL;
+   x_thing = (tMOCK *) a_thing;
+   if (a_type   != NULL)  *a_type   = x_thing->type;
+   if (a_value  != NULL)  *a_value  = x_thing->value;
+   if (a_string != NULL)  *a_string = x_thing->string;
+   return 0;
+}
+
+char
+yCALC__unit_detailer    (void *a_thing, char *a_quality, char *a_string, double *a_value)
 {
    return 0;
 }
 
 char
-yCALC__unit_detailer         (void *a_thing, char *a_quality, char *a_string, double *a_value)
+yCALC__unit_addresser   (void *a_thing, int *x, int *y, int *z)
 {
    return 0;
 }
 
-char
-yCALC__unit_addresser        (void *a_thing, int *x, int *y, int *z)
+
+
+/*====================------------------------------------====================*/
+/*===----                         unit testing                         ----===*/
+/*====================------------------------------------====================*/
+static void      o___UNITTEST________________o (void) {;}
+
+char          yCALC__unit_answer [LEN_STR ];
+
+char*        /*-> unit testing accessor --------------[ light  [us.IA0.2A5.X3]*/ /*-[02.0000.00#.#]-*/ /*-[--.---.---.--]-*/
+yCALC__unit_stack       (char *a_question, int a_num)
 {
-   return 0;
+   /*---(locals)-----------+-----+-----+-*/
+   char        x_type      =  '-';
+   tMOCK      *x_thing     = NULL;
+   char        x_label     [LEN_LABEL];
+   /*---(initialize)---------------------*/
+   strlcpy (yCALC__unit_answer, "yCALC_unit, unknown request", 100);
+   /*---(string testing)-----------------*/
+   if      (strncmp (a_question, "top"       , 20)  == 0) {
+      if (s_nstack <= 0)   snprintf (yCALC__unit_answer, LEN_STR, "STACK top   (%2d) : %c %8.2lf %-10p %-.30s", s_nstack, S_TYPE_EMPTY, 0.0, NULL, "---");
+      else {
+         switch (s_stack [s_nstack - 1].typ) {
+         case S_TYPE_NUM :
+         case S_TYPE_STR :
+            snprintf (yCALC__unit_answer, LEN_STR, "STACK top   (%2d) : %c %8.2lf %-10p %-.30s", s_nstack, s_stack [s_nstack - 1].typ, s_stack [s_nstack - 1].num, s_stack [s_nstack - 1].ref, (s_stack [s_nstack - 1].str == NULL) ? "---" : s_stack [s_nstack - 1].str);
+            break;
+         case S_TYPE_REF :
+            x_thing = (tMOCK *) (s_stack [s_nstack - 1].ref);
+            strlcpy (x_label, x_thing->label, LEN_LABEL);
+            snprintf (yCALC__unit_answer, LEN_STR, "STACK top   (%2d) : %c %8.2lf %-10.10s %-.30s", s_nstack, s_stack [s_nstack - 1].typ, s_stack [s_nstack - 1].num, x_label, (s_stack [s_nstack - 1].str == NULL) ? "---" : s_stack [s_nstack - 1].str);
+            break;
+         }
+      }
+   }
+   /*---(complete)-----------------------*/
+   return yCALC__unit_answer;
 }
+
+char yCALC__unit_stackset    (int a_num) { s_nstack = a_num; return 0; }
 
 
 

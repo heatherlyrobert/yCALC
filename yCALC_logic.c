@@ -66,8 +66,8 @@ yCALC_lequal       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.220.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 yCALC_sequal       (void)
 {
-   r = yCALC_popstr (__FUNCTION__, ++s_narg);
-   s = yCALC_popstr (__FUNCTION__, ++s_narg);
+   r = yCALC_popstr (__FUNCTION__);
+   s = yCALC_popstr (__FUNCTION__);
    if (strcmp (s, r) == 0) yCALC_pushval (__FUNCTION__, TRUE );
    else                    yCALC_pushval (__FUNCTION__, FALSE);
    return;
@@ -76,8 +76,8 @@ yCALC_sequal       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.220.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 yCALC_snotequal    (void)
 {
-   r = yCALC_popstr (__FUNCTION__, ++s_narg);
-   s = yCALC_popstr (__FUNCTION__, ++s_narg);
+   r = yCALC_popstr (__FUNCTION__);
+   s = yCALC_popstr (__FUNCTION__);
    if (strcmp (s, r) != 0) yCALC_pushval (__FUNCTION__, TRUE );
    else                    yCALC_pushval (__FUNCTION__, FALSE);
    return;
@@ -86,8 +86,8 @@ yCALC_snotequal    (void)
 void    /*-> tbd --------------------------------[ ------ [fv.220.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 yCALC_slesser      (void)
 {
-   r = yCALC_popstr (__FUNCTION__, ++s_narg);
-   s = yCALC_popstr (__FUNCTION__, ++s_narg);
+   r = yCALC_popstr (__FUNCTION__);
+   s = yCALC_popstr (__FUNCTION__);
    if (strcmp (s, r) <  0) yCALC_pushval (__FUNCTION__, TRUE );
    else                    yCALC_pushval (__FUNCTION__, FALSE);
    return;
@@ -96,8 +96,8 @@ yCALC_slesser      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.220.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 yCALC_sgreater     (void)
 {
-   r = yCALC_popstr (__FUNCTION__, ++s_narg);
-   s = yCALC_popstr (__FUNCTION__, ++s_narg);
+   r = yCALC_popstr (__FUNCTION__);
+   s = yCALC_popstr (__FUNCTION__);
    if (strcmp (s, r) >  0) yCALC_pushval (__FUNCTION__, TRUE );
    else                    yCALC_pushval (__FUNCTION__, FALSE);
    return;
