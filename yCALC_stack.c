@@ -1,19 +1,24 @@
-/*===[[ START ]]==============================================================*/
+/*============================----beg-of-source---============================*/
 #include    "yCALC.h"
 #include    "yCALC_priv.h"
 
- 
-static void*   (*s_thinger)     (char *a_label);
-static char    (*s_value  )     (void *a_thing, char a_type, double *a_value, char *a_string, char *a_print);
-static char    (*s_details)     (void *a_thing, char *a_quality, char *a_string, double *a_value);
-static char    (*s_address)     (void *a_thing, int *x, int *y, int *z);
 
+
+ 
+static void*   (*s_thinger  )   (char *a_label);
+static char    (*s_valuer   )   (void *a_thing, char a_type, double *a_value, char *a_string);
+static char    (*s_detailer )   (void *a_thing, char *a_quality, char *a_string, double *a_value);
+static char    (*s_addresser)   (void *a_thing, int *x, int *y, int *z);
+
+static char    s_type    = '-';
+static double  s_value   = 0.0;
+static char    s_string  [LEN_RECD] = "";
+static int     x, y, z;
 
 
 /*====================------------------------------------====================*/
 /*===----                         execution stack                      ----===*/
 /*====================------------------------------------====================*/
-static void  o___STACK___________o () { return; }
 /*
  *   as the rpn calculation is read from right-to-left, the execution stack
  *   stores all initial and intermediate values until required by an operator.
@@ -71,88 +76,188 @@ static void  o___STACK___________o () { return; }
  *
  */
 
-#define     MAX_STACK         1000
+#define     S_TYPE_EMPTY        '-'
+#define     S_TYPE_NUM          'n'
+#define     S_TYPE_STR          's'
+#define     S_TYPE_REF          'r'
+
+#define     S_MAX_STACK         99
 typedef  struct cSTACK tSTACK;
 struct cSTACK {
-   char      typ;            /* type : r=ref, v=val, s=str                    */
-   tCELL    *ref;            /* cell reference                                */
-   double    num;            /* constant value                                */
-   char     *str;            /* literal string                                */
+   char        typ;            /* type : r=ref, v=val, s=str                    */
+   void       *ref;            /* cell reference                                */
+   double      num;            /* constant value                                */
+   char       *str;            /* literal string                                */
 };
-tSTACK      calc__stack   [MAX_STACK];
-int         calc__nstack  = 0;
+static tSTACK  s_stack   [S_MAX_STACK];
+static int     s_nstack  = 0;
 
-/*
- *   type is one of...
- *      -- v         numeric value
- *      -- s         string
- *      -- r         cell reference
- *
- */
 
-char         /*-> add a vstring to the stack ---------[ ------ [gc.420.202.11]*/ /*-[01.0000.0#5.!]-*/ /*-[--.---.---.--]-*/
-yCALC_pushstr       (char *a_func, char *a_new)
-{  /*---(design notes)-------------------*//*---------------------------------*/
-   /* very simply adds a stack entry with a string literal as its value       */
-   /*---(defense: stack overflow)--------*//*---------------------------------*/
-   if (calc__nstack >= MAX_STACK) {
-      ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_OTHER, "stack full, could not push string");
-      return -1;
+
+/*====================------------------------------------====================*/
+/*===----                        program level                         ----===*/
+/*====================------------------------------------====================*/
+static void      o___PROGRAM_________________o (void) {;}
+
+char
+yCALC_init              (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         i           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
+   --rce;  if (strchr ("IC", myCALC.status) != NULL) {
+      DEBUG_PROG   yLOG_note    ("can not re-initialize");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(globals)------------------------*/
+   DEBUG_PROG   yLOG_note    ("clearing stack");
+   for (i = 0; i < S_MAX_STACK; ++i) {
+      s_stack [i].typ   = S_TYPE_EMPTY;
+      s_stack [i].ref   = NULL;
+      s_stack [i].num   = 0.0;
+      s_stack [i].str   = NULL;
+   }
+   s_nstack = 0;
+   /*---(functions)----------------------*/
+   DEBUG_PROG   yLOG_note    ("clearing function calls");
+   s_thinger   = NULL;
+   s_valuer    = NULL;
+   s_detailer  = NULL;
+   s_addresser = NULL;
+   /*---(update)-------------------------*/
+   DEBUG_PROG   yLOG_note    ("updating status");
+   myCALC.status = 'I';
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+yCALC_config            (void *a_thinger, void *a_valuer, void *a_detailer, void *a_addresser)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
+   --rce;  if (strchr ("IC", myCALC.status) == NULL) {
+      DEBUG_PROG   yLOG_note    ("must initialize before configuring");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   s_thinger   = a_thinger;
+   /*---(update thinger)-----------------*/
+   DEBUG_PROG   yLOG_point   ("thinger"   , a_thinger);
+   --rce;  if (a_thinger   == NULL) {
+      DEBUG_PROG   yLOG_warn    ("thinger"   , "without this callback, references, ranges, and variables can not function");
+   }
+   s_thinger   = a_thinger;
+   /*---(update valuer)------------------*/
+   DEBUG_PROG   yLOG_point   ("valuer"    , a_valuer);
+   --rce;  if (a_valuer    == NULL) {
+      DEBUG_PROG   yLOG_warn    ("valuer"    , "without this callback, references, ranges, and variables can not function");
+   }
+   s_valuer    = a_valuer;
+   /*---(update detailer)----------------*/
+   DEBUG_PROG   yLOG_point   ("detailer"  , a_detailer);
+   --rce;  if (a_detailer  == NULL) {
+      DEBUG_PROG   yLOG_warn    ("detailer"  , "without this callback, a few functions may not be allowed");
+   }
+   s_detailer  = a_detailer;
+   /*---(update addresser)---------------*/
+   DEBUG_PROG   yLOG_point   ("addresser" , a_addresser);
+   --rce;  if (a_addresser == NULL) {
+      DEBUG_PROG   yLOG_warn    ("addresser" , "without this callback, a few functions may not be allowed");
+   }
+   s_addresser = a_addresser;
+   /*---(update)-------------------------*/
+   DEBUG_PROG   yLOG_note    ("updating status");
+   myCALC.status = 'O';
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                        adding to stack                       ----===*/
+/*====================------------------------------------====================*/
+static void      o___PUSHING_________________o (void) {;}
+
+char         /*-> add a value to the stack -----------[ ------ [gc.420.202.11]*/ /*-[01.0000.0#5.!]-*/ /*-[--.---.---.--]-*/
+yCALC_pushval           (char *a_func, double a_value)
+{
+   /*---(defense: stack overflow)--------*/
+   if (s_nstack >= S_MAX_STACK) {
+      myCALC.trouble = G_STACK_ERROR;
+      return 0;
    }
    /*---(update stack item)--------------*/
-   calc__stack[calc__nstack].typ = 's';
-   calc__stack[calc__nstack].ref = NULL;
-   calc__stack[calc__nstack].num = 0;
-   calc__stack[calc__nstack].str = strndup (a_new, LEN_RECD);
+   s_stack [s_nstack].typ = S_TYPE_NUM;
+   s_stack [s_nstack].ref = NULL;
+   s_stack [s_nstack].num = a_value;
+   s_stack [s_nstack].str = NULL;
    /*---(update stack counter)-----------*/
-   ++calc__nstack;
+   ++s_nstack;
    /*---(complete)-----------------------*/
    return 0;
 }
 
-char         /*-> add a value to the stack -----------[ ------ [gc.420.202.11]*/ /*-[01.0000.0#5.!]-*/ /*-[--.---.---.--]-*/
-yCALC_pushval       (char *a_func, double a_new)
-{  /*---(design notes)-------------------*//*---------------------------------*/
-   /* very simply adds a stack entry with a numeric literal as its value      */
-   /*---(defense: stack overflow)--------*//*---------------------------------*/
-   if (calc__nstack >= MAX_STACK) {
-      ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_OTHER, "stack full, could not push value");
-      return -1;
+char         /*-> add a string to the stack ----------[ ------ [gc.420.202.11]*/ /*-[01.0000.0#5.!]-*/ /*-[--.---.---.--]-*/
+yCALC_pushstr           (char *a_func, char *a_string)
+{
+   /*---(defense: stack overflow)--------*/
+   if (s_nstack >= S_MAX_STACK) {
+      myCALC.trouble = G_STACK_ERROR;
+      return 0;
    }
    /*---(update stack item)--------------*/
-   calc__stack[calc__nstack].typ = 'v';
-   calc__stack[calc__nstack].ref = NULL;
-   calc__stack[calc__nstack].num = a_new;
-   calc__stack[calc__nstack].str = NULL;
+   s_stack [s_nstack].typ = S_TYPE_STR;
+   s_stack [s_nstack].ref = NULL;
+   s_stack [s_nstack].num = 0;
+   s_stack [s_nstack].str = strndup (a_string, LEN_RECD);
    /*---(update stack counter)-----------*/
-   ++calc__nstack;
+   ++s_nstack;
    /*---(complete)-----------------------*/
    return 0;
 }
 
 char         /*-> add a reference to the stack -------[ ------ [gc.520.203.21]*/ /*-[01.0000.075.!]-*/ /*-[--.---.---.--]-*/
-yCALC_pushref       (char *a_func, tCELL *a_new)
-{  /*---(design notes)-------------------*//*---------------------------------*/
-   /* adds a cell reference for later intepretation in the calculation        */
-   /*---(defense: stack overflow)--------*//*---------------------------------*/
-   if (calc__nstack >= MAX_STACK) {
-      ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_OTHER, "stack full, could not push reference");
-      return -1;
+yCALC_pushref           (char *a_func, void *a_thing)
+{
+   /*---(defense: stack overflow)--------*/
+   if (s_nstack >= S_MAX_STACK) {
+      myCALC.trouble = G_STACK_ERROR;
+      return 0;
    }
-   if (a_new        == NULL     )  return -2;
+   if (a_thing      == NULL     )  return -2;
    /*---(update stack item)--------------*/
-   calc__stack[calc__nstack].typ = 'r';
-   calc__stack[calc__nstack].ref = a_new;
-   calc__stack[calc__nstack].num = 0;
-   calc__stack[calc__nstack].str = NULL;
+   s_stack[s_nstack].typ = S_TYPE_REF;
+   s_stack[s_nstack].ref = a_thing;
+   s_stack[s_nstack].num = 0;
+   s_stack[s_nstack].str = NULL;
    /*---(update stack counter)-----------*/
-   ++calc__nstack;
+   ++s_nstack;
    /*---(complete)-----------------------*/
    return 0;
 }
 
+
+
+/*====================------------------------------------====================*/
+/*===----                      removing from stack                     ----===*/
+/*====================------------------------------------====================*/
+static void      o___POPPING_________________o (void) {;}
+
 double       /*-> get an numeric off the stack -------[ ------ [fn.730.205.21]*/ /*-[01.0000.0#5.!]-*/ /*-[--.---.---.--]-*/
-yCALC_popval          (char *a_func, char a_seq)
+yCALC_popval            (char *a_func)
 {  /*---(design notes)-------------------*//*---------------------------------*/
    /* always returns a value for the stack entry.                             */
    /* -- for a numeric literal, it returns the number field on the stack item */
@@ -160,30 +265,33 @@ yCALC_popval          (char *a_func, char a_seq)
    /* -- for a reference, it returns the value contained in that cell         */
    /* -- if it can't figure it out, it returns a 0.0                          */
    /*---(prepare)------------------------*/
-   if (calc__nstack <= 0) {
-      ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_ARGS , "stack empty, could not get value");
+   if (s_nstack <= 0) {
+      myCALC.trouble = G_STACK_ERROR;
       return 0.0;
    }
-   --calc__nstack;
+   --s_nstack;
    /*---(handle stack types)-------------*/
-   switch (calc__stack[calc__nstack].typ) {
-   case 'v' :
-      return  calc__stack[calc__nstack].num;
+   switch (s_stack [s_nstack].typ) {
+   case S_TYPE_NUM :
+      return  s_stack [s_nstack].num;
       break;
-   case 's' :
+   case S_TYPE_STR :
       return  0.0;
       break;
-   case 'r' :
-      return  calc__stack[calc__nstack].ref->v_num;
+   case S_TYPE_REF :
+      if (s_valuer == NULL) {
+         myCALC.trouble = G_CONF_ERROR;
+         return 0.0;
+      }
       break;
    }
    /*---(complete)-----------------------*/
-   ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_ARGS , "wrong argument type on stack");
+   /*> ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_ARGS , "wrong argument type on stack");   <*/
    return 0.0;
 }
 
 char*        /*-> get an string off the stack --------[ ------ [fs.A40.20#.31]*/ /*-[02.0000.0#5.!]-*/ /*-[--.---.---.--]-*/
-yCALC_popstr       (char *a_func, char a_seq)
+yCALC_popstr            (char *a_func)
 {  /*---(design notes)-------------------*//*---------------------------------*/
    /* always returns a string for the stack entry.                            */
    /* -- numeric literal              , return an empty string            */
@@ -196,124 +304,160 @@ yCALC_popstr       (char *a_func, char a_seq)
    /* -- reference that's unknown     , return an empty string            */
    /* -- if it can't figure it out    , return an empty string            */
    /*---(prepare)------------------------*/
-   if (calc__nstack <= 0) {
-      ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_ARGS , "stack empty, could not get string");
+   if (s_nstack <= 0) {
+      myCALC.trouble = G_STACK_ERROR;
       return strndup (nada, LEN_RECD);
    }
-   --calc__nstack;
+   --s_nstack;
    /*---(handle stack types)-------------*/
-   switch (calc__stack[calc__nstack].typ) {
+   switch (s_stack[s_nstack].typ) {
    case 'v' :
       return  strndup (nada, LEN_RECD);
       break;
    case 's' :
-      return  calc__stack[calc__nstack].str;
+      return  s_stack[s_nstack].str;
       break;
    case 'r' :
-      switch (calc__stack[calc__nstack].ref->t) {
-      case  CTYPE_STR    :
-         return  strndup (calc__stack[calc__nstack].ref->s    , LEN_RECD);
-         break;
-      case  CTYPE_MOD    :
-         return  strndup (calc__stack[calc__nstack].ref->v_str, LEN_RECD);
-         break;
-      default            :
-         return  strndup (nada, LEN_RECD);
-         break;
-      }
+      /*> switch (s_stack[s_nstack].ref->t) {                                         <* 
+       *> case  CTYPE_STR    :                                                        <* 
+       *>    return  strndup (s_stack[s_nstack].ref->s    , LEN_RECD);                <* 
+       *>    break;                                                                   <* 
+       *> case  CTYPE_MOD    :                                                        <* 
+       *>    return  strndup (s_stack[s_nstack].ref->v_str, LEN_RECD);                <* 
+       *>    break;                                                                   <* 
+       *> default            :                                                        <* 
+       *>    return  strndup (nada, LEN_RECD);                                        <* 
+       *>    break;                                                                   <* 
+       *> }                                                                           <*/
+      break;
    default            :
       return  strndup (nada, LEN_RECD);
       break;
    }
    /*---(complete)-----------------------*/
-   ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_ARGS , "wrong argument type on stack");
+   myCALC.trouble = G_STACK_ERROR;
    return strndup (nada, LEN_RECD);
 }
 
-tCELL*       /*-> get a reference off the stack ------[ ------ [fp.420.203.21]*/ /*-[01.0000.0F#.!]-*/ /*-[--.---.---.--]-*/
-yCALC_popref          (char *a_func, char a_seq)
+char*        /*-> get a reference off the stack ------[ ------ [fp.420.203.21]*/ /*-[01.0000.04#.!]-*/ /*-[--.---.---.--]-*/
+yCALC_popprint          (char *a_func)
 {  /*---(design notes)-------------------*//*---------------------------------*/
    /*---(prepare)------------------------*/
-   if (calc__nstack <= 0) {
-      ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_ARGS , "stack empty, could not get reference");
+   if (s_nstack <= 0) {
+      myCALC.trouble = G_STACK_ERROR;
       return NULL;
    }
-   --calc__nstack;
+   --s_nstack;
    /*---(handle stack types)-------------*/
-   switch (calc__stack[calc__nstack].typ) {
+   switch (s_stack[s_nstack].typ) {
    case 'r' :
-      return  calc__stack[calc__nstack].ref;
+      /*> return  strndup (s_stack[s_nstack].ref->p, LEN_RECD);                       <*/
       break;
    }
    /*---(complete)-----------------------*/
-   ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_ARGS , "wrong argument type on stack");
+   myCALC.trouble = G_STACK_ERROR;
    return NULL;
 }
 
-tCELL*       /*-> get a reference off the stack ------[ ------ [fp.420.203.21]*/ /*-[01.0000.04#.!]-*/ /*-[--.---.---.--]-*/
-yCALC_popprint        (char *a_func, char a_seq)
+void*        /*-> get a reference off the stack ------[ ------ [fp.420.203.21]*/ /*-[01.0000.0F#.!]-*/ /*-[--.---.---.--]-*/
+yCALC_popref            (char *a_func)
 {  /*---(design notes)-------------------*//*---------------------------------*/
    /*---(prepare)------------------------*/
-   if (calc__nstack <= 0) {
-      ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_ARGS , "stack empty, could not get printable");
+   if (s_nstack <= 0) {
+      myCALC.trouble = G_STACK_ERROR;
       return NULL;
    }
-   --calc__nstack;
+   --s_nstack;
    /*---(handle stack types)-------------*/
-   switch (calc__stack[calc__nstack].typ) {
+   switch (s_stack[s_nstack].typ) {
    case 'r' :
-      return  strndup (calc__stack[calc__nstack].ref->p, LEN_RECD);
+      return  s_stack[s_nstack].ref;
       break;
    }
    /*---(complete)-----------------------*/
-   ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_ARGS , "wrong argument type on stack");
+   myCALC.trouble = G_STACK_ERROR;
    return NULL;
 }
 
-tCELL*       /*-> get a reference off the stack ------[ ------ [fp.520.204.41]*/ /*-[02.0000.01#.!]-*/ /*-[--.---.---.--]-*/
-yCALC_popform         (char *a_func, char a_seq)
-{  /*---(design notes)-------------------*//*---------------------------------*/
-   /*---(prepare)------------------------*/
-   if (calc__nstack <= 0) {
-      ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_ARGS , "stack empty, could not get printable");
-      return NULL;
-   }
-   --calc__nstack;
-   /*---(handle stack types)-------------*/
-   switch (calc__stack[calc__nstack].typ) {
-   case 'r' :
-      if (strchr (G_CELL_CALC , calc__stack[calc__nstack].ref->t) != 0) {
-         return  strndup (calc__stack[calc__nstack].ref->s    , LEN_RECD);
-      } else {
-         return  strndup (nada , LEN_RECD);
-      }
-      break;
+
+
+/*====================------------------------------------====================*/
+/*===----                         unit testing                         ----===*/
+/*====================------------------------------------====================*/
+static void      o___UNITTEST________________o (void) {;}
+
+char          yCALC__unit_answer [LEN_STR ];
+
+char*        /*-> unit testing accessor --------------[ light  [us.IA0.2A5.X3]*/ /*-[02.0000.00#.#]-*/ /*-[--.---.---.--]-*/
+yCALC__unit_stack       (char *a_question, int a_num)
+{
+   /*---(initialize)---------------------*/
+   strlcpy (yCALC__unit_answer, "yCALC_unit, unknown request", 100);
+   /*---(string testing)-----------------*/
+   if      (strncmp (a_question, "top"       , 20)  == 0) {
+      if (s_nstack <= 0)   snprintf (yCALC__unit_answer, LEN_STR, "STACK top   (%2d) : %c %8.2lf %-10p %-.30s", s_nstack, S_TYPE_EMPTY, 0.0, NULL, "---");
+      else                 snprintf (yCALC__unit_answer, LEN_STR, "STACK top   (%2d) : %c %8.2lf %-10p %-.30s", s_nstack, s_stack [s_nstack - 1].typ, s_stack [s_nstack - 1].num, s_stack [s_nstack - 1].ref, (s_stack [s_nstack - 1].str == NULL) ? "---" : s_stack [s_nstack - 1].str);
    }
    /*---(complete)-----------------------*/
-   ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_ARGS , "wrong argument type on stack");
-   return NULL;
+   return yCALC__unit_answer;
 }
 
-tCELL*       /*-> get a reference off the stack ------[ ------ [fp.520.204.41]*/ /*-[02.0000.01#.!]-*/ /*-[--.---.---.--]-*/
-yCALC_poprpn          (char *a_func, char a_seq)
-{  /*---(design notes)-------------------*//*---------------------------------*/
-   /*---(prepare)------------------------*/
-   if (calc__nstack <= 0) {
-      ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_ARGS , "stack empty, could not get printable");
-      return NULL;
-   }
-   --calc__nstack;
-   /*---(handle stack types)-------------*/
-   switch (calc__stack[calc__nstack].typ) {
-   case 'r' :
-      if (strchr (G_CELL_RPN  , calc__stack[calc__nstack].ref->t) != 0) {
-         return  strndup (calc__stack[calc__nstack].ref->rpn  , LEN_RECD);
-      } else {
-         return  strndup (nada , LEN_RECD);
-      }
-      break;
-   }
-   /*---(complete)-----------------------*/
-   ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_ARGS , "wrong argument type on stack");
-   return NULL;
+char yCALC__unit_stackset    (int a_num) { s_nstack = a_num; return 0; }
+
+
+
+/*====================------------------------------------====================*/
+/*===----                         mock system                          ----===*/
+/*====================------------------------------------====================*/
+static void      o___MOCK____________________o (void) {;}
+
+typedef struct cMOCK  tMOCK;
+struct  cMOCK {
+   char        label       [LEN_LABEL];
+   char        type;
+   double      value;
+   char        string      [LEN_RECD ];
+   int         x;
+   int         y;
+   int         z;
+   char        rpn         [LEN_RECD ];
+};
+static tMOCK   s_mocks     [100] = {
+   { "0a1"       , 'n' ,     1.00, ""              ,   0,   0,   0 },
+   { "0a2"       , 'n' ,     2.00, ""              ,   0,   1,   0 },
+   { "0a3"       , 'n' ,     3.00, ""              ,   0,   2,   0 },
+   { "0a4"       , 'n' ,     4.00, ""              ,   0,   3,   0 },
+   { "0a5"       , 'n' ,     5.00, ""              ,   0,   4,   0 },
+   { "0a6"       , 'n' ,     6.00, ""              ,   0,   5,   0 },
+   { "0a10"      , 'n' ,    10.00, ""              ,   0,   9,   0 },
+   { "0a30"      , 'n' ,    30.00, ""              ,   0,  29,   0 },
+   { "0a42"      , 'n' ,    42.00, ""              ,   0,  41,   0 },
+};
+
+void*
+yCALC__unit_thinger          (char *a_label)
+{
 }
+
+char
+yCALC__unit_valuer           (void *a_thing, char a_type, double *a_value, char *a_string)
+{
+   return 0;
+}
+
+char
+yCALC__unit_detailer         (void *a_thing, char *a_quality, char *a_string, double *a_value)
+{
+   return 0;
+}
+
+char
+yCALC__unit_addresser        (void *a_thing, int *x, int *y, int *z)
+{
+   return 0;
+}
+
+
+
+
+/*============================----end-of-source---============================*/

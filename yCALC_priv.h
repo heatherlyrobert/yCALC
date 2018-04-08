@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.0b"
-#define YCALC_VER_TXT   "added some basic functions and started the stack"
+#define YCALC_VER_NUM   "0.0c"
+#define YCALC_VER_TXT   "basic stack pop and push unit testing for values and strings"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -35,11 +35,18 @@ struct cLOCAL {
    /*---(overall)-----------*/
    char        debug;
    int         logger;
+   char        status;
+   char        trouble;
    /*---(testing)-----------*/
    int         argc;
    char       *argv        [20];
 };
-extern  tLOCAL its;
+extern  tLOCAL myCALC;
+#define      G_NO_ERROR       '-'
+#define      G_BUILD_ERROR    'b'
+#define      G_STACK_ERROR    's'
+#define      G_CONF_ERROR     'c'
+#define      G_EXEC_ERROR     'e'
 
 
 extern int  g_nfunc;
@@ -57,6 +64,8 @@ struct  cFUNCS {
    char        disp        [30];       /* display version of function         */
 };
 extern tFUNCS  g_funcs [MAX_FUNCS];
+
+extern char   yCALC__unit_answer [LEN_STR ];
 
 
 
@@ -84,10 +93,23 @@ extern char        errorstr      [LEN_RECD];
 
 
 
+char        yCALC_trouble_clear     (void);
 char        yCALC__unit_quiet       (void);
 char        yCALC__unit_loud        (void);
 char        yCALC__unit_end         (void);
 char*       yCALC__unit             (char *a_question, int a_num);
+
+
+/*===[ STACK ]============================================*/
+/*---(pushing)------------------------*/
+char        yCALC_pushstr           (char *a_func, char   *a_string);
+char        yCALC_pushval           (char *a_func, double  a_value);
+char        yCALC_pushref           (char *a_func, void   *a_thing);
+/*---(popping)------------------------*/
+double      yCALC_popval            (char *a_func);
+/*---(unittest)-----------------------*/
+char*       yCALC__unit_stack       (char *a_question, int a_num);
+char        yCALC__unit_stackset    (int   a_num);
 
 
 /*---(placeholder)--------------------*/

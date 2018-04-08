@@ -12,8 +12,8 @@ static void  o___RELATIONAL______o () { return; }
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 yCALC_equal        (void)
 {
-   a = yCALC_popval (__FUNCTION__, ++s_narg);
-   b = yCALC_popval (__FUNCTION__, ++s_narg);
+   a = yCALC_popval (__FUNCTION__);
+   b = yCALC_popval (__FUNCTION__);
    yCALC_pushval (__FUNCTION__, b == a);
    return;
 }
@@ -21,8 +21,8 @@ yCALC_equal        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 yCALC_notequal      (void)
 {
-   a = yCALC_popval (__FUNCTION__, ++s_narg);
-   b = yCALC_popval (__FUNCTION__, ++s_narg);
+   a = yCALC_popval (__FUNCTION__);
+   b = yCALC_popval (__FUNCTION__);
    yCALC_pushval (__FUNCTION__, b != a);
    return;
 }
@@ -30,8 +30,8 @@ yCALC_notequal      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 yCALC_greater      (void)
 {
-   a = yCALC_popval (__FUNCTION__, ++s_narg);
-   b = yCALC_popval (__FUNCTION__, ++s_narg);
+   a = yCALC_popval (__FUNCTION__);
+   b = yCALC_popval (__FUNCTION__);
    yCALC_pushval (__FUNCTION__, b > a);
    return;
 }
@@ -39,8 +39,8 @@ yCALC_greater      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 yCALC_lesser       (void)
 {
-   a = yCALC_popval (__FUNCTION__, ++s_narg);
-   b = yCALC_popval (__FUNCTION__, ++s_narg);
+   a = yCALC_popval (__FUNCTION__);
+   b = yCALC_popval (__FUNCTION__);
    yCALC_pushval (__FUNCTION__, b < a);
    return;
 }
@@ -48,8 +48,8 @@ yCALC_lesser       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 yCALC_gequal       (void)
 {
-   a = yCALC_popval (__FUNCTION__, ++s_narg);
-   b = yCALC_popval (__FUNCTION__, ++s_narg);
+   a = yCALC_popval (__FUNCTION__);
+   b = yCALC_popval (__FUNCTION__);
    yCALC_pushval (__FUNCTION__, b >= a);
    return;
 }
@@ -57,8 +57,8 @@ yCALC_gequal       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 yCALC_lequal       (void)
 {
-   a = yCALC_popval (__FUNCTION__, ++s_narg);
-   b = yCALC_popval (__FUNCTION__, ++s_narg);
+   a = yCALC_popval (__FUNCTION__);
+   b = yCALC_popval (__FUNCTION__);
    yCALC_pushval (__FUNCTION__, b <= a);
    return;
 }
@@ -113,7 +113,7 @@ static void  o___LOGICAL_________o () { return; }
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 yCALC_not          (void)
 {
-   a = yCALC_popval (__FUNCTION__, ++s_narg);
+   a = yCALC_popval (__FUNCTION__);
    yCALC_pushval (__FUNCTION__, !a);
    return;
 }
@@ -121,8 +121,8 @@ yCALC_not          (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 yCALC_and          (void)
 {
-   a = yCALC_popval (__FUNCTION__, ++s_narg);
-   b = yCALC_popval (__FUNCTION__, ++s_narg);
+   a = yCALC_popval (__FUNCTION__);
+   b = yCALC_popval (__FUNCTION__);
    yCALC_pushval (__FUNCTION__, b && a);
    return;
 }
@@ -130,8 +130,8 @@ yCALC_and          (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 yCALC_or           (void)
 {
-   a = yCALC_popval (__FUNCTION__, ++s_narg);
-   b = yCALC_popval (__FUNCTION__, ++s_narg);
+   a = yCALC_popval (__FUNCTION__);
+   b = yCALC_popval (__FUNCTION__);
    yCALC_pushval (__FUNCTION__, b || a);
    return;
 }

@@ -1,0 +1,230 @@
+#!/usr/local/bin/koios
+#   koios-polos (north star) -- customized c unit testing meta-program and mini-language
+#   program under test  : gyges_calc
+#   auto-generated script file converted from a previous script version
+#   updated to the most recent version (v21)
+
+
+
+#23456789-12  123  123456789-123456789-123456789-12345  123456789-123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  -  123456789-123456789- 
+#==(verb)===  ver  ===========(description)===========  =====(function)=====  ========================(arguments)===================================  ==(test)==  ==========================(results)=================================================================  t  ========(var)======= 
+PREP          v21  include the prototype headers                                - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+   incl       v21  include public header                yCALC.h               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+   incl       v21  include private header               yCALC_priv.h          - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+
+
+#23456789-12  123  123456789-123456789-123456789-12345  123456789-123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  -  123456789-123456789- 
+#==(verb)===  ver  ===========(description)===========  =====(function)=====  ========================(arguments)===================================  ==(test)==  ==========================(results)=================================================================  t  ========(var)======= 
+SCRP          v21  (STACK ) add and remove values from stack                    yCALC_pushval, yCALC_popval                                             ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  verify program setup                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  setup the program                    yCALC__unit_quiet                                                                             i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 0) : -     0.00 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   GROUP      v21  quickly check a number push/pop                              - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  add a value                                                  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  push value                           yCALC_pushval         "testing"  ,    15                                                      i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 1) : n    15.00 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  remove a value                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  pop value                            yCALC_popval          "testing"                                                               r_equal     15.0                                                                                                 
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 0) : -     0.00 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   GROUP      v21  check the stack at minium                                    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  remove from an empty stack (ERROR)                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  pop value                            yCALC_popval          "testing"                                                               r_equal     0.0                                                                                                  
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 0) : -     0.00 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : s                                                                                 
+
+   GROUP      v21  check the stack at maximum                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  set the stack towards the end                                - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  update the stack counter             yCALC__unit_stackset   98                                                                     i_equal     0                                                                                                    
+     exec     v21  clear the error                      yCALC_trouble_clear                                                                           i_equal     0                                                                                                    
+
+   COND       v21  add final entry                                              - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  push value                           yCALC_pushval         "testing"  ,    30                                                      i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   (99) : n    30.00 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  add past end (ERROR)                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  push value                           yCALC_pushval         "testing"  ,   128                                                      i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   (99) : n    30.00 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : s                                                                                 
+
+   GROUP      v21  run a series of pushes and pops                              - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  set the stack back to beginning                              - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  update the stack counter             yCALC__unit_stackset    0                                                                     i_equal     0                                                                                                    
+     exec     v21  clear the error                      yCALC_trouble_clear                                                                           i_equal     0                                                                                                    
+
+   COND       v21  add a value                                                  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  push value                           yCALC_pushval         "testing"  ,    15.20                                                   i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 1) : n    15.20 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  add a value                                                  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  push value                           yCALC_pushval         "testing"  ,    57.62                                                   i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 2) : n    57.62 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  add a value                                                  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  push value                           yCALC_pushval         "testing"  ,  3000.01                                                   i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 3) : n  3000.01 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  remove a value                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  pop value                            yCALC_popval          "testing"                                                               r_equal     3000.01                                                                                              
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 2) : n    57.62 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  add a value                                                  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  push value                           yCALC_pushval         "testing"  ,   261.99                                                   i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 3) : n   261.99 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  remove a value                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  pop value                            yCALC_popval          "testing"                                                               r_equal     261.99                                                                                               
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 2) : n    57.62 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  remove a value                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  pop value                            yCALC_popval          "testing"                                                               r_equal     57.62                                                                                                
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 1) : n    15.20 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  add a value                                                  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  push value                           yCALC_pushval         "testing"  ,  -687.05                                                   i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 2) : n  -687.05 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  remove a value                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  pop value                            yCALC_popval          "testing"                                                               r_equal     -687.05                                                                                               
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 1) : n    15.20 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  remove a value                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  pop value                            yCALC_popval          "testing"                                                               r_equal     15.2                                                                                                 
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 0) : -     0.00 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   GROUP      v21  complete                                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.005))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  stop testing                         yCALC__unit_end                                                                                     i_equal     0                                                                                                    
+
+
+
+#23456789-12  123  123456789-123456789-123456789-12345  123456789-123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  -  123456789-123456789- 
+#==(verb)===  ver  ===========(description)===========  =====(function)=====  ========================(arguments)===================================  ==(test)==  ==========================(results)=================================================================  t  ========(var)======= 
+SCRP          v21  (STACK ) add and remove strings from stack                   yCALC_pushstr, yCALC_popstr                                             ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  verify program setup                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  setup the program                    yCALC__unit_quiet                                                                             i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 0) : -     0.00 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   GROUP      v21  quickly check a number push/pop                              - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  add a string                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  push string                          yCALC_pushstr         "testing"  , "one"                                                      i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 1) : s     0.00 (nil)      one                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  remove a string                                              - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  pop string                           yCALC_popstr          "testing"                                                               s_equal     one                                                                                                  
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 0) : -     0.00 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   GROUP      v21  check the stack at minium                                    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  remove from an empty stack (ERROR)                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  pop string                           yCALC_popstr          "testing"                                                               s_equal                                                                                                          
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 0) : -     0.00 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : s                                                                                 
+
+   GROUP      v21  check the stack at maximum                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  set the stack towards the end                                - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  update the stack counter             yCALC__unit_stackset   98                                                                     i_equal     0                                                                                                    
+     exec     v21  clear the error                      yCALC_trouble_clear                                                                           i_equal     0                                                                                                    
+
+   COND       v21  add final entry                                              - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  push string                          yCALC_pushstr         "testing"  , "two"                                                      i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   (99) : s     0.00 (nil)      two                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  add past end (ERROR)                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  push string                          yCALC_pushstr         "testing"  , "error"                                                    i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   (99) : s     0.00 (nil)      two                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : s                                                                                 
+
+   GROUP      v21  run a series of pushes and pops                              - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  set the stack back to beginning                              - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  update the stack counter             yCALC__unit_stackset    0                                                                     i_equal     0                                                                                                    
+     exec     v21  clear the error                      yCALC_trouble_clear                                                                           i_equal     0                                                                                                    
+
+   COND       v21  add a string                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  push string                          yCALC_pushstr         "testing"  , "one"                                                      i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 1) : s     0.00 (nil)      one                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  add a string                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  push string                          yCALC_pushstr         "testing"  , "flipper da gibit"                                         i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 2) : s     0.00 (nil)      flipper da gibit                                            
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  add a string                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  push string                          yCALC_pushstr         "testing"  , "chupacabras are very creepy"                              i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 3) : s     0.00 (nil)      chupacabras are very creepy                               
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  remove a string                                              - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  pop string                           yCALC_popstr          "testing"                                                               s_equal     chupacabras are very creepy                                                                        
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 2) : s     0.00 (nil)      flipper da gibit                                            
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  add a string                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  push string                          yCALC_pushstr         "testing"  ,   "jesus maria de   guadalupe"                             i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 3) : s     0.00 (nil)      jesus maria de   guadalupe                                
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  remove a string                                              - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  pop string                           yCALC_popstr          "testing"                                                               s_equal     jesus maria de   guadalupe                                                                         
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 2) : s     0.00 (nil)      flipper da gibit                                            
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  remove a string                                              - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  pop string                           yCALC_popstr          "testing"                                                               s_equal     flipper da gibit                                                                                     
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 1) : s     0.00 (nil)      one                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  add a string                                                 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  push string                          yCALC_pushstr         "testing"  , "testing"                                                  i_equal     0                                                                                                    
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 2) : s     0.00 (nil)      testing                                                     
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  remove a string                                              - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  pop string                           yCALC_popstr          "testing"                                                               s_equal     testing                                                                                               
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 1) : s     0.00 (nil)      one                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   COND       v21  remove a string                                              - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  pop string                           yCALC_popstr          "testing"                                                               s_equal     one                                                                                                  
+     get      v21  look at top of stack                 yCALC__unit_stack     "top"      ,     0                                                      s_equal     STACK top   ( 0) : -     0.00 (nil)      ---                                                         
+     get      v21  check error status                   yCALC__unit_base      "error"    ,     0                                                      s_equal     BASE error       : -                                                                                 
+
+   GROUP      v21  complete                                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.005))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  stop testing                         yCALC__unit_end                                                                                     i_equal     0                                                                                                    
+
+
+

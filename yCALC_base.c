@@ -4,7 +4,7 @@
 
 
 
-tLOCAL    its;
+tLOCAL      myCALC;
 
 double      a, b, c, d, e;
 int         m, n, o, len;
@@ -109,6 +109,13 @@ yCALC_noop        (void)
    return;
 }
 
+char
+yCALC_trouble_clear     (void)
+{
+   myCALC.trouble = G_NO_ERROR;
+   return 0;
+}
+
 
 
 
@@ -117,34 +124,35 @@ yCALC_noop        (void)
 /*====================------------------------------------====================*/
 static void      o___UNITTEST________________o (void) {;}
 
-#define       LEN_TEXT  2000
-char          unit_answer [ LEN_TEXT ];
-
 char*            /* [------] unit test accessor ------------------------------*/
-yCALC__unit             (char *a_question, int a_num)
+yCALC__unit_base        (char *a_question, int a_num)
 {
    /*---(initialize)---------------------*/
-   strlcpy (unit_answer, "yCALC_unit, unknown request", 100);
+   strlcpy (yCALC__unit_answer, "yCALC_unit, unknown request", 100);
    /*---(string testing)-----------------*/
-   /*> if      (strncmp(a_question, "string"    , 20)  == 0) {                        <* 
-    *>    snprintf (unit_answer, LEN_TEXT, "yCALC string     : [%s]", its.strtest);   <* 
-    *> }                                                                              <*/
+   if      (strncmp(a_question, "error"     , 20)  == 0) {
+      snprintf (yCALC__unit_answer, LEN_STR, "BASE error       : %c", myCALC.trouble);
+   }
    /*---(complete)-----------------------*/
-   return unit_answer;
+   return yCALC__unit_answer;
 }
 
 char       /*----: set up program urgents/debugging --------------------------*/
 yCALC__unit_quiet       (void)
 {
-   its.logger = yLOG_begin ("yCALC" , yLOG_SYSTEM, yLOG_QUIET);
+   myCALC.logger = yLOG_begin ("yCALC" , yLOG_SYSTEM, yLOG_QUIET);
+   myCALC.trouble = G_NO_ERROR;
+   yCALC_init ();
    return 0;
 }
 
 char       /*----: set up program urgents/debugging --------------------------*/
 yCALC__unit_loud        (void)
 {
-   its.logger = yLOG_begin ("yCALC" , yLOG_SYSTEM, yLOG_NOISE);
+   myCALC.logger = yLOG_begin ("yCALC" , yLOG_SYSTEM, yLOG_NOISE);
    DEBUG_CALC   yLOG_info     ("yCALC"    , yCALC_version   ());
+   myCALC.trouble = G_NO_ERROR;
+   yCALC_init ();
    return 0;
 }
 
