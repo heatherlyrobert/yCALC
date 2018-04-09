@@ -97,10 +97,31 @@ yCALC_version       (void)
 }
 
 char
-yCALC_init              (void)
+yCALC_init              (char a_style)
 {
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         i           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
+   --rce;  if (strchr ("io", myCALC.status) != NULL) {
+      DEBUG_PROG   yLOG_note    ("can not re-initialize");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   strlcpy (myCALC.status_detail, "- ---- -", LEN_LABEL);
+   /*---(initialize)---------------------*/
+   DEBUG_PROG   yLOG_note    ("running sub-initializations");
    yCALC__build_init ();
    yCALC__exec_init  ();
+   /*---(update status)------------------*/
+   myCALC.status = 'I';
+   myCALC.status_detail [0] = 'i';
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
 }
 
 
@@ -149,7 +170,7 @@ yCALC__unit_quiet       (void)
 {
    myCALC.logger = yLOG_begin ("yCALC" , yLOG_SYSTEM, yLOG_QUIET);
    myCALC.trouble = G_NO_ERROR;
-   yCALC_init ();
+   yCALC_init ('s');
    return 0;
 }
 
@@ -159,7 +180,7 @@ yCALC__unit_loud        (void)
    myCALC.logger = yLOG_begin ("yCALC" , yLOG_SYSTEM, yLOG_NOISE);
    DEBUG_CALC   yLOG_info     ("yCALC"    , yCALC_version   ());
    myCALC.trouble = G_NO_ERROR;
-   yCALC_init ();
+   yCALC_init ('s');
    return 0;
 }
 

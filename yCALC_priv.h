@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.0d"
-#define YCALC_VER_TXT   "basic stack pop and push unit testing for references working"
+#define YCALC_VER_NUM   "0.0e"
+#define YCALC_VER_TXT   "structure of yCALC_build in place.  not ready for unit testing yet"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -30,11 +30,26 @@
 #define     FALSE       0
 
 
+
+extern char    (*g_cleanser )   (void *a_thing);
+extern char    (*g_creater  )   (char  a_type , void *a_origin , void   *a_target);
+extern char    (*g_delcref  )   (char  a_type , void *a_origin , void   *a_target);
+extern char    (*g_ranger   )   (void *a_thing, int x1, int y1, int z1, int x2, int y2, int z2);
+
+extern void*   (*g_thinger  )   (char *a_label);
+extern char    (*g_valuer   )   (void *a_thing, char *a_type   , double *a_value, char **a_string);
+extern char    (*g_detailer )   (void *a_thing, char *a_quality, char *a_string , double *a_value);
+extern char    (*g_addresser)   (void *a_thing, int  *x        , int *y         , int *z);
+extern char    (*g_lister   )   (void *a_thing, char *a_quality, char *a_list   );
+
+
+
 typedef struct cLOCAL tLOCAL;
 struct cLOCAL {
    /*---(overall)-----------*/
    char        debug;
    int         logger;
+   char        status_detail    [LEN_LABEL];
    char        status;
    char        trouble;
    /*---(testing)-----------*/
@@ -42,12 +57,17 @@ struct cLOCAL {
    char       *argv        [20];
 };
 extern  tLOCAL myCALC;
-#define      G_NO_ERROR       '-'
-#define      G_BUILD_ERROR    'b'
-#define      G_STACK_ERROR    's'
-#define      G_CONF_ERROR     'c'
-#define      G_EXEC_ERROR     'e'
+#define     G_NO_ERROR       '-'
+#define     G_ERROR_BUILD    'b'
+#define     G_ERROR_STACK    's'
+#define     G_ERROR_CONF     'c'
+#define     G_ERROR_EXEC     'e'
+#define     G_ERROR_RANGE    'R'
 
+#define     G_TYPE_EMPTY        '-'
+#define     G_TYPE_NUM          'n'
+#define     G_TYPE_STR          's'
+#define     G_TYPE_REF          'r'
 
 
 /*
@@ -65,7 +85,7 @@ struct cCALC {
    char      t;               /* type of calculation element                  */
    double    v;               /* numeric literal                              */
    char     *s;               /* string literal                               */
-   void     *r;               /* pointer to a cell                            */
+   void     *r;               /* reference pointer                            */
    void    (*f) (void);       /* function pointer                             */
    void     *owner;           /* pointer to the cell that owns this calc      */
    tCALC    *next;            /* pointer to next calc                         */
@@ -134,9 +154,17 @@ char        yCALC__unit_end         (void);
 char*       yCALC__unit             (char *a_question, int a_num);
 
 
+
+
+/*===[ BUILD ]============================================*/
+/*---(program)------------------------*/
+char        yCALC__build_init       (void);
+
+
+
 /*===[ EXEC ]=============================================*/
 /*---(program)------------------------*/
-char        yCALC_exec_init         (void);
+char        yCALC__exec_init        (void);
 /*---(pushing)------------------------*/
 char        yCALC_pushstr           (char *a_func, char   *a_string);
 char        yCALC_pushval           (char *a_func, double  a_value);
@@ -152,10 +180,6 @@ void*       yCALC__unit_thinger     (char *a_label);
 char        yCALC__unit_valuer      (void *a_thing, char *a_type, double *a_value, char **a_string);
 char        yCALC__unit_detailer    (void *a_thing, char *a_quality, char *a_string, double *a_value);
 char        yCALC__unit_addresser   (void *a_thing, int  *x, int *y, int *z);
-
-/*===[ BUILD ]============================================*/
-/*---(program)------------------------*/
-char        yCALC_build_init        (void);
 
 
 

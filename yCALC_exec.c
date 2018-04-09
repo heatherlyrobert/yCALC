@@ -4,11 +4,13 @@
 
 
 
+void*   (*g_thinger  )   (char *a_label);
+char    (*g_valuer   )   (void *a_thing, char *a_type   , double *a_value, char **a_string);
+char    (*g_detailer )   (void *a_thing, char *a_quality, char *a_string , double *a_value);
+char    (*g_addresser)   (void *a_thing, int  *x        , int *y         , int *z);
+char    (*g_lister   )   (void *a_thing, char *a_quality, char *a_list   );
 
-static void*   (*s_thinger  )   (char *a_label);
-static char    (*s_valuer   )   (void *a_thing, char *a_type   , double *a_value, char **a_string);
-static char    (*s_detailer )   (void *a_thing, char *a_quality, char *a_string , double *a_value);
-static char    (*s_addresser)   (void *a_thing, int  *x        , int *y         , int *z);
+
 
 static char    s_type    = '-';
 static double  s_value   = 0.0;
@@ -107,13 +109,6 @@ yCALC__exec_init         (void)
    int         i           =    0;
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
-   --rce;  if (strchr ("IC", myCALC.status) != NULL) {
-      DEBUG_PROG   yLOG_note    ("can not re-initialize");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
    /*---(globals)------------------------*/
    DEBUG_PROG   yLOG_note    ("clearing stack");
    for (i = 0; i < S_MAX_STACK; ++i) {
@@ -125,13 +120,11 @@ yCALC__exec_init         (void)
    s_nstack = 0;
    /*---(functions)----------------------*/
    DEBUG_PROG   yLOG_note    ("clearing function calls");
-   s_thinger   = NULL;
-   s_valuer    = NULL;
-   s_detailer  = NULL;
-   s_addresser = NULL;
-   /*---(update)-------------------------*/
-   DEBUG_PROG   yLOG_note    ("updating status");
-   myCALC.status = 'I';
+   g_thinger   = NULL;
+   g_valuer    = NULL;
+   g_detailer  = NULL;
+   g_addresser = NULL;
+   g_lister    = NULL;
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -146,39 +139,74 @@ yCALC_exec_config       (void *a_thinger, void *a_valuer, void *a_detailer, void
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
-   --rce;  if (strchr ("IC", myCALC.status) == NULL) {
+   --rce;  if (strchr ("IO", myCALC.status) == NULL) {
       DEBUG_PROG   yLOG_note    ("must initialize before configuring");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   s_thinger   = a_thinger;
    /*---(update thinger)-----------------*/
    DEBUG_PROG   yLOG_point   ("thinger"   , a_thinger);
    --rce;  if (a_thinger   == NULL) {
-      DEBUG_PROG   yLOG_warn    ("thinger"   , "without this callback, references, ranges, and variables can not function");
+      DEBUG_PROG   yLOG_error   ("thinger"   , "without this callback, references, ranges, and variables can not function");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
-   s_thinger   = a_thinger;
+   g_thinger   = a_thinger;
    /*---(update valuer)------------------*/
    DEBUG_PROG   yLOG_point   ("valuer"    , a_valuer);
    --rce;  if (a_valuer    == NULL) {
-      DEBUG_PROG   yLOG_warn    ("valuer"    , "without this callback, references, ranges, and variables can not function");
+      DEBUG_PROG   yLOG_error   ("valuer"    , "without this callback, references, ranges, and variables can not function");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
-   s_valuer    = a_valuer;
+   g_valuer    = a_valuer;
    /*---(update detailer)----------------*/
    DEBUG_PROG   yLOG_point   ("detailer"  , a_detailer);
    --rce;  if (a_detailer  == NULL) {
       DEBUG_PROG   yLOG_warn    ("detailer"  , "without this callback, a few functions may not be allowed");
    }
-   s_detailer  = a_detailer;
+   g_detailer  = a_detailer;
    /*---(update addresser)---------------*/
    DEBUG_PROG   yLOG_point   ("addresser" , a_addresser);
    --rce;  if (a_addresser == NULL) {
       DEBUG_PROG   yLOG_warn    ("addresser" , "without this callback, a few functions may not be allowed");
    }
-   s_addresser = a_addresser;
+   g_addresser = a_addresser;
    /*---(update)-------------------------*/
    DEBUG_PROG   yLOG_note    ("updating status");
-   myCALC.status = 'O';
+   myCALC.status_detail [3] = 'e';
+   if (myCALC.status_detail [2] == 'b') {
+      myCALC.status = 'O';
+      myCALC.status_detail [6] = 'o';
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+yCALC_debug_config      (void *a_lister)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
+   --rce;  if (strchr ("IO", myCALC.status) == NULL) {
+      DEBUG_PROG   yLOG_note    ("must initialize before configuring");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(update lister)-----------------*/
+   DEBUG_PROG   yLOG_point   ("lister"   , a_lister);
+   --rce;  if (a_lister   == NULL) {
+      DEBUG_PROG   yLOG_warn    ("lister"   , "without this callback, only a few debugging functions will not work");
+   }
+   g_lister   = a_lister;
+   /*---(update)-------------------------*/
+   DEBUG_PROG   yLOG_note    ("updating status");
+   myCALC.status_detail [4] = 'd';
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -196,7 +224,7 @@ yCALC_pushval           (char *a_func, double a_value)
 {
    /*---(defense: stack overflow)--------*/
    if (s_nstack >= S_MAX_STACK) {
-      myCALC.trouble = G_STACK_ERROR;
+      myCALC.trouble = G_ERROR_STACK;
       return 0;
    }
    /*---(update stack item)--------------*/
@@ -215,7 +243,7 @@ yCALC_pushstr           (char *a_func, char *a_string)
 {
    /*---(defense: stack overflow)--------*/
    if (s_nstack >= S_MAX_STACK) {
-      myCALC.trouble = G_STACK_ERROR;
+      myCALC.trouble = G_ERROR_STACK;
       return 0;
    }
    /*---(update stack item)--------------*/
@@ -234,7 +262,7 @@ yCALC_pushref           (char *a_func, void *a_thing)
 {
    /*---(defense: stack overflow)--------*/
    if (s_nstack >= S_MAX_STACK) {
-      myCALC.trouble = G_STACK_ERROR;
+      myCALC.trouble = G_ERROR_STACK;
       return 0;
    }
    if (a_thing      == NULL     )  return -2;
@@ -266,7 +294,7 @@ yCALC_popval            (char *a_func)
    /* -- if it can't figure it out, it returns a 0.0                          */
    /*---(prepare)------------------------*/
    if (s_nstack <= 0) {
-      myCALC.trouble = G_STACK_ERROR;
+      myCALC.trouble = G_ERROR_STACK;
       return 0.0;
    }
    --s_nstack;
@@ -279,16 +307,16 @@ yCALC_popval            (char *a_func)
       return  0.0;
       break;
    case S_TYPE_REF :
-      if (s_valuer == NULL) {
-         myCALC.trouble = G_CONF_ERROR;
+      if (g_valuer == NULL) {
+         myCALC.trouble = G_ERROR_CONF;
          return 0.0;
       }
-      s_valuer (s_stack [s_nstack].ref, &s_type, &s_value, s_string);
+      g_valuer (s_stack [s_nstack].ref, &s_type, &s_value, s_string);
       return  s_value;
       break;
    }
    /*---(complete)-----------------------*/
-   myCALC.trouble = G_CONF_ERROR;
+   myCALC.trouble = G_ERROR_STACK;
    return 0.0;
 }
 
@@ -307,7 +335,7 @@ yCALC_popstr            (char *a_func)
    /* -- if it can't figure it out    , return an empty string            */
    /*---(prepare)------------------------*/
    if (s_nstack <= 0) {
-      myCALC.trouble = G_STACK_ERROR;
+      myCALC.trouble = G_ERROR_STACK;
       return strndup (g_nada, LEN_RECD);
    }
    --s_nstack;
@@ -321,19 +349,19 @@ yCALC_popstr            (char *a_func)
       break;
    case S_TYPE_REF :
       s_string = NULL;
-      if (s_valuer == NULL) {
-         myCALC.trouble = G_CONF_ERROR;
+      if (g_valuer == NULL) {
+         myCALC.trouble = G_ERROR_CONF;
          return  strndup (g_nada, LEN_RECD);
       }
-      s_valuer (s_stack [s_nstack].ref, &s_type, &s_value, &s_string);
+      g_valuer (s_stack [s_nstack].ref, &s_type, &s_value, &s_string);
       if (s_string == NULL) {
-         myCALC.trouble = G_CONF_ERROR;
+         myCALC.trouble = G_ERROR_CONF;
          return  strndup (g_nada, LEN_RECD);
       }
       return  strndup (s_string, LEN_RECD);
    }
    /*---(complete)-----------------------*/
-   myCALC.trouble = G_STACK_ERROR;
+   myCALC.trouble = G_ERROR_STACK;
    return strndup (g_nada, LEN_RECD);
 }
 
