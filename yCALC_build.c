@@ -437,7 +437,7 @@ yCALC__build_reference  (void *a_thing, tCALC *a_calc, char *a_token)
    }
    a_calc->r = x_ref;
    /*---(set dependency)-----------------*/
-   rc = s_creater (G_DEP_REQUIRE, a_thing, x_ref);
+   rc = g_creater (G_DEP_REQUIRE, a_thing, x_ref);
    DEBUG_CALC   yLOG_value   ("rc"        , rc);
    if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, G_ERROR_DEPEND);

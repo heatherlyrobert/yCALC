@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.0f"
-#define YCALC_VER_TXT   "added start of yDEP into yCALC.  too crazy to keep separated"
+#define YCALC_VER_NUM   "0.0g"
+#define YCALC_VER_TXT   "dep new and free are working and unit tested"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -260,6 +260,12 @@ extern  tLOCAL myCALC;
 
 
 
+char        yCALC__deps_new         (tDEP_LINK **a_dep);
+char        yCALC_deps_init         (void);
+char        yCALC__deps_purge       (void);
+char        yCALC_deps_wrap         (void);
+char        yCALC__deps_free        (tDEP_LINK **a_dep);
+char*       yDEP__unit              (char *a_question, void *a_point);
 
 
 
@@ -267,7 +273,7 @@ char        yCALC_trouble_clear     (void);
 char        yCALC__unit_quiet       (void);
 char        yCALC__unit_loud        (void);
 char        yCALC__unit_end         (void);
-char*       yCALC__unit             (char *a_question, int a_num);
+char*       yCALC__unit_deps        (char *a_question, void *a_point);
 
 
 
