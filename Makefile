@@ -10,15 +10,14 @@ LIB_STD    = -lm
 # all heatherly libraries used, debug versions whenever available
 LIB_MINE   = -lySTR_debug
 # directory for production code, no trailing slash
-INST_DIR   = 
-
+INST_DIR   = /usr/local/bin
 
 
 #===(optional)=============================================#
 # extra include directories required
 INC_MINE   = 
 # utilities generated, separate from main program
-NAME_UTIL  = 
+NAME_UTIL  = calc
 # libraries only for the utilities
 LIB_UTIL   = 
 

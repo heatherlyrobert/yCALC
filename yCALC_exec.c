@@ -4,11 +4,11 @@
 
 
 
-void*   (*g_thinger  )   (char *a_label);
-char    (*g_valuer   )   (void *a_thing, char *a_type   , double *a_value, char **a_string);
-char    (*g_detailer )   (void *a_thing, char *a_quality, char *a_string , double *a_value);
-char    (*g_addresser)   (void *a_thing, int  *x        , int *y         , int *z);
-char    (*g_lister   )   (void *a_thing, char *a_quality, char *a_list   );
+char    (*g_thinger  )   (char *a_label, void **a_thing  );
+char    (*g_valuer   )   (void *a_thing, char  *a_type   , double *a_value  , char   **a_string);
+char    (*g_detailer )   (void *a_thing, char  *a_quality, char   *a_string , double  *a_value);
+char    (*g_addresser)   (void *a_thing, int   *x        , int    *y        , int     *z);
+char    (*g_lister   )   (void *a_thing, char  *a_quality, char   *a_list   );
 
 
 

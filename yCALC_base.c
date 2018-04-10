@@ -53,20 +53,22 @@ tFUNCS  g_funcs [MAX_FUNCS] = {
    { "rand"       ,  4, yCALC_rand              , 'f', "v:"     , 'm', "random number betreen 0 and 1"                     , "" },
    { "randr"      ,  5, yCALC_randr             , 'f', "v:vv"   , 'm', "random number betreen x and y"                     , "" },
    /*---(relational operators)------------*/
-   { "=="         ,  0, yCALC_equal             , 'o', "t:vv"   , 'l', "T if x are y are equal, else F"                    , "" },
-   { "!="         ,  0, yCALC_notequal          , 'o', "t:vv"   , 'l', "T if x not equal y, else F"                        , "" },
-   { ">"          ,  0, yCALC_greater           , 'o', "t:vv"   , 'l', "T if x greater than y, else F"                     , "" },
-   { "<"          ,  0, yCALC_lesser            , 'o', "t:vv"   , 'l', "T if x lesser than y, else F"                      , "" },
-   { ">="         ,  0, yCALC_gequal            , 'o', "t:vv"   , 'l', "T if x greater than or equal to y, else F"         , "" },
-   { "<="         ,  0, yCALC_lequal            , 'o', "t:vv"   , 'l', "T if x lesser than or equal to y, else F"          , "" },
-   { "#="         ,  0, yCALC_sequal            , 'o', "t:ss"   , 'l', "T if n are m are equal, else F"                    , "" },
-   { "#!"         ,  0, yCALC_snotequal         , 'o', "t:ss"   , 'l', "T if n not equal m, else F"                        , "" },
-   { "#<"         ,  0, yCALC_slesser           , 'o', "t:ss"   , 'l', "T if n greater than m, else F"                     , "" },
-   { "#>"         ,  0, yCALC_sgreater          , 'o', "t:ss"   , 'l', "T if n lesser than m, else F"                      , "" },
+   { "=="         ,  2, yCALC_equal             , 'o', "t:vv"   , 'l', "T if x are y are equal, else F"                    , "" },
+   { "!="         ,  2, yCALC_notequal          , 'o', "t:vv"   , 'l', "T if x not equal y, else F"                        , "" },
+   { ">"          ,  1, yCALC_greater           , 'o', "t:vv"   , 'l', "T if x greater than y, else F"                     , "" },
+   { "<"          ,  1, yCALC_lesser            , 'o', "t:vv"   , 'l', "T if x lesser than y, else F"                      , "" },
+   { ">="         ,  2, yCALC_gequal            , 'o', "t:vv"   , 'l', "T if x greater than or equal to y, else F"         , "" },
+   { "<="         ,  2, yCALC_lequal            , 'o', "t:vv"   , 'l', "T if x lesser than or equal to y, else F"          , "" },
+   { "#="         ,  2, yCALC_sequal            , 'o', "t:ss"   , 'l', "T if n are m are equal, else F"                    , "" },
+   { "#!"         ,  2, yCALC_snotequal         , 'o', "t:ss"   , 'l', "T if n not equal m, else F"                        , "" },
+   { "#<"         ,  2, yCALC_slesser           , 'o', "t:ss"   , 'l', "T if n greater than m, else F"                     , "" },
+   { "#>"         ,  2, yCALC_sgreater          , 'o', "t:ss"   , 'l', "T if n lesser than m, else F"                      , "" },
    /*---(locgical operators)--------------*/
-   { "!"          ,  0, yCALC_not               , 'o', "t:v"    , 'l', "T if x F, else F"                                  , "" },
-   { "&&"         ,  0, yCALC_and               , 'o', "t:vv"   , 'l', "T if both x and y are T, else F"                   , "" },
-   { "||"         ,  0, yCALC_or                , 'o', "t:vv"   , 'l', "T if either x or y is T, else F"                   , "" },
+   { "!"          ,  1, yCALC_not               , 'o', "t:v"    , 'l', "T if x F, else F"                                  , "" },
+   { "&&"         ,  2, yCALC_and               , 'o', "t:vv"   , 'l', "T if both x and y are T, else F"                   , "" },
+   { "||"         ,  2, yCALC_or                , 'o', "t:vv"   , 'l', "T if either x or y is T, else F"                   , "" },
+   /*---(end-of-s_funcs)--------------------*/
+   { "END"        ,  0, NULL                    , '-', ""       , '-', ""                                                  , "" , ""            , ""            , ""            },
 };
 
 

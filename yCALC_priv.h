@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.0e"
-#define YCALC_VER_TXT   "structure of yCALC_build in place.  not ready for unit testing yet"
+#define YCALC_VER_NUM   "0.0f"
+#define YCALC_VER_TXT   "added start of yDEP into yCALC.  too crazy to keep separated"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -36,38 +36,11 @@ extern char    (*g_creater  )   (char  a_type , void *a_origin , void   *a_targe
 extern char    (*g_delcref  )   (char  a_type , void *a_origin , void   *a_target);
 extern char    (*g_ranger   )   (void *a_thing, int x1, int y1, int z1, int x2, int y2, int z2);
 
-extern void*   (*g_thinger  )   (char *a_label);
-extern char    (*g_valuer   )   (void *a_thing, char *a_type   , double *a_value, char **a_string);
-extern char    (*g_detailer )   (void *a_thing, char *a_quality, char *a_string , double *a_value);
-extern char    (*g_addresser)   (void *a_thing, int  *x        , int *y         , int *z);
-extern char    (*g_lister   )   (void *a_thing, char *a_quality, char *a_list   );
-
-
-
-typedef struct cLOCAL tLOCAL;
-struct cLOCAL {
-   /*---(overall)-----------*/
-   char        debug;
-   int         logger;
-   char        status_detail    [LEN_LABEL];
-   char        status;
-   char        trouble;
-   /*---(testing)-----------*/
-   int         argc;
-   char       *argv        [20];
-};
-extern  tLOCAL myCALC;
-#define     G_NO_ERROR       '-'
-#define     G_ERROR_BUILD    'b'
-#define     G_ERROR_STACK    's'
-#define     G_ERROR_CONF     'c'
-#define     G_ERROR_EXEC     'e'
-#define     G_ERROR_RANGE    'R'
-
-#define     G_TYPE_EMPTY        '-'
-#define     G_TYPE_NUM          'n'
-#define     G_TYPE_STR          's'
-#define     G_TYPE_REF          'r'
+extern char    (*g_thinger  )   (char *a_label, void **a_thing  );
+extern char    (*g_valuer   )   (void *a_thing, char  *a_type   , double *a_value , char   **a_string);
+extern char    (*g_detailer )   (void *a_thing, char  *a_quality, char   *a_string, double  *a_value);
+extern char    (*g_addresser)   (void *a_thing, int   *x        , int    *y       , int     *z);
+extern char    (*g_lister   )   (void *a_thing, char  *a_quality, char   *a_list  );
 
 
 /*
@@ -141,6 +114,149 @@ extern int         s_nbuild;
 extern int         s_neval;
 extern int         errornum;
 extern char        errorstr      [LEN_RECD];
+
+
+
+
+/*===[[ DEPENDENCIES ]]=======================================================*/
+typedef     struct      cDEP_LINK   tDEP_LINK;
+typedef     struct      cDEP_ROOT   tDEP_ROOT;
+typedef     struct      cDEP_INFO   tDEP_INFO;
+
+
+
+/*---(dependency root)------------------------------------*/
+/*
+ *  dependency roots are linked to each calculatable host node/vertex and
+ *  provide everything needed to get the calculation job done.
+ *
+ */
+struct      cDEP_ROOT {
+   /*---(tie to owner)------*/
+   void       *owner;
+   /*---(calculation)-------*/
+   char       *rpn;          /* rpn version of formula                        */
+   char        nrpn;         /* number of calculation tokens                  */
+   tCALC      *calc;         /* pointer to head of calculation line           */
+   /*---(dependencies)------*/
+   char        nreq;         /* number of required cells                      */
+   tDEP_LINK  *reqs;         /* incomming predesesors to this calc            */
+   char        npro;         /* number of dependent cells                     */
+   tDEP_LINK  *pros;         /* outgoing successors to this calc              */
+   /*---(sequencing)--------*/
+   int         slevel;       /* sequence level                                */
+   void       *snext;        /* next in sequence level                        */
+   void       *sprev;        /* prev in sequence level                        */
+   /*---(stamping)----------*/
+   long        u;            /* timestamp of last update run                  */
+   /*---(full linked list)---------------*/
+   tDEP_ROOT  *fprev;         /* pointer to prev dep root in full list        */
+   tDEP_ROOT  *fnext;         /* pointer to next dep root in full list        */
+   /*---(done)--------------*/
+};
+
+
+
+/*---(denpendency link)------------------*/
+/*
+ * dependencies are carried on one-way links.  these links carry little
+ * information, but carry direct pointers to every related structure so that
+ * once the dependency graph is needed, it is fast, efficient, and right.
+ *
+ */
+struct      cDEP_LINK  {
+   /*---(dependency)---------------------*/
+   char        type;          /* type of connection                           */
+   tDEP_ROOT  *source;        /* pointer to source cell                       */
+   tDEP_ROOT  *target;        /* pointer to target cell                       */
+   /*---(cell linked list)---------------*/
+   tDEP_LINK  *prev;          /* pointer to prev dependency for source cell   */
+   tDEP_LINK  *next;          /* pointer to next dependency for source cell   */
+   tDEP_LINK  *match;         /* pointer to matching dependency in ther dir  */
+   /*---(deps linked list)---------------*/
+   tDEP_LINK  *dprev;         /* pointer to prev dependency in full list      */
+   tDEP_LINK  *dnext;         /* pointer to next dependency in full list      */
+   /*---(statistics)---------------------*/
+   int         count;         /* number of times used for dep/calc            */
+   /*---(done)---------------------------*/
+};
+static tDEP_LINK     *s_hdep;
+static tDEP_LINK     *s_tdep;
+static int       s_ndep;
+
+
+
+/*---(dependency type)-------------------*/
+/*
+ * dependencies are complex and relate many different types of nodes/vertices.
+ * in order to keep all the dependencies sorted out and properly classified,
+ * a more formal system was required.
+ *
+ */
+#define     MAX_DEPTYPE     30
+struct cDEP_INFO {
+   cchar       type;                   /* connection type                     */
+   cchar       match;                  /* matching connect type               */
+   cchar       dir;                    /* direction (require vs provide)      */
+   cchar       desc        [50];       /* description of dependency type      */
+   char        match_index;            /* index of matching type              */
+   int         count;                  /* current count of type               */
+   int         total;                  /* total of type ever created          */
+};
+tDEP_INFO   g_dep_info [MAX_DEPTYPE];
+
+#define     G_DEP_DIRNONE        ' '
+#define     G_DEP_DIRREQ         '-'
+#define     G_DEP_DIRPRO         '+'
+
+extern char S_DEP_REQS [10];
+extern char S_DEP_PROS [10];
+extern char S_DEP_LIKE [10];
+
+
+
+/*===[[ ACCESSOR ]]===========================================================*/
+
+typedef struct cLOCAL tLOCAL;
+struct cLOCAL {
+   /*---(overall)-----------*/
+   char        debug;
+   int         logger;
+   char        status_detail    [LEN_LABEL];
+   char        status;
+   char        trouble;
+   /*---(testing)-----------*/
+   int         argc;
+   char       *argv        [20];
+   /*---(data)--------------*/
+   tDEP_ROOT  *droot;
+   tDEP_LINK  *dhead;
+   tDEP_LINK  *dtail;
+   int         dcount;
+   /*---(done)--------------*/
+};
+extern  tLOCAL myCALC;
+
+
+
+#define     G_NO_ERROR       '-'
+#define     G_ERROR_BUILD    'b'
+#define     G_ERROR_STACK    's'
+#define     G_ERROR_CONF     'c'
+#define     G_ERROR_EXEC     'e'
+#define     G_ERROR_RANGE    'R'
+#define     G_ERROR_THING    'T'
+#define     G_ERROR_DEPEND   'D'
+#define     G_ERROR_TOKEN    'E'
+#define     G_ERROR_UNKNOWN  'U'
+
+
+
+#define     G_TYPE_EMPTY        '-'
+#define     G_TYPE_NUM          'n'
+#define     G_TYPE_STR          's'
+#define     G_TYPE_REF          'r'
+
 
 
 

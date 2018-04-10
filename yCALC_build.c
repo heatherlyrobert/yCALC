@@ -257,15 +257,68 @@ yCALC__build_string     (void *a_thing, tCALC *a_calc, char *a_token)
    /*---(locals)-----------+-----+-----+-*/
    char        x_len       =    0;
    /*---(check for string)---------------*/
+   DEBUG_CALC   yLOG_note    ("check for literal string");
    if (a_token [0] != '"')  return  0;
-   /*---(literal string)------------------*/
-   DEBUG_CALC   yLOG_note    ("found literal string");
+   /*---(header)-------------------------*/
+   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   /*---(parse string)--------------------*/
    x_len = strllen (a_token, LEN_RECD);
    a_token [x_len - 1] = NULL;
-   a_calc->t = 's';
    a_calc->s = strndup (a_token + 1, LEN_RECD);
+   DEBUG_CALC   yLOG_info    ("string"    , a_calc->s);
+   /*---(update type)--------------------*/
+   DEBUG_CALC   yLOG_note    ("mark type");
+   a_calc->t = 's';
    /*---(complete)-----------------------*/
+   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 1;
+}
+
+char
+yCALC__build_refloc     (void *a_thing, tCALC *a_calc, int *x, int *y, int *z)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   tCALC      *x_calc      = NULL;
+   void       *x_thing     = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   /*---(get previous calc)--------------*/
+   x_calc = a_calc->prev;
+   DEBUG_CALC   yLOG_point   ("x_calc"    , x_calc);
+   if (x_calc    == NULL) {     
+      DEBUG_CALC   yLOG_note    ("can not find prev calculation");
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, G_ERROR_RANGE);
+      return G_ERROR_RANGE;
+   }
+   /*---(verify type)--------------------*/
+   DEBUG_CALC   yLOG_char    ("type"      , x_calc->t);
+   if (x_calc->t != G_TYPE_REF) {
+      DEBUG_CALC   yLOG_note    ("prev calc not a reference");
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, G_ERROR_RANGE);
+      return G_ERROR_RANGE;
+   }
+   /*---(check thing)--------------------*/
+   x_thing = x_calc->r;
+   DEBUG_CALC   yLOG_point   ("x_thing"   , x_thing);
+   if (x_thing   == NULL) {     
+      DEBUG_CALC   yLOG_note    ("beginning reference can not be null");
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, G_ERROR_RANGE);
+      return G_ERROR_RANGE;
+   }
+   /*---(get address)--------------------*/
+   rc = g_addresser (a_thing, x, y, z);
+   DEBUG_CALC   yLOG_point   ("rc"        , rc);
+   if (rc  < 0) {     
+      DEBUG_CALC   yLOG_note    ("not a valid address");
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, G_ERROR_RANGE);
+      return G_ERROR_RANGE;
+   }
+   /*---(report out)---------------------*/
+   DEBUG_CALC   yLOG_complex ("address"   , "%4dx, %4dy, %4dz", x, y, z);
+   /*---(complete)-----------------------*/
+   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   return 0;
 }
 
 char
@@ -273,73 +326,44 @@ yCALC__build_range      (void *a_thing, tCALC *a_calc, char *a_token)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
-   char        x_len       =    0;
    char        x_good      =  '-';
-   tCALC      *x_calc      = NULL;
-   void       *x_thing     = NULL;
    int         x_beg, y_beg, z_beg;
    int         x_end, y_end, z_end;
    /*---(check for range operator)-------*/
+   DEBUG_CALC   yLOG_note    ("check for range operator");
    if      (a_token [0] != ':')            x_good = 'y';
    else if (a_token [0] != ';')            x_good = 'y';
    else if (strcmp (a_token, "..") == 0)   x_good = 'y';
    if (x_good != 'y')  return  0;
-   DEBUG_CALC   yLOG_note    ("found range operator");
+   /*---(header)-------------------------*/
+   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(get starting point)-------------*/
-   x_calc = a_calc->prev;
-   DEBUG_CALC   yLOG_point   ("x_calc"    , x_calc);
-   if (x_calc    == NULL) {     
-      DEBUG_CALC   yLOG_note    ("can not find prev calculation");
-      return G_ERROR_RANGE;
+   rc = yCALC__build_refloc  (a_thing, a_calc, &x_beg, &y_beg, &z_beg);
+   DEBUG_CALC   yLOG_value   ("rc"        , rc);
+   if (rc != 0) {     
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
    }
-   DEBUG_CALC   yLOG_char    ("type"      , x_calc->t);
-   if (x_calc->t != G_TYPE_REF) {
-      DEBUG_CALC   yLOG_note    ("prev calc not a reference");
-      return G_ERROR_RANGE;
-   }
-   x_thing = x_calc->r;
-   DEBUG_CALC   yLOG_point   ("x_thing"   , x_thing);
-   if (x_thing   == NULL) {     
-      DEBUG_CALC   yLOG_note    ("beginning reference can not be null");
-      return G_ERROR_RANGE;
-   }
-   rc = g_addresser (a_thing, &x_beg, &y_beg, &z_beg);
-   DEBUG_CALC   yLOG_point   ("rc"        , rc);
-   if (rc  < 0) {     
-      DEBUG_CALC   yLOG_note    ("not a valid address");
-      return G_ERROR_RANGE;
-   }
-   DEBUG_CALC   yLOG_complex ("beginning" , "%4dx, %4dy, %4dz", x_beg, y_beg, z_beg);
    /*---(get ending point)---------------*/
-   x_calc = x_calc->prev;
-   DEBUG_CALC   yLOG_point   ("x_calc"    , x_calc);
-   if (x_calc    == NULL) {     
-      DEBUG_CALC   yLOG_note    ("can not find prev-prev calculation");
-      return G_ERROR_RANGE;
+   rc = yCALC__build_refloc  (a_thing, a_calc->prev, &x_beg, &y_beg, &z_beg);
+   DEBUG_CALC   yLOG_value   ("rc"        , rc);
+   if (rc != 0) {     
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
    }
-   DEBUG_CALC   yLOG_char    ("type"      , x_calc->t);
-   if (x_calc->t != G_TYPE_REF) {
-      DEBUG_CALC   yLOG_note    ("prev-prev calc not a reference");
-      return G_ERROR_RANGE;
-   }
-   x_thing = x_calc->r;
-   DEBUG_CALC   yLOG_point   ("x_thing"   , x_thing);
-   if (x_thing   == NULL) {     
-      DEBUG_CALC   yLOG_note    ("ending reference can not be null");
-      return G_ERROR_RANGE;
-   }
-   rc = g_addresser (a_thing, &x_end, &y_end, &z_end);
-   DEBUG_CALC   yLOG_point   ("rc"        , rc);
-   if (rc  < 0) {     
-      DEBUG_CALC   yLOG_note    ("not a valid address");
-      return G_ERROR_RANGE;
-   }
-   DEBUG_CALC   yLOG_complex ("ending"    , "%4dx, %4dy, %4dz", x_end, y_end, z_end);
    /*---(set dependencies)---------------*/
+   DEBUG_CALC   yLOG_note    ("set dedendency");
    rc = g_ranger (a_thing, z_beg, x_beg, y_beg, z_end, x_end, y_end);
-   /*---(set calc type)------------------*/
+   DEBUG_CALC   yLOG_value   ("rc"        , rc);
+   if (rc <  0) {     
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(update type)--------------------*/
+   DEBUG_CALC   yLOG_note    ("mark type");
    a_calc->t = 'x';
    /*---(complete)-----------------------*/
+   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 1;
 }
 
@@ -352,19 +376,107 @@ yCALC__build_pointer    (void *a_thing, tCALC *a_calc, char *a_token)
 char
 yCALC__build_function   (void *a_thing, tCALC *a_calc, char *a_token)
 {
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   int         x_len       =    0;
+   int         i           =    0;
+   char       *x_valid     = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+   /*---(check for function)-------------*/
+   DEBUG_CALC   yLOG_note    ("check for function");
+   x_len = strlen (a_token);
+   if (strchr ("0123456789", a_token [0]) != NULL) return 0;
+   for (i = 0; i < x_len; ++i) {
+      if (strchr (x_valid, a_token [i]) != NULL)  continue;
+      return 0;
+   }
+   /*---(header)-------------------------*/
+   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   /*---(locate function)----------------*/
+   for (i = 0; i < MAX_FUNCS; ++i) {
+      /*> DEBUG_CALC   yLOG_complex ("check"     , "%3d, %-12.12s, %3d, %-10.10p   vs %-12.12s, %3d", i, g_funcs[i].n, g_funcs[i].l, g_funcs[i].f, a_token, len);   <*/
+      /*---(check for end)---------------*/
+      if (g_funcs [i].f == NULL)                      break;
+      if (g_funcs [i].len == 0   )                    break;
+      /*---(check for length)------------*/
+      if (x_len  != g_funcs [i].len)                  continue;
+      /*---(check for name)--------------*/
+      if (a_token [0] != g_funcs[i].name [0])              continue;
+      if (strcmp (g_funcs[i].name, a_token) != 0)        continue;
+      /*---(found)-----------------------*/
+      DEBUG_CALC   yLOG_complex ("found it"  , "%3d, %-12.12s, %3d, %-10.10p   vs %-12.12s, %3d", i, g_funcs[i].name, g_funcs[i].len, g_funcs[i].f, a_token, x_len);
+      a_calc->f = g_funcs[i].f;
+      /*---(update type)-----------------*/
+      DEBUG_CALC   yLOG_note    ("mark type");
+      a_calc->t = 'f';
+      /*---(complete)--------------------*/
+      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      return 1;
+   }
+   /*---(fall-through)-------------------*/
+   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char
 yCALC__build_reference  (void *a_thing, tCALC *a_calc, char *a_token)
 {
-   return 0;
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   void       *x_ref       = NULL;
+   /*---(check for reference)------------*/
+   DEBUG_CALC   yLOG_note    ("look for reference");
+   rc = g_thinger (a_token, &x_ref);
+   if (rc < 0)     return 0;
+   /*---(header)-------------------------*/
+   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   /*---(check reference)----------------*/
+   DEBUG_CALC   yLOG_point   ("x_ref"     , x_ref);
+   if (x_ref == NULL) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, G_ERROR_THING);
+      return G_ERROR_THING;
+   }
+   a_calc->r = x_ref;
+   /*---(set dependency)-----------------*/
+   rc = s_creater (G_DEP_REQUIRE, a_thing, x_ref);
+   DEBUG_CALC   yLOG_value   ("rc"        , rc);
+   if (rc < 0) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, G_ERROR_DEPEND);
+      return G_ERROR_DEPEND;
+   }
+   /*---(update type)-----------------*/
+   DEBUG_CALC   yLOG_note    ("mark type");
+   a_calc->t = 'r';
+   /*---(complete)--------------------*/
+   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   return 1;
 }
 
 char
 yCALC__build_value      (void *a_thing, tCALC *a_calc, char *a_token)
 {
-   return 0;
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   int         x_len       =    0;
+   int         i           =    0;
+   char       *x_valid     = "0123456789.-+";    /* only digits               */
+   /*---(check for function)-------------*/
+   DEBUG_CALC   yLOG_note    ("check for value");
+   /*---(check for name quality)---------*/
+   x_len = strlen (a_token);
+   for (i = 0; i < x_len; ++i) {
+      if (strchr (x_valid, a_token [i]) != NULL)  continue;
+      return 0;
+   }
+   /*---(header)-------------------------*/
+   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   a_calc->v = atof (a_token);
+   DEBUG_CALC   yLOG_double  ("value"     , a_calc->v);
+   /*---(update type)-----------------*/
+   DEBUG_CALC   yLOG_note    ("mark type");
+   a_calc->t = 'v';
+   /*---(complete)-----------------------*/
+   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   return 1;
 }
 
 char
@@ -380,20 +492,20 @@ yCALC__build_step       (void *a_thing, tCALC *a_head, tCALC *a_tail, char *a_to
    DEBUG_CALC   yLOG_note    ("allocate calc entry");
    x_calc   = yCALC__build_new (a_thing, a_head, a_tail);
    /*---(try al types)--------------------*/
-   if (rc == 0)  yCALC__build_string    (a_thing, x_calc, a_token);
-   if (rc == 0)  yCALC__build_range     (a_thing, x_calc, a_token);
-   if (rc == 0)  yCALC__build_pointer   (a_thing, x_calc, a_token);
-   if (rc == 0)  yCALC__build_function  (a_thing, x_calc, a_token);
-   if (rc == 0)  yCALC__build_reference (a_thing, x_calc, a_token);
-   if (rc == 0)  yCALC__build_value     (a_thing, x_calc, a_token);
+   if (rc == 0)  rc = yCALC__build_string    (a_thing, x_calc, a_token);
+   if (rc == 0)  rc = yCALC__build_range     (a_thing, x_calc, a_token);
+   if (rc == 0)  rc = yCALC__build_pointer   (a_thing, x_calc, a_token);
+   if (rc == 0)  rc = yCALC__build_function  (a_thing, x_calc, a_token);
+   if (rc == 0)  rc = yCALC__build_value     (a_thing, x_calc, a_token);
+   if (rc == 0)  rc = yCALC__build_reference (a_thing, x_calc, a_token);
+   if (rc == 0)  rc = G_ERROR_TOKEN;
    /*
-    *   handle nothing found
-    */
-   /*
-    *   handle explicit errors
+    *   what about characters, should we catch that separately ?
     */
    /*---(report out)-----------------------*/
-   DEBUG_CALC   yLOG_complex ("element"   , "typ=%c, val=%F, str=%-9p, ref=%-9p, fnc=%-9p", x_calc->t, x_calc->v, x_calc->s, x_calc->r, x_calc->f);
+   if (rc == 1) {
+      DEBUG_CALC   yLOG_complex ("element"   , "typ=%c, val=%F, str=%-9p, ref=%-9p, fnc=%-9p", x_calc->t, x_calc->v, x_calc->s, x_calc->r, x_calc->f);
+   }
    /*---(complete)-------------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return rc;
@@ -419,6 +531,9 @@ yCALC_build             (void *a_thing, char *a_rpn, void *a_head, char *a_notic
       return rce;
    }
    /*---(initialize)-------------------------*/
+   /*
+    *  what the hell is the + 2 about
+    */
    strncpy (x_work, a_rpn + 2, LEN_RECD);
    DEBUG_CALC   yLOG_info    ("x_work"    , x_work);
    /*---(read first tokens)------------------*/
@@ -438,12 +553,25 @@ yCALC_build             (void *a_thing, char *a_rpn, void *a_head, char *a_notic
       ++x_ntoken;
    }
    /*---(check for failure)----------------*/
+   strlcpy (a_notice, "", LEN_RECD);
    --rce;  if (rc != 1) {
       DEBUG_CALC   yLOG_note    ("could not build calculation chain");
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       switch (rc) {
-      case S_ERROR_RANGE :
-         strlcpy (a_notice, "#.badrng", LEN_RECD);
+      case G_ERROR_RANGE  :
+         strlcpy (a_notice, "#.badrng" , LEN_RECD);
+         break;
+      case G_ERROR_THING  :
+         strlcpy (a_notice, "#.badref" , LEN_RECD);
+         break;
+      case G_ERROR_DEPEND :
+         strlcpy (a_notice, "#.baddep" , LEN_RECD);
+         break;
+      case G_ERROR_TOKEN  :
+         strlcpy (a_notice, "#.badtok" , LEN_RECD);
+         break;
+      case G_ERROR_UNKNOWN:
+         strlcpy (a_notice, "#.unknown", LEN_RECD);
          break;
       }
       return rce;
@@ -453,243 +581,3 @@ yCALC_build             (void *a_thing, char *a_rpn, void *a_head, char *a_notic
    return 0;
 }
 
-/*> char         /+-> build a new calculation ------------[ leaf   [ge.#QA.1Q#.XA]+/ /+-[04.0000.107.!]-+/ /+-[--.---.---.--]-+/                                           <* 
- *> yCALC_build_OLD         (tCELL *a_cell)                                                                                                                                <* 
- *> {                                                                                                                                                                      <* 
- *>    DEBUG_CALC   yLOG_enter   (__FUNCTION__);                                                                                                                           <* 
- *>    /+---(locals)-----------+-----------+-+/                                                                                                                            <* 
- *>    char        work        [LEN_RECD];       /+ working copy of source string  +/                                                                                      <* 
- *>    int         x_ntoken    = -1;                                                                                                                                       <* 
- *>    char       *p;                           /+ strtok current pointer         +/                                                                                       <* 
- *>    char       *q           = ",";           /+ strtok delimiter               +/                                                                                       <* 
- *>    tCALC      *x_calc      = NULL;          /+ current calculation element    +/                                                                                       <* 
- *>    tCALC      *x_tail      = NULL;          /+ last calculation element       +/                                                                                       <* 
- *>    int         t1, t2, c1, c2, r1, r2;                                                                                                                                 <* 
- *>    int         range       = 0;                                                                                                                                        <* 
- *>    char        mode        = '-';                                                                                                                                      <* 
- *>    int         x_tab       = a_cell->tab;                                                                                                                              <* 
- *>    int         x_col       = 0;                                                                                                                                        <* 
- *>    int         x_row       = 0;                                                                                                                                        <* 
- *>    tCELL      *dest        = NULL;                                                                                                                                     <* 
- *>    char        rc          = 0;                                                                                                                                        <* 
- *>    char        rce         = -10;                                                                                                                                      <* 
- *>    char        msg         [1000];                                                                                                                                     <* 
- *>    int         i           = 0;                                                                                                                                        <* 
- *>    int         len         = 0;                                                                                                                                        <* 
- *>    char       *valid       = "0123456789.-+";    /+ only digits               +/                                                                                       <* 
- *>    char        label       [20]        = "";                                                                                                                           <* 
- *>    /+---(defense: starting conditions)---+/                                                                                                                            <* 
- *>    DEBUG_CALC   yLOG_point   ("a_cell"    , a_cell);                                                                                                                   <* 
- *>    --rce;  if (a_cell       == NULL)  {                                                                                                                                <* 
- *>       DEBUG_CALC   yLOG_note    ("can not calculate a null cell");                                                                                                     <* 
- *>       DEBUG_CALC   yLOG_exit    (__FUNCTION__);                                                                                                                        <* 
- *>       return rce;                                                                                                                                                      <* 
- *>    }                                                                                                                                                                   <* 
- *>    DEBUG_CALC   yLOG_info    ("label"     , a_cell->label);                                                                                                            <* 
- *>    DEBUG_CALC   yLOG_char    ("type"      , a_cell->t);                                                                                                                <* 
- *>    --rce;  if (strchr (G_CELL_CALC, a_cell->t) == 0) {                                                                                                                 <* 
- *>       DEBUG_CALC   yLOG_note    ("not a calculated type");                                                                                                             <* 
- *>       DEBUG_CALC   yLOG_exit    (__FUNCTION__);                                                                                                                        <* 
- *>       return rce;                                                                                                                                                      <* 
- *>    }                                                                                                                                                                   <* 
- *>    DEBUG_CALC   yLOG_info    ("rpn"       , a_cell->rpn);                                                                                                              <* 
- *>    --rce;  if (a_cell->rpn  == NULL) {                                                                                                                                 <* 
- *>       DEBUG_CALC   yLOG_note    ("rpn is null, so can not build");                                                                                                     <* 
- *>       DEBUG_CALC   yLOG_exit    (__FUNCTION__);                                                                                                                        <* 
- *>       return rce;                                                                                                                                                      <* 
- *>    }                                                                                                                                                                   <* 
- *>    /+---(clear calc and deps)------------+/                                                                                                                            <* 
- *>    CALC_cleanse (a_cell);                                                                                                                                              <* 
- *>    /+---(initialize)-------------------------+/                                                                                                                        <* 
- *>    strncpy (work, a_cell->rpn + 2, LEN_RECD);                                                                                                                          <* 
- *>    DEBUG_CALC   yLOG_info    ("source"    , work);                                                                                                                     <* 
- *>    if (a_cell->s [0] == '&')  strcpy (label, "");                                                                                                                      <* 
- *>    /+---(read first tokens)------------------+/                                                                                                                        <* 
- *>    --rce;                                                                                                                                                              <* 
- *>    /+> p = strtok (work, q);                                                          <+/                                                                              <* 
- *>    p = CALC_strtok (work);                                                                                                                                             <* 
- *>    ++x_ntoken;                                                                                                                                                         <* 
- *>    if (p == NULL) {                                                                                                                                                    <* 
- *>       a_cell->t = 'E';                 /+ turn formula type off and error on  +/                                                                                       <* 
- *>       DEBUG_CALC   yLOG_exit    (__FUNCTION__);                                                                                                                        <* 
- *>       return rce;                                                                                                                                                      <* 
- *>    }                                                                                                                                                                   <* 
- *>    --rce;                                                                                                                                                              <* 
- *>    /+---(process tokens)---------------------+/                                                                                                                        <* 
- *>    while (p != NULL) {                                                                                                                                                 <* 
- *>       /+---(debug token header)--------------+/                                                                                                                        <* 
- *>       DEBUG_CALC   yLOG_info    ("token"     , p);                                                                                                                     <* 
- *>       /+---(create and null)-----------------+/                                                                                                                        <* 
- *>       DEBUG_CALC   yLOG_note    ("allocate calc entry");                                                                                                               <* 
- *>       x_calc   = CALC_new (a_cell, x_tail);                                                                                                                            <* 
- *>       x_tail   = x_calc;                                                                                                                                               <* 
- *>       /+---(literal string)------------------+/                                                                                                                        <* 
- *>       DEBUG_CALC   yLOG_note    ("check for literal string");                                                                                                          <* 
- *>       if (p[0] == '"') {                                                                                                                                               <* 
- *>          int   len = strlen(p);                                                                                                                                        <* 
- *>          p[len - 1] = '\0';                                                                                                                                            <* 
- *>          x_calc->t = 's';                                                                                                                                              <* 
- *>          x_calc->s = strndup(p + 1, LEN_RECD);                                                                                                                         <* 
- *>          /+---(read next)---------------------+/                                                                                                                       <* 
- *>          DEBUG_CALC   yLOG_complex ("element"   , "typ=%c, val=%F, str=%-9p, ref=%-9p, fnc=%-9p", x_calc->t, x_calc->v, x_calc->s, x_calc->r, x_calc->f);              <* 
- *>          /+> p = strtok (NULL, q);                                                    <+/                                                                              <* 
- *>          p = CALC_strtok (NULL);                                                                                                                                       <* 
- *>          ++x_ntoken;                                                                                                                                                   <* 
- *>          continue;                                                                                                                                                     <* 
- *>       }                                                                                                                                                                <* 
- *>       /+---(range operators)-----------------+/                                                                                                                        <* 
- *>       DEBUG_CALC   yLOG_note    ("check for range operator");                                                                                                          <* 
- *>       if ((strncmp(p, ":"          ,  2) == 0)                                                                                                                         <* 
- *>             || (strncmp(p, ";"          ,  2) == 0)                                                                                                                    <* 
- *>             || (strncmp(p, ".."         ,  2) == 0)) {                                                                                                                 <* 
- *>          DEBUG_CALC   yLOG_note    ("found a range");                                                                                                                  <* 
- *>          rc = CALC_range (a_cell, x_calc);                                                                                                                             <* 
- *>          if (rc < 0) {                                                                                                                                                 <* 
- *>             a_cell->t = 'E';                                                                                                                                           <* 
- *>             a_cell->v_str = strndup ("#.badrng", LEN_RECD);                                                                                                            <* 
- *>             DEBUG_CALC   yLOG_exit    (__FUNCTION__);                                                                                                                  <* 
- *>             return rce;                                                                                                                                                <* 
- *>          }                                                                                                                                                             <* 
- *>          x_calc->t = 'x';                                                                                                                                              <* 
- *>          /+---(read next)---------------------+/                                                                                                                       <* 
- *>          DEBUG_CALC   yLOG_complex ("element"   , "typ=%c, val=%F, str=%-9p, ref=%-9p, fnc=%-9p", x_calc->t, x_calc->v, x_calc->s, x_calc->r, x_calc->f);              <* 
- *>          /+> p = strtok (NULL, q);                                                    <+/                                                                              <* 
- *>          p = CALC_strtok (NULL);                                                                                                                                       <* 
- *>          ++x_ntoken;                                                                                                                                                   <* 
- *>          continue;                                                                                                                                                     <* 
- *>       }                                                                                                                                                                <* 
- *>       /+---(pointer operator)----------------+/                                                                                                                        <* 
- *>       DEBUG_CALC   yLOG_note    ("check for pointer operator");                                                                                                        <* 
- *>       if (strncmp(p, "*:"         ,  2) == 0) {                                                                                                                        <* 
- *>          DEBUG_CALC   yLOG_note    ("found a pointer");                                                                                                                <* 
- *>          rc = CALC_pointer (a_cell, x_calc);                                                                                                                           <* 
- *>          if (rc < 0) {                                                                                                                                                 <* 
- *>             a_cell->t = 'E';                                                                                                                                           <* 
- *>             a_cell->v_str = strndup ("#.badptr", LEN_RECD);                                                                                                            <* 
- *>             DEBUG_CALC   yLOG_exit    (__FUNCTION__);                                                                                                                  <* 
- *>             return rce;                                                                                                                                                <* 
- *>          }                                                                                                                                                             <* 
- *>          /+---(read next)---------------------+/                                                                                                                       <* 
- *>          DEBUG_CALC   yLOG_complex ("element"   , "typ=%c, val=%F, str=%-9p, ref=%-9p, fnc=%-9p", x_calc->t, x_calc->v, x_calc->s, x_calc->r, x_calc->f);              <* 
- *>          /+> p = strtok (NULL, q);                                                    <+/                                                                              <* 
- *>          p = CALC_strtok (NULL);                                                                                                                                       <* 
- *>          ++x_ntoken;                                                                                                                                                   <* 
- *>          continue;                                                                                                                                                     <* 
- *>       }                                                                                                                                                                <* 
- *>       /+---(function table)------------------+/                                                                                                                        <* 
- *>       DEBUG_CALC   yLOG_note    ("check for function");                                                                                                                <* 
- *>       len = strlen (p);                                                                                                                                                <* 
- *>       for (i = 0; i < MAX_FUNCS; ++i) {                                                                                                                                <* 
- *>          /+> DEBUG_CALC   yLOG_complex ("check"     , "%3d, %-12.12s, %3d, %-10.10p   vs %-12.12s, %3d", i, s_funcs[i].n, s_funcs[i].l, s_funcs[i].f, p, len);   <+/   <* 
- *>          if (s_funcs [i].f == NULL)              break;                                                                                                                <* 
- *>          if (strcmp (s_funcs[i].n, "END") == 0)  break;                                                                                                                <* 
- *>          if (len  != s_funcs [i].l  )            continue;                                                                                                             <* 
- *>          if (p[0] != s_funcs[i].n[0])            continue;                                                                                                             <* 
- *>          if (strcmp (s_funcs[i].n, p) != 0)      continue;                                                                                                             <* 
- *>          DEBUG_CALC   yLOG_complex ("found it"  , "%3d, %-12.12s, %3d, %-10.10p   vs %-12.12s, %3d", i, s_funcs[i].n, s_funcs[i].l, s_funcs[i].f, p, len);             <* 
- *>          x_calc->t = 'f';                                                                                                                                              <* 
- *>          x_calc->f = s_funcs[i].f;                                                                                                                                     <* 
- *>          /+> if (label [0] == '\0')  strncpy (label, s_funcs[i].h, 19);                 <+/                                                                            <* 
- *>          /+---(read next)---------------------+/                                                                                                                       <* 
- *>          DEBUG_CALC   yLOG_complex ("element"   , "typ=%c, val=%F, str=%-9p, ref=%-9p, fnc=%-9p", x_calc->t, x_calc->v, x_calc->s, x_calc->r, x_calc->f);              <* 
- *>          /+> p = strtok (NULL, q);                                                    <+/                                                                              <* 
- *>          p = CALC_strtok (NULL);                                                                                                                                       <* 
- *>          ++x_ntoken;                                                                                                                                                   <* 
- *>          break;                                                                                                                                                        <* 
- *>       }                                                                                                                                                                <* 
- *>       if (x_calc->t != '-')  continue;                                                                                                                                 <* 
- *>       /+---(look for tab names)--------------+/                                                                                                                        <* 
- *>       DEBUG_CALC   yLOG_note    ("look for reference");                                                                                                                <* 
- *>       rc = LOC_parse (p, &x_tab, &x_col, &x_row, NULL);                                                                                                                <* 
- *>       DEBUG_CALC   yLOG_value   ("rc"        , rc);                                                                                                                    <* 
- *>       /+---(handle cell reference)--------+/                                                                                                                           <* 
- *>       if (rc == 0) {                                                                                                                                                   <* 
- *>          DEBUG_CALC   yLOG_note    ("check if legal");                                                                                                                 <* 
- *>          rc = LOC_legal (x_tab, x_col, x_row, CELL_FIXED);                                                                                                             <* 
- *>          DEBUG_CALC   yLOG_value   ("rc"        , rc);                                                                                                                 <* 
- *>          if (rc == 0) {                                                                                                                                                <* 
- *>             dest = LOC_cell_at_loc (x_tab, x_col, x_row);                                                                                                              <* 
- *>             DEBUG_CALC   yLOG_point   ("dest"      , dest);                                                                                                            <* 
- *>             if (dest == NULL)  CELL_change (&dest, CHG_NOHIST, x_tab, x_col, x_row, "");                                                                               <* 
- *>             DEBUG_CALC   yLOG_point   ("dest"      , dest);                                                                                                            <* 
- *>             if (dest == NULL)  {                                                                                                                                       <* 
- *>                a_cell->t = 'E';                                                                                                                                        <* 
- *>                a_cell->v_str = strndup ("#.badmal", LEN_RECD);                                                                                                         <* 
- *>                DEBUG_CALC   yLOG_exit    (__FUNCTION__);                                                                                                               <* 
- *>                return rce - 1;                                                                                                                                         <* 
- *>             }                                                                                                                                                          <* 
- *>             rc = DEP_create (G_DEP_REQUIRE, a_cell, dest);                                                                                                             <* 
- *>             DEBUG_CALC   yLOG_value   ("rc"        , rc);                                                                                                              <* 
- *>             if (rc < 0) {                                                                                                                                              <* 
- *>                DEBUG_CALC   yLOG_info    ("error"     , "dependency can not be created");                                                                              <* 
- *>                a_cell->t = 'E';                                                                                                                                        <* 
- *>                a_cell->v_str = strndup ("#.baddep", LEN_RECD);                                                                                                         <* 
- *>                DEBUG_CALC   yLOG_exit    (__FUNCTION__);                                                                                                               <* 
- *>                return rce - 2;                                                                                                                                         <* 
- *>             }                                                                                                                                                          <* 
- *>             x_calc->t = 'r';                                                                                                                                           <* 
- *>             x_calc->r = dest;                                                                                                                                          <* 
- *>          } else {                                                                                                                                                      <* 
- *>             a_cell->t = 'E';                                                                                                                                           <* 
- *>             a_cell->v_str = strndup ("#.badref", LEN_RECD);                                                                                                            <* 
- *>             DEBUG_CALC   yLOG_exit    (__FUNCTION__);                                                                                                                  <* 
- *>             return rce - 3;                                                                                                                                            <* 
- *>          }                                                                                                                                                             <* 
- *>          /+---(read next)---------------------+/                                                                                                                       <* 
- *>          DEBUG_CALC   yLOG_complex ("element"   , "typ=%c, val=%F, str=%-9p, ref=%-9p, fnc=%-9p", x_calc->t, x_calc->v, x_calc->s, x_calc->r, x_calc->f);              <* 
- *>          /+> p = strtok (NULL, q);                                                    <+/                                                                              <* 
- *>          p = CALC_strtok (NULL);                                                                                                                                       <* 
- *>          ++x_ntoken;                                                                                                                                                   <* 
- *>          continue;                                                                                                                                                     <* 
- *>       }                                                                                                                                                                <* 
- *>       if (rc > 0) {                                                                                                                                                    <* 
- *>          a_cell->t = 'E';                                                                                                                                              <* 
- *>          a_cell->v_str = strndup ("#.bigref", LEN_RECD);                                                                                                               <* 
- *>          DEBUG_CALC   yLOG_exit    (__FUNCTION__);                                                                                                                     <* 
- *>          return rce - 4;                                                                                                                                               <* 
- *>       }                                                                                                                                                                <* 
- *>       /+---(handle cell reference)--------+/                                                                                                                           <* 
- *>       x_calc->t = 'v';                                                                                                                                                 <* 
- *>       DEBUG_CALC   yLOG_note    ("check for numeric value");                                                                                                           <* 
- *>       for (i = 0; i < len; ++i) {                                                                                                                                      <* 
- *>          if (strchr (valid, p[i])  != 0) continue;                                                                                                                     <* 
- *>          DEBUG_CALC   yLOG_char    ("non-value" , p[i]);                                                                                                               <* 
- *>          x_calc->t = '-';                                                                                                                                              <* 
- *>       }                                                                                                                                                                <* 
- *>       if (x_calc->t == 'v') {                                                                                                                                          <* 
- *>          x_calc->v = atof (p);                                                                                                                                         <* 
- *>          /+---(read next)---------------------+/                                                                                                                       <* 
- *>          DEBUG_CALC   yLOG_complex ("element"   , "typ=%c, val=%F, str=%-9p, ref=%-9p, fnc=%-9p", x_calc->t, x_calc->v, x_calc->s, x_calc->r, x_calc->f);              <* 
- *>          /+> p = strtok (NULL, q);                                                    <+/                                                                              <* 
- *>          p = CALC_strtok (NULL);                                                                                                                                       <* 
- *>          ++x_ntoken;                                                                                                                                                   <* 
- *>          continue;                                                                                                                                                     <* 
- *>       }                                                                                                                                                                <* 
- *>       /+---(fall through)-----------------+/                                                                                                                           <* 
- *>       a_cell->t = 'E';                                                                                                                                                 <* 
- *>       a_cell->v_str = strndup ("#.unknown", LEN_RECD);                                                                                                                 <* 
- *>       DEBUG_CALC   yLOG_exit    (__FUNCTION__);                                                                                                                        <* 
- *>       return rce - 4;                                                                                                                                                  <* 
- *>    }                                                                                                                                                                   <* 
- *>    /+---(auto-labeling)--------------------+/                                                                                                                          <* 
- *>    /+> rc = CALC_checkpointer (a_cell);                                                <*                                                                              <* 
- *>     *> if (rc == 1)   strcpy (label, "pointer");                                       <*                                                                              <* 
- *>     *> if (rc == 3)   strcpy (label, "dataset");                                       <*                                                                              <* 
- *>     *> if (label [0] == '\0' || label [0] == '-')  {                                   <*                                                                              <* 
- *>     *>    strcpy (label, a_cell->s);                                                   <*                                                                              <* 
- *>     *>    label [0] = ':';                                                             <*                                                                              <* 
- *>     *> }                                                                               <*                                                                              <* 
- *>     *> if (label [0] != '-') {                                                         <*                                                                              <* 
- *>     *>    rc = LOC_legal (a_cell->tab, a_cell->col + 1, a_cell->row, CELL_FIXED);      <*                                                                              <* 
- *>     *>    if (rc == 0) {                                                               <*                                                                              <* 
- *>     *>       dest = LOC_cell_at_loc (a_cell->tab, a_cell->col + 1, a_cell->row);       <*                                                                              <* 
- *>     *>       if (dest == NULL || dest->t == 'l') {                                     <*                                                                              <* 
- *>     *>          CELL_change (&dest, a_cell->tab, a_cell->col + 1, a_cell->row, label);        <*                                                                       <* 
- *>     *>          dest->t = 'l';                                                         <*                                                                              <* 
- *>     *>       }                                                                         <*                                                                              <* 
- *>     *>    }                                                                            <*                                                                              <* 
- *>     *> }                                                                               <+/                                                                             <* 
- *>    /+---(complete)-------------------------+/                                                                                                                          <* 
- *>    DEBUG_CALC   yLOG_exit    (__FUNCTION__);                                                                                                                           <* 
- *>    return 0;                                                                                                                                                           <* 
- *> }                                                                                                                                                                      <*/
