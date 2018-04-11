@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.0g"
-#define YCALC_VER_TXT   "dep new and free are working and unit tested"
+#define YCALC_VER_NUM   "0.0h"
+#define YCALC_VER_TXT   "mock system is setup and config functions work, unit tested"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -36,11 +36,12 @@ extern char    (*g_creater  )   (char  a_type , void *a_origin , void   *a_targe
 extern char    (*g_delcref  )   (char  a_type , void *a_origin , void   *a_target);
 extern char    (*g_ranger   )   (void *a_thing, int x1, int y1, int z1, int x2, int y2, int z2);
 
-extern char    (*g_thinger  )   (char *a_label, void **a_thing  );
+extern void*   (*g_thinger  )   (char *a_label);
+extern char*   (*g_labeler  )   (void *a_thing);
+
 extern char    (*g_valuer   )   (void *a_thing, char  *a_type   , double *a_value , char   **a_string);
 extern char    (*g_detailer )   (void *a_thing, char  *a_quality, char   *a_string, double  *a_value);
 extern char    (*g_addresser)   (void *a_thing, int   *x        , int    *y       , int     *z);
-extern char    (*g_lister   )   (void *a_thing, char  *a_quality, char   *a_list  );
 
 
 /*
@@ -92,7 +93,7 @@ struct  cFUNCS {
 };
 extern tFUNCS  g_funcs [MAX_FUNCS];
 
-extern char   yCALC__unit_answer [LEN_STR ];
+extern char   ycalc__unit_answer [LEN_STR ];
 
 
 
@@ -150,8 +151,8 @@ struct      cDEP_ROOT {
    /*---(stamping)----------*/
    long        u;            /* timestamp of last update run                  */
    /*---(full linked list)---------------*/
-   tDEP_ROOT  *fprev;         /* pointer to prev dep root in full list        */
-   tDEP_ROOT  *fnext;         /* pointer to next dep root in full list        */
+   tDEP_ROOT  *rprev;         /* pointer to prev dep root in full list        */
+   tDEP_ROOT  *rnext;         /* pointer to next dep root in full list        */
    /*---(done)--------------*/
 };
 
@@ -184,6 +185,9 @@ static tDEP_LINK     *s_hdep;
 static tDEP_LINK     *s_tdep;
 static int       s_ndep;
 
+#define     G_DEP_ROOT           'r'
+#define     G_DEP_UNROOT         'u'
+#define     G_DEP_CHECKROOT      'a'
 
 
 /*---(dependency type)-------------------*/
@@ -228,8 +232,12 @@ struct cLOCAL {
    /*---(testing)-----------*/
    int         argc;
    char       *argv        [20];
-   /*---(data)--------------*/
-   tDEP_ROOT  *droot;
+   /*---(dep_root)----------*/
+   tDEP_ROOT  *rroot;
+   tDEP_ROOT  *rhead;
+   tDEP_ROOT  *rtail;
+   int         rcount;
+   /*---(dep_link)----------*/
    tDEP_LINK  *dhead;
    tDEP_LINK  *dtail;
    int         dcount;
@@ -260,95 +268,97 @@ extern  tLOCAL myCALC;
 
 
 
-char        yCALC__deps_new         (tDEP_LINK **a_dep);
-char        yCALC_deps_init         (void);
-char        yCALC__deps_purge       (void);
-char        yCALC_deps_wrap         (void);
-char        yCALC__deps_free        (tDEP_LINK **a_dep);
-char*       yDEP__unit              (char *a_question, void *a_point);
+/*---(malloc)---------------------*/
+char        ycalc__deps_new         (tDEP_LINK **a_dep);
+char        ycalc__deps_free        (tDEP_LINK **a_dep);
+/*---(program)--------------------*/
+char        ycalc_deps_init         (void);
+char        ycalc__deps_purge       (void);
+char        ycalc_deps_wrap         (void);
+char*       ycalc__unit_deps        (char *a_question, void *a_point);
 
 
 
-char        yCALC_trouble_clear     (void);
-char        yCALC__unit_quiet       (void);
-char        yCALC__unit_loud        (void);
-char        yCALC__unit_end         (void);
-char*       yCALC__unit_deps        (char *a_question, void *a_point);
+char        ycalc_trouble_clear     (void);
+char        ycalc__unit_quiet       (void);
+char        ycalc__unit_loud        (void);
+char        ycalc__unit_end         (void);
 
 
 
 
 /*===[ BUILD ]============================================*/
 /*---(program)------------------------*/
-char        yCALC__build_init       (void);
+char        ycalc_build_init        (void);
 
 
 
 /*===[ EXEC ]=============================================*/
 /*---(program)------------------------*/
-char        yCALC__exec_init        (void);
+char        ycalc_exec_init         (void);
 /*---(pushing)------------------------*/
-char        yCALC_pushstr           (char *a_func, char   *a_string);
-char        yCALC_pushval           (char *a_func, double  a_value);
-char        yCALC_pushref           (char *a_func, void   *a_thing);
+char        ycalc_pushstr           (char *a_func, char   *a_string);
+char        ycalc_pushval           (char *a_func, double  a_value);
+char        ycalc_pushref           (char *a_func, void   *a_thing);
 /*---(popping)------------------------*/
-double      yCALC_popval            (char *a_func);
-char*       yCALC_popstr            (char *a_func);
+double      ycalc_popval            (char *a_func);
+char*       ycalc_popstr            (char *a_func);
 /*---(unittest)-----------------------*/
-char*       yCALC__unit_stack       (char *a_question, int a_num);
-char        yCALC__unit_stackset    (int   a_num);
+char*       ycalc__unit_stack       (char *a_question, int a_num);
+char        ycalc__unit_stackset    (int   a_num);
 /*---(mock)---------------------------*/
-void*       yCALC__unit_thinger     (char *a_label);
-char        yCALC__unit_valuer      (void *a_thing, char *a_type, double *a_value, char **a_string);
-char        yCALC__unit_detailer    (void *a_thing, char *a_quality, char *a_string, double *a_value);
-char        yCALC__unit_addresser   (void *a_thing, int  *x, int *y, int *z);
+void*       ycalc__mock_thinger     (char *a_label);
+char*       ycalc__mock_labeler     (void *a_thing);
+char        ycalc__mock_valuer      (void *a_thing, char *a_type, double *a_value, char **a_string);
+char        ycalc__mock_detailer    (void *a_thing, char *a_quality, char *a_string, double *a_value);
+char        ycalc__mock_addresser   (void *a_thing, int  *x, int *y, int *z);
 
 
 
 
 
 /*---(placeholder)--------------------*/
-void        yCALC_noop              (void);
+void        ycalc_noop              (void);
 /*---(mathmatical)--------------------*/
-void        yCALC_add               (void);
-void        yCALC_subtract          (void);
-void        yCALC_multiply          (void);
-void        yCALC_divide            (void);
-void        yCALC_modulus           (void);
-void        yCALC_increment         (void);
-void        yCALC_decrement         (void);
-void        yCALC_unaryminus        (void);
+void        ycalc_add               (void);
+void        ycalc_subtract          (void);
+void        ycalc_multiply          (void);
+void        ycalc_divide            (void);
+void        ycalc_modulus           (void);
+void        ycalc_increment         (void);
+void        ycalc_decrement         (void);
+void        ycalc_unaryminus        (void);
 /*---(mathmatical)--------------------*/
-void        yCALC_power             (void);
-void        yCALC_abs               (void);
-void        yCALC_trunc             (void);
-void        yCALC_rtrunc            (void);
-void        yCALC_round             (void);
-void        yCALC_rround            (void);
-void        yCALC_ceiling           (void);
-void        yCALC_floor             (void);
-void        yCALC_sqrt              (void);
-void        yCALC_cbrt              (void);
-void        yCALC_sqr               (void);
-void        yCALC_cube              (void);
-void        yCALC_rand              (void);
-void        yCALC_randr             (void);
+void        ycalc_power             (void);
+void        ycalc_abs               (void);
+void        ycalc_trunc             (void);
+void        ycalc_rtrunc            (void);
+void        ycalc_round             (void);
+void        ycalc_rround            (void);
+void        ycalc_ceiling           (void);
+void        ycalc_floor             (void);
+void        ycalc_sqrt              (void);
+void        ycalc_cbrt              (void);
+void        ycalc_sqr               (void);
+void        ycalc_cube              (void);
+void        ycalc_rand              (void);
+void        ycalc_randr             (void);
 /*---(num relational)-----------------*/
-void        yCALC_equal             (void);
-void        yCALC_notequal          (void);
-void        yCALC_greater           (void);
-void        yCALC_lesser            (void);
-void        yCALC_gequal            (void);
-void        yCALC_lequal            (void);
+void        ycalc_equal             (void);
+void        ycalc_notequal          (void);
+void        ycalc_greater           (void);
+void        ycalc_lesser            (void);
+void        ycalc_gequal            (void);
+void        ycalc_lequal            (void);
 /*---(str relational)-----------------*/
-void        yCALC_sequal            (void);
-void        yCALC_snotequal         (void);
-void        yCALC_sgreater          (void);
-void        yCALC_slesser           (void);
+void        ycalc_sequal            (void);
+void        ycalc_snotequal         (void);
+void        ycalc_sgreater          (void);
+void        ycalc_slesser           (void);
 /*---(logical)------------------------*/
-void        yCALC_not               (void);
-void        yCALC_and               (void);
-void        yCALC_or                (void);
+void        ycalc_not               (void);
+void        ycalc_and               (void);
+void        ycalc_or                (void);
 
 
 

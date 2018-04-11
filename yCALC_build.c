@@ -10,8 +10,10 @@
 char    (*g_cleanser )   (void *a_thing);
 char    (*g_creater  )   (char  a_type , void *a_origin , void   *a_target);
 char    (*g_delcref  )   (char  a_type , void *a_origin , void   *a_target);
-char    (*g_ranger   )   (void *a_thing, int x1, int y1, int z1, int x2, int y2, int z2);
+char    (*g_ranger   )   (void *a_thing, int x1, int y1 , int z1, int x2, int y2, int z2);
 
+void*   (*g_thinger  )   (char *a_label);
+char*   (*g_labeler  )   (void *a_thing);
 
 
 tTERMS      s_terms [MAX_TERM] = {
@@ -25,7 +27,7 @@ tTERMS      s_terms [MAX_TERM] = {
 };
 
 char
-yCALC__build_init       (void)
+ycalc_build_init        (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -34,17 +36,15 @@ yCALC__build_init       (void)
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(functions)----------------------*/
    DEBUG_PROG   yLOG_note    ("clearing function calls");
-   g_cleanser  = NULL;
-   g_creater   = NULL;
-   g_delcref   = NULL;
-   g_ranger    = NULL;
+   g_thinger   = NULL;
+   g_labeler   = NULL;
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char
-yCALC_build_config      (void *a_cleanser, void *a_creater, void *a_delcref, void *a_ranger)
+yCALC_build_config      (void *a_thinger, void *a_labeler)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -57,38 +57,22 @@ yCALC_build_config      (void *a_cleanser, void *a_creater, void *a_delcref, voi
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(update cleanser)----------------*/
-   DEBUG_PROG   yLOG_point   ("cleanser"   , a_cleanser);
-   --rce;  if (a_cleanser   == NULL) {
-      DEBUG_PROG   yLOG_error   ("cleanser"   , "without this callback, dependencies can not be cleared");
+   /*---(update thinger)-----------------*/
+   DEBUG_PROG   yLOG_point   ("thinger"   , a_thinger);
+   --rce;  if (a_thinger   == NULL) {
+      DEBUG_PROG   yLOG_error   ("thinger"   , "without this callback, references cannot be resolved");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   g_cleanser   = a_cleanser;
-   /*---(update creater)-----------------*/
-   DEBUG_PROG   yLOG_point   ("creater"    , a_creater);
-   --rce;  if (a_creater    == NULL) {
-      DEBUG_PROG   yLOG_error   ("creater"    , "without this callback, dependencies can not be created");
+   g_thinger   = a_thinger;
+   /*---(update labeler)-----------------*/
+   DEBUG_PROG   yLOG_point   ("labeler"    , a_labeler);
+   --rce;  if (a_labeler    == NULL) {
+      DEBUG_PROG   yLOG_error   ("labeler"    , "without this callback, human-readable verification is not possible");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   g_creater    = a_creater;
-   /*---(update delcref)----------------*/
-   DEBUG_PROG   yLOG_point   ("delcref"  , a_delcref);
-   --rce;  if (a_delcref  == NULL) {
-      DEBUG_PROG   yLOG_error   ("delcref"  , "without this callback, a few functions can't created calculated dependencies");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   g_delcref  = a_delcref;
-   /*---(update ranger)---------------*/
-   DEBUG_PROG   yLOG_point   ("ranger" , a_ranger);
-   --rce;  if (a_ranger == NULL) {
-      DEBUG_PROG   yLOG_error   ("ranger" , "without this callback, range dependencies can not be created");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   g_ranger = a_ranger;
+   g_labeler    = a_labeler;
    /*---(update)-------------------------*/
    DEBUG_PROG   yLOG_note    ("updating status");
    myCALC.status_detail [2] = 'b';
@@ -425,8 +409,8 @@ yCALC__build_reference  (void *a_thing, tCALC *a_calc, char *a_token)
    void       *x_ref       = NULL;
    /*---(check for reference)------------*/
    DEBUG_CALC   yLOG_note    ("look for reference");
-   rc = g_thinger (a_token, &x_ref);
-   if (rc < 0)     return 0;
+   x_ref = g_thinger (a_token);
+   if (x_ref == NULL)     return 0;
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(check reference)----------------*/
