@@ -34,9 +34,14 @@ char*       yCALC_version           (void);
 char        yCALC_init              (char  a_style);
 char        yCALC_wrap              (void);
 
-char        yCALC_build_config      (void *a_thinger , void *a_labeler  );
-char        yCALC_exec_config       (void *a_valuer  , void *a_addresser, void *a_detailer);
+char        yCALC_build_config      (void *a_deproot , void *a_whois  , void *a_labeler  , void *a_reaper  );
+char        yCALC_exec_config       (void *a_valuer  , void *a_addresser);
 
+char        yCALC_enable            (void *a_owner, void **a_ycalc);
+
+char        yCALC_create            (char a_type, void *a_source, void *a_target);
+char        yCALC_range             (void *a_source, int x1, int y1, int z1, int x2, int y2, int z2);
+char        yCALC_delete            (char a_type, void *a_source, void *a_target);
 
 
 #endif

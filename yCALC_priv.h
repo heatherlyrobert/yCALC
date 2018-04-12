@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.0h"
-#define YCALC_VER_TXT   "mock system is setup and config functions work, unit tested"
+#define YCALC_VER_NUM   "0.0i"
+#define YCALC_VER_TXT   "two-way dependencies unit tested nicely.  freaking sweet."
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -31,17 +31,14 @@
 
 
 
-extern char    (*g_cleanser )   (void *a_thing);
-extern char    (*g_creater  )   (char  a_type , void *a_origin , void   *a_target);
-extern char    (*g_delcref  )   (char  a_type , void *a_origin , void   *a_target);
-extern char    (*g_ranger   )   (void *a_thing, int x1, int y1, int z1, int x2, int y2, int z2);
+extern void*   (*g_deproot  )   (char *a_label);        /* pass label of thing, get back deproot of thing  */
+extern void*   (*g_whois    )   (int x, int y, int z);  /* pass coordinates, get back deproot of thing     */
 
-extern void*   (*g_thinger  )   (char *a_label);
-extern char*   (*g_labeler  )   (void *a_thing);
-
-extern char    (*g_valuer   )   (void *a_thing, char  *a_type   , double *a_value , char   **a_string);
-extern char    (*g_detailer )   (void *a_thing, char  *a_quality, char   *a_string, double  *a_value);
-extern char    (*g_addresser)   (void *a_thing, int   *x        , int    *y       , int     *z);
+extern char*   (*g_labeler  )   (void *a_owner);        /* pass deproot->owner, get back label of thing    */
+extern char    (*g_valuer   )   (void *a_owner, char  *a_type   , double *a_value , char   **a_string);
+extern char    (*g_addresser)   (void *a_owner, int   *x        , int    *y       , int     *z);
+extern char    (*g_detailer )   (void *a_owner, char  *a_quality, char   *a_string, double  *a_value);
+extern char    (*g_reaper   )   (void *a_owner);        /* pass deproot->owner, tries to kill thing        */
 
 
 /*
@@ -56,14 +53,18 @@ extern char    (*g_addresser)   (void *a_thing, int   *x        , int    *y     
  */
 typedef     struct   cCALC  tCALC;         /* cell calculation entry    */
 struct cCALC {
+   /*---(owner)-------------*/
+   void     *deproot;         /* pointer to the cell that owns this calc      */
+   /*---(contents)----------*/
    char      t;               /* type of calculation element                  */
    double    v;               /* numeric literal                              */
    char     *s;               /* string literal                               */
    void     *r;               /* reference pointer                            */
    void    (*f) (void);       /* function pointer                             */
-   void     *owner;           /* pointer to the cell that owns this calc      */
+   /*---(linked-list)-------*/
    tCALC    *next;            /* pointer to next calc                         */
    tCALC    *prev;            /* pointer to next calc                         */
+   /*---(done)--------------*/
 };
 
 #define     MAX_TERM     20
@@ -137,8 +138,10 @@ struct      cDEP_ROOT {
    void       *owner;
    /*---(calculation)-------*/
    char       *rpn;          /* rpn version of formula                        */
-   char        nrpn;         /* number of calculation tokens                  */
-   tCALC      *calc;         /* pointer to head of calculation line           */
+   int         ncalc;        /* number of calculation tokens                  */
+   tCALC      *chead;        /* pointer to head of calculation chain          */
+   tCALC      *ctail;        /* pointer to tail of calculation chain          */
+   int         cuse;         /* number of times calculated                    */
    /*---(dependencies)------*/
    char        nreq;         /* number of required cells                      */
    tDEP_LINK  *reqs;         /* incomming predesesors to this calc            */
@@ -226,8 +229,8 @@ struct cLOCAL {
    /*---(overall)-----------*/
    char        debug;
    int         logger;
-   char        status_detail    [LEN_LABEL];
    char        status;
+   char        status_detail    [LEN_LABEL];
    char        trouble;
    /*---(testing)-----------*/
    int         argc;
@@ -277,6 +280,14 @@ char        ycalc__deps_purge       (void);
 char        ycalc_deps_wrap         (void);
 char*       ycalc__unit_deps        (char *a_question, void *a_point);
 
+char        ycalc__deps_rooting     (tDEP_ROOT *a_curr, char a_type);
+char        ycalc__deps_circle      (int a_level, tDEP_ROOT *a_source, tDEP_ROOT *a_target, long a_stamp);
+
+
+char        ycalc__audit_disp_reqs  (tDEP_ROOT *a_me, char* a_list);
+char        ycalc__audit_disp_pros  (tDEP_ROOT *a_me, char* a_list);
+char        ycalc__audit_disp_like  (tDEP_ROOT *a_me, char* a_list);
+
 
 
 char        ycalc_trouble_clear     (void);
@@ -306,12 +317,19 @@ char*       ycalc_popstr            (char *a_func);
 /*---(unittest)-----------------------*/
 char*       ycalc__unit_stack       (char *a_question, int a_num);
 char        ycalc__unit_stackset    (int   a_num);
-/*---(mock)---------------------------*/
-void*       ycalc__mock_thinger     (char *a_label);
+
+
+/*---(mock overall)-------------------*/
+char        ycalc__mock_enable      (void);
+/*---(mock build)---------------------*/
+void*       ycalc__mock_deproot     (char *a_label);
 char*       ycalc__mock_labeler     (void *a_thing);
+char        ycalc__mock_reaper      (void *a_thing);
+void*       ycalc__mock_whois       (int x, int y, int z);
+/*---(mock execute)-------------------*/
 char        ycalc__mock_valuer      (void *a_thing, char *a_type, double *a_value, char **a_string);
-char        ycalc__mock_detailer    (void *a_thing, char *a_quality, char *a_string, double *a_value);
 char        ycalc__mock_addresser   (void *a_thing, int  *x, int *y, int *z);
+char        ycalc__mock_detailer    (void *a_thing, char *a_quality, char *a_string, double *a_value);
 
 
 

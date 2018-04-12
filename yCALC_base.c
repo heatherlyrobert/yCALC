@@ -108,7 +108,7 @@ yCALC_init              (char a_style)
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
-   --rce;  if (strchr ("io", myCALC.status) != NULL) {
+   --rce;  if (myCALC.status != NULL && strchr ("IO", myCALC.status) != NULL) {
       DEBUG_PROG   yLOG_note    ("can not re-initialize");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -192,7 +192,9 @@ ycalc__unit_quiet       (void)
 char       /*----: set up program urgents/debugging --------------------------*/
 ycalc__unit_loud        (void)
 {
-   myCALC.logger = yLOG_begin ("yCALC" , yLOG_SYSTEM, yLOG_NOISE);
+   char       *x_args [4]  = { "yCALC_debug","@@kitchen","@@CALC", "@@SORT" };
+   yURG_logger (4, x_args);
+   yURG_urgs   (4, x_args);
    DEBUG_CALC   yLOG_info     ("yCALC"    , yCALC_version   ());
    myCALC.trouble = G_NO_ERROR;
    yCALC_init ('s');

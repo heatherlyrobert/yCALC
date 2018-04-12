@@ -4,9 +4,8 @@
 
 
 
-char    (*g_valuer   )   (void *a_thing, char  *a_type   , double *a_value  , char   **a_string);
-char    (*g_addresser)   (void *a_thing, int   *x        , int    *y        , int     *z);
-char    (*g_detailer )   (void *a_thing, char  *a_quality, char   *a_string , double  *a_value);
+char    (*g_valuer   )   (void *a_owner, char  *a_type   , double *a_value  , char   **a_string);
+char    (*g_addresser)   (void *a_owner, int   *x        , int    *y        , int     *z);
 
 
 
@@ -119,7 +118,6 @@ ycalc_exec_init          (void)
    /*---(functions)----------------------*/
    DEBUG_PROG   yLOG_note    ("clearing function calls");
    g_valuer    = NULL;
-   g_detailer  = NULL;
    g_addresser = NULL;
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
@@ -127,7 +125,7 @@ ycalc_exec_init          (void)
 }
 
 char
-yCALC_exec_config       (void *a_valuer, void *a_addresser, void *a_detailer)
+yCALC_exec_config       (void *a_valuer, void *a_addresser)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -135,7 +133,7 @@ yCALC_exec_config       (void *a_valuer, void *a_addresser, void *a_detailer)
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
-   --rce;  if (strchr ("IO", myCALC.status) == NULL) {
+   --rce;  if (myCALC.status == NULL || strchr ("IO", myCALC.status) == NULL) {
       DEBUG_PROG   yLOG_note    ("must initialize before configuring");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -154,12 +152,6 @@ yCALC_exec_config       (void *a_valuer, void *a_addresser, void *a_detailer)
       DEBUG_PROG   yLOG_warn    ("addresser" , "without this callback, a few functions may not be allowed");
    }
    g_addresser = a_addresser;
-   /*---(update detailer)----------------*/
-   DEBUG_PROG   yLOG_point   ("detailer"  , a_detailer);
-   --rce;  if (a_detailer  == NULL) {
-      DEBUG_PROG   yLOG_warn    ("detailer"  , "without this callback, a few functions may not be allowed");
-   }
-   g_detailer  = a_detailer;
    /*---(update)-------------------------*/
    DEBUG_PROG   yLOG_note    ("updating status");
    myCALC.status_detail [3] = 'e';
