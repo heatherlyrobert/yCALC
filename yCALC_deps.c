@@ -312,11 +312,12 @@ ycalc__deps_purge       (void)
    myCALC.dtail   = NULL;
    myCALC.dcount  = 0;
    /*---(walk through roots)-------------*/
-   DEBUG_PROG   yLOG_point   ("root_head" , myCALC.rhead);
-   r_curr = myCALC.rhead;
+   DEBUG_PROG   yLOG_point   ("root_tail" , myCALC.rtail);
+   r_curr = myCALC.rtail;
    c      = 0;
    while (r_curr != NULL) {
-      r_next = r_curr->rnext;
+      r_next = r_curr->rprev;
+      /*> yCALC_build (r_curr, "", NULL);                                             <*/
       ycalc__deproot_free (&r_curr);
       r_curr = r_next;
       ++c;

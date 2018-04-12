@@ -43,6 +43,9 @@ char        yCALC_create            (char a_type, void *a_source, void *a_target
 char        yCALC_range             (void *a_source, int x1, int y1, int z1, int x2, int y2, int z2);
 char        yCALC_delete            (char a_type, void *a_source, void *a_target);
 
+char        yCALC_build             (void *a_deproot, char *a_rpn, char *a_notice);
+
+
 
 #endif
 /*===[[ END ]]================================================================*/

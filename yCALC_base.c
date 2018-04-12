@@ -134,6 +134,7 @@ yCALC_wrap              (void)
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(shutdown)-----------------------*/
    ycalc_deps_wrap   ();
+   myCALC.status = '-';
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;

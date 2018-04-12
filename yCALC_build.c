@@ -327,8 +327,7 @@ ycalc__build_prepare    (tDEP_ROOT *a_deproot, char *a_rpn)
       return rce;
    }
    /*---(copy the rpn)-------------------*/
-   DEBUG_CALC   yLOG_info    ("a_rpn"     , a_rpn);
-   strlcpy (a_deproot->rpn, a_rpn, LEN_RECD);
+   a_deproot->rpn = strndup (a_rpn, LEN_RECD);
    /*---(clear the calculation)----------*/
    DEBUG_CALC   yLOG_point   ("calc"      , a_deproot->chead);
    x_curr = a_deproot->chead;
@@ -358,7 +357,7 @@ ycalc__build_char       (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    /*---(locals)-----------+-----+-----+-*/
    char        x_len       =    0;
    /*---(check for string)---------------*/
-   DEBUG_CALC   yLOG_note    ("check for literal string");
+   DEBUG_CALC   yLOG_note    ("check for character");
    x_len = strllen (a_token, LEN_RECD);
    if (a_token [0]         != '\'')  return  0;
    if (a_token [2]         != '\'')  return  0;
@@ -410,8 +409,8 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    int         x_end, y_end, z_end;
    /*---(check for range operator)-------*/
    DEBUG_CALC   yLOG_note    ("check for range operator");
-   if      (a_token [0] != ':')            x_good = 'y';
-   else if (a_token [0] != ';')            x_good = 'y';
+   if      (a_token [0] == ':')            x_good = 'y';
+   else if (a_token [0] == ';')            x_good = 'y';
    else if (strcmp (a_token, "..") == 0)   x_good = 'y';
    if (x_good != 'y')  return  0;
    /*---(header)-------------------------*/
@@ -618,8 +617,14 @@ yCALC_build             (void *a_deproot, char *a_rpn, char *a_notice)
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(check for cleanse only)-------------*/
+   if (a_rpn [0] == NULL) {
+      DEBUG_CALC   yLOG_note    ("empty rpn, cleansed and returned");
+      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
    /*---(initialize)-------------------------*/
-   strncpy (x_work, a_rpn + 2, LEN_RECD);
+   strncpy (x_work, a_rpn, LEN_RECD);
    DEBUG_CALC   yLOG_info    ("x_work"    , x_work);
    p = ycalc__build_strtok (x_work);
    --rce;  if (p == NULL) {
@@ -635,27 +640,31 @@ yCALC_build             (void *a_deproot, char *a_rpn, char *a_notice)
       p = ycalc__build_strtok (NULL);
    }
    /*---(check for failure)----------------*/
-   strlcpy (a_notice, "", LEN_RECD);
+   if (a_notice != NULL) {
+      strlcpy (a_notice, "", LEN_RECD);
+      if (rc != 1) {
+         switch (rc) {
+         case G_ERROR_RANGE  :
+            strlcpy (a_notice, "#.badrng" , LEN_RECD);
+            break;
+         case G_ERROR_THING  :
+            strlcpy (a_notice, "#.badref" , LEN_RECD);
+            break;
+         case G_ERROR_DEPEND :
+            strlcpy (a_notice, "#.baddep" , LEN_RECD);
+            break;
+         case G_ERROR_TOKEN  :
+            strlcpy (a_notice, "#.badtok" , LEN_RECD);
+            break;
+         case G_ERROR_UNKNOWN:
+            strlcpy (a_notice, "#.unknown", LEN_RECD);
+            break;
+         }
+      }
+   }
    --rce;  if (rc != 1) {
       DEBUG_CALC   yLOG_note    ("could not build calculation chain");
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
-      switch (rc) {
-      case G_ERROR_RANGE  :
-         strlcpy (a_notice, "#.badrng" , LEN_RECD);
-         break;
-      case G_ERROR_THING  :
-         strlcpy (a_notice, "#.badref" , LEN_RECD);
-         break;
-      case G_ERROR_DEPEND :
-         strlcpy (a_notice, "#.baddep" , LEN_RECD);
-         break;
-      case G_ERROR_TOKEN  :
-         strlcpy (a_notice, "#.badtok" , LEN_RECD);
-         break;
-      case G_ERROR_UNKNOWN:
-         strlcpy (a_notice, "#.unknown", LEN_RECD);
-         break;
-      }
       return rce;
    }
    /*---(complete)-------------------------*/

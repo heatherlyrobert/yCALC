@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.0i"
-#define YCALC_VER_TXT   "two-way dependencies unit tested nicely.  freaking sweet."
+#define YCALC_VER_NUM   "0.0j"
+#define YCALC_VER_TXT   "basic formula-driven dependencies unit tested nicely."
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
