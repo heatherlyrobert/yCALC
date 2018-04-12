@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.0j"
-#define YCALC_VER_TXT   "basic formula-driven dependencies unit tested nicely."
+#define YCALC_VER_NUM   "0.0k"
+#define YCALC_VER_TXT   "basic dependency-driven sequencing unit tested nicely."
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -149,8 +149,8 @@ struct      cDEP_ROOT {
    tDEP_LINK  *pros;         /* outgoing successors to this calc              */
    /*---(sequencing)--------*/
    int         slevel;       /* sequence level                                */
-   void       *snext;        /* next in sequence level                        */
-   void       *sprev;        /* prev in sequence level                        */
+   tDEP_ROOT  *snext;        /* next in sequence level                        */
+   tDEP_ROOT  *sprev;        /* prev in sequence level                        */
    /*---(stamping)----------*/
    long        u;            /* timestamp of last update run                  */
    /*---(full linked list)---------------*/
@@ -332,6 +332,12 @@ char        ycalc__mock_addresser   (void *a_thing, int  *x, int *y, int *z);
 char        ycalc__mock_detailer    (void *a_thing, char *a_quality, char *a_string, double *a_value);
 
 
+/*===[ SEQ ]==============================================*/
+char        ycalc__seq_clear        (void);
+char        ycalc__seq_add          (char a_level, tDEP_ROOT *a_deproot);
+char        ycalc__seq_del          (tDEP_ROOT *a_deproot);
+char        ycalc__seq_recursion    (int a_level, tDEP_LINK *a_dep, char a_dir, long a_stamp, char a_action);
+char        ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir, long a_stamp, char a_action, FILE *a_file);
 
 
 
