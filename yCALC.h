@@ -45,9 +45,9 @@ char        yCALC_delete            (char a_type, void *a_source, void *a_target
 
 char        yCALC_build             (void *a_deproot, char *a_rpn, char *a_notice);
 
-char        yCALC_seq_up            (void *a_deproot);
-char        yCALC_seq_down          (void *a_deproot);
-char        yCALC_seq_full          (void);
+char        yCALC_seq_up            (void *a_deproot, void *a_consumer);
+char        yCALC_seq_down          (void *a_deproot, void *a_consumer);
+char        yCALC_seq_full          (void *a_consumer);
 char        yCALC_seq_list          (char *a_list);
 
 

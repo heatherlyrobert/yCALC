@@ -3,6 +3,7 @@
 #include    "yCALC_priv.h"
 
 
+char    (*g_consumer )   (int a_seq, int a_lvl, void *a_owner);
 
 
 /*====================------------------------------------====================*/
@@ -306,27 +307,30 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir, long a_stamp, char a_
       DEBUG_CALC   yLOG_point   ("x_curr"    , x_curr);
       x_sub = 0;
       while (x_curr != NULL) {
-         switch (a_action) {
-         case 'c' :  /* calculation               */
-            DEBUG_CALC   yLOG_note    ("perform calc");
-            /*> CALC_eval      (x_curr);                                              <* 
-             *> CELL_printable (x_curr);                                              <*/
-            break;
-         case 'w' :  /* purge cells               */
-            DEBUG_CALC   yLOG_note    ("purge cell");
-            /*> CELL__wipe     (x_curr);                                              <*/
-            break;
-         case 'f' :  /* write to a file           */
-            DEBUG_CALC   yLOG_note    ("write cell to file");
-            /*> OUTP_cell      (FILE_DEPCEL, x_tot, x_off, x_curr);                   <*/
-            break;
-         case 'r' :  /* write to a register       */
-            DEBUG_CALC   yLOG_note    ("write cell to register");
-            /*> REG_copy_one   (x_curr, a_stamp);                                     <*/
-            break;
-         case 'p' :  /* print the sequence        */
-            break;
+         if (g_consumer != NULL) {
+            g_consumer (x_tot, x_off, x_curr);
          }
+         /*> switch (a_action) {                                                                <* 
+          *> case 'c' :  /+ calculation               +/                                        <* 
+          *>    DEBUG_CALC   yLOG_note    ("perform calc");                                     <* 
+          *>    /+> CALC_eval      (x_curr);                                              <*    <* 
+          *>     *> CELL_printable (x_curr);                                              <+/   <* 
+          *>    break;                                                                          <* 
+          *> case 'w' :  /+ purge cells               +/                                        <* 
+          *>    DEBUG_CALC   yLOG_note    ("purge cell");                                       <* 
+          *>    /+> CELL__wipe     (x_curr);                                              <+/   <* 
+          *>    break;                                                                          <* 
+          *> case 'f' :  /+ write to a file           +/                                        <* 
+          *>    DEBUG_CALC   yLOG_note    ("write cell to file");                               <* 
+          *>    /+> OUTP_cell      (FILE_DEPCEL, x_tot, x_off, x_curr);                   <+/   <* 
+          *>    break;                                                                          <* 
+          *> case 'r' :  /+ write to a register       +/                                        <* 
+          *>    DEBUG_CALC   yLOG_note    ("write cell to register");                           <* 
+          *>    /+> REG_copy_one   (x_curr, a_stamp);                                     <+/   <* 
+          *>    break;                                                                          <* 
+          *> case 'p' :  /+ print the sequence        +/                                        <* 
+          *>    break;                                                                          <* 
+          *> }                                                                                  <*/
          ++x_sub;
          ++x_tot;
          x_curr = x_curr->snext;
@@ -342,13 +346,13 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir, long a_stamp, char a_
 }
 
 char         /*-> dependency-based calc upward -------[ leaf   [gc.950.028.3C]*/ /*-[02.0000.304.5]-*/ /*-[--.---.---.--]-*/
-yCALC_seq_up       (void *a_deproot) { return ycalc__seq_driver (a_deproot, 'u', rand() , 'c', NULL); }
+yCALC_seq_up       (void *a_deproot, void *a_consumer) { g_consumer = a_consumer; return ycalc__seq_driver (a_deproot, 'u', rand() , 'c', NULL); }
 
 char         /*-> dependency-based calc downward -----[ leaf   [gc.940.027.3A]*/ /*-[02.0000.00#.1]-*/ /*-[--.---.---.--]-*/
-yCALC_seq_down     (void *a_deproot) { return ycalc__seq_driver (a_deproot, 'd', rand() , 'c', NULL); }
+yCALC_seq_down     (void *a_deproot, void *a_consumer) { g_consumer = a_consumer; return ycalc__seq_driver (a_deproot, 'd', rand() , 'c', NULL); }
 
 char         /*-> dependency-based calculation all ---[ ------ [gc.840.026.38]*/ /*-[02.0000.402.1]-*/ /*-[--.---.---.--]-*/
-yCALC_seq_full     (void)          { return ycalc__seq_driver (myCALC.rroot, 'd', rand() , 'c', NULL); }
+yCALC_seq_full     (void *a_consumer)                  { g_consumer = a_consumer; return ycalc__seq_driver (myCALC.rroot, 'd', rand() , 'c', NULL); }
 
 
 

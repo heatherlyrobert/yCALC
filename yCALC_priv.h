@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.0k"
-#define YCALC_VER_TXT   "basic dependency-driven sequencing unit tested nicely."
+#define YCALC_VER_NUM   "0.0l"
+#define YCALC_VER_TXT   "added g_consumer to sequencing, but not unit tested yet"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -40,6 +40,7 @@ extern char    (*g_addresser)   (void *a_owner, int   *x        , int    *y     
 extern char    (*g_detailer )   (void *a_owner, char  *a_quality, char   *a_string, double  *a_value);
 extern char    (*g_reaper   )   (void *a_owner);        /* pass deproot->owner, tries to kill thing        */
 
+extern char    (*g_consumer )   (int a_seq, int a_lvl, void *a_owner);
 
 /*
  * calculation types
