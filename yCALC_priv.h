@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.0m"
-#define YCALC_VER_TXT   "sequencing performs a perfect purge!!  now unit tested."
+#define YCALC_VER_NUM   "0.0n"
+#define YCALC_VER_TXT   "updated yCALC_create and _delete to use labels.  also _unit_deps too"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -282,8 +282,10 @@ char        ycalc__deps_free        (tDEP_LINK **a_dep);
 char        ycalc_deps_init         (void);
 char        ycalc__deps_purge       (void);
 char        ycalc_deps_wrap         (void);
-char*       ycalc__unit_deps        (char *a_question, void *a_point);
+char*       ycalc__unit_deps        (char *a_question, char *a_label);
 char        ycalc_deps_wipe         (tDEP_ROOT *a_curr);
+char        ycalc_deps_create       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target);
+char        ycalc_deps_delete       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target);
 
 char        ycalc__deps_rooting     (tDEP_ROOT *a_curr, char a_type);
 char        ycalc__deps_circle      (int a_level, tDEP_ROOT *a_source, tDEP_ROOT *a_target, long a_stamp);

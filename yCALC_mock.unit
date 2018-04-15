@@ -37,6 +37,9 @@ SCRP          v21  (MOCK  ) test basic mock functions                         
      get      v21  review owner status                  ycalc__unit_mock            "status"         ,  "0a42"                                              s_equal     yCALC mock status: 0a42  good     exists     -----                                                   
      get      v21  review owner status                  ycalc__unit_mock            "status"         ,  "todos"                                             s_equal     yCALC mock status: todos error    -----      -----                                                   
 
+   GROUP      v21  try the underlying mock call                                       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  label to deproot                     ycalc__mock_who_named       "0a1"    , NULL, &x_deproot                                             i_equal     0                                                                                                    
+
    GROUP      v21  start with thinger and labeler                                     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  convert the first entry                                            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  

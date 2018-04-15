@@ -10,7 +10,7 @@
 #define     G_DEP_REQUIRE        'R'
 #define     G_DEP_PROVIDE        'p'
 
-#define     G_DEP_RANGE          'P'
+#define     G_DEP_POINTER        'P'
 #define     G_DEP_CELL           'c'
 
 #define     G_DEP_FORMAT         'F'
@@ -40,9 +40,9 @@ char        yCALC_exec_config       (void *a_valuer , void *a_addresser);
 char        yCALC_enable            (void *a_owner);
 char        yCALC_disable           (void *a_deproot);
 
-char        yCALC_create            (char a_type, void *a_source, void *a_target);
+char        yCALC_create            (char a_type, char *a_source, char *a_target);
+char        yCALC_delete            (char a_type, char *a_source, char *a_target);
 char        yCALC_range             (void *a_source, int x1, int y1, int z1, int x2, int y2, int z2);
-char        yCALC_delete            (char a_type, void *a_source, void *a_target);
 
 char        yCALC_build             (char *a_label, char *a_rpn, char *a_notice);
 

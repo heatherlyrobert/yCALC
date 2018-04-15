@@ -546,7 +546,7 @@ ycalc__build_reference  (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    }
    a_calc->r = x_ref;
    /*---(set dependency)-----------------*/
-   rc = yCALC_create (G_DEP_REQUIRE, a_deproot, x_ref);
+   rc = ycalc_deps_create (G_DEP_REQUIRE, a_deproot, x_ref);
    DEBUG_CALC   yLOG_value   ("rc"        , rc);
    if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, G_ERROR_DEPEND);
