@@ -4,9 +4,9 @@
 yCALC \- decision rationale, objectives, and overview
 
 .SH SUMMARY
-yCALC is a clean, highly debuggable shared library for creating byte-code
-execution chains from RPN notation formulas to make repeditive, tedious,
-and dangerous code testable, maintainable, and reliable.
+yCALC is a clean, debuggable shared library for creating and executing
+byte-code calculations from RPN notation to make repeditive, tedious, and
+dangerous code testable, maintainable, and reliable.
 
 .SH SCOPE, REASONING and DECISION
 
@@ -14,13 +14,13 @@ and dangerous code testable, maintainable, and reliable.
 a calculation engine accepts ad-hoc formulas as input, interprets, validates,
 fetches data, executes, and returns appropriate results.  these engines are
 absolutely required for spreadsheets, data analytics, hypercard-like apps,
-statistics, simulation, etc.
+simulation, etc.
 
 .B what the hell (?).  
-on a scale of 0 to 100, this is really freaking hard to do right ;)) its
-one thing as a proof of concept or limited-use experiment; but, i will
-depend on this capability, so i must become proficient and knowledgeable.
-gotta get bloody.
+on a scale of 0 to 100, this is really freaking hard to do right ;)) its one
+thing as a proof of concept or limited-use experiment; but, i will depend on
+this capability, so i must become proficient and knowledgeable.  gotta get
+your hands dirty.
 
 .B situation (S).  
 i started by building a solid, working, unit-tested, reasonable-size base
@@ -28,10 +28,9 @@ for gyges-hekatonkheires, my spreadsheet system.  but, now i must improve
 its universaility and applicability to a wider breadth of applications.
 
 .B complication (C).  
-calculation engines tend to be application specific because of all the
-moving parts and how invasive and data intensive the logic can be.  my base
-is growing out of a spreadsheet-specific world and needs to not get resigned
-and buried there.
+calculation engines tend to be application specific because of all the moving
+parts and how invasive and data intensive the logic can be.  my base is
+growing out of a spreadsheet-specific world and needs to not die in its cradle.
 
 .B my answer (A).  
 like with gyges, calculations are executed many, many times over; so,
@@ -40,14 +39,49 @@ give me the ability to tailor the calculation interpretation while keeping
 the execution lightning fast.
 
 .B target user (T).  
-very technical, systems programmer.
+slightly crazy, technical, systems programmer.
 
-.B accepted functionality (a).  
+.B drawbacks...
+   -- super steep conceptual learning curve
+   -- potential conflicts with so many end-uses (noted)
+   -- operates nothing like commercial systems
+   -- takes a lot of time to define up front
+   -- takes a lot of willpower to stay with it
 
+.B benefits...
+   -- define and test once, use over-and-over
+   -- removes a huge design burden for each application (stardard)
+   -- make it easy to add extended features (statistics, etc)
+   -- HUGE learning experience, both programming and data handling
+   -- can extend easily and at will (no debates and fighting)
 
+.B broad requirements...
+   -- remain ignorant of host-applications structure and data
+   -- keep calculation data hidden from host application
+   -- before execution, system knows when it is properly configured
+   -- three phase approach -- translate, build, and execute
+   -- original infix formulas translated by yRPN before input to yCALC
+   -- careful, verbose, methodical build system for byte-code
+   -- lighting fast execution system based on a array-stack
+   -- support standard-free var/object labeling (up to 15 chars)
+   -- operator presidence follows the ansi-c standard (of course)
 
-
-
+.B as always, all my applications must...
+   -- run on any linux box from raspberry to cray
+   -- stay focused, small, tight, reliable, and secure
+   -- forgo sloppy, kitchen-sink languages, like python, java, or perl
+   -- stay away from dependency on external code libraries, like boost
+   -- only human-readable, 7-bit safe, ascii streams (not database)
+   -- have dedicated, maintained, automated unit testing
+   -- build-in tracing and debugging to quickly isolate problems
+   -- build-in dumps and detailed reporting on program state
+   -- use secure communications between systems where required
+   -- clean, clean code so i can maintain after long absences
+   -- zero international, multi-lang, multi-byte support (ever)
+   -- one-hundred percent keyboard driven and centric
+   -- when applicable, follow the yVIKEYS standard to the letter
+   -- all tables must be self describing with labels and queries
+   -- all data structures must include dumps, reports, and audits
 
 .SH SEE ALSO
 this documentation is layered to provide easier navigation.

@@ -40,7 +40,7 @@ ycalc__sort_prep   (char *a_list)
    s_narray = 0;
    --rce;  while (p != NULL) {
       DEBUG_SORT    yLOG_info    ("parse"     , p);
-      x_deproot = g_deproot (p);
+      ycalc_call_who_named (p, NULL, &x_deproot);
       DEBUG_SORT    yLOG_point   ("x_deproot" , x_deproot);
       if (x_deproot == NULL)  {
          DEBUG_SORT    yLOG_note    ("could not find deproot, EXITING");
@@ -133,7 +133,7 @@ ycalc__sort_wrap   (char *a_list)
       --x;
       --y;
       DEBUG_SORT    yLOG_complex ("parts"     , "z=%04d, x=%04d, y=%04d", z, x, y);
-      x_deproot = g_whois (x, y, z);
+      ycalc_call_who_at (x, y, z, NULL, &x_deproot);
       if (x_deproot == NULL)  {
          DEBUG_SORT    yLOG_note    ("could not find deproot, EXITING");
          DEBUG_SORT    yLOG_exit    (__FUNCTION__);

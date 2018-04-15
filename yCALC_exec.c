@@ -4,8 +4,6 @@
 
 
 
-char    (*g_valuer   )   (void *a_owner, char  *a_type   , double *a_value  , char   **a_string);
-char    (*g_addresser)   (void *a_owner, int   *x        , int    *y        , int     *z);
 
 
 
@@ -244,6 +242,8 @@ ycalc_popval            (char *a_func)
    /* -- for a string literal, it returns 0.0 (since strings have no value)   */
    /* -- for a reference, it returns the value contained in that cell         */
    /* -- if it can't figure it out, it returns a 0.0                          */
+   /*---(local)--------------------------*/
+   tDEP_ROOT  *x_deproot   = NULL;
    /*---(prepare)------------------------*/
    if (s_nstack <= 0) {
       myCALC.trouble = G_ERROR_STACK;
@@ -263,7 +263,8 @@ ycalc_popval            (char *a_func)
          myCALC.trouble = G_ERROR_CONF;
          return 0.0;
       }
-      g_valuer (s_stack [s_nstack].ref, &s_type, &s_value, s_string);
+      x_deproot = s_stack [s_nstack].ref;
+      g_valuer (x_deproot->owner, &s_type, &s_value, &s_string);
       return  s_value;
       break;
    }
@@ -285,6 +286,8 @@ ycalc_popstr            (char *a_func)
    /* -- reference that's str formula , return the modified value         */
    /* -- reference that's unknown     , return an empty string            */
    /* -- if it can't figure it out    , return an empty string            */
+   /*---(local)--------------------------*/
+   tDEP_ROOT  *x_deproot   = NULL;
    /*---(prepare)------------------------*/
    if (s_nstack <= 0) {
       myCALC.trouble = G_ERROR_STACK;
@@ -305,7 +308,8 @@ ycalc_popstr            (char *a_func)
          myCALC.trouble = G_ERROR_CONF;
          return  strndup (g_nada, LEN_RECD);
       }
-      g_valuer (s_stack [s_nstack].ref, &s_type, &s_value, &s_string);
+      x_deproot = s_stack [s_nstack].ref;
+      g_valuer (x_deproot->owner, &s_type, &s_value, &s_string);
       if (s_string == NULL) {
          myCALC.trouble = G_ERROR_CONF;
          return  strndup (g_nada, LEN_RECD);
@@ -331,7 +335,7 @@ ycalc__unit_stack       (char *a_question, int a_num)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        x_type      =  '-';
-   void       *x_thing     = NULL;
+   tDEP_ROOT  *x_deproot   = NULL;
    char        x_label     [LEN_LABEL];
    /*---(initialize)---------------------*/
    strlcpy (ycalc__unit_answer, "yCALC_unit, unknown request", 100);
@@ -345,8 +349,8 @@ ycalc__unit_stack       (char *a_question, int a_num)
             snprintf (ycalc__unit_answer, LEN_STR, "STACK top   (%2d) : %c %8.2lf %-10p %-.30s", s_nstack, s_stack [s_nstack - 1].typ, s_stack [s_nstack - 1].num, s_stack [s_nstack - 1].ref, (s_stack [s_nstack - 1].str == NULL) ? "---" : s_stack [s_nstack - 1].str);
             break;
          case S_TYPE_REF :
-            x_thing = s_stack [s_nstack - 1].ref;
-            strlcpy (x_label, ycalc__mock_labeler (x_thing), LEN_LABEL);
+            x_deproot = s_stack [s_nstack - 1].ref;
+            strlcpy (x_label, ycalc__mock_labeler (x_deproot->owner), LEN_LABEL);
             snprintf (ycalc__unit_answer, LEN_STR, "STACK top   (%2d) : %c %8.2lf %-10.10s %-.30s", s_nstack, s_stack [s_nstack - 1].typ, s_stack [s_nstack - 1].num, x_label, (s_stack [s_nstack - 1].str == NULL) ? "---" : s_stack [s_nstack - 1].str);
             break;
          }

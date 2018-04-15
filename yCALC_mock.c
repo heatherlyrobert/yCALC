@@ -60,7 +60,7 @@ ycalc__mock_enable      (void)
    for (i = 0; i < 100; ++i) {
       if (s_mocks [i].label [0] == 0)                break;
       x_mock = s_mocks + i;
-      yCALC_enable (x_mock, &x_mock->ycalc);
+      yCALC_enable (x_mock);
    }
    return 0;
 }
@@ -72,12 +72,34 @@ ycalc__mock_enable      (void)
 /*====================------------------------------------====================*/
 static void      o___DEPROOT_________________o (void) {;}
 
-void*
-ycalc__mock_deproot     (char *a_label)
+char
+ycalc__mock_enabler     (void *a_owner, void *a_deproot)
 {
+   char        rce         =  -10;
+   int         i           =    0;
+   tMOCK      *x_mock      = NULL;
+   DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
+   DEBUG_DEPS   yLOG_spoint  (a_owner);
+   --rce;  if (a_owner == NULL) {
+      DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   x_mock = (tMOCK *) a_owner;
+   DEBUG_DEPS   yLOG_spoint  (a_deproot);
+   x_mock->ycalc = a_deproot;
+   DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
+ycalc__mock_who_named   (char *a_label, void **a_owner, void **a_deproot)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
    int         i           =    0;
    int         n           =   -1;
    tMOCK      *x_mock      = NULL;
+   /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
    DEBUG_DEPS   yLOG_spoint  (a_label);
    if (a_label == NULL) {
@@ -92,32 +114,67 @@ ycalc__mock_deproot     (char *a_label)
       n = i;
    }
    DEBUG_DEPS   yLOG_sint    (n);
-   if (n < 0) {
-      DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
-      return NULL;
+   /*---(handle failure)-----------------*/
+   --rce;  if (n < 0) {
+      DEBUG_DEPS   yLOG_snote   ("FAILURE");
+      if (a_owner   != NULL)  *a_owner   = NULL;
+      if (a_deproot != NULL)  *a_deproot = NULL;
+      DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
    }
+   /*---(handle normal)------------------*/
+   DEBUG_DEPS   yLOG_snote   ("success");
    x_mock = (tMOCK *) (s_mocks + n);
+   DEBUG_DEPS   yLOG_spoint  (x_mock);
+   if (a_owner   != NULL)  *a_owner   = x_mock;
    DEBUG_DEPS   yLOG_spoint  (x_mock->ycalc);
+   if (a_deproot != NULL)  *a_deproot = x_mock->ycalc;
+   /*---(complete)-----------------------*/
    DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
-   return x_mock->ycalc;
+   return 0;
 }
 
-void*
-ycalc__mock_whois       (int x, int y, int z)
+char
+ycalc__mock_who_at      (int x, int y, int z, void **a_owner, void **a_deproot)
 {
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
    int         i           =    0;
    int         n           =   -1;
    tMOCK      *x_mock      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
+   DEBUG_DEPS   yLOG_sint    (x);
+   DEBUG_DEPS   yLOG_sint    (y);
+   DEBUG_DEPS   yLOG_sint    (z);
+   /*---(search)-------------------------*/
    for (i = 0; i < 100; ++i) {
       if (s_mocks [i].label [0] == 0)                break;
       if (s_mocks [i].x != x)                        continue;
       if (s_mocks [i].y != y)                        continue;
       if (s_mocks [i].z != z)                        continue;
+      DEBUG_DEPS   yLOG_snote   ("FOUND");
       n = i;
    }
-   if (n < 0)  return NULL;
+   DEBUG_DEPS   yLOG_sint    (n);
+   /*---(handle failure)-----------------*/
+   --rce;  if (n < 0) {
+      DEBUG_DEPS   yLOG_snote   ("FAILURE");
+      if (a_owner   != NULL)  *a_owner   = NULL;
+      if (a_deproot != NULL)  *a_deproot = NULL;
+      DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(handle normal)------------------*/
+   DEBUG_DEPS   yLOG_snote   ("success");
    x_mock = (tMOCK *) (s_mocks + n);
-   return x_mock->ycalc;
+   DEBUG_DEPS   yLOG_spoint  (x_mock);
+   if (a_owner   != NULL)  *a_owner   = x_mock;
+   DEBUG_DEPS   yLOG_spoint  (x_mock->ycalc);
+   if (a_deproot != NULL)  *a_deproot = x_mock->ycalc;
+   /*---(complete)-----------------------*/
+   DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
+   return 0;
 }
 
 
@@ -178,5 +235,44 @@ ycalc__mock_addresser   (void *a_owner, int *x, int *y, int *z)
    if (z != NULL)  *z   = x_mock->z;
    return 0;
 }
+
+
+
+/*====================------------------------------------====================*/
+/*===----                         unit testing                         ----===*/
+/*====================------------------------------------====================*/
+static void  o___UNIT_TEST_______o () { return; }
+
+char*        /*-> unit testing accessor --------------[ ------ [gs.HA0.1B3.K5]*/ /*-[02.0000.00#.#]-*/ /*-[--.---.---.--]-*/
+ycalc__unit_mock        (char *a_question, char *a_label)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   void       *x_owner     = NULL;
+   tDEP_ROOT  *x_deproot   = NULL;
+   char        x_label     [LEN_LABEL];
+   char        x_rnote     [LEN_LABEL];
+   char        x_onote     [LEN_LABEL];
+   char        x_dnote     [LEN_LABEL];
+   /*---(preprare)-----------------------*/
+   strcpy (ycalc__unit_answer, "yCALC            : question not understood");
+   if (a_label == NULL)   strlcpy (x_label, "---"  , LEN_LABEL);
+   else                   strlcpy (x_label, a_label, LEN_LABEL);
+   rc = ycalc__mock_who_named (x_label, &x_owner, &x_deproot);
+   if (rc        <  0   )  strlcpy (x_rnote, "error"   , LEN_LABEL);
+   else                    strlcpy (x_rnote, "good"    , LEN_LABEL);
+   if (x_owner   == NULL)  strlcpy (x_onote, "-----"   , LEN_LABEL);
+   else                    strlcpy (x_onote, "exists"  , LEN_LABEL);
+   if (x_deproot == NULL)  strlcpy (x_dnote, "-----"   , LEN_LABEL);
+   else                    strlcpy (x_dnote, "enabled" , LEN_LABEL);
+
+   /*---(dependency list)----------------*/
+   if      (strcmp (a_question, "status"   )      == 0) {
+      snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock status: %-5s %-8s %-10s %s", x_label, x_rnote, x_onote, x_dnote);
+   }
+   /*---(complete)-----------------------*/
+   return ycalc__unit_answer;
+}
+
 
 

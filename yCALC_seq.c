@@ -3,7 +3,7 @@
 #include    "yCALC_priv.h"
 
 
-char    (*g_consumer )   (int a_seq, int a_lvl, void *a_owner);
+char    (*g_consumer )   (void *a_owner, void *a_deproot, int a_seq, int a_lvl);
 
 
 /*====================------------------------------------====================*/
@@ -24,11 +24,12 @@ static void  o___SEQUENCING______o () { return; }
  */
 
 #define   MAX_EXEC        100
-static int         s_max    = -1;
-static int         s_total  =  0;
-static int         s_count  [MAX_EXEC];
-static tDEP_ROOT      *s_heads  [MAX_EXEC];
-static tDEP_ROOT      *s_tails  [MAX_EXEC];
+/*--------- ----------- ----------- ----------- */
+static      int         s_max       = -1;
+static      int         s_total     =  0;
+static      int         s_count     [MAX_EXEC];
+static      tDEP_ROOT  *s_heads     [MAX_EXEC];
+static      tDEP_ROOT  *s_tails     [MAX_EXEC];
 
 char         /*-> prepare for new calculation --------[ leaf   [fz.742.031.10]*/ /*-[01.0000.014.2]-*/ /*-[--.---.---.--]-*/
 ycalc__seq_clear        (void)
@@ -177,7 +178,7 @@ ycalc__seq_del          (tDEP_ROOT *a_deproot)
 }
 
 char         /*-> dependency-based calc sequencing ---[ ------ [fc.F55.135.E3]*/ /*-[02.0000.024.!]-*/ /*-[--.---.---.--]-*/
-ycalc__seq_recursion    (int a_level, tDEP_LINK *a_dep, char a_dir, long a_stamp, char a_action)
+ycalc__seq_recursion    (int a_level, tDEP_LINK *a_dep, char a_dir, long a_stamp)
 {
    /*---(locals)-----------+-----------+-*/
    tDEP_LINK  *x_dep       = NULL;
@@ -227,14 +228,13 @@ ycalc__seq_recursion    (int a_level, tDEP_LINK *a_dep, char a_dir, long a_stamp
    }
    /*---(update cell and dep)------------*/
    x_curr->u = a_stamp;
-   if (a_action == 'c')  a_dep->count++;
    /*---(recurse)------------------------*/
    DEBUG_CALC   yLOG_value   ("npro"  , x_curr->npro);
    DEBUG_CALC   yLOG_value   ("nreq"  , x_curr->nreq);
    if (a_dir == 'u')  x_dep = x_curr->pros;
    else               x_dep = x_curr->reqs;
    while (x_dep != NULL) {
-      rc = ycalc__seq_recursion (a_level + 1, x_dep, a_dir, a_stamp, a_action);
+      rc = ycalc__seq_recursion (a_level + 1, x_dep, a_dir, a_stamp);
       if (rc < 0) {
          DEBUG_CALC   yLOG_exit    (__FUNCTION__);
          return rc;
@@ -247,12 +247,13 @@ ycalc__seq_recursion    (int a_level, tDEP_LINK *a_dep, char a_dir, long a_stamp
 }
 
 char         /*-> dependency-based calc marking ------[ ------ [fe.I85.584.97]*/ /*-[03.0000.063.!]-*/ /*-[--.---.---.--]-*/
-ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir, long a_stamp, char a_action, FILE *a_file)
+ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, long a_stamp, void *a_consumer)
 {
    /*---(locals)-------------------------*/
    char        rce         = -10;
    tDEP_LINK  *x_dep       = NULL;
-   tDEP_ROOT  *x_curr      = NULL;
+   tDEP_ROOT  *x_deproot   = NULL;
+   tDEP_ROOT  *x_next      = NULL;
    int         i           = 0;
    int         x_sub       = 0;
    int         x_tot       = 0;
@@ -261,11 +262,12 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir, long a_stamp, char a_
    char        x_label     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
-   DEBUG_CALC   yLOG_char    ("a_dir"     , a_dir);
+   DEBUG_CALC   yLOG_char    ("a_dir_rec" , a_dir_rec);
+   DEBUG_CALC   yLOG_char    ("a_dir_act" , a_dir_act);
    DEBUG_CALC   yLOG_value   ("a_stamp"   , a_stamp);
-   DEBUG_CALC   yLOG_char    ("a_action"  , a_action);
+   DEBUG_CALC   yLOG_point   ("a_consumer", a_consumer);
    /*---(defense : cell)-----------------*/
-   DEBUG_CALC   yLOG_point   ("*a_deproot"   , a_deproot);
+   DEBUG_CALC   yLOG_point   ("a_deproot" , a_deproot);
    --rce;  if (a_deproot == NULL) {
       DEBUG_CALC   yLOG_note    ("NULL deproot");
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
@@ -275,15 +277,16 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir, long a_stamp, char a_
    DEBUG_CALC   yLOG_sinfo   ("label"     , x_label);
    DEBUG_CALC   yLOG_value   ("npro"  , a_deproot->npro);
    DEBUG_CALC   yLOG_value   ("nreq"  , a_deproot->nreq);
+   g_consumer = a_consumer;
    /*---(prepare)------------------------*/
    ycalc__seq_clear ();
    /*---(recurse)------------------------*/
-   if (a_dir == 'u')  x_dep = a_deproot->pros;
-   else               x_dep = a_deproot->reqs;
+   if (a_dir_rec == 'u')  x_dep = a_deproot->pros;
+   else                   x_dep = a_deproot->reqs;
    while (x_dep != NULL) {
       ++i;
       DEBUG_CALC   yLOG_value   ("recurse"   , i);
-      ycalc__seq_recursion (0, x_dep, a_dir, a_stamp, a_action);
+      ycalc__seq_recursion (0, x_dep, a_dir_rec, a_stamp);
       x_dep = x_dep->next;
    }
    DEBUG_CALC   yLOG_note    ("done recursing");
@@ -293,47 +296,20 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir, long a_stamp, char a_
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return 0;
    }
-   if (strchr ("cwfrp", a_action) == NULL) {
-      DEBUG_CALC   yLOG_note    ("no action requested");
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
-      return 0;
-   }
-   /*---(run all calculations)-----------*/
+   /*---(act on sequenced list)----------*/
    for (i = 0; i <= s_max; ++i) {
       x_off = i;
-      if (a_dir == 'd') x_off = s_max - i;
+      if (a_dir_act == 'u') x_off = s_max - i;
       DEBUG_CALC   yLOG_value   ("LEVEL"     , x_off);
-      x_curr = s_heads [x_off];
-      DEBUG_CALC   yLOG_point   ("x_curr"    , x_curr);
+      x_deproot = s_heads [x_off];
+      DEBUG_CALC   yLOG_point   ("x_deproot"    , x_deproot);
       x_sub = 0;
-      while (x_curr != NULL) {
-         if (g_consumer != NULL) {
-            g_consumer (x_tot, x_off, x_curr);
-         }
-         /*> switch (a_action) {                                                                <* 
-          *> case 'c' :  /+ calculation               +/                                        <* 
-          *>    DEBUG_CALC   yLOG_note    ("perform calc");                                     <* 
-          *>    /+> CALC_eval      (x_curr);                                              <*    <* 
-          *>     *> CELL_printable (x_curr);                                              <+/   <* 
-          *>    break;                                                                          <* 
-          *> case 'w' :  /+ purge cells               +/                                        <* 
-          *>    DEBUG_CALC   yLOG_note    ("purge cell");                                       <* 
-          *>    /+> CELL__wipe     (x_curr);                                              <+/   <* 
-          *>    break;                                                                          <* 
-          *> case 'f' :  /+ write to a file           +/                                        <* 
-          *>    DEBUG_CALC   yLOG_note    ("write cell to file");                               <* 
-          *>    /+> OUTP_cell      (FILE_DEPCEL, x_tot, x_off, x_curr);                   <+/   <* 
-          *>    break;                                                                          <* 
-          *> case 'r' :  /+ write to a register       +/                                        <* 
-          *>    DEBUG_CALC   yLOG_note    ("write cell to register");                           <* 
-          *>    /+> REG_copy_one   (x_curr, a_stamp);                                     <+/   <* 
-          *>    break;                                                                          <* 
-          *> case 'p' :  /+ print the sequence        +/                                        <* 
-          *>    break;                                                                          <* 
-          *> }                                                                                  <*/
+      while (x_deproot != NULL) {
+         x_next = x_deproot->snext;
+         if (g_consumer != NULL)   g_consumer (x_deproot->owner, x_deproot, x_tot, x_off);
          ++x_sub;
          ++x_tot;
-         x_curr = x_curr->snext;
+         x_deproot = x_next;
       }
       DEBUG_CALC   yLOG_value   ("expected"  , s_count [x_off]);
       DEBUG_CALC   yLOG_value   ("subtotal"  , x_sub);
@@ -345,32 +321,37 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir, long a_stamp, char a_
    return 0;
 }
 
+
+
+/*====================------------------------------------====================*/
+/*===----                        simplifiers                           ----===*/
+/*====================------------------------------------====================*/
+static void  o___SIMPLIFIERS_____o () { return; }
+
 char         /*-> dependency-based calc upward -------[ leaf   [gc.950.028.3C]*/ /*-[02.0000.304.5]-*/ /*-[--.---.---.--]-*/
-yCALC_seq_up       (void *a_deproot, void *a_consumer) { g_consumer = a_consumer; return ycalc__seq_driver (a_deproot, 'u', rand() , 'c', NULL); }
+yCALC_seq_up       (void *a_deproot, void *a_consumer) { return ycalc__seq_driver (a_deproot   , 'u', 'd', rand() , a_consumer); }
 
 char         /*-> dependency-based calc downward -----[ leaf   [gc.940.027.3A]*/ /*-[02.0000.00#.1]-*/ /*-[--.---.---.--]-*/
-yCALC_seq_down     (void *a_deproot, void *a_consumer) { g_consumer = a_consumer; return ycalc__seq_driver (a_deproot, 'd', rand() , 'c', NULL); }
+yCALC_seq_down     (void *a_deproot, void *a_consumer) { return ycalc__seq_driver (a_deproot   , 'd', 'u', rand() , a_consumer); }
 
 char         /*-> dependency-based calculation all ---[ ------ [gc.840.026.38]*/ /*-[02.0000.402.1]-*/ /*-[--.---.---.--]-*/
-yCALC_seq_full     (void *a_consumer)                  { g_consumer = a_consumer; return ycalc__seq_driver (myCALC.rroot, 'd', rand() , 'c', NULL); }
-
-
+yCALC_seq_full     (void *a_consumer)                  { return ycalc__seq_driver (myCALC.rroot, 'd', 'u', rand() , a_consumer); }
 
 char         /*-> dependency-based wiping of cells ---[ ------ [gc.740.025.36]*/ /*-[02.0000.104.!]-*/ /*-[--.---.---.--]-*/
-SEQ_wipe_deps      (void)          { return ycalc__seq_driver (myCALC.rroot, 'd', rand() , 'w', NULL); }
+yCALC_seq_downdown (long a_stamp, void *a_consumer)    { return ycalc__seq_driver (myCALC.rroot, 'd', 'd', a_stamp, a_consumer); }
+
+char         /*-> dependency-based wiping of cells ---[ ------ [gc.740.025.36]*/ /*-[02.0000.104.!]-*/ /*-[--.---.---.--]-*/
+yCALC_seq_downup   (long a_stamp, void *a_consumer)    { return ycalc__seq_driver (myCALC.rroot, 'd', 'u', a_stamp, a_consumer); }
 
 
 
-char         /*-> dependency-based writing of file ---[ ------ [gc.740.624.34]*/ /*-[02.0000.10#.!]-*/ /*-[--.---.---.--]-*/
-SEQ_file_deps      (long a_stamp)  { return ycalc__seq_driver (myCALC.rroot, 'd', a_stamp, 'f', NULL); }
-
-char         /*-> dependency-based writing of reg ----[ ------ [gc.640.523.32]*/ /*-[02.0000.105.!]-*/ /*-[--.---.---.--]-*/
-SEQ_reg_deps       (long a_stamp)  { return ycalc__seq_driver (myCALC.rroot, 'd', a_stamp, 'r', NULL); }
-
-
+/*====================------------------------------------====================*/
+/*===----                         reporting                            ----===*/
+/*====================------------------------------------====================*/
+static void  o___REPORTING_______o () { return; }
 
 char         /*-> tbd --------------------------------[ leaf   [gc.630.122.30]*/ /*-[02.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-yCALC_seq_list     (char *a_list)
+ycalc__seq_list    (char *a_list)
 {
    /*---(locals)-----------+-----------+-*/
    int         i           = 0;

@@ -8,13 +8,6 @@
 
 
 
-void*   (*g_deproot  )   (char *a_label);        /* pass label of thing, get back deproot of thing  */
-char*   (*g_labeler  )   (void *a_owner);        /* pass deproot->owner, get back label of thing    */
-char    (*g_reaper   )   (void *a_owner);        /* pass deproot->owner, tries to kill thing        */
-void*   (*g_whois    )   (int x, int y, int z);  /* pass coordinates, get back deproot of thing     */
-
-
-
 tTERMS      s_terms [MAX_TERM] = {
    { 'v' , "val"    , "numeric or cell address"        },
    { 's' , "str"    , "string or cell address"         },
@@ -42,8 +35,8 @@ ycalc_build_init        (void)
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(functions)----------------------*/
    DEBUG_PROG   yLOG_note    ("clearing function calls");
-   g_deproot   = NULL;
-   g_whois     = NULL;
+   g_who_named = NULL;
+   g_who_at    = NULL;
    g_labeler   = NULL;
    g_reaper    = NULL;
    /*---(complete)-----------------------*/
@@ -52,10 +45,11 @@ ycalc_build_init        (void)
 }
 
 char
-yCALC_build_config      (void *a_deproot, void *a_whois, void *a_labeler, void *a_reaper)
+yCALC_build_config      (void *a_who_named, void *a_who_at, void *a_enabler, void *a_labeler, void *a_reaper)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   void       *x_owner     = NULL;
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -65,22 +59,30 @@ yCALC_build_config      (void *a_deproot, void *a_whois, void *a_labeler, void *
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(update deproot)-----------------*/
-   DEBUG_PROG   yLOG_point   ("deproot"   , a_deproot);
-   --rce;  if (a_deproot   == NULL) {
-      DEBUG_PROG   yLOG_error   ("deproot"   , "without this callback, references cannot be resolved");
+   /*---(update who_named)---------------*/
+   DEBUG_PROG   yLOG_point   ("who_named" , a_who_named);
+   --rce;  if (a_who_named   == NULL) {
+      DEBUG_PROG   yLOG_error   ("who_named" , "without this callback, references cannot be resolved");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   g_deproot    = a_deproot;
+   g_who_named  = a_who_named;
    /*---(update whois)------------------*/
-   DEBUG_PROG   yLOG_point   ("whois"    , a_whois);
-   --rce;  if (a_whois    == NULL) {
+   DEBUG_PROG   yLOG_point   ("who_at"   , a_who_at);
+   --rce;  if (a_who_at    == NULL) {
       DEBUG_PROG   yLOG_error   ("whois"    , "without this callback, range dependencies are not possible");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   g_whois     = a_whois;
+   g_who_at    = a_who_at;
+   /*---(update enabler)-----------------*/
+   DEBUG_PROG   yLOG_point   ("enabler"   , a_enabler);
+   --rce;  if (a_enabler   == NULL) {
+      DEBUG_PROG   yLOG_error   ("enabler"   , "without this callback, no yCALC functionality is possible");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   g_enabler    = a_enabler;
    /*---(update labeler)-----------------*/
    DEBUG_PROG   yLOG_point   ("labeler"    , a_labeler);
    --rce;  if (a_labeler    == NULL) {
@@ -98,7 +100,7 @@ yCALC_build_config      (void *a_deproot, void *a_whois, void *a_labeler, void *
    }
    g_reaper    = a_reaper;
    /*---(set the dep root)---------------*/
-   myCALC.rroot = g_deproot ("ROOT");
+   ycalc_call_who_named ("ROOT", NULL, &myCALC.rroot);
    DEBUG_PROG   yLOG_point   ("rroot"     , myCALC.rroot);
    --rce;  if (myCALC.rroot == NULL) {
       DEBUG_PROG   yLOG_note    ("must create a node named ¸ROOT¸ for yCALC to operate");
@@ -290,6 +292,39 @@ ycalc__build_coords     (tCALC *a_calc, int *x, int *y, int *z)
    return 0;
 }
 
+char
+ycalc_calc_wipe         (tDEP_ROOT *a_deproot)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tCALC      *x_curr      = NULL;
+   tCALC      *x_next      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_CALC   yLOG_senter  (__FUNCTION__);
+   /*---(clear the calculation)----------*/
+   DEBUG_CALC   yLOG_spoint  (a_deproot->chead);
+   x_curr = a_deproot->chead;
+   while (x_curr != NULL) {
+      x_next = x_curr->next;
+      if (x_curr->s  != NULL)  free (x_curr->s);
+      free (x_curr);
+      x_curr = x_next;
+      DEBUG_CALC   yLOG_spoint  (x_curr);
+   }
+   /*---(clear deproot vars)-------------*/
+   DEBUG_CALC   yLOG_snote   ("deproot vars");
+   a_deproot->chead = NULL;
+   a_deproot->ctail = NULL;
+   a_deproot->ncalc = 0;
+   a_deproot->cuse  = 0;
+   /*---(rpn)----------------------------*/
+   if (a_deproot->rpn != NULL)  free (a_deproot->rpn);
+   /*---(complete)-----------------------*/
+   DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -326,26 +361,22 @@ ycalc__build_prepare    (tDEP_ROOT *a_deproot, char *a_rpn)
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(copy the rpn)-------------------*/
-   a_deproot->rpn = strndup (a_rpn, LEN_RECD);
    /*---(clear the calculation)----------*/
-   DEBUG_CALC   yLOG_point   ("calc"      , a_deproot->chead);
-   x_curr = a_deproot->chead;
-   while (x_curr != NULL) {
-      DEBUG_CALC   yLOG_complex ("x_curr"    , "%-10p, %c, v=%8.2lf, s=%-10p, r=%-10p, f=%-10p, next=%-10p", x_curr, x_curr->t, x_curr->s, x_curr->r, x_curr->f, x_curr->next);
-      x_next = x_curr->next;
-      if (x_curr->s  != NULL)  free (x_curr->s);
-      free (x_curr);
-      x_curr = x_next;
+   rc = ycalc_calc_wipe  (a_deproot);
+   DEBUG_CALC   yLOG_value   ("calc"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
-   a_deproot->chead = NULL;
    /*---(clear the dependencies)---------*/
-   rc = ycalc_deps_cleanse (a_deproot);
+   rc = ycalc_deps_wipe  (a_deproot);
    DEBUG_CALC   yLOG_value   ("cleanser"  , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(copy the rpn)-------------------*/
+   a_deproot->rpn = strndup (a_rpn, LEN_RECD);
    /*---(complete)-------------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -503,7 +534,7 @@ ycalc__build_reference  (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    void       *x_ref       = NULL;
    /*---(check for reference)------------*/
    DEBUG_CALC   yLOG_note    ("look for reference");
-   x_ref = g_deproot (a_token);
+   ycalc_call_who_named (a_token, NULL, &x_ref);
    if (x_ref == NULL)     return 0;
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
@@ -598,7 +629,7 @@ ycalc__build_step       (tDEP_ROOT *a_deproot, char *a_token)
 static void  o___DRIVER__________o () { return; }
 
 char
-yCALC_build             (void *a_deproot, char *a_rpn, char *a_notice)
+yCALC_build             (char *a_label, char *a_rpn, char *a_notice)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -609,8 +640,17 @@ yCALC_build             (void *a_deproot, char *a_rpn, char *a_notice)
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
-   DEBUG_CALC   yLOG_point   ("a_deproot" , a_deproot);
-   x_deproot = (tDEP_ROOT *) a_deproot;
+   rc = ycalc_call_who_named (a_label, NULL, &x_deproot);
+   DEBUG_CALC   yLOG_value   ("who named" , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_CALC   yLOG_value   ("x_deproot" , x_deproot);
+   --rce;  if (x_deproot == NULL) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    rc = ycalc__build_prepare (x_deproot, a_rpn);
    DEBUG_CALC   yLOG_value   ("prepare"   , rc);
    --rce;  if (rc < 0) {
@@ -671,4 +711,5 @@ yCALC_build             (void *a_deproot, char *a_rpn, char *a_notice)
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
+
 

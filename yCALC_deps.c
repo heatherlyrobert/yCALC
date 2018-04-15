@@ -51,67 +51,80 @@ ycalc__deps_new         (tDEP_LINK **a_dep)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
+   void       *x_mem       = NULL;
    tDEP_LINK  *x_dep       = NULL;
    int         x_tries     =    0;
    /*---(header)-------------------------*/
-   DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   /*> DEBUG_DEPS   yLOG_senter  (__FUNCTION__);                                      <*/
    /*---(defense)------------------------*/
-   DEBUG_DEPS   yLOG_spoint  ("a_dep");
+   DEBUG_DEPS   yLOG_point   ("a_dep"     , a_dep);
+   /*> DEBUG_DEPS   yLOG_spoint  ("a_dep");                                           <*/
    --rce;  if (a_dep == NULL) {
       DEBUG_DEPS   yLOG_snote   ("no return dep pointer");
       DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DEPS   yLOG_spoint  ("*a_dep");
+   DEBUG_DEPS   yLOG_point   ("*a_dep"    , *a_dep);
+   /*> DEBUG_DEPS   yLOG_spoint  (*a_dep);                                          <*/
    --rce;  if (*a_dep != NULL) {
       DEBUG_DEPS   yLOG_snote   ("dep pointer already assigned");
       DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
    /*---(create)-------------------------*/
-   DEBUG_DEPS   yLOG_snote   ("malloc");
+   DEBUG_DEPS   yLOG_note    ("malloc");
+   /*> DEBUG_DEPS   yLOG_snote   ("malloc");                                          <*/
    while (x_dep == NULL && x_tries < 10) {
       x_dep = (tDEP_LINK *) malloc (sizeof (tDEP_LINK));
       ++x_tries;
    }
-   DEBUG_DEPS   yLOG_svalue  ("tries", x_tries);
+   DEBUG_DEPS   yLOG_value   ("tries"     , x_tries);
+   /*> DEBUG_DEPS   yLOG_sint    (x_tries);                                  <*/
    --rce;  if (x_dep == NULL) {
       DEBUG_DEPS   yLOG_snote   ("FAILED");
       DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
    /*---(dep fields)---------------------*/
-   DEBUG_DEPS   yLOG_snote   ("dep pointers");
+   DEBUG_DEPS   yLOG_note    ("dep pointers");
+   /*> DEBUG_DEPS   yLOG_snote   ("dep pointers");                                    <*/
    x_dep->type    = G_DEP_BLANK;
    x_dep->prev    = NULL;
    x_dep->next    = NULL;
    x_dep->match   = NULL;
    /*---(dependency doubly-linked list)--*/
-   DEBUG_DEPS   yLOG_snote   ("main list");
+   DEBUG_DEPS   yLOG_note    ("main list");
+   /*> DEBUG_DEPS   yLOG_snote   ("main list");                                       <*/
    x_dep->dprev   = NULL;
    x_dep->dnext   = NULL;
    if (myCALC.dtail == NULL) {
       myCALC.dhead         = x_dep;
-      myCALC.dtail         = x_dep;
    } else {
-      x_dep->dprev   = myCALC.dtail;
-      x_dep->dnext   = NULL;
+      x_dep->dprev         = myCALC.dtail;
+      x_dep->dnext         = NULL;
       myCALC.dtail->dnext  = x_dep;
-      myCALC.dtail         = x_dep;
    }
+   myCALC.dtail         = x_dep;
    ++myCALC.dcount;
+   DEBUG_DEPS   yLOG_value   ("dcount"    , myCALC.dcount);
+   /*> DEBUG_DEPS   yLOG_sint    (myCALC.dcount);                                     <*/
    /*---(cell pointers)------------------*/
-   DEBUG_DEPS   yLOG_snote   ("cell pointers");
+   DEBUG_DEPS   yLOG_note    ("cell pointers");
+   /*> DEBUG_DEPS   yLOG_snote   ("cell pointers");                                   <*/
    x_dep->source  = NULL;
    x_dep->target  = NULL;
    /*---(statistics)---------------------*/
-   DEBUG_DEPS   yLOG_snote   ("stats");
+   DEBUG_DEPS   yLOG_note    ("stats");
+   /*> DEBUG_DEPS   yLOG_snote   ("stats");                                           <*/
    x_dep->count   = 0;
    /*---(save)---------------------------*/
-   DEBUG_DEPS   yLOG_snote   ("save");
+   DEBUG_DEPS   yLOG_note    ("save");
+   /*> DEBUG_DEPS   yLOG_snote   ("save");                                            <*/
    *a_dep = x_dep;
    /*---(complete)-----------------------*/
-   DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
+   /*> DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);                                      <*/
+   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -249,39 +262,10 @@ ycalc_deps_init         (void)
    return 0;
 }
 
-char         /*-> destroy a single dependency --------[ leaf   [fp.B42.102.E0]*/ /*-[11.0000.034.5]-*/ /*-[--.---.---.--]-*/
-ycalc__deproot_free     (tDEP_LINK **a_deproot)
+char         /*-> tbd --------------------------------[ ------ [fz.842.041.24]*/ /*-[01.0000.013.T]-*/ /*-[--.---.---.--]-*/
+ycalc__deproot_wipe     (void *a_owner, void *a_deproot, int a_seq, int a_lvl)
 {
-   /*---(locals)-----------+-----------+-*/
-   char        rce         =  -10;
-   tDEP_ROOT  *x_deproot   = NULL;
-   /*---(header)-------------------------*/
-   DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
-   /*---(defense: null cell)-------------*/
-   DEBUG_DEPS   yLOG_spoint  (a_deproot);
-   --rce;  if (a_deproot  == NULL) {
-      DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DEPS   yLOG_spoint  (*a_deproot);
-   --rce;  if (*a_deproot == NULL) {
-      DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   x_deproot = *a_deproot;
-   /*---(remove from dependency list)----*/
-   DEBUG_DEPS   yLOG_snote   ("main list");
-   if (x_deproot->rnext != NULL) x_deproot->rnext->rprev = x_deproot->rprev;
-   else                          myCALC.rtail            = x_deproot->rprev;
-   if (x_deproot->rprev != NULL) x_deproot->rprev->rnext = x_deproot->rnext;
-   else                          myCALC.rhead            = x_deproot->rnext;
-   --myCALC.rcount;
-   /*---(free)---------------------------*/
-   DEBUG_DEPS   yLOG_snote   ("free");
-   free (x_deproot);
-   *a_deproot = NULL;
-   /*---(complete)-----------------------*/
-   DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
+   yCALC_disable (a_deproot);
    return 0;
 }
 
@@ -294,40 +278,71 @@ ycalc__deps_purge       (void)
    tDEP_ROOT  *r_curr      = NULL;
    tDEP_ROOT  *r_next      = NULL;
    int         c           =    0;
+   long        x_stamp     =    0;
+   char        rc          =    0;
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
-   /*---(walk through links)-------------*/
-   DEBUG_PROG   yLOG_point   ("link_head" , myCALC.dhead);
-   l_curr = myCALC.dhead;
-   c      = 0;
-   while (l_curr != NULL) {
-      l_next = l_curr->dnext;
-      ycalc__deps_free (&l_curr);
-      l_curr = l_next;
-      ++c;
-   }
-   DEBUG_PROG   yLOG_value   ("purged"    , c);
-   /*---(reset globals)------------------*/
-   myCALC.dhead   = NULL;
-   myCALC.dtail   = NULL;
-   myCALC.dcount  = 0;
-   /*---(walk through roots)-------------*/
-   DEBUG_PROG   yLOG_point   ("root_tail" , myCALC.rtail);
+   DEBUG_PROG   yLOG_note    ("INITIAL CONDITIONS");
+   DEBUG_PROG   yLOG_point   ("rroot"     , myCALC.rroot);
+   DEBUG_PROG   yLOG_point   ("rhead"     , myCALC.rhead);
+   DEBUG_PROG   yLOG_point   ("rtail"     , myCALC.rtail);
+   DEBUG_PROG   yLOG_value   ("rcount"    , myCALC.rcount);
+   DEBUG_PROG   yLOG_point   ("dhead"     , myCALC.dhead);
+   DEBUG_PROG   yLOG_point   ("dtail"     , myCALC.dtail);
+   DEBUG_PROG   yLOG_value   ("dcount"    , myCALC.dcount);
+   /*---(clear sequencing)---------------*/
+   ycalc__seq_clear ();
+   /*---(disconnect dependent cells)-----*/
+   x_stamp = rand ();
+   rc = yCALC_seq_downdown (x_stamp, ycalc__deproot_wipe);
+   DEBUG_PROG   yLOG_note    ("AFTER SEQUENCED DEPROOT DELETE");
+   DEBUG_PROG   yLOG_point   ("rroot"     , myCALC.rroot);
+   DEBUG_PROG   yLOG_point   ("rhead"     , myCALC.rhead);
+   DEBUG_PROG   yLOG_point   ("rtail"     , myCALC.rtail);
+   DEBUG_PROG   yLOG_value   ("rcount"    , myCALC.rcount);
+   DEBUG_PROG   yLOG_point   ("dhead"     , myCALC.dhead);
+   DEBUG_PROG   yLOG_point   ("dtail"     , myCALC.dtail);
+   DEBUG_PROG   yLOG_value   ("dcount"    , myCALC.dcount);
+   /*---(walk through remaining)---------*/
    r_curr = myCALC.rtail;
    c      = 0;
    while (r_curr != NULL) {
       r_next = r_curr->rprev;
-      /*> yCALC_build (r_curr, "", NULL);                                             <*/
-      ycalc__deproot_free (&r_curr);
+      yCALC_disable (r_curr);
       r_curr = r_next;
       ++c;
    }
+   DEBUG_PROG   yLOG_note    ("AFTER ALL DEPROOT DELETE");
    DEBUG_PROG   yLOG_value   ("purged"    , c);
+   DEBUG_PROG   yLOG_point   ("rroot"     , myCALC.rroot);
+   DEBUG_PROG   yLOG_point   ("rhead"     , myCALC.rhead);
+   DEBUG_PROG   yLOG_point   ("rtail"     , myCALC.rtail);
+   DEBUG_PROG   yLOG_value   ("rcount"    , myCALC.rcount);
+   DEBUG_PROG   yLOG_point   ("dhead"     , myCALC.dhead);
+   DEBUG_PROG   yLOG_point   ("dtail"     , myCALC.dtail);
+   DEBUG_PROG   yLOG_value   ("dcount"    , myCALC.dcount);
    /*---(reset globals)------------------*/
    myCALC.rroot   = NULL;
    myCALC.rhead   = NULL;
    myCALC.rtail   = NULL;
    myCALC.rcount  = 0;
+   /*---(walk through links)-------------*/
+   l_curr = myCALC.dtail;
+   c      = 0;
+   while (l_curr != NULL) {
+      l_next = l_curr->dprev;
+      ycalc__deps_free (&l_curr);
+      l_curr = l_next;
+      ++c;
+   }
+   DEBUG_PROG   yLOG_value   ("purged"    , c);
+   DEBUG_PROG   yLOG_point   ("dhead"     , myCALC.dhead);
+   DEBUG_PROG   yLOG_point   ("dtail"     , myCALC.dtail);
+   DEBUG_PROG   yLOG_value   ("dcount"    , myCALC.dcount);
+   /*---(reset globals)------------------*/
+   myCALC.dhead   = NULL;
+   myCALC.dtail   = NULL;
+   myCALC.dcount  = 0;
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -414,6 +429,7 @@ ycalc__deps_create_req  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
    DEBUG_DEPS   yLOG_info    ("src label" , x_label);
    DEBUG_DEPS   yLOG_value   ("src nreqs" , a_source->nreq);
    x_next = a_source->reqs;
+   DEBUG_DEPS   yLOG_value   ("src head"  , a_source->reqs);
    while (x_next != NULL) {
       DEBUG_DEPS   strlcpy (x_label, g_labeler (x_next->source->owner), LEN_LABEL);
       DEBUG_DEPS   yLOG_info    ("trg label" , x_label);
@@ -427,6 +443,7 @@ ycalc__deps_create_req  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
    /*---(create a new requires)-------*/
    DEBUG_DEPS   yLOG_note    ("existing not found, create new reqs");
    rc = ycalc__deps_new (&x_req);
+   DEBUG_DEPS   yLOG_value   ("rc"        , rc);
    if (rc < 0 || x_req == NULL)   {
       DEBUG_DEPS yLOG_note      ("could not make a new reqs entry");
       DEBUG_DEPS yLOG_exit      (__FUNCTION__);
@@ -485,6 +502,7 @@ ycalc__deps_create_pro  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
    /*---(create a new provides)-------*/
    DEBUG_DEPS   yLOG_note    ("existing not found, create new requires");
    rc = ycalc__deps_new (&x_pro);
+   DEBUG_DEPS   yLOG_value   ("rc"        , rc);
    if (rc < 0 || x_pro == NULL)   {
       DEBUG_DEPS yLOG_note      ("could not make a new pros entry");
       DEBUG_DEPS yLOG_exit      (__FUNCTION__);
@@ -1054,8 +1072,8 @@ ycalc__deps_circle (int a_level, tDEP_ROOT *a_source, tDEP_ROOT *a_target, long 
 static void  o___MASS____________o () { return; }
 
 char         /*-> remove all requires deps -----------[ ------ [ge.A34.142.41]*/ /*-[02.0000.515.5]-*/ /*-[--.---.---.--]-*/
-ycalc_deps_cleanse      (tDEP_ROOT *a_curr)
-{  /*---(design notes)--------------------------------------------------------*/
+ycalc_deps_wipe         (tDEP_ROOT *a_deproot)
+{
    /*---(locals)-----------+-----------+-*/
    tDEP_LINK  *x_next      = NULL;
    tDEP_LINK  *x_save      = NULL;
@@ -1064,40 +1082,40 @@ ycalc_deps_cleanse      (tDEP_ROOT *a_curr)
    char        x_label     [LEN_LABEL];
    /*---(begin)--------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
-   DEBUG_DEPS   yLOG_point   ("a_curr"    , a_curr);
+   DEBUG_DEPS   yLOG_point   ("a_deproot" , a_deproot);
    /*---(defenses)-----------------------*/
-   --rce;  if (a_curr == NULL) {
+   --rce;  if (a_deproot == NULL) {
       DEBUG_DEPS   yLOG_note    ("exiting, dep root is NULL");
       DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
       return rce;
    }
    /*---(reqs)---------------------------*/
-   DEBUG_DEPS   strlcpy (x_label, g_labeler (a_curr->owner), LEN_LABEL);
+   DEBUG_DEPS   strlcpy (x_label, g_labeler (a_deproot->owner), LEN_LABEL);
    DEBUG_DEPS   yLOG_info    ("owned by"  , x_label);
-   DEBUG_DEPS   yLOG_value   ("nreq"      , a_curr->nreq);
-   x_next = a_curr->reqs;
+   DEBUG_DEPS   yLOG_value   ("nreq"      , a_deproot->nreq);
+   x_next = a_deproot->reqs;
    while (x_next != NULL) {
       DEBUG_DEPS    yLOG_point   ("x_next"      , x_next);
       x_save = x_next->next;
       DEBUG_DEPS   strlcpy (x_label, g_labeler (x_next->target->owner), LEN_LABEL);
       DEBUG_DEPS   yLOG_complex ("target"    , "ptr=%9p, label=%s", x_next->target, x_label);
-      rc = yCALC_delete (x_next->type, a_curr, x_next->target);
-      DEBUG_DEPS   yLOG_value   ("nreq"      , a_curr->nreq);
+      rc = yCALC_delete (x_next->type, a_deproot, x_next->target);
+      DEBUG_DEPS   yLOG_value   ("nreq"      , a_deproot->nreq);
       x_next = x_save;
    }
    /*---(check if rooted)----------------*/
-   DEBUG_DEPS   yLOG_value   ("nprovide"  , a_curr->npro);
-   DEBUG_DEPS   yLOG_point   ("provides"  , a_curr->pros);
-   if (a_curr->npro == 1) {
-      DEBUG_DEPS   yLOG_point   ("source"    , a_curr->pros->source);
-      DEBUG_DEPS   strlcpy (x_label, g_labeler (a_curr->pros->source->owner), LEN_LABEL);
+   DEBUG_DEPS   yLOG_value   ("npro"      , a_deproot->npro);
+   DEBUG_DEPS   yLOG_point   ("pros"      , a_deproot->pros);
+   if (a_deproot->npro == 1) {
+      DEBUG_DEPS   yLOG_point   ("source"    , a_deproot->pros->source);
+      DEBUG_DEPS   strlcpy (x_label, g_labeler (a_deproot->pros->source->owner), LEN_LABEL);
       DEBUG_DEPS   yLOG_info    ("label"     , x_label);
-      DEBUG_DEPS   yLOG_point   ("target"    , a_curr->pros->target);
-      DEBUG_DEPS   strlcpy (x_label, g_labeler (a_curr->pros->target->owner), LEN_LABEL);
+      DEBUG_DEPS   yLOG_point   ("target"    , a_deproot->pros->target);
+      DEBUG_DEPS   strlcpy (x_label, g_labeler (a_deproot->pros->target->owner), LEN_LABEL);
       DEBUG_DEPS   yLOG_point   ("rroot"     , myCALC.rroot);
-      if (a_curr->pros->target == myCALC.rroot) {
+      if (a_deproot->pros->target == myCALC.rroot) {
          DEBUG_DEPS   yLOG_note    ("unrooting");
-         rc = yCALC_delete (G_DEP_REQUIRE, myCALC.rroot, a_curr);
+         rc = yCALC_delete (G_DEP_REQUIRE, myCALC.rroot, a_deproot);
       }
    }
    /*---(complete)-----------------------*/
@@ -1153,7 +1171,7 @@ yCALC_range      (void *a_source, int x1, int y1, int z1, int x2, int y2, int z2
    for (y_pos = y1; y_pos <= y2; ++y_pos) {
       for (x_pos = x1; x_pos <= x2; ++x_pos) {
          /*---(get existing)-------------*/
-         x_target  = g_whois (x_pos, y_pos, z1);
+         ycalc_call_who_at (x_pos, y_pos, z1, NULL, &x_target);
          DEBUG_DEPS    yLOG_complex ("target"    , "col=%4d, row=%4d, ptr=%9p", x_pos, y_pos, x_target);
          if (x_target    == NULL)   continue;
          /*---(create dependency)--------*/
@@ -1167,107 +1185,13 @@ yCALC_range      (void *a_source, int x1, int y1, int z1, int x2, int y2, int z2
    /*---(backout)------------------------*/
    if (rce_save < 0) {
       DEBUG_DEPS    yLOG_note    ("aborting, error previously encountered");
-      ycalc_deps_cleanse (x_source);
+      ycalc_deps_wipe (x_source);
       rce = rce_save;
       DEBUG_DEPS    yLOG_exit    (__FUNCTION__);
       return  rce;
    }
    /*---(complete)-----------------------*/
    DEBUG_DEPS    yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-
-
-/*====================------------------------------------====================*/
-/*===----                       enable and disable                     ----===*/
-/*====================------------------------------------====================*/
-static void  o___ENABLE__________o () { return; }
-
-char
-yCALC_enable            (void *a_owner, void **a_ycalc)
-{
-   /*---(locals)-----------+-----------+-*/
-   char        rce         =  -10;
-   tDEP_ROOT  *x_ycalc     = NULL;
-   int         x_tries     =    0;
-   /*---(header)-------------------------*/
-   DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
-   /*---(defense)------------------------*/
-   DEBUG_DEPS   yLOG_spoint  (a_owner);
-   --rce;  if (a_owner == NULL) {
-      DEBUG_DEPS   yLOG_snote   ("no owner pointer");
-      DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DEPS   yLOG_spoint  (a_ycalc);
-   --rce;  if (a_ycalc == NULL) {
-      DEBUG_DEPS   yLOG_snote   ("no return ycalc pointer");
-      DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DEPS   yLOG_spoint  (*a_ycalc);
-   --rce;  if (*a_ycalc != NULL) {
-      DEBUG_DEPS   yLOG_snote   ("ycalc pointer already assigned");
-      DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(create)-------------------------*/
-   DEBUG_DEPS   yLOG_snote   ("malloc");
-   while (x_ycalc == NULL && x_tries < 10) {
-      x_ycalc = (tDEP_ROOT *) malloc (sizeof (tDEP_ROOT));
-      ++x_tries;
-   }
-   DEBUG_DEPS   yLOG_svalue  ("tries", x_tries);
-   DEBUG_DEPS   yLOG_spoint  (x_ycalc);
-   --rce;  if (x_ycalc == NULL) {
-      DEBUG_DEPS   yLOG_snote   ("FAILED");
-      DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(calc fields)--------------------*/
-   DEBUG_DEPS   yLOG_snote   ("owner");
-   x_ycalc->owner   = a_owner;
-   /*---(calc fields)--------------------*/
-   DEBUG_DEPS   yLOG_snote   ("calc");
-   x_ycalc->rpn     = NULL;
-   x_ycalc->ncalc   = 0;
-   x_ycalc->chead   = NULL;
-   x_ycalc->ctail   = NULL;
-   x_ycalc->cuse    = 0;
-   /*---(dependencies)-------------------*/
-   DEBUG_DEPS   yLOG_snote   ("calc");
-   x_ycalc->reqs    = NULL;
-   x_ycalc->nreq    = 0;
-   x_ycalc->pros    = NULL;
-   x_ycalc->npro    = 0;
-   /*---(sequencing)---------------------*/
-   DEBUG_DEPS   yLOG_snote   ("seq");
-   x_ycalc->slevel  = 0;
-   x_ycalc->snext   = NULL;
-   x_ycalc->sprev   = NULL;
-   /*---(stamp)--------------------------*/
-   DEBUG_DEPS   yLOG_snote   ("stamp");
-   x_ycalc->u       = 0;
-   /*---(root doubly-linked list)--------*/
-   DEBUG_DEPS   yLOG_snote   ("list");
-   x_ycalc->rprev   = NULL;
-   x_ycalc->rnext   = NULL;
-   if (myCALC.rtail == NULL) {
-      myCALC.rhead         = x_ycalc;
-      myCALC.rtail         = x_ycalc;
-   } else {
-      x_ycalc->rprev   = myCALC.rtail;
-      x_ycalc->rnext   = NULL;
-      myCALC.rtail->rnext  = x_ycalc;
-      myCALC.rtail         = x_ycalc;
-   }
-   ++myCALC.rcount;
-   /*---(save)---------------------------*/
-   DEBUG_DEPS   yLOG_snote   ("save");
-   *a_ycalc = x_ycalc;
-   /*---(complete)-----------------------*/
-   DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
