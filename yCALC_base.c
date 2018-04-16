@@ -17,7 +17,6 @@ char        g_nada       [5] = "";
 
 
 
-
 tFUNCS  g_funcs [MAX_FUNCS] = {
    /*---(mathmatical operators)-----------*/
    { "+"          ,  1, ycalc_add               , 'o', "v:vv"   , 'm', "ansi-c addition"                                   , "" },
@@ -66,6 +65,50 @@ tFUNCS  g_funcs [MAX_FUNCS] = {
    { "ifs"        ,  3, ycalc_ifs               , 'f', "s:vss"  , 'l', "if x is T, n, else m"                              , "" },
    { "within"     ,  6, ycalc_within            , 'f', "t:vvv"  , 'l', "if y is within the range of x to z, then T"        , "" },
    { "approx"     ,  6, ycalc_approx            , 'f', "t:vvv"  , 'l', "if x is within the range of y +/- z, then T"       , "" },
+   /*---(string operators)----------------*/
+   { "#"          ,  1, ycalc_concat            , 'o', "s:ss"   , 's', "m concatinated to the end of n"                    , "" },
+   { "##"         ,  2, ycalc_concatplus        , 'o', "s:ss"   , 's', "m concatinated to the end of n (with a space)"     , "" },
+   /*---(string functions)----------------*/
+   { "len"        ,  3, ycalc_len               , 'f', "v:s"    , 's', "length of n"                                       , "" },
+   { "left"       ,  4, ycalc_left              , 'f', "s:sv"   , 's', "left x characters of n"                            , "" },
+   { "right"      ,  5, ycalc_right             , 'f', "s:sv"   , 's', "right x characters of n"                           , "" },
+   { "mid"        ,  3, ycalc_mid               , 'f', "s:svv"  , 's', "y characters of n, starting at x"                  , "" },
+   { "trim"       ,  4, ycalc_trim              , 'f', "s:s"    , 's', "trim leading and trailing whitespace from n"       , "" },
+   { "ltrim"      ,  5, ycalc_ltrim             , 'f', "s:s"    , 's', "trim just leading whitespace from n"               , "" },
+   { "rtrim"      ,  5, ycalc_rtrim             , 'f', "s:s"    , 's', "trim just trailing whitespace from n"              , "" },
+   { "strim"      ,  5, ycalc_strim             , 'f', "s:s"    , 's', "compress all whitespce to single, except quoted"   , "" },
+   { "etrim"      ,  5, ycalc_etrim             , 'f', "s:s"    , 's', "trim every whitespace in n excluding quoted"       , "" },
+   { "mtrim"      ,  5, ycalc_mtrim             , 'f', "s:s"    , 's', "trim every whitespace in n including quoted"       , "" },
+   { "print"      ,  5, ycalc_printstr          , 'f', "s:a"    , 's', "gyges trimmed print string of cell a"              , "" },
+   { "p"          ,  1, ycalc_printstr          , 'f', "s:a"    , 's', "gyges trimmed print string of cell a"              , "" },
+   { "printnum"   ,  8, ycalc_printnum          , 'f', "v:a"    , 's', "gyges trimmed print string as value of cell a"     , "" },
+   { "n"          ,  1, ycalc_printnum          , 'f', "v:a"    , 's', "gyges trimmed print string as value of cell a"     , "" },
+   { "lpad"       ,  4, ycalc_lpad              , 'f', "s:sv"   , 's', "add whitespace to start of n until x length"       , "" },
+   { "rpad"       ,  4, ycalc_rpad              , 'f', "s:sv"   , 's', "add whitespace to end of n until x length"         , "" },
+   { "lppad"      ,  5, ycalc_lppad             , 'f', "s:av"   , 's', "add whitespace to start of printable till x len"   , "" },
+   { "rppad"      ,  5, ycalc_rppad             , 'f', "s:av"   , 's', "add whitespace to end of printable till x len"     , "" },
+   { "find"       ,  4, ycalc_find              , 'f', "s:ss"   , 's', "find m within n"                                   , "" },
+   { "replace"    ,  7, ycalc_replace           , 'f', "s:sssv" , 's', "replace m with o within n, x times"                , "" },
+   /*---(conversion functions)------------*/
+   { "lower"      ,  5, ycalc_lower             , 'f', "s:s"    , 'c', "change all chars in n to lower case"               , "" },
+   { "upper"      ,  5, ycalc_upper             , 'f', "s:s"    , 'c', "change all chars in n to upper case"               , "" },
+   { "char"       ,  4, ycalc_char              , 'f', "s:v"    , 'c', "change x into an ascii character with that code"   , "" },
+   { "code"       ,  4, ycalc_code              , 'f', "v:s"    , 'c', "return ascii value of first char in n"             , "" },
+   { "value"      ,  5, ycalc_value             , 'f', "v:s"    , 'c', "ansi-c atof() to convert text number into value"   , "" },
+   { "salpha"     ,  6, ycalc_salpha            , 'f', "s:s"    , 'c', "change all non-alphabetic chars in n to '_'"       , "" },
+   { "salphac"    ,  7, ycalc_salphac           , 'f', "s:s"    , 'c', "remove all non-alphabetic chars in n"              , "" },
+   { "salnum"     ,  6, ycalc_salnum            , 'f', "s:s"    , 'c', "change all non-alphanumeric chars in n to '_'"     , "" },
+   { "salnumc"    ,  7, ycalc_salnumc           , 'f', "s:s"    , 'c', "remove all non-alphanumeric chars in n"            , "" },
+   { "sbasic"     ,  6, ycalc_sbasic            , 'f', "s:s"    , 'c', "change all non-basic chars in n to '_'"            , "" },
+   { "sbasicc"    ,  7, ycalc_sbasicc           , 'f', "s:s"    , 'c', "remove all non-basic chars in n"                   , "" },
+   { "swrite"     ,  6, ycalc_swrite            , 'f', "s:s"    , 'c', "change all non-writing chars in n to '_'"          , "" },
+   { "swritec"    ,  7, ycalc_swritec           , 'f', "s:s"    , 'c', "remove all non-writing chars in n"                 , "" },
+   { "sexten"     ,  6, ycalc_sexten            , 'f', "s:s"    , 'c', "change all non-extended chars in n to '_'"         , "" },
+   { "sextenc"    ,  7, ycalc_sextenc           , 'f', "s:s"    , 'c', "change all non-extended chars in n"                , "" },
+   { "sprint"     ,  6, ycalc_sprint            , 'f', "s:s"    , 'c', "change all non-printable chars in n to '_'"        , "" },
+   { "sprintc"    ,  7, ycalc_sprintc           , 'f', "s:s"    , 'c', "change all non-printable chars in n"               , "" },
+   { "sseven"     ,  6, ycalc_sseven            , 'f', "s:s"    , 'c', "change all non-7bit safe chars in n to '_'"        , "" },
+   { "ssevenc"    ,  7, ycalc_ssevenc           , 'f', "s:s"    , 'c', "remove all non-7bit safe chars in n"               , "" },
    /*---(end-of-s_funcs)--------------------*/
    { "END"        ,  0, NULL                    , '-', ""       , '-', ""                                                  , "" },
 };

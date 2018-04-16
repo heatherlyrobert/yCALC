@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.1d"
-#define YCALC_VER_TXT   "completed unit tests complete on math (including within and approx)"
+#define YCALC_VER_NUM   "0.1e"
+#define YCALC_VER_TXT   "string concatenation is unit tested"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -411,6 +411,49 @@ void        ycalc_if                (void);
 void        ycalc_ifs               (void);
 void        ycalc_within            (void);
 void        ycalc_approx            (void);
+void        ycalc_concat            (void);
+void        ycalc_concatplus        (void);
+/*---(string functions)----------------*/
+void        ycalc_len               (void);
+void        ycalc_left              (void);
+void        ycalc_right             (void);
+void        ycalc_mid               (void);
+void        ycalc_trim              (void);
+void        ycalc_ltrim             (void);
+void        ycalc_rtrim             (void);
+void        ycalc_strim             (void);
+void        ycalc_etrim             (void);
+void        ycalc_mtrim             (void);
+void        ycalc_printstr          (void);
+void        ycalc_printstr          (void);
+void        ycalc_printnum          (void);
+void        ycalc_printnum          (void);
+void        ycalc_lpad              (void);
+void        ycalc_rpad              (void);
+void        ycalc_lppad             (void);
+void        ycalc_rppad             (void);
+void        ycalc_find              (void);
+void        ycalc_replace           (void);
+/*---(conversion functions)------------*/
+void        ycalc_lower             (void);
+void        ycalc_upper             (void);
+void        ycalc_char              (void);
+void        ycalc_code              (void);
+void        ycalc_value             (void);
+void        ycalc_salpha            (void);
+void        ycalc_salphac           (void);
+void        ycalc_salnum            (void);
+void        ycalc_salnumc           (void);
+void        ycalc_sbasic            (void);
+void        ycalc_sbasicc           (void);
+void        ycalc_swrite            (void);
+void        ycalc_swritec           (void);
+void        ycalc_sexten            (void);
+void        ycalc_sextenc           (void);
+void        ycalc_sprint            (void);
+void        ycalc_sprintc           (void);
+void        ycalc_sseven            (void);
+void        ycalc_ssevenc           (void);
 
 
 

@@ -30,6 +30,8 @@ tMOCK   s_mocks     [100] = {
    { "1a2"       , 's' ,     0.00, NULL            ,   0,   1,   1,   NULL },
    { "1a3"       , 's' ,     0.00, NULL            ,   0,   2,   1,   NULL },
    { "1a4"       , 's' ,     0.00, NULL            ,   0,   3,   1,   NULL },
+   { "0b1"       , 's' ,     0.00, NULL            ,   1,   0,   0,   NULL },
+   { "0d3"       , 's' ,     0.00, NULL            ,   4,   4,   0,   NULL },
    /*---(two-way dependency testing)----------------*/
    { "0f6"       , 's' ,     0.00, NULL            ,   5,   5,   0,   NULL },
    { "0f7"       , 's' ,     0.00, NULL            ,   5,   6,   0,   NULL },
