@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.1c"
-#define YCALC_VER_TXT   "unit tests complete on all string and numeric relational and logic"
+#define YCALC_VER_NUM   "0.1d"
+#define YCALC_VER_TXT   "completed unit tests complete on math (including within and approx)"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20

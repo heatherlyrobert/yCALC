@@ -62,12 +62,12 @@ tFUNCS  g_funcs [MAX_FUNCS] = {
    { "&&"         ,  2, ycalc_and               , 'o', "t:vv"   , 'l', "T if both x and y are T, else F"                   , "" },
    { "||"         ,  2, ycalc_or                , 'o', "t:vv"   , 'l', "T if either x or y is T, else F"                   , "" },
    /*---(logical functions)---------------*/
-   { "if"         ,  2, ycalc_if                , 'f', "v:vvv"  , 'l', "if x is T, y, else z"                              , "" , ""            , ""            , ""            },
-   { "ifs"        ,  3, ycalc_ifs               , 'f', "s:vss"  , 'l', "if x is T, n, else m"                              , "" , ""            , ""            , ""            },
-   { "within"     ,  6, ycalc_within            , 'f', "t:vvv"  , 'l', "if x is within the range of y to z, then T"        , "" , ""            , ""            , ""            },
-   { "approx"     ,  6, ycalc_approx            , 'f', "t:vvv"  , 'l', "if x is within the range of y +/- z, then T"       , "" , ""            , ""            , ""            },
+   { "if"         ,  2, ycalc_if                , 'f', "v:vvv"  , 'l', "if x is T, y, else z"                              , "" },
+   { "ifs"        ,  3, ycalc_ifs               , 'f', "s:vss"  , 'l', "if x is T, n, else m"                              , "" },
+   { "within"     ,  6, ycalc_within            , 'f', "t:vvv"  , 'l', "if y is within the range of x to z, then T"        , "" },
+   { "approx"     ,  6, ycalc_approx            , 'f', "t:vvv"  , 'l', "if x is within the range of y +/- z, then T"       , "" },
    /*---(end-of-s_funcs)--------------------*/
-   { "END"        ,  0, NULL                    , '-', ""       , '-', ""                                                  , "" , ""            , ""            , ""            },
+   { "END"        ,  0, NULL                    , '-', ""       , '-', ""                                                  , "" },
 };
 
 
