@@ -272,7 +272,7 @@ ycalc_popval            (char *a_func)
          return 0.0;
       }
       x_deproot = s_stack [s_nstack].ref;
-      g_valuer (x_deproot->owner, &s_type, &s_value, &s_string);
+      g_valuer (x_deproot->owner, NULL, &s_value, NULL);
       return  s_value;
       break;
    }
@@ -317,12 +317,9 @@ ycalc_popstr            (char *a_func)
          return  strndup (g_nada, LEN_RECD);
       }
       x_deproot = s_stack [s_nstack].ref;
-      g_valuer (x_deproot->owner, &s_type, &s_value, &s_string);
-      if (s_string == NULL) {
-         myCALC.trouble = G_ERROR_CONF;
-         return  strndup (g_nada, LEN_RECD);
-      }
-      return  strndup (s_string, LEN_RECD);
+      g_valuer (x_deproot->owner, NULL, NULL, &s_string);
+      if (s_string == NULL) return  strndup (g_nada  , LEN_RECD);
+      else                  return  strndup (s_string, LEN_RECD);
    }
    /*---(complete)-----------------------*/
    myCALC.trouble = G_ERROR_STACK;
@@ -382,7 +379,7 @@ ycalc__exec_prepare     (tDEP_ROOT *a_deproot, char a_type, double *a_value, cha
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   --rce;  if (a_type == '#' && (a_string == NULL || *a_string == NULL)) {
+   --rce;  if (a_type == '#' && a_string == NULL) {
       DEBUG_CALC   yLOG_note    ("#, but string return value is null");
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;

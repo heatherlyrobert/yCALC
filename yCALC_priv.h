@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.1b"
-#define YCALC_VER_TXT   "unit tests complete on all basic arithmetic"
+#define YCALC_VER_NUM   "0.1c"
+#define YCALC_VER_TXT   "unit tests complete on all string and numeric relational and logic"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -222,7 +222,7 @@ struct  cMOCK {
    char        label       [LEN_LABEL];
    char        type;
    double      value;
-   char        string      [LEN_RECD ];
+   char       *string;
    int         x;
    int         y;
    int         z;
@@ -407,6 +407,10 @@ void        ycalc_slesser           (void);
 void        ycalc_not               (void);
 void        ycalc_and               (void);
 void        ycalc_or                (void);
+void        ycalc_if                (void);
+void        ycalc_ifs               (void);
+void        ycalc_within            (void);
+void        ycalc_approx            (void);
 
 
 

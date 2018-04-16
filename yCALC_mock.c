@@ -12,33 +12,37 @@ static void      o___MOCK____________________o (void) {;}
 
 tMOCK   s_mocks     [100] = {
    /*---(root)--------------------------------------*/
-   { "ROOT"      , 'n' ,     0.00, ""              ,  -1,  -1,  -1,   NULL },
+   { "ROOT"      , 'n' ,     0.00, NULL            ,  -1,  -1,  -1,   NULL },
    /*---(done)--------------------------------------*/
-   { "0a1"       , 'n' ,     1.00, ""              ,   0,   0,   0,   NULL },
-   { "0a2"       , 'n' ,     2.00, ""              ,   0,   1,   0,   NULL },
-   { "0a3"       , 'n' ,     3.00, ""              ,   0,   2,   0,   NULL },
-   { "0a4"       , 'n' ,     4.00, ""              ,   0,   3,   0,   NULL },
-   { "0a5"       , 'n' ,     5.00, ""              ,   0,   4,   0,   NULL },
-   { "0a6"       , 'n' ,     6.00, ""              ,   0,   5,   0,   NULL },
-   { "0a7"       , 'n' ,     7.00, ""              ,   0,   6,   0,   NULL },
-   { "0a8"       , 'n' ,     8.00, ""              ,   0,   7,   0,   NULL },
-   { "0a9"       , 'n' ,     9.00, ""              ,   0,   8,   0,   NULL },
-   { "0a10"      , 'n' ,    10.00, ""              ,   0,   9,   0,   NULL },
-   { "0a30"      , 'n' ,    30.00, ""              ,   0,  29,   0,   NULL },
-   { "0a42"      , 'n' ,    42.00, ""              ,   0,  41,   0,   NULL },
-   { "1a1"       , 's' ,     0.00, ""              ,   0,   0,   1,   NULL },
-   { "1a2"       , 's' ,     0.00, ""              ,   0,   1,   1,   NULL },
-   { "1a3"       , 's' ,     0.00, ""              ,   0,   2,   1,   NULL },
-   { "1a4"       , 's' ,     0.00, ""              ,   0,   3,   1,   NULL },
+   { "0a1"       , 'n' ,     1.00, NULL            ,   0,   0,   0,   NULL },
+   { "0a2"       , 'n' ,     2.00, NULL            ,   0,   1,   0,   NULL },
+   { "0a3"       , 'n' ,     3.00, NULL            ,   0,   2,   0,   NULL },
+   { "0a4"       , 'n' ,     4.00, NULL            ,   0,   3,   0,   NULL },
+   { "0a5"       , 'n' ,     5.00, NULL            ,   0,   4,   0,   NULL },
+   { "0a6"       , 'n' ,     6.00, NULL            ,   0,   5,   0,   NULL },
+   { "0a7"       , 'n' ,     7.00, NULL            ,   0,   6,   0,   NULL },
+   { "0a8"       , 'n' ,     8.00, NULL            ,   0,   7,   0,   NULL },
+   { "0a9"       , 'n' ,     9.00, NULL            ,   0,   8,   0,   NULL },
+   { "0a10"      , 'n' ,    10.00, NULL            ,   0,   9,   0,   NULL },
+   { "0a30"      , 'n' ,    30.00, NULL            ,   0,  29,   0,   NULL },
+   { "0a42"      , 'n' ,    42.00, NULL            ,   0,  41,   0,   NULL },
+   { "1a1"       , 's' ,     0.00, NULL            ,   0,   0,   1,   NULL },
+   { "1a2"       , 's' ,     0.00, NULL            ,   0,   1,   1,   NULL },
+   { "1a3"       , 's' ,     0.00, NULL            ,   0,   2,   1,   NULL },
+   { "1a4"       , 's' ,     0.00, NULL            ,   0,   3,   1,   NULL },
    /*---(two-way dependency testing)----------------*/
-   { "0f6"       , 's' ,     0.00, ""              ,   5,   5,   0,   NULL },
-   { "0f7"       , 's' ,     0.00, ""              ,   5,   6,   0,   NULL },
-   { "0g6"       , 's' ,     0.00, ""              ,   6,   5,   0,   NULL },
-   { "0g7"       , 's' ,     0.00, ""              ,   6,   6,   0,   NULL },
-   { "0h8"       , 's' ,     0.00, ""              ,   7,   7,   0,   NULL },
-   { "0k11"      , 's' ,     0.00, ""              ,  10,  10,   0,   NULL },
+   { "0f6"       , 's' ,     0.00, NULL            ,   5,   5,   0,   NULL },
+   { "0f7"       , 's' ,     0.00, NULL            ,   5,   6,   0,   NULL },
+   { "0g6"       , 's' ,     0.00, NULL            ,   6,   5,   0,   NULL },
+   { "0g7"       , 's' ,     0.00, NULL            ,   6,   6,   0,   NULL },
+   { "0h8"       , 's' ,     0.00, NULL            ,   7,   7,   0,   NULL },
+   { "0k11"      , 's' ,     0.00, NULL            ,  10,  10,   0,   NULL },
+   { "1k11"      , 's' ,     0.00, NULL            ,  10,  10,   1,   NULL },
+   { "2k11"      , 's' ,     0.00, NULL            ,  10,  10,   2,   NULL },
+   { "3k11"      , 's' ,     0.00, NULL            ,  10,  10,   3,   NULL },
+   { "4k11"      , 's' ,     0.00, NULL            ,  10,  10,   4,   NULL },
    /*---(done)--------------------------------------*/
-   { ""          , 'n' ,     0.00, ""              ,   0,   0,   0,   NULL },
+   { ""          , 'n' ,     0.00, NULL            ,   0,   0,   0,   NULL },
 };
 
 char
@@ -208,7 +212,10 @@ ycalc__mock_valuer      (void *a_owner, char *a_type, double *a_value, char **a_
    x_mock    = (tMOCK     *) a_owner;
    if (a_type   != NULL)  *a_type   = x_mock->type;
    if (a_value  != NULL)  *a_value  = x_mock->value;
-   if (a_string != NULL)  *a_string = x_mock->string;
+   if (a_string != NULL) {
+      if (x_mock->string == NULL)  *a_string = g_nada;
+      else                         *a_string = x_mock->string;
+   }
    DEBUG_DEPS   yLOG_schar   (x_mock->type);
    DEBUG_DEPS   yLOG_sdouble (x_mock->value);
    DEBUG_DEPS   yLOG_snote   (x_mock->string);
@@ -268,7 +275,6 @@ ycalc__unit_mock        (char *a_question, char *a_label)
    else if (x_owner->string [0] == NULL)  strlcpy (x_string, "-", LEN_LABEL);
    else                                   strlcpy (x_string, x_owner->string, LEN_LABEL);
    if      (x_owner == NULL)              x_value = 0.0;
-   else if (x_owner->string == NULL)      x_value = 0.0;
    else                                   x_value = x_owner->value;
    /*---(dependency list)----------------*/
    if      (strcmp (a_question, "status"   )      == 0) {

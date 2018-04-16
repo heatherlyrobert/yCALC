@@ -214,3 +214,191 @@ ycalc_cube          (void)
    ycalc_pushval (__FUNCTION__, a * a * a);
    return;
 }
+
+
+
+/*====================------------------------------------====================*/
+/*===----                     relational operators                     ----===*/
+/*====================------------------------------------====================*/
+static void  o___RELATIONAL______o () { return; }
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_equal        (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, b == a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_notequal      (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, b != a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_greater      (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, b > a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_lesser       (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, b < a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_gequal       (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, b >= a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_lequal       (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, b <= a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_sequal       (void)
+{
+   r = ycalc_popstr (__FUNCTION__);
+   s = ycalc_popstr (__FUNCTION__);
+   if (strcmp (s, r) == 0) ycalc_pushval (__FUNCTION__, TRUE );
+   else                    ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_snotequal    (void)
+{
+   r = ycalc_popstr (__FUNCTION__);
+   s = ycalc_popstr (__FUNCTION__);
+   if (strcmp (s, r) != 0) ycalc_pushval (__FUNCTION__, TRUE );
+   else                    ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_slesser      (void)
+{
+   r = ycalc_popstr (__FUNCTION__);
+   s = ycalc_popstr (__FUNCTION__);
+   if (strcmp (s, r) <  0) ycalc_pushval (__FUNCTION__, TRUE );
+   else                    ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_sgreater     (void)
+{
+   r = ycalc_popstr (__FUNCTION__);
+   s = ycalc_popstr (__FUNCTION__);
+   if (strcmp (s, r) >  0) ycalc_pushval (__FUNCTION__, TRUE );
+   else                    ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                       logical operators                      ----===*/
+/*====================------------------------------------====================*/
+static void  o___LOGICAL_________o () { return; }
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_not          (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, !a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_and          (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, b && a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_or           (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, b || a);
+   return;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                         logic functions                      ----===*/
+/*====================------------------------------------====================*/
+void  o___LOGIC___________o () { return; }
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_if            (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   c = ycalc_popval (__FUNCTION__);
+   if (c) ycalc_pushval (__FUNCTION__, b);
+   else   ycalc_pushval (__FUNCTION__, a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.000.23]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_ifs           (void)
+{
+   r = ycalc_popstr (__FUNCTION__);
+   s = ycalc_popstr (__FUNCTION__);
+   c = ycalc_popval (__FUNCTION__);
+   if (c) ycalc_pushstr (__FUNCTION__, s);
+   else   ycalc_pushstr (__FUNCTION__, r);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_within        (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   c = ycalc_popval (__FUNCTION__);
+   if (c >= b && c <= a) ycalc_pushval (__FUNCTION__, TRUE);
+   else                  ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_approx        (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   c = ycalc_popval (__FUNCTION__);
+   if (c >= (b - a) && c <= (b + a)) ycalc_pushval (__FUNCTION__, TRUE);
+   else                              ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+
+
