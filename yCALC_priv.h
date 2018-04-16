@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.1a"
-#define YCALC_VER_TXT   "yCALC_exec and yCALC_build unit tested with basic math operators"
+#define YCALC_VER_NUM   "0.1b"
+#define YCALC_VER_TXT   "unit tests complete on all basic arithmetic"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
