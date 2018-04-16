@@ -31,6 +31,7 @@ tMOCK   s_mocks     [100] = {
    { "1a3"       , 's' ,     0.00, NULL            ,   0,   2,   1,   NULL },
    { "1a4"       , 's' ,     0.00, NULL            ,   0,   3,   1,   NULL },
    { "0b1"       , 's' ,     0.00, NULL            ,   1,   0,   0,   NULL },
+   { "0c1"       , 's' ,     0.00, NULL            ,   2,   0,   0,   NULL },
    { "0d3"       , 's' ,     0.00, NULL            ,   4,   4,   0,   NULL },
    /*---(two-way dependency testing)----------------*/
    { "0f6"       , 's' ,     0.00, NULL            ,   5,   5,   0,   NULL },
@@ -272,10 +273,10 @@ ycalc__unit_mock        (char *a_question, char *a_label)
    if (x_deproot == NULL)  strlcpy (x_dnote , "-----"   , LEN_LABEL);
    else                    strlcpy (x_dnote , "enabled" , LEN_LABEL);
 
-   if      (x_owner == NULL)              strlcpy (x_string, "-", LEN_LABEL);
-   else if (x_owner->string == NULL)      strlcpy (x_string, "-", LEN_LABEL);
-   else if (x_owner->string [0] == NULL)  strlcpy (x_string, "-", LEN_LABEL);
-   else                                   strlcpy (x_string, x_owner->string, LEN_LABEL);
+   if      (x_owner == NULL)              strlcpy (x_string, "", LEN_RECD );
+   else if (x_owner->string == NULL)      strlcpy (x_string, "", LEN_RECD );
+   else if (x_owner->string [0] == NULL)  strlcpy (x_string, "", LEN_RECD );
+   else                                   strlcpy (x_string, x_owner->string, LEN_RECD );
    if      (x_owner == NULL)              x_value = 0.0;
    else                                   x_value = x_owner->value;
    /*---(dependency list)----------------*/
@@ -283,7 +284,7 @@ ycalc__unit_mock        (char *a_question, char *a_label)
       snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock status: %-5s %-8s %-10s %s", x_label, x_rnote, x_onote, x_dnote);
    }
    else if (strcmp (a_question, "value"    )      == 0) {
-      snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock value : %-5s %8.2lf %-.35s", x_label, x_value, x_string);
+      snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock value : %-5s %8.2lf :%-.45s:", x_label, x_value, x_string);
    }
    /*---(complete)-----------------------*/
    return ycalc__unit_answer;

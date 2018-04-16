@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.1e"
-#define YCALC_VER_TXT   "string concatenation is unit tested"
+#define YCALC_VER_NUM   "0.1f"
+#define YCALC_VER_TXT   "string len, left, right, and mid are unit tested"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
