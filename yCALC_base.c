@@ -15,12 +15,6 @@ char       *q, *r, *s;
 char        t           [LEN_RECD];
 char        g_nada       [5] = "";
 
-char        s_narg        = 0;
-int         s_nerror      = 0;
-int         s_nbuild      = 0;
-int         s_neval       = 0;
-int         errornum;
-char        errorstr      [LEN_RECD];
 
 
 

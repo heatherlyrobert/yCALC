@@ -69,7 +69,6 @@ ycalc__seq_add          (char a_level, tDEP_ROOT *a_deproot)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;
-   char        x_label     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_senter  (__FUNCTION__);
    /*---(defense : level)----------------*/
@@ -86,8 +85,7 @@ ycalc__seq_add          (char a_level, tDEP_ROOT *a_deproot)
       DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
       return rce;
    }
-   DEBUG_CALC   strlcpy (x_label, g_labeler (a_deproot->owner), LEN_LABEL);
-   DEBUG_CALC   yLOG_sinfo   ("label"     , x_label);
+   DEBUG_CALC   yLOG_sinfo   ("label"     , g_labeler (a_deproot->owner));
    DEBUG_CALC   yLOG_spoint  (myCALC.rroot);
    --rce;  if (a_deproot == myCALC.rroot) {
       DEBUG_CALC   yLOG_snote   ("cell is root");
@@ -135,7 +133,6 @@ ycalc__seq_del          (tDEP_ROOT *a_deproot)
    /*---(locals)-----------+-----------+-*/
    char        x_level     = 0;
    char        rce         = -10;
-   char        x_label     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_senter  (__FUNCTION__);
    /*---(defense : cell)-----------------*/
@@ -145,8 +142,7 @@ ycalc__seq_del          (tDEP_ROOT *a_deproot)
       DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
       return rce;
    }
-   DEBUG_CALC   strlcpy (x_label, g_labeler (a_deproot->owner), LEN_LABEL);
-   DEBUG_CALC   yLOG_sinfo   ("label"     , x_label);
+   DEBUG_CALC   yLOG_sinfo   ("label"     , g_labeler (a_deproot->owner));
    /*---(defense : unassigned)-----------*/
    x_level = a_deproot->slevel;
    DEBUG_CALC   yLOG_svalue  ("x_level"   , x_level);
@@ -184,7 +180,6 @@ ycalc__seq_recursion    (int a_level, tDEP_LINK *a_dep, char a_dir, long a_stamp
    tDEP_LINK  *x_dep       = NULL;
    tDEP_ROOT  *x_curr      = NULL;
    char        rc          = 0;
-   char        x_label     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    DEBUG_CALC   yLOG_value   ("a_level"   , a_level);
@@ -205,8 +200,7 @@ ycalc__seq_recursion    (int a_level, tDEP_LINK *a_dep, char a_dir, long a_stamp
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return 0;
    }
-   DEBUG_CALC   strlcpy (x_label, g_labeler (x_curr->owner), LEN_LABEL);
-   DEBUG_CALC   yLOG_info    ("curr label", x_label);
+   DEBUG_CALC   yLOG_info    ("curr label", g_labeler (x_curr->owner));
    /*---(calculate)----------------------*/
    if (x_curr->u != a_stamp) {
       DEBUG_CALC   yLOG_note    ("stamp does not match");
@@ -259,7 +253,6 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, l
    int         x_tot       = 0;
    int         x_off       = 0;
    int         x_seq       = 0;
-   char        x_label     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    DEBUG_CALC   yLOG_char    ("a_dir_rec" , a_dir_rec);
@@ -273,8 +266,7 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, l
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   DEBUG_CALC   strlcpy (x_label, g_labeler (a_deproot->owner), LEN_LABEL);
-   DEBUG_CALC   yLOG_sinfo   ("label"     , x_label);
+   DEBUG_CALC   yLOG_sinfo   ("label"     , g_labeler (a_deproot->owner));
    DEBUG_CALC   yLOG_value   ("npro"  , a_deproot->npro);
    DEBUG_CALC   yLOG_value   ("nreq"  , a_deproot->nreq);
    g_consumer = a_consumer;
@@ -356,7 +348,6 @@ ycalc__seq_list    (char *a_list)
    /*---(locals)-----------+-----------+-*/
    int         i           = 0;
    tDEP_ROOT  *x_curr      = NULL;
-   char        x_label     [LEN_LABEL];
    /*---(defenses)--------------------*/
    if (a_list  == NULL) return -1;     /* then no point                       */
    /*---(walk the list)---------------*/
@@ -364,8 +355,7 @@ ycalc__seq_list    (char *a_list)
    for (i = 0; i <= s_max; ++i) {
       x_curr = s_heads [i];
       while (x_curr != NULL) {
-         strlcpy (x_label, g_labeler (x_curr->owner), LEN_LABEL);
-         strncat (a_list, x_label, LEN_RECD);
+         strncat (a_list, g_labeler (x_curr->owner), LEN_RECD);
          strncat (a_list, ",", LEN_RECD);
          x_curr = x_curr->snext;
       }

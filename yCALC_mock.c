@@ -10,20 +10,9 @@
 /*====================------------------------------------====================*/
 static void      o___MOCK____________________o (void) {;}
 
-typedef struct cMOCK  tMOCK;
-struct  cMOCK {
-   char        label       [LEN_LABEL];
-   char        type;
-   double      value;
-   char        string      [LEN_RECD ];
-   int         x;
-   int         y;
-   int         z;
-   void       *ycalc;
-};
-static tMOCK   s_mocks     [100] = {
+tMOCK   s_mocks     [100] = {
    /*---(root)--------------------------------------*/
-   { "ROOT"      , 'n' ,     1.00, ""              ,  -1,  -1,  -1,   NULL },
+   { "ROOT"      , 'n' ,     0.00, ""              ,  -1,  -1,  -1,   NULL },
    /*---(done)--------------------------------------*/
    { "0a1"       , 'n' ,     1.00, ""              ,   0,   0,   0,   NULL },
    { "0a2"       , 'n' ,     2.00, ""              ,   0,   1,   0,   NULL },
@@ -31,23 +20,23 @@ static tMOCK   s_mocks     [100] = {
    { "0a4"       , 'n' ,     4.00, ""              ,   0,   3,   0,   NULL },
    { "0a5"       , 'n' ,     5.00, ""              ,   0,   4,   0,   NULL },
    { "0a6"       , 'n' ,     6.00, ""              ,   0,   5,   0,   NULL },
-   { "0a7"       , 'n' ,     6.00, ""              ,   0,   6,   0,   NULL },
-   { "0a8"       , 'n' ,     6.00, ""              ,   0,   7,   0,   NULL },
-   { "0a9"       , 'n' ,     6.00, ""              ,   0,   8,   0,   NULL },
+   { "0a7"       , 'n' ,     7.00, ""              ,   0,   6,   0,   NULL },
+   { "0a8"       , 'n' ,     8.00, ""              ,   0,   7,   0,   NULL },
+   { "0a9"       , 'n' ,     9.00, ""              ,   0,   8,   0,   NULL },
    { "0a10"      , 'n' ,    10.00, ""              ,   0,   9,   0,   NULL },
    { "0a30"      , 'n' ,    30.00, ""              ,   0,  29,   0,   NULL },
    { "0a42"      , 'n' ,    42.00, ""              ,   0,  41,   0,   NULL },
-   { "1a1"       , 's' ,     0.00, "one"           ,   0,   0,   1,   NULL },
-   { "1a2"       , 's' ,     0.00, "onetwo"        ,   0,   1,   1,   NULL },
-   { "1a3"       , 's' ,     0.00, "two"           ,   0,   2,   1,   NULL },
-   { "1a4"       , 's' ,     0.00, "three"         ,   0,   3,   1,   NULL },
+   { "1a1"       , 's' ,     0.00, ""              ,   0,   0,   1,   NULL },
+   { "1a2"       , 's' ,     0.00, ""              ,   0,   1,   1,   NULL },
+   { "1a3"       , 's' ,     0.00, ""              ,   0,   2,   1,   NULL },
+   { "1a4"       , 's' ,     0.00, ""              ,   0,   3,   1,   NULL },
    /*---(two-way dependency testing)----------------*/
-   { "0f6"       , 's' ,     0.00, "one"           ,   5,   5,   0,   NULL },
-   { "0f7"       , 's' ,     0.00, "two"           ,   5,   6,   0,   NULL },
-   { "0g6"       , 's' ,     0.00, "three"         ,   6,   5,   0,   NULL },
-   { "0g7"       , 's' ,     0.00, "four"          ,   6,   6,   0,   NULL },
-   { "0h8"       , 's' ,     0.00, "five"          ,   7,   7,   0,   NULL },
-   { "0k11"      , 's' ,     0.00, "nine"          ,  10,  10,   0,   NULL },
+   { "0f6"       , 's' ,     0.00, ""              ,   5,   5,   0,   NULL },
+   { "0f7"       , 's' ,     0.00, ""              ,   5,   6,   0,   NULL },
+   { "0g6"       , 's' ,     0.00, ""              ,   6,   5,   0,   NULL },
+   { "0g7"       , 's' ,     0.00, ""              ,   6,   6,   0,   NULL },
+   { "0h8"       , 's' ,     0.00, ""              ,   7,   7,   0,   NULL },
+   { "0k11"      , 's' ,     0.00, ""              ,  10,  10,   0,   NULL },
    /*---(done)--------------------------------------*/
    { ""          , 'n' ,     0.00, ""              ,   0,   0,   0,   NULL },
 };
@@ -210,6 +199,8 @@ char
 ycalc__mock_valuer      (void *a_owner, char *a_type, double *a_value, char **a_string)
 {
    tMOCK      *x_mock      = NULL;
+   DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
+   DEBUG_DEPS   yLOG_spoint  (a_owner);
    if (a_type   != NULL)  *a_type   = '-';
    if (a_value  != NULL)  *a_value  = 0.0;
    if (a_string != NULL)  *a_string = g_nada;
@@ -218,6 +209,10 @@ ycalc__mock_valuer      (void *a_owner, char *a_type, double *a_value, char **a_
    if (a_type   != NULL)  *a_type   = x_mock->type;
    if (a_value  != NULL)  *a_value  = x_mock->value;
    if (a_string != NULL)  *a_string = x_mock->string;
+   DEBUG_DEPS   yLOG_schar   (x_mock->type);
+   DEBUG_DEPS   yLOG_sdouble (x_mock->value);
+   DEBUG_DEPS   yLOG_snote   (x_mock->string);
+   DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -248,27 +243,39 @@ ycalc__unit_mock        (char *a_question, char *a_label)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
-   void       *x_owner     = NULL;
+   tMOCK      *x_owner     = NULL;
    tDEP_ROOT  *x_deproot   = NULL;
    char        x_label     [LEN_LABEL];
    char        x_rnote     [LEN_LABEL];
    char        x_onote     [LEN_LABEL];
    char        x_dnote     [LEN_LABEL];
+   char        x_string    [LEN_RECD ];
+   double      x_value     =  0.0;
    /*---(preprare)-----------------------*/
    strcpy (ycalc__unit_answer, "yCALC            : question not understood");
    if (a_label == NULL)   strlcpy (x_label, "---"  , LEN_LABEL);
    else                   strlcpy (x_label, a_label, LEN_LABEL);
    rc = ycalc__mock_who_named (x_label, &x_owner, &x_deproot);
-   if (rc        <  0   )  strlcpy (x_rnote, "error"   , LEN_LABEL);
-   else                    strlcpy (x_rnote, "good"    , LEN_LABEL);
-   if (x_owner   == NULL)  strlcpy (x_onote, "-----"   , LEN_LABEL);
-   else                    strlcpy (x_onote, "exists"  , LEN_LABEL);
-   if (x_deproot == NULL)  strlcpy (x_dnote, "-----"   , LEN_LABEL);
-   else                    strlcpy (x_dnote, "enabled" , LEN_LABEL);
+   if (rc        <  0   )  strlcpy (x_rnote , "error"   , LEN_LABEL);
+   else                    strlcpy (x_rnote , "good"    , LEN_LABEL);
+   if (x_owner   == NULL)  strlcpy (x_onote , "-----"   , LEN_LABEL);
+   else                    strlcpy (x_onote , "exists"  , LEN_LABEL);
+   if (x_deproot == NULL)  strlcpy (x_dnote , "-----"   , LEN_LABEL);
+   else                    strlcpy (x_dnote , "enabled" , LEN_LABEL);
 
+   if      (x_owner == NULL)              strlcpy (x_string, "-", LEN_LABEL);
+   else if (x_owner->string == NULL)      strlcpy (x_string, "-", LEN_LABEL);
+   else if (x_owner->string [0] == NULL)  strlcpy (x_string, "-", LEN_LABEL);
+   else                                   strlcpy (x_string, x_owner->string, LEN_LABEL);
+   if      (x_owner == NULL)              x_value = 0.0;
+   else if (x_owner->string == NULL)      x_value = 0.0;
+   else                                   x_value = x_owner->value;
    /*---(dependency list)----------------*/
    if      (strcmp (a_question, "status"   )      == 0) {
       snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock status: %-5s %-8s %-10s %s", x_label, x_rnote, x_onote, x_dnote);
+   }
+   else if (strcmp (a_question, "value"    )      == 0) {
+      snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock value : %-5s %8.2lf %-.35s", x_label, x_value, x_string);
    }
    /*---(complete)-----------------------*/
    return ycalc__unit_answer;

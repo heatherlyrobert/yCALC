@@ -400,7 +400,7 @@ ycalc__build_char       (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    DEBUG_CALC   yLOG_double  ("value"     , a_calc->v);
    /*---(update type)--------------------*/
    DEBUG_CALC   yLOG_note    ("mark type");
-   a_calc->t = 'v';
+   a_calc->t = G_TYPE_VAL;
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 1;
@@ -424,7 +424,7 @@ ycalc__build_string     (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    DEBUG_CALC   yLOG_info    ("string"    , a_calc->s);
    /*---(update type)--------------------*/
    DEBUG_CALC   yLOG_note    ("mark type");
-   a_calc->t = 's';
+   a_calc->t = G_TYPE_STR;
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 1;
@@ -440,10 +440,7 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    int         x_end, y_end, z_end;
    /*---(check for range operator)-------*/
    DEBUG_CALC   yLOG_note    ("check for range operator");
-   if      (a_token [0] == ':')            x_good = 'y';
-   else if (a_token [0] == ';')            x_good = 'y';
-   else if (strcmp (a_token, "..") == 0)   x_good = 'y';
-   if (x_good != 'y')  return  0;
+   if (strcmp (a_token, "..") != 0)    return 0;
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(get starting point)-------------*/
@@ -470,7 +467,7 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    }
    /*---(update type)--------------------*/
    DEBUG_CALC   yLOG_note    ("mark type");
-   a_calc->t = 'x';
+   a_calc->t = G_TYPE_NOOP;
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 1;
@@ -489,15 +486,10 @@ ycalc__build_function   (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    char        rc          =    0;
    int         x_len       =    0;
    int         i           =    0;
-   char       *x_valid     = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+   /*> char       *x_valid     = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";   <*/
    /*---(check for function)-------------*/
    DEBUG_CALC   yLOG_note    ("check for function");
    x_len = strlen (a_token);
-   if (strchr ("0123456789", a_token [0]) != NULL) return 0;
-   for (i = 0; i < x_len; ++i) {
-      if (strchr (x_valid, a_token [i]) != NULL)  continue;
-      return 0;
-   }
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(locate function)----------------*/
@@ -516,7 +508,7 @@ ycalc__build_function   (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
       a_calc->f = g_funcs[i].f;
       /*---(update type)-----------------*/
       DEBUG_CALC   yLOG_note    ("mark type");
-      a_calc->t = 'f';
+      a_calc->t = G_TYPE_FUNC;
       /*---(complete)--------------------*/
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return 1;
@@ -554,7 +546,7 @@ ycalc__build_reference  (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    }
    /*---(update type)-----------------*/
    DEBUG_CALC   yLOG_note    ("mark type");
-   a_calc->t = 'r';
+   a_calc->t = G_TYPE_REF;
    /*---(complete)--------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 1;
@@ -582,7 +574,7 @@ ycalc__build_value      (tDEP_ROOT *a_thing, tCALC *a_calc, char *a_token)
    DEBUG_CALC   yLOG_double  ("value"     , a_calc->v);
    /*---(update type)-----------------*/
    DEBUG_CALC   yLOG_note    ("mark type");
-   a_calc->t = 'v';
+   a_calc->t = G_TYPE_VAL;
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 1;

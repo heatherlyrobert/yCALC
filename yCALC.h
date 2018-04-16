@@ -46,6 +46,9 @@ char        yCALC_range             (void *a_source, int x1, int y1, int z1, int
 
 char        yCALC_build             (char *a_label, char *a_rpn, char *a_notice);
 
+char        yCALC_exec              (void *a_deproot, char a_type, double *a_value, char **a_string);
+char        yCALC_exec_label        (char *a_label, char a_type, double *a_value, char **a_string);
+
 char        yCALC_seq_up            (void *a_deproot, void *a_consumer);
 char        yCALC_seq_down          (void *a_deproot, void *a_consumer);
 char        yCALC_seq_full          (void *a_consumer);

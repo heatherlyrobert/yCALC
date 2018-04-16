@@ -421,18 +421,15 @@ ycalc__deps_create_req  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
    char        rc          =    0;
    tDEP_LINK  *x_next      = NULL;          /* iterator -- dependency lists   */
    tDEP_LINK  *x_req       = NULL;          /* new requires entry             */
-   char        x_label     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(check for existing requires)----*/
-   DEBUG_DEPS   strlcpy (x_label, g_labeler (a_source->owner), LEN_LABEL);
-   DEBUG_DEPS   yLOG_info    ("src label" , x_label);
+   DEBUG_DEPS   yLOG_info    ("src label" , g_labeler (a_source->owner));
    DEBUG_DEPS   yLOG_value   ("src nreqs" , a_source->nreq);
    x_next = a_source->reqs;
    DEBUG_DEPS   yLOG_value   ("src head"  , a_source->reqs);
    while (x_next != NULL) {
-      DEBUG_DEPS   strlcpy (x_label, g_labeler (x_next->source->owner), LEN_LABEL);
-      DEBUG_DEPS   yLOG_info    ("trg label" , x_label);
+      DEBUG_DEPS   yLOG_info    ("trg label" , g_labeler (x_next->source->owner));
       if (x_next->target == a_target) {
          DEBUG_DEPS   yLOG_note    ("found existing, done");
          DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
@@ -481,17 +478,14 @@ ycalc__deps_create_pro  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
    char        rc          =    0;
    tDEP_LINK  *x_next      = NULL;          /* iterator -- dependency lists   */
    tDEP_LINK  *x_pro       = NULL;          /* new requires entry             */
-   char        x_label     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(check for existing requires)----*/
-   DEBUG_DEPS   strlcpy (x_label, g_labeler (a_source->owner), LEN_LABEL);
-   DEBUG_DEPS   yLOG_info    ("src label" , x_label);
+   DEBUG_DEPS   yLOG_info    ("src label" , g_labeler (a_source->owner));
    DEBUG_DEPS   yLOG_value   ("src npros" , a_source->npro);
    x_next = a_source->pros;
    while (x_next != NULL) {
-      DEBUG_DEPS   strlcpy (x_label, g_labeler (x_next->source->owner), LEN_LABEL);
-      DEBUG_DEPS   yLOG_info    ("trg label" , x_label);
+      DEBUG_DEPS   yLOG_info    ("trg label" , g_labeler (x_next->source->owner));
       if (x_next->target == a_target) {
          DEBUG_DEPS   yLOG_note    ("found existing, done");
          DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
@@ -542,7 +536,6 @@ ycalc_deps_create       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
    char        x_index     =    0;          /* dependency type table index    */
    tDEP_LINK  *x_require   = NULL;    /* new requires entry                   */
    tDEP_LINK  *x_provide   = NULL;    /* new provides entry                   */
-   char        x_label     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(defense: null pointers)---------*/
@@ -552,16 +545,14 @@ ycalc_deps_create       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
       DEBUG_DEPS yLOG_exit      (__FUNCTION__);
       return rce;
    }
-   DEBUG_DEPS   strlcpy (x_label, g_labeler (a_source->owner), LEN_LABEL);
-   DEBUG_DEPS   yLOG_info    ("src label" , x_label);
+   DEBUG_DEPS   yLOG_info    ("src label" , g_labeler (a_source->owner));
    DEBUG_DEPS   yLOG_point   ("a_target"  , a_target);
    --rce;  if (a_target     == NULL)   {
       DEBUG_DEPS yLOG_note      ("target is null");
       DEBUG_DEPS yLOG_exit      (__FUNCTION__);
       return rce;
    }
-   DEBUG_DEPS   strlcpy (x_label, g_labeler (a_target->owner), LEN_LABEL);
-   DEBUG_DEPS   yLOG_info    ("trg label" , x_label);
+   DEBUG_DEPS   yLOG_info    ("trg label" , g_labeler (a_target->owner));
    /*---(defense: linking back to root)--*/
    --rce;  if (a_target     == myCALC.rroot)  {
       DEBUG_DEPS yLOG_note      ("can not route back to root");
@@ -692,17 +683,14 @@ ycalc__deps_delete_req  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
    char        rc          = 0;
    tDEP_LINK  *x_next      = NULL;          /* iterator -- dependency lists   */
    tDEP_LINK  *x_req       = NULL;          /* new requires entry             */
-   char        x_label     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(check for existing requires)----*/
-   DEBUG_DEPS   strlcpy (x_label, g_labeler (a_source->owner), LEN_LABEL);
-   DEBUG_DEPS   yLOG_info    ("src label" , x_label);
+   DEBUG_DEPS   yLOG_info    ("src label" , g_labeler (a_source->owner));
    DEBUG_DEPS   yLOG_value   ("src nreqs" , a_source->nreq);
    x_next = a_source->reqs;
    --rce; while (x_next != NULL) {
-      DEBUG_DEPS   strlcpy (x_label, g_labeler (x_next->target->owner), LEN_LABEL);
-      DEBUG_DEPS   yLOG_info    ("trg label" , x_label);
+      DEBUG_DEPS   yLOG_info    ("trg label" , g_labeler (x_next->target->owner));
       if (x_next->target == a_target) {
          DEBUG_DEPS   yLOG_note    ("found existing");
          rc = ycalc__deps_free (&x_next);
@@ -733,17 +721,14 @@ ycalc__deps_delete_pro  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
    char        rc          = 0;
    tDEP_LINK  *x_next      = NULL;          /* iterator -- dependency lists   */
    tDEP_LINK  *x_req       = NULL;          /* new requires entry             */
-   char        x_label     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(check for existing requires)----*/
-   DEBUG_DEPS   strlcpy (x_label, g_labeler (a_source->owner), LEN_LABEL);
-   DEBUG_DEPS   yLOG_info    ("src label" , x_label);
+   DEBUG_DEPS   yLOG_info    ("src label" , g_labeler (a_source->owner));
    DEBUG_DEPS   yLOG_value   ("nprovide"  , a_source->npro);
    x_next = a_source->pros;
    --rce; while (x_next != NULL) {
-      DEBUG_DEPS   strlcpy (x_label, g_labeler (x_next->target->owner), LEN_LABEL);
-      DEBUG_DEPS   yLOG_info    ("trg label" , x_label);
+      DEBUG_DEPS   yLOG_info    ("trg label" , g_labeler (x_next->target->owner));
       if (x_next->target == a_target) {
          DEBUG_DEPS   yLOG_note    ("found existing");
          rc = ycalc__deps_free (&x_next);
@@ -781,7 +766,6 @@ ycalc_deps_delete       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
    char        x_index     =    0;          /* dependency type table index    */
    tDEP_LINK  *x_require   = NULL;    /* new requires entry                   */
    tDEP_LINK  *x_provide   = NULL;    /* new provides entry                   */
-   char        x_label     [LEN_LABEL];
    char        x_type      =  ' ';
    /*---(defense: null pointers)---------*/
    DEBUG_DEPS   yLOG_point   ("a_source"  , a_source);
@@ -790,8 +774,7 @@ ycalc_deps_delete       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
       DEBUG_DEPS yLOG_exit      (__FUNCTION__);
       return rce; 
    }
-   DEBUG_DEPS   strlcpy (x_label, g_labeler (a_source->owner), LEN_LABEL);
-   DEBUG_DEPS   yLOG_info    ("src label" , x_label);
+   DEBUG_DEPS   yLOG_info    ("src label" , g_labeler (a_source->owner));
    DEBUG_DEPS   yLOG_value   ("nreq"  , a_source->nreq);
    DEBUG_DEPS   yLOG_point   ("a_target"  , a_target);
    --rce;  if (a_target     == NULL)   {
@@ -799,8 +782,7 @@ ycalc_deps_delete       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
       DEBUG_DEPS yLOG_exit      (__FUNCTION__);
       return rce;
    }
-   DEBUG_DEPS   strlcpy (x_label, g_labeler (a_target->owner), LEN_LABEL);
-   DEBUG_DEPS   yLOG_info    ("trg label" , x_label);
+   DEBUG_DEPS   yLOG_info    ("trg label" , g_labeler (a_target->owner));
    DEBUG_DEPS   yLOG_value   ("nprovide"  , a_target->npro);
    /*---(defense: linking back to root)--*/
    --rce;  if (a_target     == myCALC.rroot)  {
@@ -946,7 +928,6 @@ ycalc__deps_rooting     (tDEP_ROOT *a_curr, char a_type)
    tDEP_LINK  *x_next      = NULL;
    int         x_norms     = 0;
    int         x_roots     = 0;
-   char        x_label     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(defenses)-----------------------*/
@@ -1009,8 +990,7 @@ ycalc__deps_rooting     (tDEP_ROOT *a_curr, char a_type)
    --rce;
    x_next = a_curr->pros;
    while (x_next != NULL) {
-      DEBUG_DEPS   strlcpy (x_label, g_labeler (x_next->target->owner), LEN_LABEL);
-      DEBUG_DEPS   yLOG_info    ("owned by"  , x_label);
+      DEBUG_DEPS   yLOG_info    ("owned by"  , g_labeler (x_next->target->owner));
       if (x_next->target != myCALC.rroot)  ++x_norms;
       else                          ++x_roots;
       x_next = x_next->next;
@@ -1066,7 +1046,6 @@ ycalc__deps_circle (int a_level, tDEP_ROOT *a_source, tDEP_ROOT *a_target, long 
    char        rce         =  -10;
    tDEP_LINK  *x_next      = NULL;
    char        rc          =    0;
-   char        x_label     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    DEBUG_DEPS   yLOG_value   ("a_level"   , a_level);
@@ -1077,8 +1056,7 @@ ycalc__deps_circle (int a_level, tDEP_ROOT *a_source, tDEP_ROOT *a_target, long 
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
       return  rce;
    }
-   DEBUG_DEPS   strlcpy (x_label, g_labeler (a_source->owner), LEN_LABEL);
-   DEBUG_DEPS   yLOG_info    ("label"     , x_label);
+   DEBUG_DEPS   yLOG_info    ("label"     , g_labeler (a_source->owner));
    DEBUG_DEPS   yLOG_point   ("a_target"  , a_target);
    --rce;  if (a_target   == NULL)  {
       DEBUG_DEPS   yLOG_info    ("FAILED"    , "target pointer is null");
@@ -1090,8 +1068,7 @@ ycalc__deps_circle (int a_level, tDEP_ROOT *a_source, tDEP_ROOT *a_target, long 
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   DEBUG_DEPS   strlcpy (x_label, g_labeler (a_target->owner), LEN_LABEL);
-   DEBUG_DEPS   yLOG_info    ("label"     , x_label);
+   DEBUG_DEPS   yLOG_info    ("label"     , g_labeler (a_target->owner));
    --rce;  if (a_level  >= MAX_DEP) {
       DEBUG_DEPS   yLOG_info    ("FAILED"    , "past max depth");
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
@@ -1111,8 +1088,7 @@ ycalc__deps_circle (int a_level, tDEP_ROOT *a_source, tDEP_ROOT *a_target, long 
    x_next = a_source->reqs;
    while (x_next != NULL) {
       /*---(recurse to child)------------*/
-      DEBUG_DEPS   strlcpy (x_label, g_labeler (x_next->target->owner), LEN_LABEL);
-      DEBUG_DEPS   yLOG_info    ("label"     , x_label);
+      DEBUG_DEPS   yLOG_info    ("label"     , g_labeler (x_next->target->owner));
       rc = ycalc__deps_circle (a_level + 1, x_next->target, a_target, a_stamp);
       if (rc < 0) {
          DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
@@ -1141,7 +1117,6 @@ ycalc_deps_wipe         (tDEP_ROOT *a_deproot)
    tDEP_LINK  *x_save      = NULL;
    char        rce         =  -10;
    char        rc          = 0;
-   char        x_label     [LEN_LABEL];
    /*---(begin)--------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    DEBUG_DEPS   yLOG_point   ("a_deproot" , a_deproot);
@@ -1152,15 +1127,13 @@ ycalc_deps_wipe         (tDEP_ROOT *a_deproot)
       return rce;
    }
    /*---(reqs)---------------------------*/
-   DEBUG_DEPS   strlcpy (x_label, g_labeler (a_deproot->owner), LEN_LABEL);
-   DEBUG_DEPS   yLOG_info    ("owned by"  , x_label);
+   DEBUG_DEPS   yLOG_info    ("owned by"  , g_labeler (a_deproot->owner));
    DEBUG_DEPS   yLOG_value   ("nreq"      , a_deproot->nreq);
    x_next = a_deproot->reqs;
    while (x_next != NULL) {
       DEBUG_DEPS    yLOG_point   ("x_next"      , x_next);
       x_save = x_next->next;
-      DEBUG_DEPS   strlcpy (x_label, g_labeler (x_next->target->owner), LEN_LABEL);
-      DEBUG_DEPS   yLOG_complex ("target"    , "ptr=%9p, label=%s", x_next->target, x_label);
+      DEBUG_DEPS   yLOG_complex ("target"    , "ptr=%9p, label=%s", x_next->target, g_labeler (x_next->target->owner));
       rc = ycalc_deps_delete (x_next->type, a_deproot, x_next->target);
       DEBUG_DEPS   yLOG_value   ("nreq"      , a_deproot->nreq);
       x_next = x_save;
@@ -1170,10 +1143,9 @@ ycalc_deps_wipe         (tDEP_ROOT *a_deproot)
    DEBUG_DEPS   yLOG_point   ("pros"      , a_deproot->pros);
    if (a_deproot->npro == 1) {
       DEBUG_DEPS   yLOG_point   ("source"    , a_deproot->pros->source);
-      DEBUG_DEPS   strlcpy (x_label, g_labeler (a_deproot->pros->source->owner), LEN_LABEL);
-      DEBUG_DEPS   yLOG_info    ("label"     , x_label);
+      DEBUG_DEPS   yLOG_info    ("label"     , g_labeler (a_deproot->pros->source->owner));
       DEBUG_DEPS   yLOG_point   ("target"    , a_deproot->pros->target);
-      DEBUG_DEPS   strlcpy (x_label, g_labeler (a_deproot->pros->target->owner), LEN_LABEL);
+      DEBUG_DEPS   yLOG_info    ("label"     , g_labeler (a_deproot->pros->target->owner));
       DEBUG_DEPS   yLOG_point   ("rroot"     , myCALC.rroot);
       if (a_deproot->pros->target == myCALC.rroot) {
          DEBUG_DEPS   yLOG_note    ("unrooting");
@@ -1202,7 +1174,6 @@ yCALC_range      (void *a_source, int x1, int y1, int z1, int x2, int y2, int z2
    char        rc          = 0;             /* generic return code character  */
    char        rce         = -10;           /* return code for errors         */
    char        rce_save    = 0;             /* saved rce value for backout    */
-   char        x_label     [LEN_LABEL];
    /*---(begin)--------------------------*/
    DEBUG_DEPS    yLOG_enter   (__FUNCTION__);
    DEBUG_DEPS    yLOG_point   ("a_source"    , a_source);
@@ -1227,8 +1198,7 @@ yCALC_range      (void *a_source, int x1, int y1, int z1, int x2, int y2, int z2
       return rce;
    }
    /*---(setup dependencies)-------------*/
-   DEBUG_DEPS   strlcpy (x_label, g_labeler (x_source->owner), LEN_LABEL);
-   DEBUG_DEPS   yLOG_info    ("source"    , x_label);
+   DEBUG_DEPS   yLOG_info    ("source"    , g_labeler (x_source->owner));
    --rce;
    for (y_pos = y1; y_pos <= y2; ++y_pos) {
       for (x_pos = x1; x_pos <= x2; ++x_pos) {
@@ -1237,8 +1207,7 @@ yCALC_range      (void *a_source, int x1, int y1, int z1, int x2, int y2, int z2
          DEBUG_DEPS    yLOG_complex ("target"    , "col=%4d, row=%4d, ptr=%9p", x_pos, y_pos, x_target);
          if (x_target    == NULL)   continue;
          /*---(create dependency)--------*/
-         DEBUG_DEPS   strlcpy (x_label, g_labeler (x_target->owner), LEN_LABEL);
-         DEBUG_DEPS   yLOG_info    ("target"    , x_label);
+         DEBUG_DEPS   yLOG_info    ("target"    , g_labeler (x_target->owner));
          rc  = ycalc_deps_create (G_DEP_POINTER, x_source, x_target);
          if (rc  <  0)               { rce_save = rce - 3; break; }
       }

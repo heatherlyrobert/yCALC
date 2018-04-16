@@ -28,7 +28,6 @@ yCALC_enable            (void *a_owner)
    char        rce         =  -10;
    tDEP_ROOT  *x_deproot   = NULL;
    int         x_tries     =    0;
-   char        x_label     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -38,8 +37,7 @@ yCALC_enable            (void *a_owner)
       DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DEPS   strlcpy (x_label, g_labeler (a_owner), LEN_LABEL);
-   DEBUG_DEPS   yLOG_info    ("label"     , x_label);
+   DEBUG_DEPS   yLOG_info    ("label"     , g_labeler (a_owner));
    /*---(create)-------------------------*/
    DEBUG_DEPS   yLOG_snote   ("malloc");
    while (x_deproot == NULL && x_tries < 10) {
@@ -105,7 +103,6 @@ yCALC_disable           (void *a_deproot)
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
    tDEP_ROOT*  x_deproot   = NULL;
-   char        x_label     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -117,8 +114,7 @@ yCALC_disable           (void *a_deproot)
    }
    /*---(prepare)------------------------*/
    x_deproot = (tDEP_ROOT *) a_deproot;
-   DEBUG_DEPS   strlcpy (x_label, g_labeler (x_deproot->owner), LEN_LABEL);
-   DEBUG_DEPS   yLOG_info    ("label"     , x_label);
+   DEBUG_DEPS   yLOG_info    ("label"     , g_labeler (x_deproot->owner));
    /*---(wipe)---------------------------*/
    ycalc_calc_wipe     (x_deproot);
    ycalc_deps_wipe     (x_deproot);

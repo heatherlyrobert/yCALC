@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.0n"
-#define YCALC_VER_TXT   "updated yCALC_create and _delete to use labels.  also _unit_deps too"
+#define YCALC_VER_NUM   "0.1a"
+#define YCALC_VER_TXT   "yCALC_exec and yCALC_build unit tested with basic math operators"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -112,15 +112,6 @@ extern char        t           [LEN_RECD];
 extern char        g_nada      [5];
 
 #define  MAX   1000000000
-
-/*> PRIV   tCELL      *s_me;                                                          <*/
-extern char        s_narg;
-extern int         s_nerror;
-extern int         s_nbuild;
-extern int         s_neval;
-extern int         errornum;
-extern char        errorstr      [LEN_RECD];
-
 
 
 
@@ -226,6 +217,19 @@ extern char S_DEP_LIKE [10];
 
 
 
+typedef struct cMOCK  tMOCK;
+struct  cMOCK {
+   char        label       [LEN_LABEL];
+   char        type;
+   double      value;
+   char        string      [LEN_RECD ];
+   int         x;
+   int         y;
+   int         z;
+   void       *ycalc;
+};
+extern tMOCK   s_mocks     [100];
+
 /*===[[ ACCESSOR ]]===========================================================*/
 
 typedef struct cLOCAL tLOCAL;
@@ -268,9 +272,11 @@ extern  tLOCAL myCALC;
 
 
 #define     G_TYPE_EMPTY        '-'
-#define     G_TYPE_NUM          'n'
+#define     G_TYPE_VAL          'v'
 #define     G_TYPE_STR          's'
 #define     G_TYPE_REF          'r'
+#define     G_TYPE_FUNC         'f'
+#define     G_TYPE_NOOP         'x'
 
 
 
