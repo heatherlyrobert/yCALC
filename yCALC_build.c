@@ -18,6 +18,13 @@ tTERMS      s_terms [MAX_TERM] = {
    { '-' , "---"    , "-----"                          },
 };
 
+tyCALC_ERROR   yCALC_ERRORS     [100] = {
+   { G_ERROR_THING   , 'b', "#.badref"  , "" },
+   { G_ERROR_RANGE   , 'b', "#.badrng"  , "" },
+   { G_ERROR_DEPEND  , 'b', "#.baddep"  , "" },
+   { G_ERROR_TOKEN   , 'b', "#.badtok"  , "" },
+   { G_ERROR_UNKNOWN , 'b', "#.unknown" , "" },
+};
 
 
 /*====================------------------------------------====================*/
@@ -621,7 +628,7 @@ ycalc__build_step       (tDEP_ROOT *a_deproot, char *a_token)
 static void  o___DRIVER__________o () { return; }
 
 char
-yCALC_build             (char *a_label, char *a_rpn, char *a_notice)
+yCALC_build             (char *a_label, char *a_rpn, char **a_notice)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;

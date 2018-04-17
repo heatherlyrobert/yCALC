@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.1f"
-#define YCALC_VER_TXT   "string len, left, right, and mid are unit tested"
+#define YCALC_VER_NUM   "0.1g"
+#define YCALC_VER_TXT   "string trimming variations are unit tested"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -256,6 +256,14 @@ struct cLOCAL {
 };
 extern  tLOCAL myCALC;
 
+typedef   struct cyCALC_ERROR  tyCALC_ERROR;
+struct cyCALC_ERROR {
+   char        abbr;
+   char        phase;
+   char        terse       [LEN_LABEL];
+   char        desc        [LEN_DESC ];
+};
+extern tyCALC_ERROR   yCALC_ERRORS     [100];
 
 
 #define     G_NO_ERROR       '-'

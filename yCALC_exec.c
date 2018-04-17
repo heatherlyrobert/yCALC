@@ -450,7 +450,7 @@ ycalc__exec_wrap        (char a_type, double *a_value, char **a_string)
 static void      o___DRIVER__________________o (void) {;}
 
 char         /*-> evaluate a calculation -------------[ ------ [ge.J95.146.A6]*/ /*-[02.0000.204.!]-*/ /*-[--.---.---.--]-*/
-yCALC_exec             (void *a_deproot, char a_type, double *a_value, char **a_string)
+yCALC_exec             (void *a_deproot, char a_type, double *a_value, char **a_string, char **a_notice)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
@@ -509,7 +509,7 @@ yCALC_exec             (void *a_deproot, char a_type, double *a_value, char **a_
 }
 
 char         /*-> delete a two-way dependency --------[ ------ [ge.M88.15#.B6]*/ /*-[01.0000.526.H]-*/ /*-[--.---.---.--]-*/
-yCALC_exec_label        (char *a_label, char a_type, double *a_value, char **a_string)
+yCALC_exec_label        (char *a_label, char a_type, double *a_value, char **a_string, char **a_notice)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;
@@ -528,7 +528,7 @@ yCALC_exec_label        (char *a_label, char a_type, double *a_value, char **a_s
       return rce;
    }
    /*---(run)----------------------------*/
-   rc = yCALC_exec (x_deproot, a_type, a_value, a_string);
+   rc = yCALC_exec (x_deproot, a_type, a_value, a_string, a_notice);
    DEBUG_CALC   yLOG_value   ("exec"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
