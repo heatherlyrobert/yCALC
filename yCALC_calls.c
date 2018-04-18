@@ -7,12 +7,14 @@
 char    (*g_who_named)   (char *a_label      , void **a_owner, void **a_deproot);        /* pass label of thing, get back deproot of thing  */
 char    (*g_who_at   )   (int x, int y, int z, void **a_owner, void **a_deproot);  /* pass coordinates, get back deproot of thing     */
 
+char    (*g_consumer )   (void *a_owner, void *a_deproot, int a_seq, int a_lvl);
 char    (*g_enabler  )   (void *a_owner, void *a_deproot);
-char*   (*g_labeler  )   (void *a_owner);        /* pass deproot->owner, get back label of thing    */
 char    (*g_reaper   )   (void *a_owner);        /* pass deproot->owner, tries to kill thing        */
 
-char    (*g_valuer   )   (void *a_owner, char  *a_type   , double *a_value  , char   **a_string);
+char*   (*g_labeler  )   (void *a_owner);        /* pass deproot->owner, get back label of thing    */
 char    (*g_addresser)   (void *a_owner, int   *x        , int    *y        , int     *z);
+char    (*g_valuer   )   (void *a_owner, char *a_type, double *a_value  , char   **a_string);
+char    (*g_special  )   (void *a_owner, char  a_what, double *a_value , char   **a_string);
 
 
 

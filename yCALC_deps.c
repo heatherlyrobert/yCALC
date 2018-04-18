@@ -839,7 +839,7 @@ ycalc_deps_delete       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
       }
    }
    /*---(check on target)----------------*/
-   g_valuer (a_target, &x_type, NULL, NULL);
+   g_valuer (a_target->owner, &x_type, NULL, NULL);
    if        (a_source           == myCALC.rroot) {
       DEBUG_DEPS   yLOG_note    ("source was root, so this is unrooting, done");
    } else if (a_target->npro >  0) {
@@ -854,7 +854,7 @@ ycalc_deps_delete       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
       }
    } else if (x_type == '-') {
       DEBUG_DEPS   yLOG_note    ("target is a zombie and not required, delete");
-      rc = g_reaper (a_target);
+      rc = g_reaper (a_target->owner);
       /*> rc = CELL_delete (CHG_NOHIST, a_target->tab, a_target->col, a_target->row);   <*/
       if (rc != 0) {
          DEBUG_DEPS   yLOG_note    ("target could not be properly deleted");

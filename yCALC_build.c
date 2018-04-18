@@ -326,7 +326,10 @@ ycalc_calc_wipe         (tDEP_ROOT *a_deproot)
    a_deproot->ncalc = 0;
    a_deproot->cuse  = 0;
    /*---(rpn)----------------------------*/
+   DEBUG_CALC   yLOG_spoint  (a_deproot->rpn);
    if (a_deproot->rpn != NULL)  free (a_deproot->rpn);
+   a_deproot->rpn = NULL;
+   DEBUG_CALC   yLOG_spoint  (a_deproot->rpn);
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -368,6 +371,7 @@ ycalc__build_prepare    (tDEP_ROOT *a_deproot, char *a_rpn)
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   DEBUG_CALC   yLOG_info    ("a_rpn"     , a_rpn);
    /*---(clear the calculation)----------*/
    rc = ycalc_calc_wipe  (a_deproot);
    DEBUG_CALC   yLOG_value   ("calc"      , rc);
@@ -645,7 +649,7 @@ yCALC_build             (char *a_label, char *a_rpn, char **a_notice)
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_CALC   yLOG_value   ("x_deproot" , x_deproot);
+   DEBUG_CALC   yLOG_point   ("x_deproot" , x_deproot);
    --rce;  if (x_deproot == NULL) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;

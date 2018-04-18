@@ -9,6 +9,7 @@ static char    s_type    = '-';
 static double  s_value   = 0.0;
 static char   *s_string  = NULL;
 static int     x, y, z;
+static char    s_list    [LEN_RECD];
 
 
 
@@ -131,7 +132,7 @@ ycalc_exec_init          (void)
 }
 
 char
-yCALC_exec_config       (void *a_valuer, void *a_addresser)
+yCALC_exec_config       (void *a_valuer, void *a_addresser, void *a_special)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -156,8 +157,18 @@ yCALC_exec_config       (void *a_valuer, void *a_addresser)
    DEBUG_PROG   yLOG_point   ("addresser" , a_addresser);
    --rce;  if (a_addresser == NULL) {
       DEBUG_PROG   yLOG_warn    ("addresser" , "without this callback, a few functions may not be allowed");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
    g_addresser = a_addresser;
+   /*---(update special)---------------*/
+   DEBUG_PROG   yLOG_point   ("special" , a_special);
+   --rce;  if (a_special == NULL) {
+      DEBUG_PROG   yLOG_warn    ("special" , "without this callback, a few functions may not be allowed");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   g_special = a_special;
    /*---(update)-------------------------*/
    DEBUG_PROG   yLOG_note    ("updating status");
    myCALC.status_detail [3] = 'e';
@@ -320,6 +331,112 @@ ycalc_popstr            (char *a_func)
       g_valuer (x_deproot->owner, NULL, NULL, &s_string);
       if (s_string == NULL) return  strndup (g_nada  , LEN_RECD);
       else                  return  strndup (s_string, LEN_RECD);
+   }
+   /*---(complete)-----------------------*/
+   myCALC.trouble = G_ERROR_STACK;
+   return strndup (g_nada, LEN_RECD);
+}
+
+int          /*-> get an string off the stack --------[ ------ [fs.A40.20#.31]*/ /*-[02.0000.0#5.!]-*/ /*-[--.---.---.--]-*/
+ycalc_popval_plus       (char *a_func, char a_what)
+{
+   /*---(local)--------------------------*/
+   tDEP_ROOT  *x_deproot   = NULL;
+   /*---(prepare)------------------------*/
+   if (s_nstack <= 0) {
+      myCALC.trouble = G_ERROR_STACK;
+      return strndup (g_nada, LEN_RECD);
+   }
+   --s_nstack;
+   /*---(handle stack types)-------------*/
+   switch (s_stack[s_nstack].typ) {
+   case S_TYPE_NUM :
+   case S_TYPE_STR :
+      return  0;
+      break;
+   case S_TYPE_REF :
+      if (g_valuer == NULL) {
+         myCALC.trouble = G_ERROR_CONF;
+         return  strndup (g_nada, LEN_RECD);
+      }
+      x_deproot = s_stack [s_nstack].ref;
+      switch (a_what) {
+      case G_SPECIAL_TYPE   :
+         g_valuer  (x_deproot->owner, &s_type, NULL, NULL);
+         return s_type;
+         break;
+      case G_SPECIAL_NCALC  :
+         return x_deproot->ncalc;
+         break;
+      case G_SPECIAL_NPRO   :
+         return x_deproot->npro;
+         break;
+      case G_SPECIAL_NREQ   :
+         return x_deproot->nreq;
+         break;
+      case G_SPECIAL_LEVEL  :
+         return x_deproot->slevel;
+         break;
+      }
+   }
+   /*---(complete)-----------------------*/
+   myCALC.trouble = G_ERROR_STACK;
+   return strndup (g_nada, LEN_RECD);
+}
+
+char*        /*-> get an string off the stack --------[ ------ [fs.A40.20#.31]*/ /*-[02.0000.0#5.!]-*/ /*-[--.---.---.--]-*/
+ycalc_popstr_plus       (char *a_func, char a_what)
+{
+   /*---(local)--------------------------*/
+   tDEP_ROOT  *x_deproot   = NULL;
+   /*---(prepare)------------------------*/
+   if (s_nstack <= 0) {
+      myCALC.trouble = G_ERROR_STACK;
+      return strndup (g_nada, LEN_RECD);
+   }
+   --s_nstack;
+   /*---(handle stack types)-------------*/
+   switch (s_stack[s_nstack].typ) {
+   case S_TYPE_NUM :
+   case S_TYPE_STR :
+      return  strndup (g_nada, LEN_RECD);
+      break;
+   case S_TYPE_REF :
+      s_string = NULL;
+      if (g_valuer  == NULL || g_special == NULL) {
+         myCALC.trouble = G_ERROR_CONF;
+         return  strndup (g_nada, LEN_RECD);
+      }
+      x_deproot = s_stack [s_nstack].ref;
+      switch (a_what) {
+      case G_SPECIAL_SOURCE :
+         g_special (x_deproot->owner, G_SPECIAL_SOURCE, NULL, &s_string);
+         return strndup (s_string, LEN_RECD);
+         break;
+      case G_SPECIAL_PRINT  :
+         g_special (x_deproot->owner, G_SPECIAL_PRINT , NULL, &s_string);
+         return strndup (s_string, LEN_RECD);
+         break;
+      case G_SPECIAL_RPN    :
+         return strndup (x_deproot->rpn, LEN_RECD);
+         break;
+      case G_SPECIAL_PROS   :
+         ycalc_audit_disp_pros      (x_deproot, s_list);
+         return strndup (s_list, LEN_RECD);
+         break;
+      case G_SPECIAL_REQS   :
+         ycalc_audit_disp_reqs      (x_deproot, s_list);
+         return strndup (s_list, LEN_RECD);
+         break;
+      case G_SPECIAL_LIKE   :
+         ycalc_audit_disp_like      (x_deproot, s_list);
+         return strndup (s_list, LEN_RECD);
+         break;
+      default               :
+         g_special (x_deproot->owner, a_what, NULL, &s_string);
+         return strndup (s_string, LEN_RECD);
+         break;
+      }
    }
    /*---(complete)-----------------------*/
    myCALC.trouble = G_ERROR_STACK;
@@ -515,6 +632,8 @@ yCALC_exec_label        (char *a_label, char a_type, double *a_value, char **a_s
    char        rce         = -10;
    char        rc          = 0;
    tDEP_ROOT  *x_deproot   = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
    rc = ycalc_call_who_named (a_label, NULL, &x_deproot);
    DEBUG_CALC   yLOG_value   ("who named" , rc);

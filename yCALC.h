@@ -35,7 +35,7 @@ char        yCALC_init              (char  a_style);
 char        yCALC_wrap              (void);
 
 char        yCALC_build_config      (void *a_enabler, void *a_deproot, void *a_whois, void *a_labeler, void *a_reaper);
-char        yCALC_exec_config       (void *a_valuer , void *a_addresser);
+char        yCALC_exec_config       (void *a_valuer, void *a_addresser, void *a_special);
 
 char        yCALC_enable            (void *a_owner);
 char        yCALC_disable           (void *a_deproot);

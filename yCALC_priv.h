@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.1g"
-#define YCALC_VER_TXT   "string trimming variations are unit tested"
+#define YCALC_VER_NUM   "0.1h"
+#define YCALC_VER_TXT   "string printables variations are unit tested (lots of fixes :)"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -34,16 +34,16 @@
 extern char    (*g_who_named)   (char *a_label      , void **a_owner, void **a_deproot);        /* pass label of thing, get back deproot of thing  */
 extern char    (*g_who_at   )   (int x, int y, int z, void **a_owner, void **a_deproot);  /* pass coordinates, get back deproot of thing     */
 
-
-
-extern char*   (*g_labeler  )   (void *a_owner);        /* pass deproot->owner, get back label of thing    */
-extern char    (*g_valuer   )   (void *a_owner, char  *a_type   , double *a_value , char   **a_string);
-extern char    (*g_addresser)   (void *a_owner, int   *x        , int    *y       , int     *z);
-extern char    (*g_detailer )   (void *a_owner, char  *a_quality, char   *a_string, double  *a_value);
-extern char    (*g_reaper   )   (void *a_owner);        /* pass deproot->owner, tries to kill thing        */
-
 extern char    (*g_consumer )   (void *a_owner, void *a_deproot, int a_seq, int a_lvl);
 extern char    (*g_enabler  )   (void *a_owner, void *a_deproot);
+extern char    (*g_reaper   )   (void *a_owner);        /* pass deproot->owner, tries to kill thing        */
+
+extern char*   (*g_labeler  )   (void *a_owner);        /* pass deproot->owner, get back label of thing    */
+extern char    (*g_addresser)   (void *a_owner, int   *x        , int    *y       , int     *z);
+extern char    (*g_valuer   )   (void *a_owner, char *a_type, double *a_value , char   **a_string);
+extern char    (*g_special  )   (void *a_owner, char  a_what, double *a_value , char   **a_string);
+
+
 
 /*
  * calculation types
@@ -221,8 +221,10 @@ typedef struct cMOCK  tMOCK;
 struct  cMOCK {
    char        label       [LEN_LABEL];
    char        type;
+   char        *source;
    double      value;
    char       *string;
+   char       *print;
    int         x;
    int         y;
    int         z;
@@ -288,6 +290,19 @@ extern tyCALC_ERROR   yCALC_ERRORS     [100];
 
 
 
+#define       G_SPECIAL_TYPE     'T'
+#define       G_SPECIAL_SOURCE   'S'
+#define       G_SPECIAL_PRINT    'P'
+
+#define       G_SPECIAL_RPN      'R'
+#define       G_SPECIAL_NCALC    '0'
+#define       G_SPECIAL_PROS     'p'
+#define       G_SPECIAL_NPRO     '1'
+#define       G_SPECIAL_REQS     'r'
+#define       G_SPECIAL_NREQ     '2'
+#define       G_SPECIAL_LIKE     'l'
+#define       G_SPECIAL_LEVEL    's'
+
 
 /*---(malloc)---------------------*/
 char        ycalc__deps_new         (tDEP_LINK **a_dep);
@@ -352,8 +367,10 @@ char        ycalc__mock_reaper      (void *a_owner);
 /*---(mock execute)-------------------*/
 char        ycalc__mock_valuer      (void *a_thing, char *a_type, double *a_value, char **a_string);
 char        ycalc__mock_addresser   (void *a_thing, int  *x, int *y, int *z);
-char        ycalc__mock_detailer    (void *a_thing, char *a_quality, char *a_string, double *a_value);
+char        ycalc__mock_special     (void *a_owner, char a_what, double *a_value, char **a_string);
 /*---(unit testing)-------------------*/
+char        ycalc__mock_special_set (char *a_label, char *a_source, double a_value, char *a_print);
+char        ycalc__mock_whole       (char *a_label, char a_type, char *a_source, char a_format, char a_decs, char a_aign, char a_width);
 char*       ycalc__unit_mock        (char *a_question, char *a_label);
 
 

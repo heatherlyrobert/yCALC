@@ -3,7 +3,6 @@
 #include    "yCALC_priv.h"
 
 
-char    (*g_consumer )   (void *a_owner, void *a_deproot, int a_seq, int a_lvl);
 
 
 /*====================------------------------------------====================*/

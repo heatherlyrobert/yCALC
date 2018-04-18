@@ -332,15 +332,15 @@ ycalc_mtrim        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.420.000.12]*/ /*-[10.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_printstr     (void)
 {
-   /*> /+---(get arguments)------------------+/                                       <* 
-    *> r = ycalc_popprint (__FUNCTION__);                                             <* 
-    *> /+---(defense)------------------------+/                                       <* 
-    *> if (r == NULL)  r = strndup (g_nada, LEN_RECD);                                <* 
-    *> /+---(process)------------------------+/                                       <* 
-    *> strltrim (r, ySTR_BOTH, LEN_RECD);                                             <* 
-    *> ycalc_pushstr (__FUNCTION__, r);                                               <* 
-    *> /+---(clean up)-----------------------+/                                       <* 
-    *> free (r);                                                                      <*/
+   /*---(get arguments)------------------*/
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_PRINT);
+   /*---(defense)------------------------*/
+   if (r == NULL)  r = strndup (g_nada, LEN_RECD);
+   /*---(process)------------------------*/
+   strltrim (r, ySTR_BOTH, LEN_RECD);
+   ycalc_pushstr (__FUNCTION__, r);
+   /*---(clean up)-----------------------*/
+   free (r);
    /*---(complete)-----------------------*/
    return;
 }
@@ -348,18 +348,18 @@ ycalc_printstr     (void)
 void    /*-> tbd --------------------------------[ ------ [fv.420.010.22]*/ /*-[10.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_printnum     (void)
 {
-   /*> int         x_len       = 0;                                                   <* 
-    *> /+---(get arguments)------------------+/                                       <* 
-    *> r = ycalc_popprint (__FUNCTION__);                                             <* 
-    *> /+---(defense)------------------------+/                                       <* 
-    *> if (r == NULL)  r = strndup (g_nada, LEN_RECD);                                <* 
-    *> /+---(process)------------------------+/                                       <* 
-    *> strltrim (r, ySTR_BOTH, LEN_RECD);                                             <* 
-    *> x_len = strlen (r);                                                            <* 
-    *> if (r [x_len - 1] == '>')  r [x_len - 1] = '\0';                               <* 
-    *> ycalc_pushval (__FUNCTION__, atof (r));                                        <* 
-    *> /+---(clean up)-----------------------+/                                       <* 
-    *> free (r);                                                                      <*/
+   int         x_len       = 0;
+   /*---(get arguments)------------------*/
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_PRINT);
+   /*---(defense)------------------------*/
+   if (r == NULL)  r = strndup (g_nada, LEN_RECD);
+   /*---(process)------------------------*/
+   strltrim (r, ySTR_BOTH, LEN_RECD);
+   x_len = strlen (r);
+   if (r [x_len - 1] == '>')  r [x_len - 1] = '\0';
+   ycalc_pushval (__FUNCTION__, atof (r));
+   /*---(clean up)-----------------------*/
+   free (r);
    /*---(complete)-----------------------*/
    return;
 }
@@ -367,15 +367,15 @@ ycalc_printnum     (void)
 void    /*-> tbd --------------------------------[ ------ [fv.420.000.12]*/ /*-[10.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_formula      (void)
 {
-   /*> /+---(get arguments)------------------+/                                       <* 
-    *> r = ycalc_popform   (__FUNCTION__);                                            <* 
-    *> /+---(defense)------------------------+/                                       <* 
-    *> if (r == NULL)  r = strndup (g_nada, LEN_RECD);                                <* 
-    *> /+---(process)------------------------+/                                       <* 
-    *> strltrim (r, ySTR_BOTH, LEN_RECD);                                             <* 
-    *> ycalc_pushstr (__FUNCTION__, r);                                               <* 
-    *> /+---(clean up)-----------------------+/                                       <* 
-    *> free (r);                                                                      <*/
+   /*---(get arguments)------------------*/
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_SOURCE);
+   /*---(defense)------------------------*/
+   if (r == NULL)  r = strndup (g_nada, LEN_RECD);
+   /*---(process)------------------------*/
+   strltrim (r, ySTR_BOTH, LEN_RECD);
+   ycalc_pushstr (__FUNCTION__, r);
+   /*---(clean up)-----------------------*/
+   free (r);
    /*---(complete)-----------------------*/
    return;
 }
@@ -383,15 +383,15 @@ ycalc_formula      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.420.000.12]*/ /*-[10.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_rpn          (void)
 {
-   /*> /+---(get arguments)------------------+/                                       <* 
-    *> r = ycalc_poprpn    (__FUNCTION__);                                            <* 
-    *> /+---(defense)------------------------+/                                       <* 
-    *> if (r == NULL)  r = strndup (g_nada, LEN_RECD);                                <* 
-    *> /+---(process)------------------------+/                                       <* 
-    *> strltrim (r, ySTR_BOTH, LEN_RECD);                                             <* 
-    *> ycalc_pushstr (__FUNCTION__, r);                                               <* 
-    *> /+---(clean up)-----------------------+/                                       <* 
-    *> free (r);                                                                      <*/
+   /*---(get arguments)------------------*/
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_RPN);
+   /*---(defense)------------------------*/
+   if (r == NULL)  r = strndup (g_nada, LEN_RECD);
+   /*---(process)------------------------*/
+   strltrim (r, ySTR_BOTH, LEN_RECD);
+   ycalc_pushstr (__FUNCTION__, r);
+   /*---(clean up)-----------------------*/
+   free (r);
    /*---(complete)-----------------------*/
    return;
 }
