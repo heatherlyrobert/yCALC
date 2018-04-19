@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.1i"
-#define YCALC_VER_TXT   "owner/object auditing formulas are working and unit tested"
+#define YCALC_VER_NUM   "0.1j"
+#define YCALC_VER_TXT   "pointer build and exec avoidance is working"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -295,6 +295,7 @@ extern tyCALC_ERROR   yCALC_ERRORS     [100];
 #define     G_ERROR_THING    'T'
 #define     G_ERROR_DEPEND   'D'
 #define     G_ERROR_TOKEN    'E'
+#define     G_ERROR_POINTER  'P'
 #define     G_ERROR_UNKNOWN  'U'
 
 
@@ -348,6 +349,7 @@ extern char    YCALC_GROUP_CALC   [LEN_LABEL];
 extern char    YCALC_GROUP_DEPS   [LEN_LABEL];
 extern char    YCALC_GROUP_NUM    [LEN_LABEL];
 extern char    YCALC_GROUP_STR    [LEN_LABEL];
+extern char    YCALC_GROUP_POINT  [LEN_LABEL];
 extern char    YCALC_GROUP_ERR    [LEN_LABEL];
 extern char    YCALC_GROUP_FPRE   [LEN_LABEL];
 

@@ -363,7 +363,7 @@ ycalc__mock_whole       (char *a_label, char a_type, char *a_source, char a_form
       DEBUG_DEPS   yLOG_note    ("numeric literal type");
       x_owner->value  = atof (a_source); 
       break;
-   case '=' : case '#' :
+   case '=' : case '#' : case '&' :
       DEBUG_DEPS   yLOG_note    ("formula type");
       sprintf (t, "rpn \"%s\" > /tmp/rpn.txt", a_source + 1);
       DEBUG_DEPS   yLOG_info    ("request"   , t);

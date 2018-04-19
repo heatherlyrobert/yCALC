@@ -13,8 +13,8 @@ const tyCALC_TYPES  g_ycalc_types [YCALC_MAX_TYPE] = {
    {  YCALC_DATA_NUM    , "number"     , ' ', '-', '-', '-', '=', "numeric literal presented in various formats"       },
    {  YCALC_DATA_NFORM  , "num-form"   , '=', 'y', 'y', 'y', '=', "numeric formula"                                    },
    {  YCALC_DATA_NLIKE  , "num-like"   , '~', 'y', 'y', 'y', '=', "numeric formula derived from another cell"          },
-   {  YCALC_DATA_RANGE  , "range"      , '&', 'y', 'y', 'y', '-', "range pointer to use in other formulas"             },
-   {  YCALC_DATA_ADDR   , "address"    , '&', 'y', 'y', 'y', '-', "address pointer to use in other formulas"           },
+   {  YCALC_DATA_ADDR   , "address"    , '&', 'y', '-', 'y', '-', "address pointer to use in other formulas"           },
+   {  YCALC_DATA_RANGE  , "range"      , '&', 'y', '-', 'y', '-', "range pointer to use in other formulas"             },
    {  YCALC_DATA_MERGED , "merged"     , '<', '-', '-', 'y', '-', "empty cell used to present merged information"      },
    {  YCALC_DATA_ERROR  , "error"      , ' ', '-', '-', '-', 'e', "error status"                                       },
    /*---type------------ -terse-------- -pre -rpn calc -dep -res ---description--------------------------------------- */
@@ -26,6 +26,7 @@ char    YCALC_GROUP_CALC   [LEN_LABEL] = "";
 char    YCALC_GROUP_DEPS   [LEN_LABEL] = "";
 char    YCALC_GROUP_NUM    [LEN_LABEL] = "";
 char    YCALC_GROUP_STR    [LEN_LABEL] = "";
+char    YCALC_GROUP_POINT  [LEN_LABEL] = "";
 char    YCALC_GROUP_ERR    [LEN_LABEL] = "";
 char    YCALC_GROUP_FPRE   [LEN_LABEL] = "";
 
@@ -48,14 +49,15 @@ ycalc_audit_init        (void)
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(object types)-------------------*/
    DEBUG_PROG   yLOG_note    ("clear validation types");
-   strlcpy (YCALC_GROUP_ALL , "", LEN_LABEL);
-   strlcpy (YCALC_GROUP_RPN , "", LEN_LABEL);
-   strlcpy (YCALC_GROUP_CALC, "", LEN_LABEL);
-   strlcpy (YCALC_GROUP_DEPS, "", LEN_LABEL);
-   strlcpy (YCALC_GROUP_NUM , "", LEN_LABEL);
-   strlcpy (YCALC_GROUP_STR , "", LEN_LABEL);
-   strlcpy (YCALC_GROUP_ERR , "", LEN_LABEL);
-   strlcpy (YCALC_GROUP_FPRE, "", LEN_LABEL);
+   strlcpy (YCALC_GROUP_ALL  , "", LEN_LABEL);
+   strlcpy (YCALC_GROUP_RPN  , "", LEN_LABEL);
+   strlcpy (YCALC_GROUP_CALC , "", LEN_LABEL);
+   strlcpy (YCALC_GROUP_DEPS , "", LEN_LABEL);
+   strlcpy (YCALC_GROUP_NUM  , "", LEN_LABEL);
+   strlcpy (YCALC_GROUP_STR  , "", LEN_LABEL);
+   strlcpy (YCALC_GROUP_ERR  , "", LEN_LABEL);
+   strlcpy (YCALC_GROUP_POINT, "", LEN_LABEL);
+   strlcpy (YCALC_GROUP_FPRE , "", LEN_LABEL);
    /*---(complete info table)------------*/
    DEBUG_PROG   yLOG_note    ("build cell validation types");
    --rce;
@@ -69,11 +71,12 @@ ycalc_audit_init        (void)
       DEBUG_PROG_M yLOG_info    ("str type"  , t);
       DEBUG_PROG_M yLOG_char    ("rpn flag"  , g_ycalc_types [i].rpn);
       strcat (YCALC_GROUP_ALL , t);
-      if (g_ycalc_types [i].calc    == 'y')  strcat (YCALC_GROUP_CALC, t);
-      if (g_ycalc_types [i].deps    == 'y')  strcat (YCALC_GROUP_DEPS, t);
-      if (g_ycalc_types [i].result  == '=')  strcat (YCALC_GROUP_NUM , t);
-      if (g_ycalc_types [i].result  == '#')  strcat (YCALC_GROUP_STR , t);
-      if (g_ycalc_types [i].result  == 'e')  strcat (YCALC_GROUP_ERR , t);
+      if (g_ycalc_types [i].calc    == 'y')  strcat (YCALC_GROUP_CALC , t);
+      if (g_ycalc_types [i].deps    == 'y')  strcat (YCALC_GROUP_DEPS , t);
+      if (g_ycalc_types [i].result  == '=')  strcat (YCALC_GROUP_NUM  , t);
+      if (g_ycalc_types [i].result  == '#')  strcat (YCALC_GROUP_STR  , t);
+      if (g_ycalc_types [i].result  == 'e')  strcat (YCALC_GROUP_ERR  , t);
+      if (g_ycalc_types [i].prefix  == '&')  strcat (YCALC_GROUP_POINT, t);
       if (g_ycalc_types [i].rpn     == 'y') {
          strcat  (YCALC_GROUP_RPN , t);
          sprintf (t, "%c", g_ycalc_types [i].prefix);
@@ -86,14 +89,15 @@ ycalc_audit_init        (void)
    }
    /*---(report out)---------------------*/
    DEBUG_PROG   yLOG_value   ("c"         , c);
-   DEBUG_PROG   yLOG_info    ("GROUP_ALL" , YCALC_GROUP_ALL );
-   DEBUG_PROG   yLOG_info    ("GROUP_RPN" , YCALC_GROUP_RPN );
-   DEBUG_PROG   yLOG_info    ("GROUP_CALC", YCALC_GROUP_CALC);
-   DEBUG_PROG   yLOG_info    ("GROUP_DEPS", YCALC_GROUP_DEPS);
-   DEBUG_PROG   yLOG_info    ("GROUP_NUM" , YCALC_GROUP_NUM );
-   DEBUG_PROG   yLOG_info    ("GROUP_STR" , YCALC_GROUP_STR );
-   DEBUG_PROG   yLOG_info    ("GROUP_ERR" , YCALC_GROUP_ERR );
-   DEBUG_PROG   yLOG_info    ("GROUP_FPRE", YCALC_GROUP_FPRE);
+   DEBUG_PROG   yLOG_info    ("GROUP_ALL" , YCALC_GROUP_ALL  );
+   DEBUG_PROG   yLOG_info    ("GROUP_RPN" , YCALC_GROUP_RPN  );
+   DEBUG_PROG   yLOG_info    ("GROUP_CALC", YCALC_GROUP_CALC );
+   DEBUG_PROG   yLOG_info    ("GROUP_DEPS", YCALC_GROUP_DEPS );
+   DEBUG_PROG   yLOG_info    ("GROUP_NUM" , YCALC_GROUP_NUM  );
+   DEBUG_PROG   yLOG_info    ("GROUP_STR" , YCALC_GROUP_STR  );
+   DEBUG_PROG   yLOG_info    ("GROUP_POIN", YCALC_GROUP_POINT);
+   DEBUG_PROG   yLOG_info    ("GROUP_ERR" , YCALC_GROUP_ERR  );
+   DEBUG_PROG   yLOG_info    ("GROUP_FPRE", YCALC_GROUP_FPRE );
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;

@@ -19,11 +19,12 @@ tTERMS      s_terms [MAX_TERM] = {
 };
 
 tyCALC_ERROR   yCALC_ERRORS     [100] = {
-   { G_ERROR_THING   , 'b', "#.badref"  , "" },
-   { G_ERROR_RANGE   , 'b', "#.badrng"  , "" },
-   { G_ERROR_DEPEND  , 'b', "#.baddep"  , "" },
-   { G_ERROR_TOKEN   , 'b', "#.badtok"  , "" },
+   { G_ERROR_THING   , 'b', "#.ref"     , "" },
+   { G_ERROR_RANGE   , 'b', "#.range"   , "" },
+   { G_ERROR_DEPEND  , 'b', "#.dep"     , "" },
+   { G_ERROR_TOKEN   , 'b', "#.token"   , "" },
    { G_ERROR_UNKNOWN , 'b', "#.unknown" , "" },
+   { G_ERROR_POINTER , 'b', "#.point"   , "" },
 };
 
 
@@ -48,54 +49,6 @@ ycalc_build_init        (void)
    g_who_at    = NULL;
    g_labeler   = NULL;
    g_reaper    = NULL;
-   /*---(object types)-------------------*/
-   DEBUG_PROG   yLOG_note    ("clear validation types");
-   strlcpy (YCALC_GROUP_ALL , "", 20);
-   strlcpy (YCALC_GROUP_RPN , "", 20);
-   strlcpy (YCALC_GROUP_CALC, "", 20);
-   strlcpy (YCALC_GROUP_DEPS, "", 20);
-   strlcpy (YCALC_GROUP_NUM , "", 20);
-   strlcpy (YCALC_GROUP_STR , "", 20);
-   strlcpy (YCALC_GROUP_ERR , "", 20);
-   strlcpy (YCALC_GROUP_FPRE, "", 20);
-   /*---(complete info table)------------*/
-   DEBUG_PROG   yLOG_note    ("build cell validation types");
-   --rce;
-   for (i = 0; i < YCALC_MAX_TYPE; ++i) {
-      DEBUG_PROG_M yLOG_value   ("ENTRY"     , i);
-      DEBUG_PROG_M yLOG_char    ("type"      , g_ycalc_types [i].type);
-      /*---(check for end)---------------*/
-      if (g_ycalc_types [i].type == 0)  break;
-      /*---(add to lists)----------------*/
-      sprintf (t, "%c", g_ycalc_types [i].type);
-      DEBUG_PROG_M yLOG_info    ("str type"  , t);
-      DEBUG_PROG_M yLOG_char    ("rpn flag"  , g_ycalc_types [i].rpn);
-      strcat (YCALC_GROUP_ALL , t);
-      if (g_ycalc_types [i].calc    == 'y')  strcat (YCALC_GROUP_CALC, t);
-      if (g_ycalc_types [i].deps    == 'y')  strcat (YCALC_GROUP_DEPS, t);
-      if (g_ycalc_types [i].result  == '=')  strcat (YCALC_GROUP_NUM , t);
-      if (g_ycalc_types [i].result  == '#')  strcat (YCALC_GROUP_STR , t);
-      if (g_ycalc_types [i].result  == 'e')  strcat (YCALC_GROUP_ERR , t);
-      if (g_ycalc_types [i].rpn     == 'y') {
-         strcat  (YCALC_GROUP_RPN , t);
-         sprintf (t, "%c", g_ycalc_types [i].prefix);
-         if   (g_ycalc_types [i].prefix != ' ' && 
-               strchr (YCALC_GROUP_FPRE, g_ycalc_types [i].prefix) == 0) {
-            strcat  (YCALC_GROUP_FPRE , t);
-         }
-      }
-      ++c;
-   }
-   /*---(report out)---------------------*/
-   DEBUG_PROG   yLOG_value   ("c"         , c);
-   DEBUG_PROG   yLOG_info    ("GROUP_ALL" , YCALC_GROUP_ALL );
-   DEBUG_PROG   yLOG_info    ("GROUP_RPN" , YCALC_GROUP_RPN );
-   DEBUG_PROG   yLOG_info    ("GROUP_CALC", YCALC_GROUP_CALC);
-   DEBUG_PROG   yLOG_info    ("GROUP_DEPS", YCALC_GROUP_DEPS);
-   DEBUG_PROG   yLOG_info    ("GROUP_NUM" , YCALC_GROUP_NUM );
-   DEBUG_PROG   yLOG_info    ("GROUP_STR" , YCALC_GROUP_STR );
-   DEBUG_PROG   yLOG_info    ("GROUP_ERR" , YCALC_GROUP_ERR );
-   DEBUG_PROG   yLOG_info    ("GROUP_FPRE", YCALC_GROUP_FPRE);
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -537,7 +490,72 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
 char
 ycalc__build_pointer    (tDEP_ROOT *a_thing, tCALC *a_calc, char *a_token)
 {
-   return 0;
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          = G_ERROR_POINTER;
+   char        x_rc        =    0;
+   char        x_type      =    0;
+   tCALC      *x_prev      = NULL;
+   tDEP_ROOT  *x_ref       = NULL;
+   tDEP_ROOT  *x_other     = NULL;
+   tCALC      *x_beg       = NULL;
+   tCALC      *x_end       = NULL;
+   /*---(check for range operator)-------*/
+   DEBUG_CALC   yLOG_note    ("check for pointer operator");
+   if (strcmp (a_token, "*:") != 0)    return 0;
+   /*---(header)-------------------------*/
+   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   /*---(get the reference)--------------*/
+   x_prev = a_calc->prev;
+   DEBUG_CALC   yLOG_point   ("x_prev"    , x_prev);
+   if (x_prev == NULL || x_prev->t != G_TYPE_REF || x_prev->r == NULL) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   DEBUG_CALC   yLOG_char    ("type"      , x_prev->t);
+   x_ref = x_prev->r;
+   DEBUG_CALC   yLOG_point   ("x_ref"     , x_ref);
+   x_rc = g_valuer  (x_ref->owner, &x_type, NULL, NULL);
+   DEBUG_CALC   yLOG_value   ("valuer"    , x_rc);
+   if (x_rc < 0) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   DEBUG_CALC   yLOG_char    ("x_type"    , x_type);
+   if (x_type == 0 || strchr (YCALC_GROUP_POINT, x_type) == NULL) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   DEBUG_CALC   yLOG_value   ("ncalc"     , x_ref->ncalc);
+   /*---(first)--------------------------*/
+   x_beg = x_ref->chead;
+   DEBUG_CALC   yLOG_point   ("x_beg"     , x_beg);
+   if (x_beg == NULL || x_beg->t != G_TYPE_REF || x_beg->r == NULL) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   a_calc->t = G_TYPE_NOOP;
+   x_prev->t = G_TYPE_REF;
+   x_prev->r = x_beg;
+   if (x_ref->ncalc == 1) {
+      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      return 1;
+   }
+   /*---(second)-------------------------*/
+   if (x_ref->ncalc != 3) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   x_end = x_beg->next;
+   DEBUG_CALC   yLOG_point   ("x_end"     , x_end);
+   if (x_end == NULL || x_end->t != G_TYPE_REF || x_end->r == NULL) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   a_calc->t = G_TYPE_REF;
+   a_calc->r = x_end;
+   /*---(complete)-----------------------*/
+   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   return 1;
 }
 
 char

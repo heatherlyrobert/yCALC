@@ -600,6 +600,8 @@ yCALC_exec             (void *a_deproot, char a_type, double *a_value, char **a_
    char        rc          =    0;
    tDEP_ROOT  *x_deproot   = NULL;
    tCALC      *x_calc      = NULL;
+   /*---(pre-defense)--------------------*/
+   if (strchr (YCALC_GROUP_CALC, a_type) == NULL)   return 0;
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
