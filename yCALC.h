@@ -3,6 +3,22 @@
 #define YCALC_HGUARD loaded
 
 
+
+/*---(object types)-------------------*/
+#define       YCALC_DATA_BLANK   '-'
+#define       YCALC_DATA_STR     's'
+#define       YCALC_DATA_SFORM   '#'
+#define       YCALC_DATA_SLIKE   '5'
+#define       YCALC_DATA_NUM     'n'
+#define       YCALC_DATA_NFORM   '='
+#define       YCALC_DATA_NLIKE   '9'
+#define       YCALC_DATA_RANGE   'p'
+#define       YCALC_DATA_ADDR    'a'
+#define       YCALC_DATA_MERGED  '+'
+#define       YCALC_DATA_ERROR   'E'
+
+
+
 /*---(dependency types)---------------*/
 
 #define     G_DEP_BLANK          '-'

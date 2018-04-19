@@ -4,6 +4,199 @@
 
 
 
+const tyCALC_TYPES  g_ycalc_types [YCALC_MAX_TYPE] = {
+   /*---type------------ -terse-------- -pre -rpn calc -dep -res ---description--------------------------------------- */
+   {  YCALC_DATA_BLANK  , "blank"      , ' ', '-', '-', '-', '-', "blank cell"                                         },
+   {  YCALC_DATA_STR    , "string"     , ' ', '-', '-', '-', '#', "string literal presented from source field"         },
+   {  YCALC_DATA_SFORM  , "str-form"   , '#', 'y', 'y', 'y', '#', "string formula"                                     },
+   {  YCALC_DATA_SLIKE  , "str-like"   , '~', 'y', 'y', 'y', '#', "string formula derived from another cell"           },
+   {  YCALC_DATA_NUM    , "number"     , ' ', '-', '-', '-', '=', "numeric literal presented in various formats"       },
+   {  YCALC_DATA_NFORM  , "num-form"   , '=', 'y', 'y', 'y', '=', "numeric formula"                                    },
+   {  YCALC_DATA_NLIKE  , "num-like"   , '~', 'y', 'y', 'y', '=', "numeric formula derived from another cell"          },
+   {  YCALC_DATA_RANGE  , "range"      , '&', 'y', 'y', 'y', '-', "range pointer to use in other formulas"             },
+   {  YCALC_DATA_ADDR   , "address"    , '&', 'y', 'y', 'y', '-', "address pointer to use in other formulas"           },
+   {  YCALC_DATA_MERGED , "merged"     , '<', '-', '-', 'y', '-', "empty cell used to present merged information"      },
+   {  YCALC_DATA_ERROR  , "error"      , ' ', '-', '-', '-', 'e', "error status"                                       },
+   /*---type------------ -terse-------- -pre -rpn calc -dep -res ---description--------------------------------------- */
+   {  0                 , ""           ,  0 ,  0 ,  0 ,  0 ,  0 , ""                                                   },
+};
+char    YCALC_GROUP_ALL    [LEN_LABEL] = "";
+char    YCALC_GROUP_RPN    [LEN_LABEL] = "";
+char    YCALC_GROUP_CALC   [LEN_LABEL] = "";
+char    YCALC_GROUP_DEPS   [LEN_LABEL] = "";
+char    YCALC_GROUP_NUM    [LEN_LABEL] = "";
+char    YCALC_GROUP_STR    [LEN_LABEL] = "";
+char    YCALC_GROUP_ERR    [LEN_LABEL] = "";
+char    YCALC_GROUP_FPRE   [LEN_LABEL] = "";
+
+
+
+/*====================------------------------------------====================*/
+/*===----                          program level                       ----===*/
+/*====================------------------------------------====================*/
+static void  o___PROGRAM_________o () { return; }
+
+char
+ycalc_audit_init        (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         i           =    0;
+   char        t           [LEN_LABEL];
+   int         c           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(object types)-------------------*/
+   DEBUG_PROG   yLOG_note    ("clear validation types");
+   strlcpy (YCALC_GROUP_ALL , "", LEN_LABEL);
+   strlcpy (YCALC_GROUP_RPN , "", LEN_LABEL);
+   strlcpy (YCALC_GROUP_CALC, "", LEN_LABEL);
+   strlcpy (YCALC_GROUP_DEPS, "", LEN_LABEL);
+   strlcpy (YCALC_GROUP_NUM , "", LEN_LABEL);
+   strlcpy (YCALC_GROUP_STR , "", LEN_LABEL);
+   strlcpy (YCALC_GROUP_ERR , "", LEN_LABEL);
+   strlcpy (YCALC_GROUP_FPRE, "", LEN_LABEL);
+   /*---(complete info table)------------*/
+   DEBUG_PROG   yLOG_note    ("build cell validation types");
+   --rce;
+   for (i = 0; i < YCALC_MAX_TYPE; ++i) {
+      DEBUG_PROG_M yLOG_value   ("ENTRY"     , i);
+      DEBUG_PROG_M yLOG_char    ("type"      , g_ycalc_types [i].type);
+      /*---(check for end)---------------*/
+      if (g_ycalc_types [i].type == 0)  break;
+      /*---(add to lists)----------------*/
+      sprintf (t, "%c", g_ycalc_types [i].type);
+      DEBUG_PROG_M yLOG_info    ("str type"  , t);
+      DEBUG_PROG_M yLOG_char    ("rpn flag"  , g_ycalc_types [i].rpn);
+      strcat (YCALC_GROUP_ALL , t);
+      if (g_ycalc_types [i].calc    == 'y')  strcat (YCALC_GROUP_CALC, t);
+      if (g_ycalc_types [i].deps    == 'y')  strcat (YCALC_GROUP_DEPS, t);
+      if (g_ycalc_types [i].result  == '=')  strcat (YCALC_GROUP_NUM , t);
+      if (g_ycalc_types [i].result  == '#')  strcat (YCALC_GROUP_STR , t);
+      if (g_ycalc_types [i].result  == 'e')  strcat (YCALC_GROUP_ERR , t);
+      if (g_ycalc_types [i].rpn     == 'y') {
+         strcat  (YCALC_GROUP_RPN , t);
+         sprintf (t, "%c", g_ycalc_types [i].prefix);
+         if   (g_ycalc_types [i].prefix != ' ' && 
+               strchr (YCALC_GROUP_FPRE, g_ycalc_types [i].prefix) == 0) {
+            strcat  (YCALC_GROUP_FPRE , t);
+         }
+      }
+      ++c;
+   }
+   /*---(report out)---------------------*/
+   DEBUG_PROG   yLOG_value   ("c"         , c);
+   DEBUG_PROG   yLOG_info    ("GROUP_ALL" , YCALC_GROUP_ALL );
+   DEBUG_PROG   yLOG_info    ("GROUP_RPN" , YCALC_GROUP_RPN );
+   DEBUG_PROG   yLOG_info    ("GROUP_CALC", YCALC_GROUP_CALC);
+   DEBUG_PROG   yLOG_info    ("GROUP_DEPS", YCALC_GROUP_DEPS);
+   DEBUG_PROG   yLOG_info    ("GROUP_NUM" , YCALC_GROUP_NUM );
+   DEBUG_PROG   yLOG_info    ("GROUP_STR" , YCALC_GROUP_STR );
+   DEBUG_PROG   yLOG_info    ("GROUP_ERR" , YCALC_GROUP_ERR );
+   DEBUG_PROG   yLOG_info    ("GROUP_FPRE", YCALC_GROUP_FPRE);
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                            driver                            ----===*/
+/*====================------------------------------------====================*/
+static void  o___DRIVER__________o () { return; }
+
+char
+yCALC__handle_prep      (char *a_type, double *a_value, char **a_string, char **a_notice)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;           /* return code for errors         */
+   /*---(header)-------------------------*/
+   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_CALC   yLOG_char    ("status"    , myCALC.status);
+   --rce;  if (myCALC.status != 'O') {
+      DEBUG_PROG   yLOG_note    ("must initialize and configure before use");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_CALC   yLOG_point   ("a_value"    , a_value);
+   --rce;  if (a_value == NULL) {
+      DEBUG_CALC   yLOG_note    ("value pointer not given, nothing to do");
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_CALC   yLOG_point   ("a_string"   , a_string);
+   --rce;  if (a_string == NULL) {
+      DEBUG_CALC   yLOG_note    ("string pointer not given, nothing to do");
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+
+
+}
+
+char
+yCALC__handle_formula   (char *a_label, char *a_src, char *a_type, double *a_value, char **a_string, char **a_notice)
+{
+}
+
+char
+yCALC_handle            (char *a_label, char *a_src, char *a_type, double *a_value, char **a_string, char **a_notice)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;           /* return code for errors         */
+   char        rc          =    0;           /* return code for errors         */
+   int         x_len       =    0;
+   /*---(header)-------------------------*/
+   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   /*---(prepare)------------------------*/
+   if (a_type   != NULL)   *a_type   = YCALC_DATA_BLANK;
+   if (a_value  != NULL)   *a_value  = 0.0;
+   if (a_string != NULL && *a_string != NULL)   free (*a_string);
+   /*---(blanks)-------------------------*/
+   DEBUG_CALC   yLOG_point   ("a_src"     , a_src);
+   if (a_src == NULL || a_src [0] == 0) {
+      if (a_type   != NULL)  *a_type   = YCALC_DATA_BLANK;
+      DEBUG_CALC   yLOG_note    ("blank object");
+      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(merges)-------------------------*/
+   x_len = strllen (a_src, LEN_RECD);
+   DEBUG_CALC   yLOG_value   ("x_len"     , x_len);
+   if (x_len == 1 || a_src [0] == '<') {
+      if (a_type   != NULL)  *a_type   = YCALC_DATA_MERGED;
+      DEBUG_CALC   yLOG_note    ("merged object");
+      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(formulas)-----------------------*/
+   DEBUG_CELL   yLOG_char    ("a_src [0]" , a_src [0]);
+   DEBUG_CELL   yLOG_info    ("valid"     , YCALC_GROUP_FPRE);
+   --rce;  if (strchr (YCALC_GROUP_FPRE, a_src [0]) != NULL) {
+      DEBUG_CALC   yLOG_note    ("formula object");
+      rc = yCALC__handle_formula (a_label, a_src, a_type, a_value, a_string, a_notice);
+      DEBUG_CALC   yLOG_value   ("rc"        , rc);
+      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      return rc;
+   }
+   /*---(numbers)------------------------*/
+   rc = strl2num (a_src, a_value, LEN_RECD);
+   DEBUG_CALC   yLOG_value   ("rc"        , rc);
+   if (rc >= 0) {
+      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(default string)-----------------*/
+   if (a_type   != NULL)  *a_type   = YCALC_DATA_STR;
+   /*---(complete)-----------------------*/
+   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
 /*====================------------------------------------====================*/
 /*===----                          sorting list                        ----===*/
 /*====================------------------------------------====================*/
@@ -231,6 +424,207 @@ ycalc__audit_disp_master   (tDEP_ROOT *a_me, char *a_list, char a_start, char *a
 char       ycalc_audit_disp_reqs      (tDEP_ROOT *a_me, char *a_list) { return ycalc__audit_disp_master (a_me, a_list, 'R', S_DEP_REQS); }
 char       ycalc_audit_disp_pros      (tDEP_ROOT *a_me, char *a_list) { return ycalc__audit_disp_master (a_me, a_list, 'P', S_DEP_PROS); }
 char       ycalc_audit_disp_like      (tDEP_ROOT *a_me, char *a_list) { return ycalc__audit_disp_master (a_me, a_list, 'P', S_DEP_LIKE); }
+
+/*> switch (a_what) {                                                                 <* 
+ *> case G_SPECIAL_TYPE   :                                                           <* 
+ *>    g_valuer  (x_deproot->owner, &s_type, NULL, NULL);                             <* 
+ *>    return s_type;                                                                 <* 
+ *>    break;                                                                         <* 
+ *> case G_SPECIAL_NCALC  :                                                           <* 
+ *>    return x_deproot->ncalc;                                                       <* 
+ *>    break;                                                                         <* 
+ *> case G_SPECIAL_NPRO   :                                                           <* 
+ *>    return x_deproot->npro;                                                        <* 
+ *>    break;                                                                         <* 
+ *> case G_SPECIAL_NREQ   :                                                           <* 
+ *>    return x_deproot->nreq;                                                        <* 
+ *>    break;                                                                         <* 
+ *> case G_SPECIAL_LEVEL  :                                                           <* 
+ *>    return x_deproot->slevel;                                                      <* 
+ *>    break;                                                                         <* 
+ *> }                                                                                 <*/
+
+
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_type          (void)
+{
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   ycalc_pushval (__FUNCTION__, a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_isblank       (void)
+{
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if (a == YCALC_DATA_BLANK)   ycalc_pushval (__FUNCTION__, TRUE);
+   else                         ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_isvalue       (void)
+{
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if (strchr (YCALC_GROUP_NUM, a) != NULL) ycalc_pushval (__FUNCTION__, TRUE);
+   else                                     ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_istext        (void)
+{
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if (strchr (YCALC_GROUP_STR, a) != NULL) ycalc_pushval (__FUNCTION__, TRUE);
+   else                                     ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_iscalc        (void)
+{
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if (strchr (YCALC_GROUP_CALC, a) != NULL) ycalc_pushval (__FUNCTION__, TRUE);
+   else                                      ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_islit         (void)
+{
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if (strchr (YCALC_GROUP_CALC, a) == NULL) ycalc_pushval (__FUNCTION__, TRUE);
+   else                                      ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_ispoint       (void)
+{
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if      (a == YCALC_DATA_RANGE) ycalc_pushval (__FUNCTION__, TRUE);
+   else if (a == YCALC_DATA_ADDR ) ycalc_pushval (__FUNCTION__, TRUE);
+   else                            ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_iserror       (void)
+{
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if (strchr (YCALC_GROUP_ERR , a) != NULL) ycalc_pushval (__FUNCTION__, TRUE);
+   else                                      ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_xpos          (void)
+{
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_XPOS);
+   ycalc_pushval (__FUNCTION__, a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_ypos          (void)
+{
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_YPOS);
+   ycalc_pushval (__FUNCTION__, a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_zpos          (void)
+{
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_ZPOS);
+   ycalc_pushval (__FUNCTION__, a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_me            (void)
+{
+   ycalc_pushref (__FUNCTION__, myCALC.deproot);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_label         (void)
+{
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_LABEL);
+   ycalc_pushstr (__FUNCTION__, strndup (r, LEN_RECD));
+   free (r);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_formula       (void)
+{
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_SOURCE);
+   ycalc_pushstr (__FUNCTION__, strndup (r, LEN_RECD));
+   free (r);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_rpn           (void)
+{
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_RPN);
+   ycalc_pushstr (__FUNCTION__, strndup (r, LEN_RECD));
+   free (r);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_reqs          (void)
+{
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_REQS);
+   ycalc_pushstr (__FUNCTION__, strndup (r, LEN_RECD));
+   free (r);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_pros          (void)
+{
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_PROS);
+   ycalc_pushstr (__FUNCTION__, strndup (r, LEN_RECD));
+   free (r);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_ncalc         (void)
+{
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_NCALC);
+   ycalc_pushval (__FUNCTION__, a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_nreq          (void)
+{
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_NREQ);
+   ycalc_pushval (__FUNCTION__, a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_npro          (void)
+{
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_NPRO);
+   ycalc_pushval (__FUNCTION__, a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_level         (void)
+{
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_LEVEL);
+   ycalc_pushval (__FUNCTION__, a);
+   return;
+}
 
 
 

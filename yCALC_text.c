@@ -364,38 +364,6 @@ ycalc_printnum     (void)
    return;
 }
 
-void    /*-> tbd --------------------------------[ ------ [fv.420.000.12]*/ /*-[10.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-ycalc_formula      (void)
-{
-   /*---(get arguments)------------------*/
-   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_SOURCE);
-   /*---(defense)------------------------*/
-   if (r == NULL)  r = strndup (g_nada, LEN_RECD);
-   /*---(process)------------------------*/
-   strltrim (r, ySTR_BOTH, LEN_RECD);
-   ycalc_pushstr (__FUNCTION__, r);
-   /*---(clean up)-----------------------*/
-   free (r);
-   /*---(complete)-----------------------*/
-   return;
-}
-
-void    /*-> tbd --------------------------------[ ------ [fv.420.000.12]*/ /*-[10.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-ycalc_rpn          (void)
-{
-   /*---(get arguments)------------------*/
-   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_RPN);
-   /*---(defense)------------------------*/
-   if (r == NULL)  r = strndup (g_nada, LEN_RECD);
-   /*---(process)------------------------*/
-   strltrim (r, ySTR_BOTH, LEN_RECD);
-   ycalc_pushstr (__FUNCTION__, r);
-   /*---(clean up)-----------------------*/
-   free (r);
-   /*---(complete)-----------------------*/
-   return;
-}
-
 void    /*-> tbd --------------------------------[ ------ [fv.530.000.43]*/ /*-[11.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_lpad         (void)
 {

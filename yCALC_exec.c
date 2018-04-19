@@ -4,7 +4,6 @@
 
 
 
-
 static char    s_type    = '-';
 static double  s_value   = 0.0;
 static char   *s_string  = NULL;
@@ -126,6 +125,10 @@ ycalc_exec_init          (void)
    DEBUG_PROG   yLOG_note    ("clearing function calls");
    g_valuer    = NULL;
    g_addresser = NULL;
+   /*---(globals)------------------------*/
+   DEBUG_PROG   yLOG_note    ("global variables");
+   myCALC.deproot = NULL;
+   myCALC.owner   = NULL;
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -377,6 +380,18 @@ ycalc_popval_plus       (char *a_func, char a_what)
       case G_SPECIAL_LEVEL  :
          return x_deproot->slevel;
          break;
+      case G_SPECIAL_XPOS   :
+         g_addresser (x_deproot->owner, &x, &y, &z);
+         return x;
+         break;
+      case G_SPECIAL_YPOS   :
+         g_addresser (x_deproot->owner, &x, &y, &z);
+         return y;
+         break;
+      case G_SPECIAL_ZPOS   :
+         g_addresser (x_deproot->owner, &x, &y, &z);
+         return z;
+         break;
       }
    }
    /*---(complete)-----------------------*/
@@ -411,30 +426,41 @@ ycalc_popstr_plus       (char *a_func, char a_what)
       switch (a_what) {
       case G_SPECIAL_SOURCE :
          g_special (x_deproot->owner, G_SPECIAL_SOURCE, NULL, &s_string);
-         return strndup (s_string, LEN_RECD);
+         if (s_string == NULL) return  strndup (g_nada  , LEN_RECD);
+         else                  return  strndup (s_string, LEN_RECD);
+         break;
+      case G_SPECIAL_LABEL  :
+         return strndup (g_labeler (x_deproot->owner), LEN_RECD);
          break;
       case G_SPECIAL_PRINT  :
          g_special (x_deproot->owner, G_SPECIAL_PRINT , NULL, &s_string);
-         return strndup (s_string, LEN_RECD);
+         if (s_string == NULL) return  strndup (g_nada  , LEN_RECD);
+         else                  return  strndup (s_string, LEN_RECD);
          break;
       case G_SPECIAL_RPN    :
-         return strndup (x_deproot->rpn, LEN_RECD);
+         s_string = x_deproot->rpn;
+         if (s_string == NULL) return  strndup (g_nada  , LEN_RECD);
+         else                  return  strndup (s_string, LEN_RECD);
          break;
       case G_SPECIAL_PROS   :
          ycalc_audit_disp_pros      (x_deproot, s_list);
-         return strndup (s_list, LEN_RECD);
+         if (s_list   == NULL) return  strndup (g_nada  , LEN_RECD);
+         else                  return  strndup (s_list  , LEN_RECD);
          break;
       case G_SPECIAL_REQS   :
          ycalc_audit_disp_reqs      (x_deproot, s_list);
-         return strndup (s_list, LEN_RECD);
+         if (s_list   == NULL) return  strndup (g_nada  , LEN_RECD);
+         else                  return  strndup (s_list  , LEN_RECD);
          break;
       case G_SPECIAL_LIKE   :
          ycalc_audit_disp_like      (x_deproot, s_list);
-         return strndup (s_list, LEN_RECD);
+         if (s_list   == NULL) return  strndup (g_nada  , LEN_RECD);
+         else                  return  strndup (s_list  , LEN_RECD);
          break;
       default               :
          g_special (x_deproot->owner, a_what, NULL, &s_string);
-         return strndup (s_string, LEN_RECD);
+         if (s_string == NULL) return  strndup (g_nada  , LEN_RECD);
+         else                  return  strndup (s_string, LEN_RECD);
          break;
       }
    }
@@ -585,6 +611,8 @@ yCALC_exec             (void *a_deproot, char a_type, double *a_value, char **a_
       return rce;
    }
    /*---(main loop)----------------------*/
+   myCALC.deproot = x_deproot;
+   myCALC.owner   = x_deproot->owner;
    x_calc   = x_deproot->chead;
    while (x_calc != NULL) {
       ++s_neval;
@@ -613,6 +641,8 @@ yCALC_exec             (void *a_deproot, char a_type, double *a_value, char **a_
       if (s_error != 0) break;
       x_calc = x_calc->next;
    }
+   myCALC.deproot = NULL;
+   myCALC.owner   = NULL;
    /*---(check results)------------------*/
    rc = ycalc__exec_wrap    (a_type, a_value, a_string);
    DEBUG_CALC   yLOG_value   ("wrap"      , rc);

@@ -236,7 +236,7 @@ ycalc__mock_valuer      (void *a_owner, char *a_type, double *a_value, char **a_
    }
    if (a_string != NULL) {
       if      (x_mock->string != NULL)  *a_string = x_mock->string;
-      else if (x_mock->source != NULL)  *a_string = x_mock->source;
+      else if (x_mock->type == 's' && x_mock->source != NULL)  *a_string = x_mock->source;
       else                              *a_string = g_nada;
       DEBUG_DEPS   yLOG_snote   (*a_string);
    }

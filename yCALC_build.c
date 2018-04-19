@@ -9,12 +9,12 @@
 
 
 tTERMS      s_terms [MAX_TERM] = {
-   { 'v' , "val"    , "numeric or cell address"        },
+   { 'n' , "num"    , "numeric or cell address"        },
    { 's' , "str"    , "string or cell address"         },
+   { 't' , "t/f"    , "boolean (true or false)"        },
    { '?' , "v/s"    , "string or numeric (runtime)"    },
-   { 'a' , "adr"    , "cell address or pointer"        },
-   { 'r' , "rng"    , "range of cells or pointer"      },
-   { 't' , "T/F"    , "true or false"                  },
+   { 'a' , "addr"   , "cell address or pointer"        },
+   { 'r' , "range"  , "range of cells or pointer"      },
    { '-' , "---"    , "-----"                          },
 };
 
@@ -38,6 +38,8 @@ ycalc_build_init        (void)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    int         i           =    0;
+   char        t           [LEN_LABEL];
+   int         c           =    0;
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(functions)----------------------*/
@@ -46,6 +48,54 @@ ycalc_build_init        (void)
    g_who_at    = NULL;
    g_labeler   = NULL;
    g_reaper    = NULL;
+   /*---(object types)-------------------*/
+   DEBUG_PROG   yLOG_note    ("clear validation types");
+   strlcpy (YCALC_GROUP_ALL , "", 20);
+   strlcpy (YCALC_GROUP_RPN , "", 20);
+   strlcpy (YCALC_GROUP_CALC, "", 20);
+   strlcpy (YCALC_GROUP_DEPS, "", 20);
+   strlcpy (YCALC_GROUP_NUM , "", 20);
+   strlcpy (YCALC_GROUP_STR , "", 20);
+   strlcpy (YCALC_GROUP_ERR , "", 20);
+   strlcpy (YCALC_GROUP_FPRE, "", 20);
+   /*---(complete info table)------------*/
+   DEBUG_PROG   yLOG_note    ("build cell validation types");
+   --rce;
+   for (i = 0; i < YCALC_MAX_TYPE; ++i) {
+      DEBUG_PROG_M yLOG_value   ("ENTRY"     , i);
+      DEBUG_PROG_M yLOG_char    ("type"      , g_ycalc_types [i].type);
+      /*---(check for end)---------------*/
+      if (g_ycalc_types [i].type == 0)  break;
+      /*---(add to lists)----------------*/
+      sprintf (t, "%c", g_ycalc_types [i].type);
+      DEBUG_PROG_M yLOG_info    ("str type"  , t);
+      DEBUG_PROG_M yLOG_char    ("rpn flag"  , g_ycalc_types [i].rpn);
+      strcat (YCALC_GROUP_ALL , t);
+      if (g_ycalc_types [i].calc    == 'y')  strcat (YCALC_GROUP_CALC, t);
+      if (g_ycalc_types [i].deps    == 'y')  strcat (YCALC_GROUP_DEPS, t);
+      if (g_ycalc_types [i].result  == '=')  strcat (YCALC_GROUP_NUM , t);
+      if (g_ycalc_types [i].result  == '#')  strcat (YCALC_GROUP_STR , t);
+      if (g_ycalc_types [i].result  == 'e')  strcat (YCALC_GROUP_ERR , t);
+      if (g_ycalc_types [i].rpn     == 'y') {
+         strcat  (YCALC_GROUP_RPN , t);
+         sprintf (t, "%c", g_ycalc_types [i].prefix);
+         if   (g_ycalc_types [i].prefix != ' ' && 
+               strchr (YCALC_GROUP_FPRE, g_ycalc_types [i].prefix) == 0) {
+            strcat  (YCALC_GROUP_FPRE , t);
+         }
+      }
+      ++c;
+   }
+   /*---(report out)---------------------*/
+   DEBUG_PROG   yLOG_value   ("c"         , c);
+   DEBUG_PROG   yLOG_info    ("GROUP_ALL" , YCALC_GROUP_ALL );
+   DEBUG_PROG   yLOG_info    ("GROUP_RPN" , YCALC_GROUP_RPN );
+   DEBUG_PROG   yLOG_info    ("GROUP_CALC", YCALC_GROUP_CALC);
+   DEBUG_PROG   yLOG_info    ("GROUP_DEPS", YCALC_GROUP_DEPS);
+   DEBUG_PROG   yLOG_info    ("GROUP_NUM" , YCALC_GROUP_NUM );
+   DEBUG_PROG   yLOG_info    ("GROUP_STR" , YCALC_GROUP_STR );
+   DEBUG_PROG   yLOG_info    ("GROUP_ERR" , YCALC_GROUP_ERR );
+   DEBUG_PROG   yLOG_info    ("GROUP_FPRE", YCALC_GROUP_FPRE);
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -505,18 +555,18 @@ ycalc__build_function   (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(locate function)----------------*/
    for (i = 0; i < MAX_FUNCS; ++i) {
-      /*> DEBUG_CALC   yLOG_complex ("check"     , "%3d, %-12.12s, %3d, %-10.10p   vs %-12.12s, %3d", i, g_funcs[i].n, g_funcs[i].l, g_funcs[i].f, a_token, len);   <*/
+      /*> DEBUG_CALC   yLOG_complex ("check"     , "%3d, %-12.12s, %3d, %-10.10p   vs %-12.12s, %3d", i, g_ycalc_funcs[i].n, g_ycalc_funcs[i].l, g_ycalc_funcs[i].f, a_token, len);   <*/
       /*---(check for end)---------------*/
-      if (g_funcs [i].f == NULL)                      break;
-      if (g_funcs [i].len == 0   )                    break;
+      if (g_ycalc_funcs [i].f == NULL)                      break;
+      if (g_ycalc_funcs [i].len == 0   )                    break;
       /*---(check for length)------------*/
-      if (x_len  != g_funcs [i].len)                  continue;
+      if (x_len  != g_ycalc_funcs [i].len)                  continue;
       /*---(check for name)--------------*/
-      if (a_token [0] != g_funcs[i].name [0])              continue;
-      if (strcmp (g_funcs[i].name, a_token) != 0)        continue;
+      if (a_token [0] != g_ycalc_funcs[i].name [0])              continue;
+      if (strcmp (g_ycalc_funcs[i].name, a_token) != 0)        continue;
       /*---(found)-----------------------*/
-      DEBUG_CALC   yLOG_complex ("found it"  , "%3d, %-12.12s, %3d, %-10.10p   vs %-12.12s, %3d", i, g_funcs[i].name, g_funcs[i].len, g_funcs[i].f, a_token, x_len);
-      a_calc->f = g_funcs[i].f;
+      DEBUG_CALC   yLOG_complex ("found it"  , "%3d, %-12.12s, %3d, %-10.10p   vs %-12.12s, %3d", i, g_ycalc_funcs[i].name, g_ycalc_funcs[i].len, g_ycalc_funcs[i].f, a_token, x_len);
+      a_calc->f = g_ycalc_funcs[i].f;
       /*---(update type)-----------------*/
       DEBUG_CALC   yLOG_note    ("mark type");
       a_calc->t = G_TYPE_FUNC;

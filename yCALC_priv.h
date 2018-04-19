@@ -18,8 +18,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.1h"
-#define YCALC_VER_TXT   "string printables variations are unit tested (lots of fixes :)"
+#define YCALC_VER_NUM   "0.1i"
+#define YCALC_VER_TXT   "owner/object auditing formulas are working and unit tested"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -94,9 +94,24 @@ struct  cFUNCS {
    char        terms       [10];       /* number of terms                     */
    char        fcat;                   /* category                            */
    char        desc        [60];       /* descriptive label                   */
-   char        disp        [30];       /* display version of function         */
 };
-extern tFUNCS  g_funcs [MAX_FUNCS];
+extern const tFUNCS  g_ycalc_funcs [MAX_FUNCS];
+
+
+#define     MAX_FCAT          50
+typedef struct cFCAT tFCAT;
+struct cFCAT {
+   char        fcat;
+   char        desc        [LEN_DESC];
+};
+extern const tFCAT s_fcats  [MAX_FCAT];
+
+
+
+
+
+
+
 
 extern char   ycalc__unit_answer [LEN_STR ];
 
@@ -255,6 +270,9 @@ struct cLOCAL {
    tDEP_LINK  *dtail;
    int         dcount;
    /*---(done)--------------*/
+   void       *owner;
+   void       *deproot;
+   /*---(done)--------------*/
 };
 extern  tLOCAL myCALC;
 
@@ -291,6 +309,7 @@ extern tyCALC_ERROR   yCALC_ERRORS     [100];
 
 
 #define       G_SPECIAL_TYPE     'T'
+#define       G_SPECIAL_LABEL    'L'
 #define       G_SPECIAL_SOURCE   'S'
 #define       G_SPECIAL_PRINT    'P'
 
@@ -302,7 +321,39 @@ extern tyCALC_ERROR   yCALC_ERRORS     [100];
 #define       G_SPECIAL_NREQ     '2'
 #define       G_SPECIAL_LIKE     'l'
 #define       G_SPECIAL_LEVEL    's'
+#define       G_SPECIAL_XPOS     'X'
+#define       G_SPECIAL_YPOS     'Y'
+#define       G_SPECIAL_ZPOS     'Z'
 
+
+
+/*===[[ OBJECT TYPES ]]=======================================================*/
+#define   YCALC_MAX_TYPE    15
+typedef struct cyCALC_TYPES  tyCALC_TYPES;
+struct cyCALC_TYPES {
+   char        type;                        /* cell type                      */
+   char        terse       [LEN_LABEL];     /* short description of cell type */
+   char        prefix;                      /* prefix in cell source string   */
+   char        rpn;                         /* require processing by rpn      */
+   char        calc;                        /* must it be calculated          */
+   char        deps;                        /* must follow the dependencies   */
+   char        result;                      /* what type is the result        */
+   char        desc        [LEN_DESC ];     /* description of cell type       */
+};
+extern const   tyCALC_TYPES  g_ycalc_types [YCALC_MAX_TYPE];
+
+extern char    YCALC_GROUP_ALL    [LEN_LABEL];
+extern char    YCALC_GROUP_RPN    [LEN_LABEL];
+extern char    YCALC_GROUP_CALC   [LEN_LABEL];
+extern char    YCALC_GROUP_DEPS   [LEN_LABEL];
+extern char    YCALC_GROUP_NUM    [LEN_LABEL];
+extern char    YCALC_GROUP_STR    [LEN_LABEL];
+extern char    YCALC_GROUP_ERR    [LEN_LABEL];
+extern char    YCALC_GROUP_FPRE   [LEN_LABEL];
+
+
+
+/*===[[ FUNCTION PROTOTYPES ]]================================================*/
 
 /*---(malloc)---------------------*/
 char        ycalc__deps_new         (tDEP_LINK **a_dep);
@@ -320,6 +371,7 @@ char        ycalc__deps_rooting     (tDEP_ROOT *a_curr, char a_type);
 char        ycalc__deps_circle      (int a_level, tDEP_ROOT *a_source, tDEP_ROOT *a_target, long a_stamp);
 
 
+char        ycalc_audit_init        (void);
 char        ycalc__audit_disp_reqs  (tDEP_ROOT *a_me, char* a_list);
 char        ycalc__audit_disp_pros  (tDEP_ROOT *a_me, char* a_list);
 char        ycalc__audit_disp_like  (tDEP_ROOT *a_me, char* a_list);
@@ -479,6 +531,35 @@ void        ycalc_sprint            (void);
 void        ycalc_sprintc           (void);
 void        ycalc_sseven            (void);
 void        ycalc_ssevenc           (void);
+/*---(object audit functions)----------*/
+void        ycalc_type              (void);
+void        ycalc_isblank           (void);
+void        ycalc_isvalue           (void);
+void        ycalc_istext            (void);
+void        ycalc_isnum             (void);
+void        ycalc_isfor             (void);
+void        ycalc_isstr             (void);
+void        ycalc_ismod             (void);
+void        ycalc_iscalc            (void);
+void        ycalc_islit             (void);
+void        ycalc_ispoint           (void);
+void        ycalc_iserror           (void);
+void        ycalc_xpos              (void);
+void        ycalc_ypos              (void);
+void        ycalc_zpos              (void);
+void        ycalc_me                (void);
+void        ycalc_label             (void);
+void        ycalc_tab               (void);
+void        ycalc_col               (void);
+void        ycalc_row               (void);
+void        ycalc_formula           (void);
+void        ycalc_rpn               (void);
+void        ycalc_ncalc             (void);
+void        ycalc_reqs              (void);
+void        ycalc_nreq              (void);
+void        ycalc_pros              (void);
+void        ycalc_npro              (void);
+void        ycalc_level             (void);
 
 
 
