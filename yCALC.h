@@ -12,8 +12,8 @@
 #define       YCALC_DATA_NUM     'n'
 #define       YCALC_DATA_NFORM   '='
 #define       YCALC_DATA_NLIKE   '9'
-#define       YCALC_DATA_RANGE   'p'
-#define       YCALC_DATA_ADDR    'a'
+#define       YCALC_DATA_ADDR    '&'
+#define       YCALC_DATA_RANGE   ':'
 #define       YCALC_DATA_MERGED  '+'
 #define       YCALC_DATA_ERROR   'E'
 
@@ -60,10 +60,13 @@ char        yCALC_create            (char a_type, char *a_source, char *a_target
 char        yCALC_delete            (char a_type, char *a_source, char *a_target);
 char        yCALC_range             (void *a_source, int x1, int y1, int z1, int x2, int y2, int z2);
 
-char        yCALC_build             (char *a_label, char *a_rpn, char **a_notice);
+char        yCALC_handle            (char *a_label  , char *a_src , char *a_type, double *a_value, char **a_string);
 
-char        yCALC_exec              (void *a_deproot, char a_type, double *a_value, char **a_string, char **a_notice);
-char        yCALC_exec_label        (char *a_label  , char a_type, double *a_value, char **a_string, char **a_notice);
+char        yCALC_build             (void *a_deproot, char *a_rpn , char *a_type, char **a_string);
+char        yCALC_build_label       (char *a_label  , char *a_rpn , char *a_type, char **a_string);
+
+char        yCALC_exec              (void *a_deproot, char *a_type, double *a_value, char **a_string);
+char        yCALC_exec_label        (char *a_label  , char *a_type, double *a_value, char **a_string);
 
 char        yCALC_seq_up            (void *a_deproot, void *a_consumer);
 char        yCALC_seq_down          (void *a_deproot, void *a_consumer);

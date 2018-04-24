@@ -4,6 +4,36 @@
 
 
 
+static const double DEG2RAD = 3.1415927 / 180.0;
+static const double RAD2DEG = 180.0 / 3.1415927;
+
+
+
+typedef struct cTRIG  tTRIG;
+struct  cTRIG {
+   double      si;
+   double      co;
+   double      ta;
+};
+static tTRIG   s_trig [3600];
+
+char
+ycalc_math_init         (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   int         i           =    0;
+   double      a           =  0.0;
+   /*---(load trig table)----------------*/
+   for (i = 0; i < 3600; ++i) {
+      a = ((double) i) / 10.0;
+      s_trig [i].si = sin ((double) a * DEG2RAD);
+      s_trig [i].co = cos ((double) a * DEG2RAD);
+      s_trig [i].ta = tan ((double) a * DEG2RAD);
+      if ( i % 900 == 0)  s_trig[i].ta = 0.0;
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
 
 
 /*====================------------------------------------====================*/
@@ -349,6 +379,33 @@ ycalc_or           (void)
    return;
 }
 
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_nand         (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, !(b && a));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_nor          (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, !(b || a));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_xor          (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, (b && !a) || (!b && a));
+   return;
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -399,6 +456,259 @@ ycalc_approx        (void)
    else                              ycalc_pushval (__FUNCTION__, FALSE);
    return;
 }
+
+
+
+/*====================------------------------------------====================*/
+/*===----                         trig functions                       ----===*/
+/*====================------------------------------------====================*/
+
+void  o___TRIG____________o () { return; }
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.07#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_degrees       (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, a * RAD2DEG);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_radians       (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, a * DEG2RAD);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.01]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_pi            (void)
+{
+   ycalc_pushval (__FUNCTION__, 3.1415927);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_hypot         (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, sqrt(a * a + b * b));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_side          (void)
+{
+   b = ycalc_popval (__FUNCTION__);
+   c = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, sqrt(c * c - b * b));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.010.12]*/ /*-[00.0000.03#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_sin           (void)
+{
+   int i;
+   a = ycalc_popval (__FUNCTION__);
+   i = round (a * 10.0);
+   i = i % 3600;
+   if (i < 0)  i = 3600 + i;
+   ycalc_pushval (__FUNCTION__, s_trig[i].si);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_sinr          (void)
+{
+   ycalc_degrees ();
+   ycalc_sin     ();
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.000.04]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_csc           (void)
+{
+   ycalc_sin     ();
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, 1);
+   ycalc_pushval (__FUNCTION__, a);
+   ycalc_divide ();
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_cscr          (void)
+{
+   ycalc_degrees ();
+   ycalc_csc     ();
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.010.12]*/ /*-[00.0000.02#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_cos           (void)
+{
+   int i;
+   a = ycalc_popval (__FUNCTION__);
+   i = round (a * 10.0);
+   i = i % 3600;
+   if (i < 0)  i = 3600 + i;
+   ycalc_pushval (__FUNCTION__, s_trig[i].co);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_cosr          (void)
+{
+   ycalc_degrees ();
+   ycalc_cos     ();
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.000.04]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_sec           (void)
+{
+   ycalc_cos     ();
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, 1);
+   ycalc_pushval (__FUNCTION__, a);
+   ycalc_divide ();
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_secr          (void)
+{
+   ycalc_degrees ();
+   ycalc_sec     ();
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.010.12]*/ /*-[00.0000.02#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_tan           (void)
+{
+   int i;
+   a = ycalc_popval (__FUNCTION__);
+   i = round (a * 10.0);
+   i = i % 3600;
+   if (i < 0)  i = 3600 + i;
+   ycalc_pushval (__FUNCTION__, s_trig[i].ta);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_tanr          (void)
+{
+   ycalc_degrees ();
+   ycalc_tan     ();
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.000.04]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_cot           (void)
+{
+   ycalc_tan     ();
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, 1);
+   ycalc_pushval (__FUNCTION__, a);
+   ycalc_divide ();
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_cotr          (void)
+{
+   ycalc_degrees ();
+   ycalc_cot     ();
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.000.03]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_crd           (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, a / 2.0);
+   ycalc_sin     ();
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, a * 2.0);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_crdr          (void)
+{
+   ycalc_degrees ();
+   ycalc_crd     ();
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_asin          (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, asin(a) * RAD2DEG);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_asinr         (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, asin(a));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_acos          (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, acos(a) * RAD2DEG);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_acosr         (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, acos(a));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_atan          (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, atan(a) * RAD2DEG);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_atanr         (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, atan(a));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_atan2         (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, atan2 (b,a) * RAD2DEG);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_atanr2        (void)
+{
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, atan2 (b,a));
+   return;
+}
+
+
 
 
 

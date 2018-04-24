@@ -105,6 +105,23 @@ static int     s_nstack  = 0;
 static void      o___PROGRAM_________________o (void) {;}
 
 char
+ycalc__exec_stack_clear  (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   int         i           =    0;
+   for (i = 0; i < S_MAX_STACK; ++i) {
+      s_stack [i].typ   = S_TYPE_EMPTY;
+      s_stack [i].ref   = NULL;
+      s_stack [i].num   = 0.0;
+      s_stack [i].str   = NULL;
+   }
+   s_nstack = 0;
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+
+char
 ycalc_exec_init          (void)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -114,13 +131,7 @@ ycalc_exec_init          (void)
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(globals)------------------------*/
    DEBUG_PROG   yLOG_note    ("clearing stack");
-   for (i = 0; i < S_MAX_STACK; ++i) {
-      s_stack [i].typ   = S_TYPE_EMPTY;
-      s_stack [i].ref   = NULL;
-      s_stack [i].num   = 0.0;
-      s_stack [i].str   = NULL;
-   }
-   s_nstack = 0;
+   ycalc__exec_stack_clear ();
    /*---(functions)----------------------*/
    DEBUG_PROG   yLOG_note    ("clearing function calls");
    g_valuer    = NULL;
@@ -340,6 +351,35 @@ ycalc_popstr            (char *a_func)
    return strndup (g_nada, LEN_RECD);
 }
 
+tDEP_ROOT*   /*-> get an string off the stack --------[ ------ [fs.A40.20#.31]*/ /*-[02.0000.0#5.!]-*/ /*-[--.---.---.--]-*/
+ycalc_popref            (char *a_func)
+{
+   /*---(local)--------------------------*/
+   tDEP_ROOT  *x_deproot   = NULL;
+   /*---(prepare)------------------------*/
+   if (s_nstack <= 0) {
+      myCALC.trouble = G_ERROR_STACK;
+      return strndup (g_nada, LEN_RECD);
+   }
+   --s_nstack;
+   /*---(handle stack types)-------------*/
+   switch (s_stack[s_nstack].typ) {
+   case S_TYPE_NUM :
+      myCALC.trouble = G_ERROR_POINTER;
+      return  NULL;
+      break;
+   case S_TYPE_STR :
+      myCALC.trouble = G_ERROR_POINTER;
+      return  NULL;
+      break;
+   case S_TYPE_REF :
+      return s_stack [s_nstack].ref;
+   }
+   /*---(complete)-----------------------*/
+   myCALC.trouble = G_ERROR_STACK;
+   return NULL;
+}
+
 int          /*-> get an string off the stack --------[ ------ [fs.A40.20#.31]*/ /*-[02.0000.0#5.!]-*/ /*-[--.---.---.--]-*/
 ycalc_popval_plus       (char *a_func, char a_what)
 {
@@ -477,7 +517,7 @@ ycalc_popstr_plus       (char *a_func, char a_what)
 static void      o___SUPPORT_________________o (void) {;}
 
 char
-ycalc__exec_prepare     (tDEP_ROOT *a_deproot, char a_type, double *a_value, char **a_string)
+ycalc__exec_prepare     (tDEP_ROOT *a_deproot, char *a_type, double *a_value, char **a_string)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -487,12 +527,26 @@ ycalc__exec_prepare     (tDEP_ROOT *a_deproot, char a_type, double *a_value, cha
    /*---(default settings)---------------*/
    if (a_value  != NULL)  *a_value = 0.0;
    if (a_string != NULL && *a_string != NULL)  strlcpy (*a_string, "", LEN_RECD);
+   ycalc__exec_stack_clear ();
    /*---(check status)-------------------*/
    DEBUG_CALC   yLOG_char    ("status"    , myCALC.status);
    --rce;  if (myCALC.status != 'O') {
       DEBUG_PROG   yLOG_note    ("must initialize and configure before use");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
+   }
+   /*---(check return type)--------------*/
+   DEBUG_CALC   yLOG_point   ("a_type"    , a_type);
+   --rce;  if (a_type == NULL) {
+      DEBUG_CALC   yLOG_note    ("calculation result available");
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_CALC   yLOG_char    ("*a_type"   , *a_type);
+   if (strchr (YCALC_GROUP_CALC, *a_type) == NULL) {
+      DEBUG_CALC   yLOG_note    ("not a calculated type");
+      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      return 0;
    }
    /*---(check deproot)------------------*/
    DEBUG_CALC   yLOG_point   ("a_deproot" , a_deproot);
@@ -509,21 +563,14 @@ ycalc__exec_prepare     (tDEP_ROOT *a_deproot, char a_type, double *a_value, cha
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(check return type)--------------*/
-   DEBUG_CALC   yLOG_char    ("a_type"    , a_type);
-   --rce;  if (strchr ("=#", a_type) == NULL) {
-      DEBUG_CALC   yLOG_note    ("calculation result not understood");
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
    /*---(check return variables)---------*/
-   --rce;  if (a_type == '=' && a_value == NULL) {
-      DEBUG_CALC   yLOG_note    ("=, but numeric return value is null");
+   --rce;  if (a_value == NULL) {
+      DEBUG_CALC   yLOG_note    ("numeric return value is null");
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   --rce;  if (a_type == '#' && a_string == NULL) {
-      DEBUG_CALC   yLOG_note    ("#, but string return value is null");
+   --rce;  if (a_string == NULL) {
+      DEBUG_CALC   yLOG_note    ("sring return value is null");
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -538,7 +585,7 @@ ycalc__exec_prepare     (tDEP_ROOT *a_deproot, char a_type, double *a_value, cha
 }
 
 char
-ycalc__exec_wrap        (char a_type, double *a_value, char **a_string)
+ycalc__exec_wrap        (char *a_type, double *a_value, char **a_string)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -572,11 +619,11 @@ ycalc__exec_wrap        (char a_type, double *a_value, char **a_string)
       return rce;
    }
    /*---(results)------------------------*/
-   if (a_type == '=') {
+   if (*a_type == '=') {
       *a_value = ycalc_popval (__FUNCTION__);
       DEBUG_CALC   yLOG_value   ("value"     , *a_value);
    }
-   if (a_type == '#') {
+   if (*a_type == '#') {
       *a_string = ycalc_popstr (__FUNCTION__);
       DEBUG_CALC   yLOG_info    ("string"    , *a_string);
    }
@@ -593,15 +640,13 @@ ycalc__exec_wrap        (char a_type, double *a_value, char **a_string)
 static void      o___DRIVER__________________o (void) {;}
 
 char         /*-> evaluate a calculation -------------[ ------ [ge.J95.146.A6]*/ /*-[02.0000.204.!]-*/ /*-[--.---.---.--]-*/
-yCALC_exec             (void *a_deproot, char a_type, double *a_value, char **a_string, char **a_notice)
+yCALC_exec             (void *a_deproot, char *a_type, double *a_value, char **a_string)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
    char        rc          =    0;
    tDEP_ROOT  *x_deproot   = NULL;
    tCALC      *x_calc      = NULL;
-   /*---(pre-defense)--------------------*/
-   if (strchr (YCALC_GROUP_CALC, a_type) == NULL)   return 0;
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
@@ -616,6 +661,8 @@ yCALC_exec             (void *a_deproot, char a_type, double *a_value, char **a_
    myCALC.deproot = x_deproot;
    myCALC.owner   = x_deproot->owner;
    x_calc   = x_deproot->chead;
+   DEBUG_CALC   yLOG_value   ("ncalc"     , x_deproot->ncalc);
+   DEBUG_CALC   yLOG_value   ("nstack"    , s_nstack);
    while (x_calc != NULL) {
       ++s_neval;
       DEBUG_CALC   yLOG_complex ("element"   , "typ=%c, val=%F, str=%-9p, ref=%-9p, fnc=%-9p", x_calc->t, x_calc->v, x_calc->s, x_calc->r, x_calc->f);
@@ -642,6 +689,7 @@ yCALC_exec             (void *a_deproot, char a_type, double *a_value, char **a_
       }
       if (s_error != 0) break;
       x_calc = x_calc->next;
+      DEBUG_CALC   yLOG_value   ("nstack"    , s_nstack);
    }
    myCALC.deproot = NULL;
    myCALC.owner   = NULL;
@@ -658,7 +706,7 @@ yCALC_exec             (void *a_deproot, char a_type, double *a_value, char **a_
 }
 
 char         /*-> delete a two-way dependency --------[ ------ [ge.M88.15#.B6]*/ /*-[01.0000.526.H]-*/ /*-[--.---.---.--]-*/
-yCALC_exec_label        (char *a_label, char a_type, double *a_value, char **a_string, char **a_notice)
+yCALC_exec_label        (char *a_label, char *a_type, double *a_value, char **a_string)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;
@@ -679,7 +727,7 @@ yCALC_exec_label        (char *a_label, char a_type, double *a_value, char **a_s
       return rce;
    }
    /*---(run)----------------------------*/
-   rc = yCALC_exec (x_deproot, a_type, a_value, a_string, a_notice);
+   rc = yCALC_exec (x_deproot, a_type, a_value, a_string);
    DEBUG_CALC   yLOG_value   ("exec"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);

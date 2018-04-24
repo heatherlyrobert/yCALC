@@ -12,14 +12,15 @@
 
 #include    <yURG.h>                    /* heatherly program logger            */
 #include    <ySTR.h>
+#include    <yRPN.h>
 #include    <yLOG.h>                    /* heatherly program logger            */
 #include    "yCALC.h"
 
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.1j"
-#define YCALC_VER_TXT   "pointer build and exec avoidance is working"
+#define YCALC_VER_NUM   "0.1k"
+#define YCALC_VER_TXT   "all math unit tests switched to yCALC_handle and added nand, nor, xor"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -39,6 +40,7 @@ extern char    (*g_enabler  )   (void *a_owner, void *a_deproot);
 extern char    (*g_reaper   )   (void *a_owner);        /* pass deproot->owner, tries to kill thing        */
 
 extern char*   (*g_labeler  )   (void *a_owner);        /* pass deproot->owner, get back label of thing    */
+extern char*   (*g_adjuster )   (char *a_label, int x, int y, int z);        /* pass deproot->owner, get back label of thing    */
 extern char    (*g_addresser)   (void *a_owner, int   *x        , int    *y       , int     *z);
 extern char    (*g_valuer   )   (void *a_owner, char *a_type, double *a_value , char   **a_string);
 extern char    (*g_special  )   (void *a_owner, char  a_what, double *a_value , char   **a_string);
@@ -276,6 +278,9 @@ struct cLOCAL {
 };
 extern  tLOCAL myCALC;
 
+
+
+#define   YCALC_MAX_ERROR       100
 typedef   struct cyCALC_ERROR  tyCALC_ERROR;
 struct cyCALC_ERROR {
    char        abbr;
@@ -283,7 +288,7 @@ struct cyCALC_ERROR {
    char        terse       [LEN_LABEL];
    char        desc        [LEN_DESC ];
 };
-extern tyCALC_ERROR   yCALC_ERRORS     [100];
+extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 
 
 #define     G_NO_ERROR       '-'
@@ -295,9 +300,12 @@ extern tyCALC_ERROR   yCALC_ERRORS     [100];
 #define     G_ERROR_THING    'T'
 #define     G_ERROR_DEPEND   'D'
 #define     G_ERROR_TOKEN    'E'
-#define     G_ERROR_POINTER  'P'
+#define     G_ERROR_POINTER  'p'
 #define     G_ERROR_UNKNOWN  'U'
 
+#define     YCALC_ERROR_RPN      'r'
+#define     YCALC_ERROR_POINT    '&'
+#define     YCALC_ERROR_DEREF    '*'
 
 
 #define     G_TYPE_EMPTY        '-'
@@ -413,8 +421,8 @@ char        ycalc__unit_stackset    (int   a_num);
 /*---(mock overall)-------------------*/
 char        ycalc__mock_enable      (void);
 /*---(mock build)---------------------*/
-char        ycalc__mock_who_named   (char *a_label, void **a_owner, void **a_deproot);
-char        ycalc__mock_who_at      (int x, int y, int z, void **a_owner, void **a_deproot);
+char        ycalc__mock_named       (char *a_label, void **a_owner, void **a_deproot);
+char        ycalc__mock_at          (int x, int y, int z, void **a_owner, void **a_deproot);
 char        ycalc__mock_enabler     (void *a_owner, void *a_deproot);
 char*       ycalc__mock_labeler     (void *a_owner);
 char        ycalc__mock_reaper      (void *a_owner);
@@ -424,6 +432,7 @@ char        ycalc__mock_addresser   (void *a_thing, int  *x, int *y, int *z);
 char        ycalc__mock_special     (void *a_owner, char a_what, double *a_value, char **a_string);
 /*---(unit testing)-------------------*/
 char        ycalc__mock_special_set (char *a_label, char *a_source, double a_value, char *a_print);
+char        ycalc__mock_source      (char *a_label, char *a_source);
 char        ycalc__mock_whole       (char *a_label, char a_type, char *a_source, char a_format, char a_decs, char a_aign, char a_width);
 char*       ycalc__unit_mock        (char *a_question, char *a_label);
 
@@ -442,6 +451,10 @@ char        ycalc__seq_list         (char *a_list);
 /*===[ CALLS ]============================================*/
 char        ycalc_call_who_named    (char *a_label, void **a_owner, void **a_deproot);
 char        ycalc_call_who_at       (int x, int y, int z, void **a_owner, void **a_deproot);
+
+
+char        ycalc_math_init         (void);
+
 
 
 /*---(placeholder)--------------------*/
@@ -486,6 +499,9 @@ void        ycalc_slesser           (void);
 void        ycalc_not               (void);
 void        ycalc_and               (void);
 void        ycalc_or                (void);
+void        ycalc_nand              (void);
+void        ycalc_nor               (void);
+void        ycalc_xor               (void);
 void        ycalc_if                (void);
 void        ycalc_ifs               (void);
 void        ycalc_within            (void);
@@ -562,6 +578,7 @@ void        ycalc_nreq              (void);
 void        ycalc_pros              (void);
 void        ycalc_npro              (void);
 void        ycalc_level             (void);
+void        ycalc_pointer           (void);
 
 
 

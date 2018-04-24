@@ -12,7 +12,8 @@ char    (*g_enabler  )   (void *a_owner, void *a_deproot);
 char    (*g_reaper   )   (void *a_owner);        /* pass deproot->owner, tries to kill thing        */
 
 char*   (*g_labeler  )   (void *a_owner);        /* pass deproot->owner, get back label of thing    */
-char    (*g_addresser)   (void *a_owner, int   *x        , int    *y        , int     *z);
+char*   (*g_adjuster )   (char *a_label, int x, int y, int z);        /* pass deproot->owner, get back label of thing    */
+char    (*g_addresser)   (void *a_owner, int  *x, int *y, int *z);
 char    (*g_valuer   )   (void *a_owner, char *a_type, double *a_value  , char   **a_string);
 char    (*g_special  )   (void *a_owner, char  a_what, double *a_value , char   **a_string);
 
@@ -39,7 +40,7 @@ yCALC_enable            (void *a_owner)
       DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DEPS   yLOG_info    ("label"     , g_labeler (a_owner));
+   /*> DEBUG_DEPS   yLOG_info    ("label"     , g_labeler (a_owner));                 <*/
    /*---(create)-------------------------*/
    DEBUG_DEPS   yLOG_snote   ("malloc");
    while (x_deproot == NULL && x_tries < 10) {

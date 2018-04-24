@@ -1249,7 +1249,7 @@ ycalc__unit_deps        (char *a_question, char *a_label)
    strcpy (ycalc__unit_answer, "yCALC            : question not understood");
    if (a_label == NULL)   strlcpy (x_label, "---"  , LEN_LABEL);
    else                   strlcpy (x_label, a_label, LEN_LABEL);
-   rc = ycalc__mock_who_named (x_label, &x_owner, &x_deproot);
+   rc = ycalc__mock_named (x_label, &x_owner, &x_deproot);
    /*---(dependency list)----------------*/
    if      (strcmp (a_question, "count"    )      == 0) {
       x_dep  = myCALC.dhead; while (x_dep  != NULL) { ++x_fore; x_dep  = x_dep ->dnext; }

@@ -51,9 +51,9 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "exp"        ,  3, ycalc_power             , 'f', "n:nn"   , 'm', "x raised to the power of y"                        },
    { "abs"        ,  3, ycalc_abs               , 'f', "n:n"    , 'm', "ansi-c fabs() removes negative sign"               },
    { "trunc"      ,  5, ycalc_trunc             , 'f', "n:n"    , 'm', "truncate to the nearest integer value"             },
-   { "rtrunc"     ,  6, ycalc_rtrunc            , 'f', "n:nn"   , 'm', "truncate to y decimal places"                      },
+   { "truncn"     ,  6, ycalc_rtrunc            , 'f', "n:nn"   , 'm', "truncate to y decimal places"                      },
    { "round"      ,  5, ycalc_round             , 'f', "n:n"    , 'm', "round, up or down, to the nearest integer"         },
-   { "rround"     ,  6, ycalc_rround            , 'f', "n:nn"   , 'm', "round, up or down, to y decimal places"            },
+   { "roundn"     ,  6, ycalc_rround            , 'f', "n:nn"   , 'm', "round, up or down, to y decimal places"            },
    { "ceil"       ,  4, ycalc_ceiling           , 'f', "n:n"    , 'm', "raise up to the nearest integer"                   },
    { "floor"      ,  5, ycalc_floor             , 'f', "n:n"    , 'm', "push down to the nearest integer"                  },
    { "sqrt"       ,  4, ycalc_sqrt              , 'f', "n:n"    , 'm', "ansi-c square root"                                },
@@ -82,6 +82,9 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "ifs"        ,  3, ycalc_ifs               , 'f', "s:tss"  , 'l', "if x is T, n, else m"                              },
    { "within"     ,  6, ycalc_within            , 'f', "t:nnn"  , 'l', "if y is within the range of x to z, then T"        },
    { "approx"     ,  6, ycalc_approx            , 'f', "t:nnn"  , 'l', "if x is within the range of y +/- z, then T"       },
+   { "nand"       ,  4, ycalc_nand              , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "nor"        ,  3, ycalc_nor               , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "xor"        ,  3, ycalc_xor               , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
    /*---(string operators)----------------*/
    { "#"          ,  1, ycalc_concat            , 'o', "s:ss"   , 's', "m concatinated to the end of n"                    },
    { "##"         ,  2, ycalc_concatplus        , 'o', "s:ss"   , 's', "m concatinated to the end of n (with a space)"     },
@@ -127,7 +130,7 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "sseven"     ,  6, ycalc_sseven            , 'f', "s:s"    , 'c', "change all non-7bit safe chars in n to '_'"        },
    { "ssevenc"    ,  7, ycalc_ssevenc           , 'f', "s:s"    , 'c', "remove all non-7bit safe chars in n"               },
    /*---(object audit functions)----------*/
-   { "type"       ,  4, ycalc_type              , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
+   { "type"       ,  4, ycalc_type              , 'f', "n:a"    , 'i', "returns the type character as a value"             },
    { "isblank"    ,  7, ycalc_isblank           , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
    { "isvalue"    ,  7, ycalc_isvalue           , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
    { "istext"     ,  6, ycalc_istext            , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
@@ -153,6 +156,7 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "pros"       ,  4, ycalc_pros              , 'f', "s:a"    , 'i', "list of cells provided to by cell a"               },
    { "npro"       ,  4, ycalc_npro              , 'f', "n:a"    , 'i', "count of cells provided to by cell a"              },
    { "level"      ,  5, ycalc_level             , 'f', "n:a"    , 'i', "level of seqencing"                                },
+   { "*:"         ,  2, ycalc_pointer           , 'o', "a:a"    , 'i', "indirect access using pointer-like interface"      },
    /*---(end-of-s_funcs)--------------------*/
    { "END"        ,  0, NULL                    , '-', ""       , '-', ""                                                  },
 };
@@ -206,6 +210,7 @@ yCALC_init              (char a_style)
    ycalc_build_init  ();
    ycalc_exec_init   ();
    ycalc_deps_init   ();
+   ycalc_math_init   ();
    /*---(update status)------------------*/
    myCALC.status = 'I';
    myCALC.status_detail [0] = 'i';
@@ -280,9 +285,9 @@ ycalc__unit_quiet       (void)
 char       /*----: set up program urgents/debugging --------------------------*/
 ycalc__unit_loud        (void)
 {
-   char       *x_args [4]  = { "yCALC_debug","@@kitchen","@@CALC", "@@SORT" };
-   yURG_logger (4, x_args);
-   yURG_urgs   (4, x_args);
+   char       *x_args [5]  = { "yCALC_debug","@@kitchen","@@CALC", "@@SORT", "@@YRPN" };
+   yURG_logger (5, x_args);
+   yURG_urgs   (5, x_args);
    DEBUG_CALC   yLOG_info     ("yCALC"    , yCALC_version   ());
    myCALC.trouble = G_NO_ERROR;
    yCALC_init ('s');

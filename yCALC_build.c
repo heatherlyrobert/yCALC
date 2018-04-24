@@ -18,15 +18,6 @@ tTERMS      s_terms [MAX_TERM] = {
    { '-' , "---"    , "-----"                          },
 };
 
-tyCALC_ERROR   yCALC_ERRORS     [100] = {
-   { G_ERROR_THING   , 'b', "#.ref"     , "" },
-   { G_ERROR_RANGE   , 'b', "#.range"   , "" },
-   { G_ERROR_DEPEND  , 'b', "#.dep"     , "" },
-   { G_ERROR_TOKEN   , 'b', "#.token"   , "" },
-   { G_ERROR_UNKNOWN , 'b', "#.unknown" , "" },
-   { G_ERROR_POINTER , 'b', "#.point"   , "" },
-};
-
 
 /*====================------------------------------------====================*/
 /*===----                        program level                         ----===*/
@@ -346,7 +337,7 @@ ycalc_calc_wipe         (tDEP_ROOT *a_deproot)
 static void  o___STEPS___________o () { return; }
 
 char
-ycalc__build_prepare    (tDEP_ROOT *a_deproot, char *a_rpn)
+ycalc__build_prepare    (tDEP_ROOT *a_deproot, char *a_rpn, char *a_type, char *a_string)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -375,6 +366,18 @@ ycalc__build_prepare    (tDEP_ROOT *a_deproot, char *a_rpn)
       return rce;
    }
    DEBUG_CALC   yLOG_info    ("a_rpn"     , a_rpn);
+   DEBUG_CALC   yLOG_point   ("a_type"    , a_type);
+   --rce;  if (a_type == NULL) {
+      DEBUG_CALC   yLOG_note    ("type not available, can not mark errors");
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_CALC   yLOG_point   ("a_string"  , a_string);
+   --rce;  if (a_string == NULL) {
+      DEBUG_CALC   yLOG_note    ("string not available, can not return errors");
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(clear the calculation)----------*/
    rc = ycalc_calc_wipe  (a_deproot);
    DEBUG_CALC   yLOG_value   ("calc"      , rc);
@@ -482,77 +485,6 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    /*---(update type)--------------------*/
    DEBUG_CALC   yLOG_note    ("mark type");
    a_calc->t = G_TYPE_NOOP;
-   /*---(complete)-----------------------*/
-   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
-   return 1;
-}
-
-char
-ycalc__build_pointer    (tDEP_ROOT *a_thing, tCALC *a_calc, char *a_token)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rc          = G_ERROR_POINTER;
-   char        x_rc        =    0;
-   char        x_type      =    0;
-   tCALC      *x_prev      = NULL;
-   tDEP_ROOT  *x_ref       = NULL;
-   tDEP_ROOT  *x_other     = NULL;
-   tCALC      *x_beg       = NULL;
-   tCALC      *x_end       = NULL;
-   /*---(check for range operator)-------*/
-   DEBUG_CALC   yLOG_note    ("check for pointer operator");
-   if (strcmp (a_token, "*:") != 0)    return 0;
-   /*---(header)-------------------------*/
-   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
-   /*---(get the reference)--------------*/
-   x_prev = a_calc->prev;
-   DEBUG_CALC   yLOG_point   ("x_prev"    , x_prev);
-   if (x_prev == NULL || x_prev->t != G_TYPE_REF || x_prev->r == NULL) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
-      return rc;
-   }
-   DEBUG_CALC   yLOG_char    ("type"      , x_prev->t);
-   x_ref = x_prev->r;
-   DEBUG_CALC   yLOG_point   ("x_ref"     , x_ref);
-   x_rc = g_valuer  (x_ref->owner, &x_type, NULL, NULL);
-   DEBUG_CALC   yLOG_value   ("valuer"    , x_rc);
-   if (x_rc < 0) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
-      return rc;
-   }
-   DEBUG_CALC   yLOG_char    ("x_type"    , x_type);
-   if (x_type == 0 || strchr (YCALC_GROUP_POINT, x_type) == NULL) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
-      return rc;
-   }
-   DEBUG_CALC   yLOG_value   ("ncalc"     , x_ref->ncalc);
-   /*---(first)--------------------------*/
-   x_beg = x_ref->chead;
-   DEBUG_CALC   yLOG_point   ("x_beg"     , x_beg);
-   if (x_beg == NULL || x_beg->t != G_TYPE_REF || x_beg->r == NULL) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
-      return rc;
-   }
-   a_calc->t = G_TYPE_NOOP;
-   x_prev->t = G_TYPE_REF;
-   x_prev->r = x_beg;
-   if (x_ref->ncalc == 1) {
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
-      return 1;
-   }
-   /*---(second)-------------------------*/
-   if (x_ref->ncalc != 3) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
-      return rc;
-   }
-   x_end = x_beg->next;
-   DEBUG_CALC   yLOG_point   ("x_end"     , x_end);
-   if (x_end == NULL || x_end->t != G_TYPE_REF || x_end->r == NULL) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
-      return rc;
-   }
-   a_calc->t = G_TYPE_REF;
-   a_calc->r = x_end;
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 1;
@@ -675,7 +607,6 @@ ycalc__build_step       (tDEP_ROOT *a_deproot, char *a_token)
    if (rc == 0)  rc = ycalc__build_char      (a_deproot, x_calc, a_token);
    if (rc == 0)  rc = ycalc__build_string    (a_deproot, x_calc, a_token);
    if (rc == 0)  rc = ycalc__build_range     (a_deproot, x_calc, a_token);
-   if (rc == 0)  rc = ycalc__build_pointer   (a_deproot, x_calc, a_token);
    if (rc == 0)  rc = ycalc__build_function  (a_deproot, x_calc, a_token);
    if (rc == 0)  rc = ycalc__build_value     (a_deproot, x_calc, a_token);
    if (rc == 0)  rc = ycalc__build_reference (a_deproot, x_calc, a_token);
@@ -700,7 +631,7 @@ ycalc__build_step       (tDEP_ROOT *a_deproot, char *a_token)
 static void  o___DRIVER__________o () { return; }
 
 char
-yCALC_build             (char *a_label, char *a_rpn, char **a_notice)
+yCALC_build             (void *a_deproot, char *a_rpn, char *a_type, char **a_string)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -710,19 +641,15 @@ yCALC_build             (char *a_label, char *a_rpn, char **a_notice)
    char       *p;                           /* strtok current pointer         */
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
-   /*---(prepare)------------------------*/
-   rc = ycalc_call_who_named (a_label, NULL, &x_deproot);
-   DEBUG_CALC   yLOG_value   ("who named" , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
+   /*---(recast)-----------------------------*/
+   x_deproot = (tDEP_ROOT *) a_deproot;
    DEBUG_CALC   yLOG_point   ("x_deproot" , x_deproot);
    --rce;  if (x_deproot == NULL) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   rc = ycalc__build_prepare (x_deproot, a_rpn);
+   /*---(prepare)----------------------------*/
+   rc = ycalc__build_prepare (x_deproot, a_rpn, a_type, a_string);
    DEBUG_CALC   yLOG_value   ("prepare"   , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
@@ -751,24 +678,24 @@ yCALC_build             (char *a_label, char *a_rpn, char **a_notice)
       p = ycalc__build_strtok (NULL);
    }
    /*---(check for failure)----------------*/
-   if (a_notice != NULL) {
-      strlcpy (a_notice, "", LEN_RECD);
+   if (a_string != NULL) {
+      strlcpy (a_string, "", LEN_RECD);
       if (rc != 1) {
          switch (rc) {
          case G_ERROR_RANGE  :
-            strlcpy (a_notice, "#.badrng" , LEN_RECD);
+            strlcpy (a_string, "#.badrng" , LEN_RECD);
             break;
          case G_ERROR_THING  :
-            strlcpy (a_notice, "#.badref" , LEN_RECD);
+            strlcpy (a_string, "#.badref" , LEN_RECD);
             break;
          case G_ERROR_DEPEND :
-            strlcpy (a_notice, "#.baddep" , LEN_RECD);
+            strlcpy (a_string, "#.baddep" , LEN_RECD);
             break;
          case G_ERROR_TOKEN  :
-            strlcpy (a_notice, "#.badtok" , LEN_RECD);
+            strlcpy (a_string, "#.badtok" , LEN_RECD);
             break;
          case G_ERROR_UNKNOWN:
-            strlcpy (a_notice, "#.unknown", LEN_RECD);
+            strlcpy (a_string, "#.unknown", LEN_RECD);
             break;
          }
       }
@@ -781,6 +708,25 @@ yCALC_build             (char *a_label, char *a_rpn, char **a_notice)
    /*---(complete)-------------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
+}
+
+char
+yCALC_build_label       (char *a_label, char *a_rpn, char *a_type, char **a_string)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   tDEP_ROOT  *x_deproot   = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   /*---(identify)-----------------------*/
+   rc = ycalc_call_who_named (a_label, NULL, &x_deproot);
+   DEBUG_CALC   yLOG_value   ("who named" , rc);
+   /*---(run)----------------------------*/
+   rc = yCALC_build (x_deproot, a_rpn, a_type, a_string);
+   DEBUG_CALC   yLOG_value   ("prepare"   , rc);
+   /*---(complete)-------------------------*/
+   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   return rc;
 }
 
 

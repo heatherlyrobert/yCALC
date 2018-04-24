@@ -97,7 +97,7 @@ ycalc__mock_enabler     (void *a_owner, void *a_deproot)
 }
 
 char
-ycalc__mock_who_named   (char *a_label, void **a_owner, void **a_deproot)
+ycalc__mock_named       (char *a_label, void **a_owner, void **a_deproot)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -140,7 +140,7 @@ ycalc__mock_who_named   (char *a_label, void **a_owner, void **a_deproot)
 }
 
 char
-ycalc__mock_who_at      (int x, int y, int z, void **a_owner, void **a_deproot)
+ycalc__mock_at          (int x, int y, int z, void **a_owner, void **a_deproot)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -235,8 +235,8 @@ ycalc__mock_valuer      (void *a_owner, char *a_type, double *a_value, char **a_
       DEBUG_DEPS   yLOG_sdouble (*a_value);
    }
    if (a_string != NULL) {
-      if      (x_mock->string != NULL)  *a_string = x_mock->string;
-      else if (x_mock->type == 's' && x_mock->source != NULL)  *a_string = x_mock->source;
+      if      (x_mock->type == 's' && x_mock->source != NULL)  *a_string = x_mock->source;
+      else if (x_mock->string != NULL)  *a_string = x_mock->string;
       else                              *a_string = g_nada;
       DEBUG_DEPS   yLOG_snote   (*a_string);
    }
@@ -297,6 +297,39 @@ ycalc__mock_special     (void *a_owner, char a_what, double *a_value, char **a_s
 }
 
 char
+ycalc__mock_source      (char *a_label, char *a_source)
+{
+   char        rce         =  -10;
+   char        rc          =    0;
+   tMOCK      *x_owner     = NULL;
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   DEBUG_DEPS   yLOG_point   ("a_source"  , a_source);
+   --rce;  if (a_source == NULL) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DEPS   yLOG_info    ("a_source"  , a_source);
+   rc = ycalc_call_who_named (a_label, &x_owner, NULL);
+   DEBUG_DEPS   yLOG_value   ("rc"        , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DEPS   yLOG_point   ("source"    , x_owner->source);
+   DEBUG_DEPS   yLOG_info    ("source"    , x_owner->source);
+   if (x_owner->source != NULL) {
+      DEBUG_DEPS   yLOG_note    ("must free");
+      free (x_owner->source);
+      x_owner->source = NULL;
+   }
+   x_owner->source = strdup (a_source);
+   DEBUG_DEPS   yLOG_point   ("source"    , x_owner->source);
+   DEBUG_DEPS   yLOG_info    ("source"    , x_owner->source);
+   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
 ycalc__mock_special_set (char *a_label, char *a_source, double a_value, char *a_print)
 {
    char        rce         =  -10;
@@ -304,9 +337,23 @@ ycalc__mock_special_set (char *a_label, char *a_source, double a_value, char *a_
    tMOCK      *x_owner     = NULL;
    rc = ycalc_call_who_named (a_label, &x_owner, NULL);
    --rce;  if (rc < 0)  return rce;
-   if (a_source != NULL)  x_owner->source = strdup (a_source);
-   if (a_value  != -666)  x_owner->value  = a_value;
-   if (a_print  != NULL)  x_owner->print  = strdup (a_print);
+   if (a_source != NULL) {
+      if (x_owner->source != NULL) {
+         free (x_owner->source);
+         x_owner->source = NULL;
+      }
+      x_owner->source = strdup (a_source);
+   }
+   if (a_value  != -666) {
+      x_owner->value  = a_value;
+   }
+   if (a_print  != NULL) {
+      if (x_owner->print != NULL) {
+         free (x_owner->print);
+         x_owner->print = NULL;
+      }
+      x_owner->print  = strdup (a_print);
+   }
    return 0;
 }
 
@@ -358,6 +405,7 @@ ycalc__mock_whole       (char *a_label, char a_type, char *a_source, char a_form
       x_owner->print  = NULL;
    }
    /*---(handle formulas)----------------*/
+   x_owner->type = a_type;
    switch (a_type) {
    case 'n' :
       DEBUG_DEPS   yLOG_note    ("numeric literal type");
@@ -384,14 +432,14 @@ ycalc__mock_whole       (char *a_label, char a_type, char *a_source, char a_form
       DEBUG_DEPS   yLOG_value   ("x_len"     , x_len);
       t [--x_len] = 0;
       DEBUG_DEPS   yLOG_info    ("rpn"       , t);
-      rc = yCALC_build (a_label, t, NULL);
+      rc = yCALC_build_label (a_label, t, &x_owner->type, &x_owner->string);
       DEBUG_DEPS   yLOG_value   ("build"     , rc);
       --rce;  if (rc < 0) {
          DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
-      rc = yCALC_exec  (x_deproot, a_type, &x_owner->value, &x_owner->string, NULL);
-      DEBUG_DEPS   yLOG_value   ("build"     , rc);
+      rc = yCALC_exec  (x_deproot, &x_owner->type, &x_owner->value, &x_owner->string);
+      DEBUG_DEPS   yLOG_value   ("exec"      , rc);
       --rce;  if (rc < 0) {
          DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
@@ -436,7 +484,7 @@ ycalc__unit_mock        (char *a_question, char *a_label)
    strcpy (ycalc__unit_answer, "yCALC            : question not understood");
    if (a_label == NULL)   strlcpy (x_label, "---"  , LEN_LABEL);
    else                   strlcpy (x_label, a_label, LEN_LABEL);
-   rc = ycalc__mock_who_named (x_label, &x_owner, &x_deproot);
+   rc = ycalc__mock_named (x_label, &x_owner, &x_deproot);
    if (rc        <  0   )  strlcpy (x_rnote , "error"   , LEN_LABEL);
    else                    strlcpy (x_rnote , "good"    , LEN_LABEL);
    if (x_owner   == NULL)  strlcpy (x_onote , "-----"   , LEN_LABEL);
