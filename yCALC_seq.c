@@ -249,9 +249,8 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, l
    tDEP_ROOT  *x_next      = NULL;
    int         i           = 0;
    int         x_sub       = 0;
-   int         x_tot       = 0;
-   int         x_off       = 0;
    int         x_seq       = 0;
+   int         x_lvl       = 0;
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    DEBUG_CALC   yLOG_char    ("a_dir_rec" , a_dir_rec);
@@ -289,24 +288,24 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, l
    }
    /*---(act on sequenced list)----------*/
    for (i = 0; i <= s_max; ++i) {
-      x_off = i;
-      if (a_dir_act == 'u') x_off = s_max - i;
-      DEBUG_CALC   yLOG_value   ("LEVEL"     , x_off);
-      x_deproot = s_heads [x_off];
+      x_lvl = i;
+      if (a_dir_act == 'u') x_lvl = s_max - i;
+      DEBUG_CALC   yLOG_value   ("LEVEL"     , x_lvl);
+      x_deproot = s_heads [x_lvl];
       DEBUG_CALC   yLOG_point   ("x_deproot"    , x_deproot);
       x_sub = 0;
       while (x_deproot != NULL) {
          x_next = x_deproot->snext;
-         if (g_consumer != NULL)   g_consumer (x_deproot->owner, x_deproot, x_tot, x_off);
+         if (g_consumer != NULL)   g_consumer (x_deproot->owner, x_deproot, x_seq, x_lvl);
          ++x_sub;
-         ++x_tot;
+         ++x_seq;
          x_deproot = x_next;
       }
-      DEBUG_CALC   yLOG_value   ("expected"  , s_count [x_off]);
+      DEBUG_CALC   yLOG_value   ("expected"  , s_count [x_lvl]);
       DEBUG_CALC   yLOG_value   ("subtotal"  , x_sub);
    }
    DEBUG_CALC   yLOG_value   ("expected"  , s_total);
-   DEBUG_CALC   yLOG_value   ("subtotal"  , x_tot);
+   DEBUG_CALC   yLOG_value   ("subtotal"  , x_seq);
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;

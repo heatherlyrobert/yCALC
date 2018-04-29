@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.1k"
-#define YCALC_VER_TXT   "all math unit tests switched to yCALC_handle and added nand, nor, xor"
+#define YCALC_VER_NUM   "0.2a"
+#define YCALC_VER_TXT   "totally restructured the handler, classify, build, and execute calls"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -31,21 +31,20 @@
 #define     FALSE       0
 
 
-
-extern char    (*g_who_named)   (char *a_label      , void **a_owner, void **a_deproot);        /* pass label of thing, get back deproot of thing  */
+/*---(label config)-------------------*/
+extern char    (*g_who_named)   (char *a_label, void **a_owner, void **a_deproot);        /* pass label of thing, get back deproot of thing  */
 extern char    (*g_who_at   )   (int x, int y, int z, void **a_owner, void **a_deproot);  /* pass coordinates, get back deproot of thing     */
-
-extern char    (*g_consumer )   (void *a_owner, void *a_deproot, int a_seq, int a_lvl);
-extern char    (*g_enabler  )   (void *a_owner, void *a_deproot);
-extern char    (*g_reaper   )   (void *a_owner);        /* pass deproot->owner, tries to kill thing        */
-
 extern char*   (*g_labeler  )   (void *a_owner);        /* pass deproot->owner, get back label of thing    */
-extern char*   (*g_adjuster )   (char *a_label, int x, int y, int z);        /* pass deproot->owner, get back label of thing    */
+/*---(struct config)-----------------*/
+extern char    (*g_enabler  )   (void *a_owner, void *a_deproot);
+extern char    (*g_pointer  )   (void *a_owner, char **a_source, char **a_type, double **a_value , char **a_string);
+extern char    (*g_reaper   )   (void *a_owner);        /* pass deproot->owner, tries to kill thing        */
+/*---(value config)-------------------*/
+extern char    (*g_valuer   )   (void *a_owner, char *a_type, double *a_value , char **a_string);
 extern char    (*g_addresser)   (void *a_owner, int   *x        , int    *y       , int     *z);
-extern char    (*g_valuer   )   (void *a_owner, char *a_type, double *a_value , char   **a_string);
 extern char    (*g_special  )   (void *a_owner, char  a_what, double *a_value , char   **a_string);
-
-
+/*---(sequencing)---------------------*/
+extern char    (*g_consumer )   (void *a_owner, void *a_deproot, int a_seq, int a_lvl);
 
 /*
  * calculation types
@@ -291,20 +290,26 @@ struct cyCALC_ERROR {
 extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 
 
-#define     G_NO_ERROR       '-'
-#define     G_ERROR_BUILD    'b'
-#define     G_ERROR_STACK    's'
-#define     G_ERROR_CONF     'c'
-#define     G_ERROR_EXEC     'e'
-#define     G_ERROR_RANGE    'R'
-#define     G_ERROR_THING    'T'
-#define     G_ERROR_DEPEND   'D'
-#define     G_ERROR_TOKEN    'E'
-#define     G_ERROR_POINTER  'p'
-#define     G_ERROR_UNKNOWN  'U'
+#define     G_NO_ERROR         '-'
+#define     G_ERROR_BUILD      'b'
+#define     G_ERROR_STACK      's'
+#define     G_ERROR_CONF       'c'
+#define     G_ERROR_EXEC       'e'
+#define     G_ERROR_RANGE      'R'
+#define     G_ERROR_DEPEND     'D'
+#define     G_ERROR_TOKEN      'E'
+#define     G_ERROR_POINTER    'p'
+#define     G_ERROR_UNKNOWN    'U'
 
-#define     YCALC_ERROR_RPN      'r'
-#define     YCALC_ERROR_POINT    '&'
+#define     YCALC_ERROR_BUILD_RPN  'r'
+#define     YCALC_ERROR_BUILD_REF  '@'
+#define     YCALC_ERROR_BUILD_DEP  'd'
+#define     YCALC_ERROR_BUILD_CIR  'c'
+#define     YCALC_ERROR_BUILD_PNT  '&'
+#define     YCALC_ERROR_BUILD_RNG  ':'
+#define     YCALC_ERROR_BUILD_TOK  '?'
+
+
 #define     YCALC_ERROR_DEREF    '*'
 
 
@@ -365,10 +370,15 @@ extern char    YCALC_GROUP_FPRE   [LEN_LABEL];
 
 /*===[[ FUNCTION PROTOTYPES ]]================================================*/
 
-/*---(malloc)---------------------*/
+
+char        ycalc_not_ready         (void);
+char        ycalc_handle_error      (char a_error, char *a_type, double *a_value, char **a_string, char *a_note);
+
+
+/*---(malloc)-------------------------*/
 char        ycalc__deps_new         (tDEP_LINK **a_dep);
 char        ycalc__deps_free        (tDEP_LINK **a_dep);
-/*---(program)--------------------*/
+/*---(program)------------------------*/
 char        ycalc_deps_init         (void);
 char        ycalc__deps_purge       (void);
 char        ycalc_deps_wrap         (void);
@@ -380,6 +390,14 @@ char        ycalc_deps_delete       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT
 char        ycalc__deps_rooting     (tDEP_ROOT *a_curr, char a_type);
 char        ycalc__deps_circle      (int a_level, tDEP_ROOT *a_source, tDEP_ROOT *a_target, long a_stamp);
 
+/*===[[ AUDIT ]]==========================================*/
+/*---(classify)-----------------------*/
+char        ycalc_shared_verify     (char **a_source, char *a_type, double *a_value, char **a_string);
+char        ycalc_shared_clear      (tDEP_ROOT *a_deproot, char *a_type, double *a_value, char **a_string);
+char        ycalc_classify_trusted  (tDEP_ROOT *a_deproot, char **a_source, char *a_type, double *a_value, char **a_string);
+char        ycalc_classify_detail   (tDEP_ROOT *a_deproot, char **a_source, char *a_type, double *a_value, char **a_string);
+char        ycalc_classify_owner    (void *a_owner, tDEP_ROOT *a_deproot);
+char        ycalc_classify_label    (char *a_label);
 
 char        ycalc_audit_init        (void);
 char        ycalc__audit_disp_reqs  (tDEP_ROOT *a_me, char* a_list);
@@ -399,6 +417,14 @@ char        ycalc__unit_end         (void);
 /*===[ BUILD ]============================================*/
 /*---(program)------------------------*/
 char        ycalc_build_init        (void);
+
+char        ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, double *a_value, char **a_string);
+char        ycalc_build_detail      (void *a_owner, tDEP_ROOT *a_deproot, char **a_source, char *a_type, double *a_value, char **a_string);
+char        ycalc_build_owner       (void *a_owner, tDEP_ROOT *a_deproot);
+char        ycalc_build_label       (char *a_label);
+
+
+
 char        ycalc_calc_wipe         (tDEP_ROOT *a_deproot);
 
 
@@ -413,27 +439,35 @@ char        ycalc_pushref           (char *a_func, void   *a_thing);
 /*---(popping)------------------------*/
 double      ycalc_popval            (char *a_func);
 char*       ycalc_popstr            (char *a_func);
+/*---(running)------------------------*/
+char        ycalc_execute_trusted   (tDEP_ROOT *a_deproot, char *a_type, double *a_value, char **a_string);
+char        ycalc_execute_detail    (tDEP_ROOT *a_deproot, char **a_source, char *a_type, double *a_value, char **a_string);
+char        ycalc_execute_owner     (void *a_owner, tDEP_ROOT *a_deproot);
+char        ycalc_execute_label     (char *a_label);
+char        ycalc_execute_auto      (void *a_owner, tDEP_ROOT *a_deproot, int a_seq, int a_lvl);
 /*---(unittest)-----------------------*/
 char*       ycalc__unit_stack       (char *a_question, int a_num);
 char        ycalc__unit_stackset    (int   a_num);
 
 
 /*---(mock overall)-------------------*/
-char        ycalc__mock_enable      (void);
-/*---(mock build)---------------------*/
-char        ycalc__mock_named       (char *a_label, void **a_owner, void **a_deproot);
-char        ycalc__mock_at          (int x, int y, int z, void **a_owner, void **a_deproot);
+char        ycalc__mock_prepare     (void);
+/*---(exist)--------------------------*/
 char        ycalc__mock_enabler     (void *a_owner, void *a_deproot);
-char*       ycalc__mock_labeler     (void *a_owner);
+char        ycalc__mock_pointer     (void *a_owner, char **a_source, char **a_type, double **a_value, char **a_string);
 char        ycalc__mock_reaper      (void *a_owner);
-/*---(mock execute)-------------------*/
+/*---(label)--------------------------*/
+char        ycalc__mock_named       (char *a_label, void **a_owner, void **a_deproot);
+char        ycalc__mock_whos_at     (int x, int y, int z, void **a_owner, void **a_deproot);
+char*       ycalc__mock_labeler     (void *a_owner);
+/*---(value)--------------------------*/
 char        ycalc__mock_valuer      (void *a_thing, char *a_type, double *a_value, char **a_string);
-char        ycalc__mock_addresser   (void *a_thing, int  *x, int *y, int *z);
+char        ycalc__mock_address     (void *a_thing, int  *x, int *y, int *z);
 char        ycalc__mock_special     (void *a_owner, char a_what, double *a_value, char **a_string);
 /*---(unit testing)-------------------*/
 char        ycalc__mock_special_set (char *a_label, char *a_source, double a_value, char *a_print);
 char        ycalc__mock_source      (char *a_label, char *a_source);
-char        ycalc__mock_whole       (char *a_label, char a_type, char *a_source, char a_format, char a_decs, char a_aign, char a_width);
+char        ycalc__mock_whole       (char *a_label, char *a_source, char a_format, char a_decs, char a_aign, char a_width);
 char*       ycalc__unit_mock        (char *a_question, char *a_label);
 
 

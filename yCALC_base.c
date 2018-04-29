@@ -189,21 +189,128 @@ yCALC_version       (void)
 }
 
 char
+ycalc_not_ready         (void)
+{
+   if (myCALC.status != 'O') {
+      DEBUG_CALC   yLOG_note    ("system not operational, must init and config");
+      DEBUG_CALC   yLOG_char    ("status"    , myCALC.status);
+      DEBUG_CALC   yLOG_info    ("detail"    , myCALC.status_detail);
+      return 1;
+   }
+   DEBUG_CALC   yLOG_note    ("system operational, ready");
+   return 0;
+}
+
+char
+ycalc_status_allow      (char a_step)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         x_pos       =    0;
+   char       *x_valid     = "ielv";
+   /*---(allowed)------------------------*/
+   DEBUG_PROG   yLOG_value   ("a_step"    , a_step);
+   --rce;  if (a_step == 0)  {
+      DEBUG_PROG   yLOG_note    ("must provide a step abbreviation");
+      return rce;
+   }
+   DEBUG_PROG   yLOG_char    ("a_step"    , a_step);
+   DEBUG_PROG   yLOG_info    ("valid"     , x_valid);
+   --rce;  if (strchr (x_valid, a_step) == NULL) {
+      DEBUG_PROG   yLOG_note    ("not a valid step");
+      return rce;
+   }
+   /*---(sequence)-----------------------*/
+   --rce;  if (a_step == 'i' && myCALC.status_detail [2] == 'i') {
+      DEBUG_PROG   yLOG_note    ("already called init, can not re-initialize");
+      return rce;
+   }
+   --rce;  if (strchr ("elv", a_step) != NULL && myCALC.status_detail [2] != 'i') {
+      DEBUG_PROG   yLOG_note    ("can not call any config before initialization");
+      return rce;
+   }
+   --rce;  if (a_step == 'l' && myCALC.status_detail [4] != 'e') {
+      DEBUG_PROG   yLOG_note    ("can not label config before exist config");
+      return rce;
+   }
+   --rce;  if (a_step == 'v' && myCALC.status_detail [4] != 'e') {
+      DEBUG_PROG   yLOG_note    ("can not value config before exist config");
+      return rce;
+   }
+   --rce;  if (a_step == 'v' && myCALC.status_detail [5] != 'l') {
+      DEBUG_PROG   yLOG_note    ("can not value config before label config");
+      return rce;
+   }
+   /*---(display)------------------------*/
+   DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
+   DEBUG_PROG   yLOG_info    ("detail"    , myCALC.status_detail);
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+ycalc_status_update     (char a_step)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   int         x_pos       =    0;
+   /*---(position)-----------------------*/
+   if (a_step == 0) {
+      myCALC.status = '-';
+      strlcpy (myCALC.status_detail, "[ - --- - ]", LEN_LABEL);
+      return 0;
+   }
+   /*---(position)-----------------------*/
+   switch (a_step) {
+   case 'i' : x_pos = 2;  myCALC.status = 'I';  break;
+   case 'e' : x_pos = 4;  break;
+   case 'l' : x_pos = 5;  break;
+   case 'v' : x_pos = 6;  break;
+   default  : return -1;
+   }
+   /*---(update)-------------------------*/
+   myCALC.status_detail [x_pos] = a_step;
+   /*---(check)--------------------------*/
+   if (strncmp (myCALC.status_detail + 4, "elv", 3)  == 0) {
+      myCALC.status = 'O';
+      myCALC.status_detail [8] = 'o';
+   }
+   /*---(display)------------------------*/
+   DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
+   DEBUG_PROG   yLOG_info    ("detail"    , myCALC.status_detail);
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
 yCALC_init              (char a_style)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   char        rc          =    0;
    int         i           =    0;
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
-   --rce;  if (myCALC.status != NULL && strchr ("IO", myCALC.status) != NULL) {
-      DEBUG_PROG   yLOG_note    ("can not re-initialize");
+   rc = ycalc_status_allow  ('i');
+   DEBUG_PROG   yLOG_value   ("allow"    , rc);
+   --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (myCALC.status_detail, "- ---- -", LEN_LABEL);
+   ycalc_status_update (0);
+   DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
+   DEBUG_PROG   yLOG_info    ("detail"    , myCALC.status_detail);
+   /*---(functions)----------------------*/
+   DEBUG_PROG   yLOG_note    ("clearing function calls");
+   g_who_named = NULL;
+   g_who_at    = NULL;
+   g_labeler   = NULL;
+   g_enabler   = NULL;
+   g_pointer   = NULL;
+   g_reaper    = NULL;
+   g_valuer    = NULL;
+   g_addresser = NULL;
+   g_special   = NULL;
    /*---(initialize)---------------------*/
    DEBUG_PROG   yLOG_note    ("running sub-initializations");
    ycalc_audit_init  ();
@@ -212,8 +319,7 @@ yCALC_init              (char a_style)
    ycalc_deps_init   ();
    ycalc_math_init   ();
    /*---(update status)------------------*/
-   myCALC.status = 'I';
-   myCALC.status_detail [0] = 'i';
+   ycalc_status_update ('i');
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -226,7 +332,168 @@ yCALC_wrap              (void)
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(shutdown)-----------------------*/
    ycalc_deps_wrap   ();
-   myCALC.status = '-';
+   /*---(update status)------------------*/
+   ycalc_status_update (0);
+   DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
+   DEBUG_PROG   yLOG_info    ("detail"    , myCALC.status_detail);
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                   configuration functions                    ----===*/
+/*====================------------------------------------====================*/
+static void  o___CONFIG__________o () { return; }
+
+char
+yCALC_exist_config      (void *a_enabler, void *a_pointer, void *a_reaper)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   rc = ycalc_status_allow  ('e');
+   DEBUG_PROG   yLOG_value   ("allow"    , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(update enabler)------------------*/
+   DEBUG_PROG   yLOG_point   ("enabler"    , a_enabler);
+   --rce;  if (a_enabler    == NULL) {
+      DEBUG_PROG   yLOG_error   ("enabler"    , "without this callback, references, ranges, and variables can not function");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   g_enabler    = a_enabler;
+   /*---(update pointer)------------------*/
+   DEBUG_PROG   yLOG_point   ("pointer"    , a_pointer);
+   --rce;  if (a_pointer    == NULL) {
+      DEBUG_PROG   yLOG_error   ("pointer"    , "without this callback, references, ranges, and variables can not function");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   g_pointer    = a_pointer;
+   /*---(update reaper)---------------*/
+   DEBUG_PROG   yLOG_point   ("reaper" , a_reaper);
+   --rce;  if (a_reaper == NULL) {
+      DEBUG_PROG   yLOG_warn    ("reaper" , "without this callback, a few functions may not be allowed");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   g_reaper = a_reaper;
+   /*---(update)-------------------------*/
+   DEBUG_PROG   yLOG_note    ("updating status");
+   ycalc_status_update ('e');
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+yCALC_label_config      (void *a_who_named, void *a_who_at, void *a_labeler)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   void       *x_owner     = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   rc = ycalc_status_allow  ('l');
+   DEBUG_PROG   yLOG_value   ("allow"    , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(update who_named)---------------*/
+   DEBUG_PROG   yLOG_point   ("who_named" , a_who_named);
+   --rce;  if (a_who_named   == NULL) {
+      DEBUG_PROG   yLOG_error   ("who_named" , "without this callback, references cannot be resolved");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   g_who_named  = a_who_named;
+   /*---(update whois)------------------*/
+   DEBUG_PROG   yLOG_point   ("who_at"   , a_who_at);
+   --rce;  if (a_who_at    == NULL) {
+      DEBUG_PROG   yLOG_error   ("whois"    , "without this callback, range dependencies are not possible");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   g_who_at    = a_who_at;
+   /*---(update labeler)-----------------*/
+   DEBUG_PROG   yLOG_point   ("labeler"    , a_labeler);
+   --rce;  if (a_labeler    == NULL) {
+      DEBUG_PROG   yLOG_error   ("labeler"    , "without this callback, human-readable verification is not possible");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   g_labeler    = a_labeler;
+   /*---(set the dep root)---------------*/
+   ycalc_call_who_named ("ROOT", NULL, &myCALC.rroot);
+   DEBUG_PROG   yLOG_point   ("rroot"     , myCALC.rroot);
+   --rce;  if (myCALC.rroot == NULL) {
+      DEBUG_PROG   yLOG_note    ("must create a node named ¸ROOT¸ for yCALC to operate");
+      DEBUG_PROG   yLOG_error   ("rroot"     , "without this, all dependencies fail");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(update)-------------------------*/
+   DEBUG_PROG   yLOG_note    ("updating status");
+   ycalc_status_update ('l');
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+yCALC_value_config      (void *a_valuer, void *a_addresser, void *a_special)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   rc = ycalc_status_allow  ('v');
+   DEBUG_PROG   yLOG_value   ("allow"    , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(update valuer)------------------*/
+   DEBUG_PROG   yLOG_point   ("valuer"    , a_valuer);
+   --rce;  if (a_valuer    == NULL) {
+      DEBUG_PROG   yLOG_error   ("valuer"    , "without this callback, references, ranges, and variables can not function");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   g_valuer    = a_valuer;
+   /*---(update addresser)---------------*/
+   DEBUG_PROG   yLOG_point   ("addresser" , a_addresser);
+   --rce;  if (a_addresser == NULL) {
+      DEBUG_PROG   yLOG_warn    ("addresser" , "without this callback, a few functions may not be allowed");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   g_addresser = a_addresser;
+   /*---(update special)---------------*/
+   DEBUG_PROG   yLOG_point   ("special" , a_special);
+   --rce;  if (a_special == NULL) {
+      DEBUG_PROG   yLOG_warn    ("special" , "without this callback, a few functions may not be allowed");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   g_special = a_special;
+   /*---(update)-------------------------*/
+   DEBUG_PROG   yLOG_note    ("updating status");
+   ycalc_status_update ('v');
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;

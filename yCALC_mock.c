@@ -58,16 +58,13 @@ tMOCK   s_mocks     [100] = {
 };
 
 char
-ycalc__mock_enable      (void)
+ycalc__mock_prepare     (void)
 {
-   int         i           =    0;
-   tMOCK      *x_mock      = NULL;
-   for (i = 0; i < 100; ++i) {
-      if (s_mocks [i].label [0] == 0)                break;
-      x_mock = s_mocks + i;
-      yCALC_enable (x_mock);
-   }
-   return 0;
+   char        rc          =    0;
+   if (rc == 0)  rc = yCALC_exist_config (ycalc__mock_enabler, ycalc__mock_pointer, ycalc__mock_reaper);
+   if (rc == 0)  rc = yCALC_label_config (ycalc__mock_named  , ycalc__mock_whos_at, ycalc__mock_labeler);
+   if (rc == 0)  rc = yCALC_value_config (ycalc__mock_valuer , ycalc__mock_address, ycalc__mock_special);
+   return rc;
 }
 
 
@@ -140,7 +137,7 @@ ycalc__mock_named       (char *a_label, void **a_owner, void **a_deproot)
 }
 
 char
-ycalc__mock_at          (int x, int y, int z, void **a_owner, void **a_deproot)
+ycalc__mock_whos_at     (int x, int y, int z, void **a_owner, void **a_deproot)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -212,6 +209,42 @@ ycalc__mock_reaper      (void *a_owner)
 }
 
 char
+ycalc__mock_pointer     (void *a_owner, char **a_source, char **a_type, double **a_value, char **a_string)
+{
+   char        rce         =  -10;
+   tMOCK      *x_mock      = NULL;
+   DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
+   DEBUG_DEPS   yLOG_spoint  (a_owner);
+   --rce;  if (a_owner  == NULL) {
+      DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   x_mock    = (tMOCK     *) a_owner;
+   if (a_source != NULL) {
+      DEBUG_DEPS   yLOG_spoint  (*a_source);
+      *a_source = &x_mock->source;
+      DEBUG_DEPS   yLOG_spoint  (*a_source);
+   }
+   if (a_type  != NULL) {
+      DEBUG_DEPS   yLOG_spoint  (*a_type);
+      *a_type   = &x_mock->type;
+      DEBUG_DEPS   yLOG_spoint  (*a_type);
+   }
+   if (a_value  != NULL) {
+      DEBUG_DEPS   yLOG_spoint  (*a_value);
+      *a_value  = &x_mock->value;
+      DEBUG_DEPS   yLOG_spoint  (*a_value);
+   }
+   if (a_string != NULL) {
+      DEBUG_DEPS   yLOG_spoint  (*a_string);
+      *a_string = &x_mock->string;
+      DEBUG_DEPS   yLOG_spoint  (*a_string);
+   }
+   DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
 ycalc__mock_valuer      (void *a_owner, char *a_type, double *a_value, char **a_string)
 {
    char        rce         =  -10;
@@ -235,7 +268,8 @@ ycalc__mock_valuer      (void *a_owner, char *a_type, double *a_value, char **a_
       DEBUG_DEPS   yLOG_sdouble (*a_value);
    }
    if (a_string != NULL) {
-      if      (x_mock->type == 's' && x_mock->source != NULL)  *a_string = x_mock->source;
+      if      (x_mock->type == 'E')     *a_string   = g_nada;
+      else if (x_mock->type == 's' && x_mock->source != NULL)  *a_string = x_mock->source;
       else if (x_mock->string != NULL)  *a_string = x_mock->string;
       else                              *a_string = g_nada;
       DEBUG_DEPS   yLOG_snote   (*a_string);
@@ -245,7 +279,7 @@ ycalc__mock_valuer      (void *a_owner, char *a_type, double *a_value, char **a_
 }
 
 char
-ycalc__mock_addresser   (void *a_owner, int *x, int *y, int *z)
+ycalc__mock_address     (void *a_owner, int *x, int *y, int *z)
 {
    tMOCK      *x_mock      = NULL;
    if (x != NULL)  *x   = 0;
@@ -303,12 +337,6 @@ ycalc__mock_source      (char *a_label, char *a_source)
    char        rc          =    0;
    tMOCK      *x_owner     = NULL;
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
-   DEBUG_DEPS   yLOG_point   ("a_source"  , a_source);
-   --rce;  if (a_source == NULL) {
-      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_DEPS   yLOG_info    ("a_source"  , a_source);
    rc = ycalc_call_who_named (a_label, &x_owner, NULL);
    DEBUG_DEPS   yLOG_value   ("rc"        , rc);
    --rce;  if (rc < 0) {
@@ -322,9 +350,11 @@ ycalc__mock_source      (char *a_label, char *a_source)
       free (x_owner->source);
       x_owner->source = NULL;
    }
-   x_owner->source = strdup (a_source);
-   DEBUG_DEPS   yLOG_point   ("source"    , x_owner->source);
-   DEBUG_DEPS   yLOG_info    ("source"    , x_owner->source);
+   if (a_source != NULL) {
+      x_owner->source = strdup (a_source);
+      DEBUG_DEPS   yLOG_point   ("source"    , x_owner->source);
+      DEBUG_DEPS   yLOG_info    ("source"    , x_owner->source);
+   }
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return 0;
 }
@@ -358,7 +388,7 @@ ycalc__mock_special_set (char *a_label, char *a_source, double a_value, char *a_
 }
 
 char
-ycalc__mock_whole       (char *a_label, char a_type, char *a_source, char a_format, char a_decs, char a_align, char a_width)
+ycalc__mock_whole       (char *a_label, char *a_source, char a_format, char a_decs, char a_align, char a_width)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -392,62 +422,39 @@ ycalc__mock_whole       (char *a_label, char a_type, char *a_source, char a_form
       return rce;
    }
    DEBUG_DEPS   yLOG_info    ("a_source"  , a_source);
-   /*---(clear)--------------------------*/
-   x_owner->type   = a_type;
+   /*---(load/clear)---------------------*/
    x_owner->source = strdup (a_source);
-   x_owner->value  = 0.0;
-   if (x_owner->string != NULL) {
-      free (x_owner->string);
-      x_owner->string = NULL;
-   }
    if (x_owner->print  != NULL) {
       free (x_owner->print);
       x_owner->print  = NULL;
    }
+   /*---(classify)-----------------------*/
+   rc = yCALC_handle (a_label);
+   /*> rc = ycalc_classify_trusted (x_deproot, &x_owner->source, &x_owner->type, &x_owner->value, &x_owner->string);   <*/
    /*---(handle formulas)----------------*/
-   x_owner->type = a_type;
-   switch (a_type) {
-   case 'n' :
-      DEBUG_DEPS   yLOG_note    ("numeric literal type");
-      x_owner->value  = atof (a_source); 
-      break;
-   case '=' : case '#' : case '&' :
-      DEBUG_DEPS   yLOG_note    ("formula type");
-      sprintf (t, "rpn \"%s\" > /tmp/rpn.txt", a_source + 1);
-      DEBUG_DEPS   yLOG_info    ("request"   , t);
-      rc = system (t);
-      DEBUG_DEPS   yLOG_value   ("system"    , rc);
-      --rce;  if (rc < 0) {
-         DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
-         return rce;
-      }
-      f = fopen ("/tmp/rpn.txt", "r");
-      DEBUG_DEPS   yLOG_point   ("f"         , f);
-      --rce;  if (f == NULL) {
-         DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
-         return rce;
-      }
-      fgets (t, LEN_RECD, f);
-      x_len = strllen (t, LEN_RECD);
-      DEBUG_DEPS   yLOG_value   ("x_len"     , x_len);
-      t [--x_len] = 0;
-      DEBUG_DEPS   yLOG_info    ("rpn"       , t);
-      rc = yCALC_build_label (a_label, t, &x_owner->type, &x_owner->string);
-      DEBUG_DEPS   yLOG_value   ("build"     , rc);
-      --rce;  if (rc < 0) {
-         DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
-         return rce;
-      }
-      rc = yCALC_exec  (x_deproot, &x_owner->type, &x_owner->value, &x_owner->string);
-      DEBUG_DEPS   yLOG_value   ("exec"      , rc);
-      --rce;  if (rc < 0) {
-         DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
-         return rce;
-      }
-      break;
-   }
+   /*> switch (x_owner->type) {                                                                                          <* 
+    *> case 'n' :                                                                                                        <* 
+    *>    DEBUG_DEPS   yLOG_note    ("numeric literal type");                                                            <* 
+    *>    x_owner->value  = atof (a_source);                                                                             <* 
+    *>    break;                                                                                                         <* 
+    *> case '=' : case '#' : case '&' :                                                                                  <* 
+    *>    DEBUG_DEPS   yLOG_note    ("formula type");                                                                    <* 
+    *>    rc = ycalc_build_trusted   (x_deproot, &x_owner->source, &x_owner->type, &x_owner->value, &x_owner->string);   <* 
+    *>    DEBUG_DEPS   yLOG_value   ("build"     , rc);                                                                  <* 
+    *>    --rce;  if (rc < 0) {                                                                                          <* 
+    *>       DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);                                                              <* 
+    *>       return rce;                                                                                                 <* 
+    *>    }                                                                                                              <* 
+    *>    rc = ycalc_execute_trusted (x_deproot, &x_owner->type, &x_owner->value, &x_owner->string);                     <* 
+    *>    DEBUG_DEPS   yLOG_value   ("exec"      , rc);                                                                  <* 
+    *>    --rce;  if (rc < 0) {                                                                                          <* 
+    *>       DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);                                                              <* 
+    *>       return rce;                                                                                                 <* 
+    *>    }                                                                                                              <* 
+    *>    break;                                                                                                         <* 
+    *> }                                                                                                                 <*/
    /*---(handle results)-----------------*/
-   if (strchr ("=n", a_type) != NULL) {
+   if (strchr ("=n", x_owner->type) != NULL) {
       strl4main (x_owner->value, t, a_decs, a_format, LEN_RECD);
    } else {
       if (x_owner->string != NULL)  strlcpy (t, x_owner->string, LEN_RECD);
@@ -493,9 +500,9 @@ ycalc__unit_mock        (char *a_question, char *a_label)
    else                    strlcpy (x_dnote , "enabled" , LEN_LABEL);
 
    if      (x_owner == NULL)              strlcpy (x_string, "", LEN_RECD );
-   else if (strchr ("s#5", x_owner->type) == NULL)   strlcpy (x_string, "", LEN_RECD );
+   else if (strchr ("s#5E", x_owner->type) == NULL)   strlcpy (x_string, "", LEN_RECD );
    else if (x_owner->string != NULL)      strlcpy (x_string, x_owner->string, LEN_RECD );
-   else if (x_owner->source != NULL)      strlcpy (x_string, x_owner->source, LEN_RECD );
+   else if (x_owner->type == 's')         strlcpy (x_string, x_owner->source, LEN_RECD );
    else                                   strlcpy (x_string, "", LEN_RECD );
    if      (x_owner == NULL)              x_value = 0.0;
    else                                   x_value = x_owner->value;

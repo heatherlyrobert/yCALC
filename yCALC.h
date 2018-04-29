@@ -4,6 +4,10 @@
 
 
 
+#define       YCALC_GYGES        's'
+
+
+
 /*---(object types)-------------------*/
 #define       YCALC_DATA_BLANK   '-'
 #define       YCALC_DATA_STR     's'
@@ -50,8 +54,9 @@ char*       yCALC_version           (void);
 char        yCALC_init              (char  a_style);
 char        yCALC_wrap              (void);
 
-char        yCALC_build_config      (void *a_enabler, void *a_deproot, void *a_whois, void *a_labeler, void *a_reaper);
-char        yCALC_exec_config       (void *a_valuer, void *a_addresser, void *a_special);
+char        yCALC_exist_config      (void *a_enabler  , void *a_pionter  , void *a_reaper );
+char        yCALC_label_config      (void *a_who_named, void *a_who_at   , void *a_labeler);
+char        yCALC_value_config      (void *a_valuer   , void *a_addresser, void *a_special);
 
 char        yCALC_enable            (void *a_owner);
 char        yCALC_disable           (void *a_deproot);
@@ -60,19 +65,12 @@ char        yCALC_create            (char a_type, char *a_source, char *a_target
 char        yCALC_delete            (char a_type, char *a_source, char *a_target);
 char        yCALC_range             (void *a_source, int x1, int y1, int z1, int x2, int y2, int z2);
 
-char        yCALC_handle            (char *a_label  , char *a_src , char *a_type, double *a_value, char **a_string);
-
-char        yCALC_build             (void *a_deproot, char *a_rpn , char *a_type, char **a_string);
-char        yCALC_build_label       (char *a_label  , char *a_rpn , char *a_type, char **a_string);
-
-char        yCALC_exec              (void *a_deproot, char *a_type, double *a_value, char **a_string);
-char        yCALC_exec_label        (char *a_label  , char *a_type, double *a_value, char **a_string);
+char        yCALC_handle            (char *a_label);
 
 char        yCALC_seq_up            (void *a_deproot, void *a_consumer);
 char        yCALC_seq_down          (void *a_deproot, void *a_consumer);
 char        yCALC_seq_full          (void *a_consumer);
 char        yCALC_seq_downdown      (long a_stamp   , void *a_consumer);
-char        yCALC_seq_downup        (long a_stamp   , void *a_consumer);
 char        yCALC_seq_downup        (long a_stamp   , void *a_consumer);
 
 

@@ -1117,15 +1117,11 @@ ycalc_deps_wipe         (tDEP_ROOT *a_deproot)
    tDEP_LINK  *x_save      = NULL;
    char        rce         =  -10;
    char        rc          = 0;
+   /*---(filter)-------------------------*/
+   if (a_deproot == NULL)  return 0;
    /*---(begin)--------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    DEBUG_DEPS   yLOG_point   ("a_deproot" , a_deproot);
-   /*---(defenses)-----------------------*/
-   --rce;  if (a_deproot == NULL) {
-      DEBUG_DEPS   yLOG_note    ("exiting, dep root is NULL");
-      DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
-      return rce;
-   }
    /*---(reqs)---------------------------*/
    DEBUG_DEPS   yLOG_info    ("owned by"  , g_labeler (a_deproot->owner));
    DEBUG_DEPS   yLOG_value   ("nreq"      , a_deproot->nreq);

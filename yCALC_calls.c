@@ -4,14 +4,17 @@
 
 
 
-char    (*g_who_named)   (char *a_label      , void **a_owner, void **a_deproot);        /* pass label of thing, get back deproot of thing  */
-char    (*g_who_at   )   (int x, int y, int z, void **a_owner, void **a_deproot);  /* pass coordinates, get back deproot of thing     */
 
 char    (*g_consumer )   (void *a_owner, void *a_deproot, int a_seq, int a_lvl);
+
 char    (*g_enabler  )   (void *a_owner, void *a_deproot);
+char    (*g_pointer  )   (void *a_owner, char **a_source, char **a_type, double **a_value , char **a_string);
 char    (*g_reaper   )   (void *a_owner);        /* pass deproot->owner, tries to kill thing        */
 
+char    (*g_who_named)   (char *a_label      , void **a_owner, void **a_deproot);        /* pass label of thing, get back deproot of thing  */
+char    (*g_who_at   )   (int x, int y, int z, void **a_owner, void **a_deproot);  /* pass coordinates, get back deproot of thing     */
 char*   (*g_labeler  )   (void *a_owner);        /* pass deproot->owner, get back label of thing    */
+
 char*   (*g_adjuster )   (char *a_label, int x, int y, int z);        /* pass deproot->owner, get back label of thing    */
 char    (*g_addresser)   (void *a_owner, int  *x, int *y, int *z);
 char    (*g_valuer   )   (void *a_owner, char *a_type, double *a_value  , char   **a_string);
@@ -40,7 +43,18 @@ yCALC_enable            (void *a_owner)
       DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   /*> DEBUG_DEPS   yLOG_info    ("label"     , g_labeler (a_owner));                 <*/
+   /*> DEBUG_DEPS   yLOG_spoint  (a_deproot);                                         <*/
+   /*> --rce;  if (a_deproot == NULL) {                                               <* 
+    *>    DEBUG_DEPS   yLOG_snote   ("no deproot pointer");                           <* 
+    *>    DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <* 
+    *> DEBUG_DEPS   yLOG_spoint  (*a_deproot);                                        <* 
+    *> --rce;  if (*a_deproot != NULL) {                                              <* 
+    *>    DEBUG_DEPS   yLOG_snote   ("deproot exists");                               <* 
+    *>    DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
    /*---(create)-------------------------*/
    DEBUG_DEPS   yLOG_snote   ("malloc");
    while (x_deproot == NULL && x_tries < 10) {
