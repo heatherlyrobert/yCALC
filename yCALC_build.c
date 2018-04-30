@@ -495,10 +495,12 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   char       *x_rpn       = NULL;
+   char        x_rpn       [LEN_RECD];
    int         x_nrpn      =    0;
    char        x_work      [LEN_RECD];       /* working copy of source string  */
    char       *p           = NULL;           /* strtok current pointer         */
+   int         x_len       =    0;
+   char        t           [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    DEBUG_CALC   yLOG_point   ("a_deproot" , a_deproot);
@@ -516,12 +518,25 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(length)-------------------------*/
+   x_len = strllen (*a_source, LEN_RECD);
+   --rce;  if (x_len <= 1) {
+      ycalc_handle_error (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, "empty");
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(generate rpn)-------------------*/
-   x_rpn = yRPN_spreadsheet (*a_source + 1, &x_nrpn, 0);
+   rc = yRPN_interpret (*a_source, &x_rpn, &x_nrpn, LEN_RECD, 0);
+   DEBUG_CALC   yLOG_value   ("rc"        , rc);
    DEBUG_CALC   yLOG_value   ("x_nrpn"    , x_nrpn);
    DEBUG_CALC   yLOG_point   ("x_rpn"     , x_rpn);
    --rce;  if (x_nrpn <= 0 || x_rpn == NULL) {
-      ycalc_handle_error (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, "failed");
+      if (rc < 0) {
+         sprintf (t, "pos %d", yRPN_errorpos ());
+         ycalc_handle_error (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, t);
+      } else {
+         ycalc_handle_error (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, "failed");
+      }
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }

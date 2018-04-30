@@ -76,7 +76,15 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    /*---(locgical operators)--------------*/
    { "!"          ,  1, ycalc_not               , 'o', "t:n"    , 'l', "T if x F, else F"                                  },
    { "&&"         ,  2, ycalc_and               , 'o', "t:nn"   , 'l', "T if both x and y are T, else F"                   },
+   { "Ð"          ,  1, ycalc_and               , 'o', "t:nn"   , 'l', "T if both x and y are T, else F"                   },
    { "||"         ,  2, ycalc_or                , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "Ñ"          ,  1, ycalc_or                , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "&Ô"         ,  2, ycalc_nand              , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "¶"          ,  1, ycalc_nand              , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "|Ô"         ,  2, ycalc_nor               , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "¯"          ,  1, ycalc_nor               , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "|Ó"         ,  2, ycalc_xor               , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "Ò"          ,  1, ycalc_xor               , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
    /*---(logical functions)---------------*/
    { "if"         ,  2, ycalc_if                , 'f', "n:tnn"  , 'l', "if x is T, y, else z"                              },
    { "ifs"        ,  3, ycalc_ifs               , 'f', "s:tss"  , 'l', "if x is T, n, else m"                              },

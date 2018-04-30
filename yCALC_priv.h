@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2a"
-#define YCALC_VER_TXT   "totally restructured the handler, classify, build, and execute calls"
+#define YCALC_VER_NUM   "0.2b"
+#define YCALC_VER_TXT   "updated yRPN to provide error positions in bad parses"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
