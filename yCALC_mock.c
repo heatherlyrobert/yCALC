@@ -10,7 +10,7 @@
 /*====================------------------------------------====================*/
 static void      o___MOCK____________________o (void) {;}
 
-tMOCK   s_mocks     [100] = {
+tMOCK   s_mocks     [500] = {
    /*---(root)--------------------------------------*/
    { "ROOT"   , 'n', NULL,     0.00, NULL, NULL,  -1,  -1,  -1,   NULL },
    /*---(done)--------------------------------------*/
@@ -39,9 +39,50 @@ tMOCK   s_mocks     [100] = {
    { "0b6"    , 's', NULL,     0.00, NULL, NULL,   1,   5,   0,   NULL },
    { "0b7"    , 's', NULL,     0.00, NULL, NULL,   1,   6,   0,   NULL },
    { "0b8"    , 's', NULL,     0.00, NULL, NULL,   1,   7,   0,   NULL },
+   { "0b9"    , 's', NULL,     0.00, NULL, NULL,   1,   8,   0,   NULL },
+   { "0b10"   , 's', NULL,     0.00, NULL, NULL,   1,   9,   0,   NULL },
+   { "0b11"   , 's', NULL,     0.00, NULL, NULL,   1,  10,   0,   NULL },
+   { "0b12"   , 's', NULL,     0.00, NULL, NULL,   1,  11,   0,   NULL },
+   { "0b13"   , 's', NULL,     0.00, NULL, NULL,   1,  12,   0,   NULL },
+   { "0b14"   , 's', NULL,     0.00, NULL, NULL,   1,  13,   0,   NULL },
+   { "0b15"   , 's', NULL,     0.00, NULL, NULL,   1,  14,   0,   NULL },
+   { "0b16"   , 's', NULL,     0.00, NULL, NULL,   1,  15,   0,   NULL },
+   { "0b17"   , 's', NULL,     0.00, NULL, NULL,   1,  17,   0,   NULL },
    { "0c1"    , 's', NULL,     0.00, NULL, NULL,   2,   0,   0,   NULL },
-   { "0d1"    , 's', NULL,     0.00, NULL, NULL,   4,   0,   0,   NULL },
-   { "0d3"    , 's', NULL,     0.00, NULL, NULL,   4,   4,   0,   NULL },
+   { "0c2"    , 's', NULL,     0.00, NULL, NULL,   2,   1,   0,   NULL },
+   { "0c3"    , 's', NULL,     0.00, NULL, NULL,   2,   2,   0,   NULL },
+   { "0c4"    , 's', NULL,     0.00, NULL, NULL,   2,   3,   0,   NULL },
+   { "0c5"    , 's', NULL,     0.00, NULL, NULL,   2,   4,   0,   NULL },
+   { "0c6"    , 's', NULL,     0.00, NULL, NULL,   2,   5,   0,   NULL },
+   { "0c7"    , 's', NULL,     0.00, NULL, NULL,   2,   6,   0,   NULL },
+   { "0c8"    , 's', NULL,     0.00, NULL, NULL,   2,   7,   0,   NULL },
+   { "0c9"    , 's', NULL,     0.00, NULL, NULL,   2,   8,   0,   NULL },
+   { "0c10"   , 's', NULL,     0.00, NULL, NULL,   2,   9,   0,   NULL },
+   { "0c11"   , 's', NULL,     0.00, NULL, NULL,   2,  10,   0,   NULL },
+   { "0c12"   , 's', NULL,     0.00, NULL, NULL,   2,  11,   0,   NULL },
+   { "0c13"   , 's', NULL,     0.00, NULL, NULL,   2,  12,   0,   NULL },
+   { "0c14"   , 's', NULL,     0.00, NULL, NULL,   2,  13,   0,   NULL },
+   { "0c15"   , 's', NULL,     0.00, NULL, NULL,   2,  14,   0,   NULL },
+   { "0c16"   , 's', NULL,     0.00, NULL, NULL,   2,  15,   0,   NULL },
+   { "0c17"   , 's', NULL,     0.00, NULL, NULL,   2,  16,   0,   NULL },
+   { "0d1"    , 's', NULL,     0.00, NULL, NULL,   3,   0,   0,   NULL },
+   { "0d2"    , 's', NULL,     0.00, NULL, NULL,   3,   1,   0,   NULL },
+   { "0d3"    , 's', NULL,     0.00, NULL, NULL,   3,   2,   0,   NULL },
+   { "0d4"    , 's', NULL,     0.00, NULL, NULL,   3,   3,   0,   NULL },
+   { "0d5"    , 's', NULL,     0.00, NULL, NULL,   3,   4,   0,   NULL },
+   { "0d6"    , 's', NULL,     0.00, NULL, NULL,   3,   5,   0,   NULL },
+   { "0d7"    , 's', NULL,     0.00, NULL, NULL,   3,   6,   0,   NULL },
+   { "0d8"    , 's', NULL,     0.00, NULL, NULL,   3,   7,   0,   NULL },
+   { "0d9"    , 's', NULL,     0.00, NULL, NULL,   3,   8,   0,   NULL },
+   { "0d10"   , 's', NULL,     0.00, NULL, NULL,   3,   9,   0,   NULL },
+   { "0d11"   , 's', NULL,     0.00, NULL, NULL,   3,  10,   0,   NULL },
+   { "0d12"   , 's', NULL,     0.00, NULL, NULL,   3,  11,   0,   NULL },
+   { "0d13"   , 's', NULL,     0.00, NULL, NULL,   3,  12,   0,   NULL },
+   { "0d14"   , 's', NULL,     0.00, NULL, NULL,   3,  13,   0,   NULL },
+   { "0d15"   , 's', NULL,     0.00, NULL, NULL,   3,  14,   0,   NULL },
+   { "0d16"   , 's', NULL,     0.00, NULL, NULL,   3,  15,   0,   NULL },
+   { "0d17"   , 's', NULL,     0.00, NULL, NULL,   3,  16,   0,   NULL },
+   { "0d18"   , 's', NULL,     0.00, NULL, NULL,   3,  17,   0,   NULL },
    /*---(two-way dependency testing)----------------*/
    { "0f6"    , 's', NULL,     0.00, NULL, NULL,   5,   5,   0,   NULL },
    { "0f7"    , 's', NULL,     0.00, NULL, NULL,   5,   6,   0,   NULL },
@@ -109,7 +150,7 @@ ycalc__mock_named       (char *a_label, void **a_owner, void **a_deproot)
       return NULL;
    }
    DEBUG_DEPS   yLOG_snote   (a_label);
-   for (i = 0; i < 100; ++i) {
+   for (i = 0; i < 500; ++i) {
       if (s_mocks [i].label [0] == 0)                break;
       if (strcmp (s_mocks [i].label, a_label) != 0)  continue;
       DEBUG_DEPS   yLOG_snote   ("FOUND");
@@ -150,7 +191,7 @@ ycalc__mock_whos_at     (int x, int y, int z, void **a_owner, void **a_deproot)
    DEBUG_DEPS   yLOG_sint    (y);
    DEBUG_DEPS   yLOG_sint    (z);
    /*---(search)-------------------------*/
-   for (i = 0; i < 100; ++i) {
+   for (i = 0; i < 500; ++i) {
       if (s_mocks [i].label [0] == 0)                break;
       if (s_mocks [i].x != x)                        continue;
       if (s_mocks [i].y != y)                        continue;
@@ -515,6 +556,9 @@ ycalc__unit_mock        (char *a_question, char *a_label)
    }
    else if (strcmp (a_question, "value"    )      == 0) {
       snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock value : %-5s %c %8.2lf :%-.45s:", x_label, x_owner->type, x_value, x_string);
+   }
+   else if (strcmp (a_question, "double"   )      == 0) {
+      snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock double: %-5s %c %16.6lf", x_label, x_owner->type, x_value);
    }
    /*---(complete)-----------------------*/
    return ycalc__unit_answer;

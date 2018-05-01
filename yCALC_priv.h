@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2b"
-#define YCALC_VER_TXT   "updated yRPN to provide error positions in bad parses"
+#define YCALC_VER_NUM   "0.2c"
+#define YCALC_VER_TXT   "basic trig functions are in place and very early unit test"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -246,7 +246,7 @@ struct  cMOCK {
    int         z;
    void       *ycalc;
 };
-extern tMOCK   s_mocks     [100];
+extern tMOCK   s_mocks     [500];
 
 /*===[[ ACCESSOR ]]===========================================================*/
 
@@ -308,6 +308,12 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 #define     YCALC_ERROR_BUILD_PNT  '&'
 #define     YCALC_ERROR_BUILD_RNG  ':'
 #define     YCALC_ERROR_BUILD_TOK  '?'
+
+#define     YCALC_ERROR_EXEC_BRNG  '<'
+#define     YCALC_ERROR_EXEC_ERNG  '>'
+
+
+extern int       g_error;
 
 
 #define     YCALC_ERROR_DEREF    '*'
@@ -487,7 +493,7 @@ char        ycalc_call_who_named    (char *a_label, void **a_owner, void **a_dep
 char        ycalc_call_who_at       (int x, int y, int z, void **a_owner, void **a_deproot);
 
 
-char        ycalc_math_init         (void);
+char        ycalc_trig_init         (void);
 
 
 
@@ -613,6 +619,57 @@ void        ycalc_pros              (void);
 void        ycalc_npro              (void);
 void        ycalc_level             (void);
 void        ycalc_pointer           (void);
+/*---(trig functions)------------------*/
+void        ycalc_radians           (void);
+void        ycalc_degrees           (void);
+void        ycalc_pi                (void);
+void        ycalc_hypot             (void);
+void        ycalc_side              (void);
+/*------*/
+void        ycalc_sin               (void);
+void        ycalc_sinr              (void);
+void        ycalc_cos               (void);
+void        ycalc_cosr              (void);
+void        ycalc_tan               (void);
+void        ycalc_tanr              (void);
+void        ycalc_cot               (void);
+void        ycalc_cotr              (void);
+void        ycalc_sec               (void);
+void        ycalc_secr              (void);
+void        ycalc_csc               (void);
+void        ycalc_cscr              (void);
+void        ycalc_xsec              (void);
+void        ycalc_xsecr             (void);
+void        ycalc_xcsc              (void);
+void        ycalc_xcscr             (void);
+/*------*/
+void        ycalc_vsin              (void);
+void        ycalc_vsinr             (void);
+void        ycalc_vcos              (void);
+void        ycalc_vcosr             (void);
+void        ycalc_csin              (void);
+void        ycalc_csinr             (void);
+void        ycalc_ccos              (void);
+void        ycalc_ccosr             (void);
+void        ycalc_hvsin             (void);
+void        ycalc_hvsinr            (void);
+void        ycalc_hvcos             (void);
+void        ycalc_hvcosr            (void);
+void        ycalc_hcsin             (void);
+void        ycalc_hcsinr            (void);
+void        ycalc_hccos             (void);
+void        ycalc_hccosr            (void);
+/*------*/
+void        ycalc_crd               (void);
+void        ycalc_crdr              (void);
+void        ycalc_asin              (void);
+void        ycalc_asinr             (void);
+void        ycalc_acos              (void);
+void        ycalc_acosr             (void);
+void        ycalc_atan              (void);
+void        ycalc_atanr             (void);
+void        ycalc_atan2             (void);
+void        ycalc_atanr2            (void);
 
 
 

@@ -165,6 +165,94 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "npro"       ,  4, ycalc_npro              , 'f', "n:a"    , 'i', "count of cells provided to by cell a"              },
    { "level"      ,  5, ycalc_level             , 'f', "n:a"    , 'i', "level of seqencing"                                },
    { "*:"         ,  2, ycalc_pointer           , 'o', "a:a"    , 'i', "indirect access using pointer-like interface"      },
+   /*---(trig functions)------------------*/
+   { "rad"        ,  3, ycalc_radians           , 'f', "n:n"    , 't', "translate x degrees into radians"                  },
+   { "deg"        ,  3, ycalc_degrees           , 'f', "n:n"    , 't', "translate x radians into degrees"                  },
+   { "pi"         ,  2, ycalc_pi                , 'f', "n:"     , 't', "value of PI to 7 decimal places"                   },
+   { "hypot"      ,  5, ycalc_hypot             , 'f', "n:nn"   , 't', "hypotenuse length given sides x and y"             },
+   { "side"       ,  4, ycalc_side              , 'f', "n:nn"   , 't', "side length given hypotenuse and other side"       },
+   /*-------*/
+   { "sin"        ,  3, ycalc_sin               , 'f', "n:n"    , 't', "sine (degrees)"                                    },
+   { "sinr"       ,  4, ycalc_sinr              , 'f', "n:n"    , 't', "sine (radians)"                                    },
+   { "cos"        ,  3, ycalc_cos               , 'f', "n:n"    , 't', "cosine (degrees)"                                  },
+   { "cosr"       ,  4, ycalc_cosr              , 'f', "n:n"    , 't', "cosine (radians)"                                  },
+   /*-------*/
+   { "tan"        ,  3, ycalc_tan               , 'f', "n:n"    , 't', "tangent (degrees)"                                 },
+   { "tanr"       ,  4, ycalc_tanr              , 'f', "n:n"    , 't', "tangent (radians)"                                 },
+   { "cot"        ,  3, ycalc_cot               , 'f', "n:n"    , 't', "cotangent (degrees)"                               },
+   { "cotr"       ,  4, ycalc_cotr              , 'f', "n:n"    , 't', "cotangent (radians)"                               },
+   /*-------*/
+   { "sec"        ,  3, ycalc_sec               , 'f', "n:n"    , 't', "secant (degrees)"                                  },
+   { "secr"       ,  4, ycalc_secr              , 'f', "n:n"    , 't', "secant (radians)"                                  },
+   { "csc"        ,  3, ycalc_csc               , 'f', "n:n"    , 't', "cosecant (degrees)"                                },
+   { "cscr"       ,  4, ycalc_cscr              , 'f', "n:n"    , 't', "cosecant (radians)"                                },
+   /*-------*/
+   { "xsec"       ,  4, ycalc_xsec              , 'f', "n:n"    , 't', "external secant (degrees)"                         },
+   { "xsecr"      ,  5, ycalc_xsecr             , 'f', "n:n"    , 't', "external secant (radians)"                         },
+   { "xcsc"       ,  4, ycalc_xcsc              , 'f', "n:n"    , 't', "external cosecant (degrees)"                       },
+   { "xcscr"      ,  5, ycalc_xcscr             , 'f', "n:n"    , 't', "external cosecant (radians)"                       },
+   /*-------*/
+   { "vsin"       ,  4, ycalc_vsin              , 'f', "n:n"    , 't', "versed sine (degrees)"                             },
+   { "vsinr"      ,  5, ycalc_vsinr             , 'f', "n:n"    , 't', "versed sine (radians)"                             },
+   { "vcos"       ,  4, ycalc_vcos              , 'f', "n:n"    , 't', "versed cosine (degrees)"                           },
+   { "vcosr"      ,  5, ycalc_vcosr             , 'f', "n:n"    , 't', "versed cosine (radians)"                           },
+   { "csin"       ,  4, ycalc_csin              , 'f', "n:n"    , 't', "coversed sine (degrees)"                           },
+   { "csinr"      ,  5, ycalc_csinr             , 'f', "n:n"    , 't', "coversed sine (radians)"                           },
+   { "ccos"       ,  4, ycalc_ccos              , 'f', "n:n"    , 't', "coversed cosine (degrees)"                         },
+   { "ccosr"      ,  5, ycalc_ccosr             , 'f', "n:n"    , 't', "coversed cosine (radians)"                         },
+   /*-------*/
+   { "hvsin"      ,  5, ycalc_hvsin             , 'f', "n:n"    , 't', "half-versed sine (degrees)"                        },
+   { "hvsinr"     ,  6, ycalc_hvsinr            , 'f', "n:n"    , 't', "half-versed sine (radians)"                        },
+   { "hvcos"      ,  5, ycalc_hvcos             , 'f', "n:n"    , 't', "half-versed cosine (degrees)"                      },
+   { "hvcosr"     ,  6, ycalc_hvcosr            , 'f', "n:n"    , 't', "half-versed cosine (radians)"                      },
+   { "hcsin"      ,  5, ycalc_hcsin             , 'f', "n:n"    , 't', "half-coversed sine (degrees)"                      },
+   { "hcsinr"     ,  6, ycalc_hcsinr            , 'f', "n:n"    , 't', "half-coversed sine (radians)"                      },
+   { "hccos"      ,  5, ycalc_hccos             , 'f', "n:n"    , 't', "half-coversed cosine (degrees)"                    },
+   { "hccosr"     ,  6, ycalc_hccosr            , 'f', "n:n"    , 't', "half-coversed cosine (radians)"                    },
+   /*-------*/
+   { "crd"        ,  3, ycalc_crd               , 'f', "n:n"    , 't', "chord (degrees)"                                   },
+   { "crdr"       ,  4, ycalc_crdr              , 'f', "n:n"    , 't', "chord (radians)"                                   },
+   /*-------*/
+   { "asin"       ,  4, ycalc_asin              , 'f', "n:n"    , 't', "arcsine in degrees"                                },
+   { "asinr"      ,  5, ycalc_asinr             , 'f', "n:n"    , 't', "arcsine in radians"                                },
+   { "acos"       ,  4, ycalc_acos              , 'f', "n:n"    , 't', "arcosine in degrees"                               },
+   { "acosr"      ,  5, ycalc_acosr             , 'f', "n:n"    , 't', "arcosine in radians"                               },
+   { "atan"       ,  4, ycalc_atan              , 'f', "n:n"    , 't', "arctangent in degrees"                             },
+   { "atanr"      ,  5, ycalc_atanr             , 'f', "n:n"    , 't', "arctangent in radians"                             },
+   { "atan2"      ,  5, ycalc_atan2             , 'f', "n:nn"   , 't', "arctangent in degrees given sides x and y"         },
+   { "atanr2"     ,  6, ycalc_atanr2            , 'f', "n:nn"   , 't', "arctangent in radians given sides x and y"         },
+   /*---(range info functions)------------*/
+   /*> { "dist"       ,  0, CALC__dist              , 'f', "v:r"    , 'r', "geometric distance between beg and end locations"  , "" , ""            , ""            , ""            },   <* 
+    *> { "tabs"       ,  0, CALC__tabs              , 'f', "v:r"    , 'r', "number of tabs in range"                           , "" , ""            , ""            , ""            },   <* 
+    *> { "cols"       ,  0, CALC__cols              , 'f', "v:r"    , 'r', "number of columns in range"                        , "" , ""            , ""            , ""            },   <* 
+    *> { "rows"       ,  0, CALC__rows              , 'f', "v:r"    , 'r', "number of rows in range"                           , "" , ""            , ""            , ""            },   <*/
+   /*> { "sum"        ,  3, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     , "" , ""            , ""            , ""            },   <*/
+   /*> { "s"          ,  1, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     , "" , ""            , ""            , ""            },   <*/
+   /*> { "count"      ,  0, CALC__count             , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" , "count"       , ""            , ""            },   <* 
+    *> { "numbers"    ,  0, CALC__count             , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" , "count"       , ""            , ""            },   <* 
+    *> { "c"          ,  0, CALC__count             , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" , "count"       , ""            , ""            },   <* 
+    *> { "counts"     ,  0, CALC__counts            , 'f', "v:r"    , 'r', "count of string cells in range"                    , "" , ""            , ""            , ""            },   <* 
+    *> { "strings"    ,  0, CALC__counts            , 'f', "v:r"    , 'r', "count of string cells in range"                    , "" , ""            , ""            , ""            },   <* 
+    *> { "counta"     ,  0, CALC__counta            , 'f', "v:r"    , 'r', "count of filled cells in range"                    , "" , "counta"      , ""            , ""            },   <* 
+    *> { "filled"     ,  0, CALC__counta            , 'f', "v:r"    , 'r', "count of filled cells in range"                    , "" , "counta"      , ""            , ""            },   <* 
+    *> { "countb"     ,  0, CALC__countb            , 'f', "v:r"    , 'r', "count of blank cells in range"                     , "" , "countblank"  , ""            , ""            },   <* 
+    *> { "blanks"     ,  0, CALC__countb            , 'f', "v:r"    , 'r', "count of blank cells in range"                     , "" , "countblank"  , ""            , ""            },   <* 
+    *> { "counte"     ,  0, CALC__counte            , 'f', "v:r"    , 'r', "count of every cell in range"                      , "" , ""            , ""            , ""            },   <* 
+    *> { "every"      ,  0, CALC__counte            , 'f', "v:r"    , 'r', "count of every cell in range"                      , "" , ""            , ""            , ""            },   <* 
+    *> { "avg"        ,  0, CALC__average           , 'f', "v:r"    , 'r', "average of numeric cells in range"                 , "" , ""            , ""            , ""            },   <* 
+    *> { "mean"       ,  0, CALC__average           , 'f', "v:r"    , 'r', "average of numeric cells in range"                 , "" , ""            , ""            , ""            },   <* 
+    *> { "min"        ,  0, CALC__minimum           , 'f', "v:r"    , 'r', "minimum value in range"                            , "" , ""            , ""            , ""            },   <* 
+    *> { "max"        ,  0, CALC__maximum           , 'f', "v:r"    , 'r', "maximum value in range"                            , "" , ""            , ""            , ""            },   <* 
+    *> { "range"      ,  0, CALC__range             , 'f', "v:r"    , 'r', "difference between min and max in range"           , "" , ""            , ""            , ""            },   <* 
+    *> { "qtr0"       ,  0, CALC__minimum           , 'f', "v:r"    , 'r', "minimum value in range"                            , "" , ""            , ""            , ""            },   <* 
+    *> { "qtr1"       ,  0, CALC__quarter1          , 'f', "v:r"    , 'r', "first quarter value in range"                      , "" , ""            , ""            , ""            },   <* 
+    *> { "qtr2"       ,  0, CALC__average           , 'f', "v:r"    , 'r', "second quarter (average) value in range"           , "" , ""            , ""            , ""            },   <* 
+    *> { "qtr3"       ,  0, CALC__quarter3          , 'f', "v:r"    , 'r', "third quarter value in range"                      , "" , ""            , ""            , ""            },   <* 
+    *> { "qtr4"       ,  0, CALC__maximum           , 'f', "v:r"    , 'r', "maximum value in range"                            , "" , ""            , ""            , ""            },   <* 
+    *> { "rangeq"     ,  0, CALC__rangeq            , 'f', "v:r"    , 'r', "difference between q1 and q3 in range"             , "" , ""            , ""            , ""            },   <* 
+    *> { "median"     ,  0, CALC__median            , 'f', "v:r"    , 'r', "median value in range"                             , "" , ""            , ""            , ""            },   <* 
+    *> { "mode"       ,  0, CALC__mode              , 'f', "v:r"    , 'r', "mode of range"                                     , "" , ""            , ""            , ""            },   <* 
+    *> { "stddev"     ,  0, CALC__stddev            , 'f', "v:r"    , 'r', "standard deviation in range"                       , "" , ""            , ""            , ""            },   <*/
    /*---(end-of-s_funcs)--------------------*/
    { "END"        ,  0, NULL                    , '-', ""       , '-', ""                                                  },
 };
@@ -325,7 +413,7 @@ yCALC_init              (char a_style)
    ycalc_build_init  ();
    ycalc_exec_init   ();
    ycalc_deps_init   ();
-   ycalc_math_init   ();
+   ycalc_trig_init   ();
    /*---(update status)------------------*/
    ycalc_status_update ('i');
    /*---(complete)-----------------------*/

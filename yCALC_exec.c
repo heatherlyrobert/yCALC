@@ -18,7 +18,7 @@ static int         s_nerror      =    0;
 static int         s_nbuild      =    0;
 static int         s_neval       =    0;
 
-static int         s_error       =    0;
+int                g_error       =    0;
 
 
 /*====================------------------------------------====================*/
@@ -503,7 +503,7 @@ ycalc__exec_prepare     (tDEP_ROOT *a_deproot, char *a_type, double *a_value, ch
    /*---(reset globals)------------------*/
    s_owner  = a_deproot->owner;
    s_neval  = 0;
-   s_error  = 0;
+   g_error  = 0;
    /*---(complete)-------------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -518,19 +518,21 @@ ycalc__exec_wrap        (char *a_type, double *a_value, char **a_string)
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(check errors)-------------------*/
-   DEBUG_CALC   yLOG_value   ("s_error"   , s_error);
-   --rce;  if (s_error <  0) {
+   DEBUG_CALC   yLOG_value   ("g_error"   , g_error);
+   --rce;  if (g_error <  0) {
       *a_type = YCALC_DATA_ERROR;
+      ycalc_handle_error (g_error, a_type, a_value, a_string, "");
       /*> a_curr->t = YCALC_DATA_ERROR;                                                            <* 
        *> a_curr->v_str = strndup (errorstr, LEN_RECD);                               <*/
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   --rce;  if (s_error >  0) {
+   --rce;  if (g_error >  0) {
       *a_type = YCALC_DATA_ERROR;
+      ycalc_handle_error (g_error, a_type, a_value, a_string, "");
       /*> a_curr->t = YCALC_DATA_ERROR;                                                            <* 
        *> a_curr->v_str = strndup (errorstr, LEN_RECD);                               <*/
-      DEBUG_CALC   yLOG_value   ("s_error"  , s_error);
+      DEBUG_CALC   yLOG_value   ("g_error"  , g_error);
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return rce;
    }
@@ -609,10 +611,10 @@ ycalc_execute_trusted   (tDEP_ROOT *a_deproot, char *a_type, double *a_value, ch
          break;
       default  :
          /*> ERROR_add (s_me, PERR_EVAL, s_neval, __FUNCTION__, TERR_OTHER, "bad calculation type requested");   <*/
-         s_error = -66;
+         g_error = -66;
          break;
       }
-      if (s_error != 0) break;
+      if (g_error != 0) break;
       x_calc = x_calc->next;
       DEBUG_CALC   yLOG_value   ("nstack"    , s_nstack);
    }
