@@ -84,7 +84,7 @@ ycalc__seq_add          (char a_level, tDEP_ROOT *a_deproot)
       DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
       return rce;
    }
-   DEBUG_CALC   yLOG_sinfo   ("label"     , g_labeler (a_deproot->owner));
+   DEBUG_CALC   yLOG_sinfo   ("label"     , ycalc_call_labeler (a_deproot));
    DEBUG_CALC   yLOG_spoint  (myCALC.rroot);
    --rce;  if (a_deproot == myCALC.rroot) {
       DEBUG_CALC   yLOG_snote   ("cell is root");
@@ -141,7 +141,7 @@ ycalc__seq_del          (tDEP_ROOT *a_deproot)
       DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
       return rce;
    }
-   DEBUG_CALC   yLOG_sinfo   ("label"     , g_labeler (a_deproot->owner));
+   DEBUG_CALC   yLOG_sinfo   ("label"     , ycalc_call_labeler (a_deproot));
    /*---(defense : unassigned)-----------*/
    x_level = a_deproot->slevel;
    DEBUG_CALC   yLOG_svalue  ("x_level"   , x_level);
@@ -199,7 +199,7 @@ ycalc__seq_recursion    (int a_level, tDEP_LINK *a_dep, char a_dir, long a_stamp
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return 0;
    }
-   DEBUG_CALC   yLOG_info    ("curr label", g_labeler (x_curr->owner));
+   DEBUG_CALC   yLOG_info    ("curr label", ycalc_call_labeler (x_curr));
    /*---(calculate)----------------------*/
    if (x_curr->u != a_stamp) {
       DEBUG_CALC   yLOG_note    ("stamp does not match");
@@ -264,7 +264,7 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, l
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   DEBUG_CALC   yLOG_sinfo   ("label"     , g_labeler (a_deproot->owner));
+   DEBUG_CALC   yLOG_sinfo   ("label"     , ycalc_call_labeler (a_deproot));
    DEBUG_CALC   yLOG_value   ("npro"  , a_deproot->npro);
    DEBUG_CALC   yLOG_value   ("nreq"  , a_deproot->nreq);
    g_consumer = a_consumer;
@@ -353,7 +353,7 @@ ycalc__seq_list    (char *a_list)
    for (i = 0; i <= s_max; ++i) {
       x_curr = s_heads [i];
       while (x_curr != NULL) {
-         strncat (a_list, g_labeler (x_curr->owner), LEN_RECD);
+         strncat (a_list, ycalc_call_labeler (x_curr), LEN_RECD);
          strncat (a_list, ",", LEN_RECD);
          x_curr = x_curr->snext;
       }
@@ -396,7 +396,7 @@ ycalc__unit_seq         (char *a_question, void *a_point)
       }
    }
    else if (strcmp (a_question, "level"       )   == 0) {
-      strlcpy (x_label, g_labeler (x_root->owner), LEN_RECD);
+      strlcpy (x_label, ycalc_call_labeler (x_root), LEN_RECD);
       if (x_root->slevel >= 0) snprintf (ycalc__unit_answer, LEN_RECD, "yCALC seq level  : %-5.5s  %2d", x_label, x_root->slevel);
       else                     snprintf (ycalc__unit_answer, LEN_RECD, "yCALC seq level  : %-5.5s  %2s", x_label, "--"          );
    }

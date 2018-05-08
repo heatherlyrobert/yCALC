@@ -139,9 +139,11 @@ ycalc__mock_named       (char *a_label, void **a_owner, void **a_deproot)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   char        rc          =    0;
    int         i           =    0;
    int         n           =   -1;
    tMOCK      *x_mock      = NULL;
+   tDEP_ROOT  *x_deproot   = NULL;
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
    DEBUG_DEPS   yLOG_spoint  (a_label);
@@ -150,6 +152,21 @@ ycalc__mock_named       (char *a_label, void **a_owner, void **a_deproot)
       return NULL;
    }
    DEBUG_DEPS   yLOG_snote   (a_label);
+   /*---(range)--------------------------*/
+   if (a_label [0] == '­') {
+      rc = ycalc_range_deproot (a_label, &x_deproot);
+      DEBUG_CALC   yLOG_value   ("rc"        , rc);
+      --rce;  if (rc < 0) {
+         DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      DEBUG_DEPS   yLOG_spoint  (x_deproot);
+      if (a_owner   != NULL)  *a_owner   = NULL;
+      if (a_deproot != NULL)  *a_deproot = x_deproot;
+      DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
+      return 0;
+   }
+   /*---(mock data)----------------------*/
    for (i = 0; i < 500; ++i) {
       if (s_mocks [i].label [0] == 0)                break;
       if (strcmp (s_mocks [i].label, a_label) != 0)  continue;
@@ -187,9 +204,27 @@ ycalc__mock_whos_at     (int x, int y, int z, void **a_owner, void **a_deproot)
    tMOCK      *x_mock      = NULL;
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
+   /*---(initialize)---------------------*/
+   if (a_owner   != NULL)  *a_owner   = NULL;
+   if (a_deproot != NULL)  *a_deproot = NULL;
+   /*---(legal)--------------------------*/
    DEBUG_DEPS   yLOG_sint    (x);
    DEBUG_DEPS   yLOG_sint    (y);
    DEBUG_DEPS   yLOG_sint    (z);
+   if (x != -1 && y != -1 && z != -1) { /* ROOT */
+      --rce;  if (x < 0 || x >  100) {
+         DEBUG_DEPS   yLOG_snote   ("x-pos out of range");
+         return rce;
+      }
+      --rce;  if (y < 0 || y > 1000) {
+         DEBUG_DEPS   yLOG_snote   ("y-pos out of range");
+         return rce;
+      }
+      --rce;  if (z < 0 || z >   35) {
+         DEBUG_DEPS   yLOG_snote   ("z-pos out of range");
+         return rce;
+      }
+   }
    /*---(search)-------------------------*/
    for (i = 0; i < 500; ++i) {
       if (s_mocks [i].label [0] == 0)                break;

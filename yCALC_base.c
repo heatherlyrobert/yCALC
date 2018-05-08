@@ -226,8 +226,8 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
     *> { "tabs"       ,  0, CALC__tabs              , 'f', "v:r"    , 'r', "number of tabs in range"                           , "" , ""            , ""            , ""            },   <* 
     *> { "cols"       ,  0, CALC__cols              , 'f', "v:r"    , 'r', "number of columns in range"                        , "" , ""            , ""            , ""            },   <* 
     *> { "rows"       ,  0, CALC__rows              , 'f', "v:r"    , 'r', "number of rows in range"                           , "" , ""            , ""            , ""            },   <*/
-   /*> { "sum"        ,  3, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     , "" , ""            , ""            , ""            },   <*/
-   /*> { "s"          ,  1, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     , "" , ""            , ""            , ""            },   <*/
+   { "sum"        ,  3, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     , "" , ""            , ""            , ""            },
+   { "s"          ,  1, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     , "" , ""            , ""            , ""            },
    /*> { "count"      ,  0, CALC__count             , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" , "count"       , ""            , ""            },   <* 
     *> { "numbers"    ,  0, CALC__count             , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" , "count"       , ""            , ""            },   <* 
     *> { "c"          ,  0, CALC__count             , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" , "count"       , ""            , ""            },   <* 
@@ -410,6 +410,7 @@ yCALC_init              (char a_style)
    /*---(initialize)---------------------*/
    DEBUG_PROG   yLOG_note    ("running sub-initializations");
    ycalc_audit_init  ();
+   ycalc_range_init  ();
    ycalc_build_init  ();
    ycalc_exec_init   ();
    ycalc_deps_init   ();

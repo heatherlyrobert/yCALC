@@ -470,6 +470,7 @@ yCALC_handle            (char *a_label)
    double     *x_value     = NULL;
    char      **x_string    = NULL;
    int         x_len       =    0;
+   int         x, y, z;
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -503,6 +504,19 @@ yCALC_handle            (char *a_label)
    /*---(classify)-----------------------*/
    rc = ycalc_classify_trusted (x_deproot, x_source, x_type, x_value, x_string);
    DEBUG_CALC   yLOG_value   ("classify"  , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(ranges)-------------------------*/
+   rc = g_addresser (x_owner, &x, &y, &z);
+   DEBUG_CALC   yLOG_value   ("addresser" , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = ycalc_range_include (x_deproot, x, y, z);
+   DEBUG_CALC   yLOG_value   ("ranges"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -671,7 +685,7 @@ ycalc__sort_wrap   (char *a_list)
          DEBUG_SORT    yLOG_exit    (__FUNCTION__);
          return rce;
       }
-      strlcpy (x_label, g_labeler (x_deproot->owner), LEN_LABEL);
+      strlcpy (x_label, ycalc_call_labeler (x_deproot), LEN_LABEL);
       DEBUG_SORT    yLOG_info    ("label"   , x_label);
       strcat (a_list, x_label);
       strcat (a_list, ",");
@@ -748,8 +762,8 @@ ycalc__audit_disp_master   (tDEP_ROOT *a_me, char *a_list, char a_start, char *a
    /*---(walk the list)------------------*/
    while (n != NULL) {
       if (strchr (a_types, n->type) != 0) {
-         strlcat (a_list, g_labeler (n->target->owner), LEN_RECD);
-         strlcat (a_list, ","                         , LEN_RECD);
+         strlcat (a_list, ycalc_call_labeler (n->target), LEN_RECD);
+         strlcat (a_list, ","                           , LEN_RECD);
       }
       n = n->next;
    }

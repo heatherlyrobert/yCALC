@@ -171,11 +171,11 @@ ycalc__build_coords     (tCALC *a_calc, int *x, int *y, int *z)
    char        rce         =  -10;
    char        rc          =    0;
    tCALC      *x_calc      = NULL;
-   void       *x_thing     = NULL;
+   tDEP_ROOT  *x_deproot   = NULL;
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(get previous calc)--------------*/
-   x_calc = a_calc->prev;
+   x_calc = a_calc;
    DEBUG_CALC   yLOG_point   ("x_calc"    , x_calc);
    --rce; if (x_calc    == NULL) {     
       DEBUG_CALC   yLOG_note    ("can not find prev calculation");
@@ -191,23 +191,23 @@ ycalc__build_coords     (tCALC *a_calc, int *x, int *y, int *z)
       return G_ERROR_RANGE;
    }
    /*---(check thing)--------------------*/
-   x_thing = x_calc->r;
-   DEBUG_CALC   yLOG_point   ("x_thing"   , x_thing);
-   if (x_thing   == NULL) {     
+   x_deproot = x_calc->r;
+   DEBUG_CALC   yLOG_point   ("x_deproot"   , x_deproot);
+   if (x_deproot   == NULL) {     
       DEBUG_CALC   yLOG_note    ("beginning reference can not be null");
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, G_ERROR_RANGE);
       return G_ERROR_RANGE;
    }
    /*---(get address)--------------------*/
-   rc = g_addresser (x_thing, x, y, z);
-   DEBUG_CALC   yLOG_point   ("rc"        , rc);
+   rc = g_addresser (x_deproot->owner, x, y, z);
+   DEBUG_CALC   yLOG_value   ("addresser" , rc);
    if (rc  < 0) {     
       DEBUG_CALC   yLOG_note    ("not a valid address");
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, G_ERROR_RANGE);
       return G_ERROR_RANGE;
    }
    /*---(report out)---------------------*/
-   DEBUG_CALC   yLOG_complex ("address"   , "%4dx, %4dy, %4dz", x, y, z);
+   DEBUG_CALC   yLOG_complex ("address"   , "%4dx, %4dy, %4dz", *x, *y, *z);
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -314,6 +314,7 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    char        x_good      =  '-';
    int         x_beg, y_beg, z_beg;
    int         x_end, y_end, z_end;
+   int         a;
    /*---(check for range operator)-------*/
    DEBUG_CALC   yLOG_note    ("check for range operator");
    if (strcmp (a_token, "..") != 0)    return 0;
@@ -328,17 +329,33 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
       return rc;
    }
    /*---(get ending point)---------------*/
-   rc = ycalc__build_coords  (a_calc->prev->prev, &x_beg, &y_beg, &z_beg);
+   rc = ycalc__build_coords  (a_calc->prev->prev, &x_end, &y_end, &z_end);
    DEBUG_CALC   yLOG_value   ("rc"        , rc);
    if (rc != 0) {     
       rc = YCALC_ERROR_BUILD_RNG;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
+   if (x_beg > x_end)  { a = x_beg;  x_beg = x_end;  x_end = a; }
+   if (y_beg > y_end)  { a = y_beg;  y_beg = y_end;  y_end = a; }
    /*---(set dependencies)---------------*/
-   DEBUG_CALC   yLOG_note    ("set dedendency");
-   rc = yCALC_range (a_deproot, x_beg, y_beg, z_beg, x_end, y_end, z_end);
+   DEBUG_CALC   yLOG_note    ("set dedendencies");
+   DEBUG_DEPS    yLOG_complex ("range"     , "bx=%4d, ex=%4d, by=%4d, ey=%4d, z=%4d", x_beg, x_end, y_beg, y_end, z_beg);
+   rc = ycalc_range_use (a_deproot, x_beg, x_end, y_beg, y_end, z_beg);
    DEBUG_CALC   yLOG_value   ("rc"        , rc);
+   if (rc <  0) {     
+      rc = YCALC_ERROR_BUILD_DEP;
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(update type)--------------------*/
+   rc = ycalc_deps_delete (G_DEP_REQUIRE, a_deproot, a_calc->prev->r);
+   if (rc <  0) {     
+      rc = YCALC_ERROR_BUILD_DEP;
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   rc = ycalc_deps_delete (G_DEP_REQUIRE, a_deproot, a_calc->prev->prev->r);
    if (rc <  0) {     
       rc = YCALC_ERROR_BUILD_DEP;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
@@ -467,6 +484,7 @@ ycalc__build_step       (tDEP_ROOT *a_deproot, char *a_token)
    /*---(create and null)-----------------*/
    DEBUG_CALC   yLOG_note    ("allocate calc entry");
    x_calc   = ycalc__build_new (a_deproot);
+   DEBUG_CALC   yLOG_value   ("calc step" , a_deproot->ncalc);
    /*---(try al types)--------------------*/
    if (rc == 0)  rc = ycalc__build_char      (a_deproot, x_calc, a_token);
    if (rc == 0)  rc = ycalc__build_string    (a_deproot, x_calc, a_token);

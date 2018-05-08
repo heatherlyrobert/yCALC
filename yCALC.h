@@ -33,6 +33,9 @@
 #define     G_DEP_POINTER        'P'
 #define     G_DEP_CELL           'c'
 
+#define     G_DEP_RANGE          ':'
+#define     G_DEP_ENTRY          '.'
+
 #define     G_DEP_FORMAT         'F'
 #define     G_DEP_COPY           'f'
 

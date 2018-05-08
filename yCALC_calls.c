@@ -71,6 +71,7 @@ yCALC_enable            (void *a_owner)
    /*---(calc fields)--------------------*/
    DEBUG_DEPS   yLOG_snote   ("owner");
    x_deproot->owner   = a_owner;
+   x_deproot->range   =   -1;
    /*---(calc fields)--------------------*/
    DEBUG_DEPS   yLOG_snote   ("calc");
    x_deproot->rpn     = NULL;
@@ -131,7 +132,7 @@ yCALC_disable           (void *a_deproot)
    }
    /*---(prepare)------------------------*/
    x_deproot = (tDEP_ROOT *) a_deproot;
-   DEBUG_DEPS   yLOG_info    ("label"     , g_labeler (x_deproot->owner));
+   DEBUG_DEPS   yLOG_info    ("label"     , ycalc_call_labeler (x_deproot));
    /*---(wipe)---------------------------*/
    ycalc_calc_wipe     (x_deproot);
    ycalc_deps_wipe     (x_deproot);
@@ -165,6 +166,19 @@ yCALC_disable           (void *a_deproot)
 /*===----                     information wrappers                     ----===*/
 /*====================------------------------------------====================*/
 static void  o___INFO____________o () { return; }
+
+char*
+ycalc_call_labeler      (tDEP_ROOT *a_deproot)
+{
+   /*---(defense)------------------------*/
+   if (a_deproot == NULL)  return g_nada;
+   /*---(normal)-------------------------*/
+   if (a_deproot->owner != NULL)  return g_labeler (a_deproot->owner);
+   /*---(range)--------------------------*/
+   if (a_deproot->range >= 0)     return ycalc_range_label (a_deproot->range);
+   /*---(complete)-----------------------*/
+   return g_nada;
+}
 
 char
 ycalc_call_who_named    (char *a_label, void **a_owner, void **a_deproot)
@@ -210,16 +224,25 @@ ycalc_call_who_named    (char *a_label, void **a_owner, void **a_deproot)
       return rce;
    }
    /*---(callback)-----------------------*/
-   rc = g_who_named (a_label, &x_owner, &x_deproot);
-   DEBUG_CALC   yLOG_value   ("rc"        , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_CALC   yLOG_point   ("x_owner"   , x_owner);
-   --rce;  if (x_owner == NULL) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+   if (a_label [0] == '­') {
+      rc = ycalc_range_deproot (a_label, &x_deproot);
+      DEBUG_CALC   yLOG_value   ("rc"        , rc);
+      --rce;  if (rc < 0) {
+         DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+   } else {
+      rc = g_who_named (a_label, &x_owner, &x_deproot);
+      DEBUG_CALC   yLOG_value   ("rc"        , rc);
+      --rce;  if (rc < 0) {
+         DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      DEBUG_CALC   yLOG_point   ("x_owner"   , x_owner);
+      --rce;  if (x_owner == NULL) {
+         DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
    }
    /*---(setup)--------------------------*/
    DEBUG_CALC   yLOG_point   ("x_deproot" , x_deproot);

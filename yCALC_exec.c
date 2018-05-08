@@ -416,7 +416,7 @@ ycalc_popstr_plus       (char *a_func, char a_what)
          else                  return  strndup (s_string, LEN_RECD);
          break;
       case G_SPECIAL_LABEL  :
-         return strndup (g_labeler (x_deproot->owner), LEN_RECD);
+         return strndup (ycalc_call_labeler (x_deproot), LEN_RECD);
          break;
       case G_SPECIAL_PRINT  :
          g_special (x_deproot->owner, G_SPECIAL_PRINT , NULL, &s_string);

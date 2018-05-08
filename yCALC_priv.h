@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2c"
-#define YCALC_VER_TXT   "basic trig functions are in place and very early unit test"
+#define YCALC_VER_NUM   "0.2d"
+#define YCALC_VER_TXT   "range dependencies in place and unit tested.  still need calc logic"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -41,7 +41,7 @@ extern char    (*g_pointer  )   (void *a_owner, char **a_source, char **a_type, 
 extern char    (*g_reaper   )   (void *a_owner);        /* pass deproot->owner, tries to kill thing        */
 /*---(value config)-------------------*/
 extern char    (*g_valuer   )   (void *a_owner, char *a_type, double *a_value , char **a_string);
-extern char    (*g_addresser)   (void *a_owner, int   *x        , int    *y       , int     *z);
+extern char    (*g_addresser)   (void *a_owner, int *x, int *y, int *z);
 extern char    (*g_special  )   (void *a_owner, char  a_what, double *a_value , char   **a_string);
 /*---(sequencing)---------------------*/
 extern char    (*g_consumer )   (void *a_owner, void *a_deproot, int a_seq, int a_lvl);
@@ -147,6 +147,7 @@ typedef     struct      cDEP_INFO   tDEP_INFO;
 struct      cDEP_ROOT {
    /*---(tie to owner)------*/
    void       *owner;
+   short       range;
    /*---(calculation)-------*/
    char       *rpn;          /* rpn version of formula                        */
    int         ncalc;        /* number of calculation tokens                  */
@@ -184,6 +185,7 @@ struct      cDEP_LINK  {
    char        type;          /* type of connection                           */
    tDEP_ROOT  *source;        /* pointer to source cell                       */
    tDEP_ROOT  *target;        /* pointer to target cell                       */
+   int         count;         /* reuse with same source and target            */
    /*---(cell linked list)---------------*/
    tDEP_LINK  *prev;          /* pointer to prev dependency for source cell   */
    tDEP_LINK  *next;          /* pointer to next dependency for source cell   */
@@ -191,8 +193,6 @@ struct      cDEP_LINK  {
    /*---(deps linked list)---------------*/
    tDEP_LINK  *dprev;         /* pointer to prev dependency in full list      */
    tDEP_LINK  *dnext;         /* pointer to next dependency in full list      */
-   /*---(statistics)---------------------*/
-   int         count;         /* number of times used for dep/calc            */
    /*---(done)---------------------------*/
 };
 static tDEP_LINK     *s_hdep;
@@ -418,6 +418,11 @@ char        ycalc__unit_loud        (void);
 char        ycalc__unit_end         (void);
 
 
+int         ycalc_range_init        (void);
+int         ycalc_range_label       (int n);
+char        ycalc_range_deproot     (char *a_name, tDEP_ROOT **a_deproot);
+char        ycalc_range_use         (tDEP_ROOT *a_src, int bx, int ex, int by, int ey, int z);
+char        ycalc_range_include     (tDEP_ROOT *a_src, int x, int y, int z);
 
 
 /*===[ BUILD ]============================================*/
@@ -491,6 +496,7 @@ char        ycalc__seq_list         (char *a_list);
 /*===[ CALLS ]============================================*/
 char        ycalc_call_who_named    (char *a_label, void **a_owner, void **a_deproot);
 char        ycalc_call_who_at       (int x, int y, int z, void **a_owner, void **a_deproot);
+char*       ycalc_call_labeler      (tDEP_ROOT *a_deproot);
 
 
 char        ycalc_trig_init         (void);
@@ -671,6 +677,7 @@ void        ycalc_atanr             (void);
 void        ycalc_atan2             (void);
 void        ycalc_atanr2            (void);
 
+void        ycalc_sum               (void);
 
 
 #endif
