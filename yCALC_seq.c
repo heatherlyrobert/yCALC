@@ -43,6 +43,7 @@ ycalc__seq_clear        (void)
    DEBUG_CALC   yLOG_note    ("resetting cell calc exec fields");
    x_next = myCALC.rroot;
    while (x_next != NULL) {
+      DEBUG_CALC   yLOG_info    ("label"     , ycalc_call_labeler (x_next));
       x_next->slevel = -1;
       x_next->snext  = NULL;
       x_next->sprev  = NULL;
@@ -332,6 +333,9 @@ yCALC_seq_downdown (long a_stamp, void *a_consumer)    { return ycalc__seq_drive
 
 char         /*-> dependency-based wiping of cells ---[ ------ [gc.740.025.36]*/ /*-[02.0000.104.!]-*/ /*-[--.---.---.--]-*/
 yCALC_seq_downup   (long a_stamp, void *a_consumer)    { return ycalc__seq_driver (myCALC.rroot, 'd', 'u', a_stamp, a_consumer); }
+
+char         /*-> dependency-based calculation all ---[ ------ [gc.840.026.38]*/ /*-[02.0000.402.1]-*/ /*-[--.---.---.--]-*/
+yCALC_calculate    (void)                              { return ycalc__seq_driver (myCALC.rroot, 'd', 'u', rand() , ycalc_execute_auto); }
 
 
 

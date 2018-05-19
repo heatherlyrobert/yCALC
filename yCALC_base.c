@@ -8,9 +8,6 @@ tLOCAL      myCALC;
 
 double      a, b, c, d, e;
 int         m, n, o, len;
-double      tot, min, max;
-int         cnt, cnta, cnts, cntb, cntr;
-double      entries     [1000];
 char       *q, *r, *s;
 char        t           [LEN_RECD];
 char        g_nada       [5] = "";
@@ -222,37 +219,39 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "atan2"      ,  5, ycalc_atan2             , 'f', "n:nn"   , 't', "arctangent in degrees given sides x and y"         },
    { "atanr2"     ,  6, ycalc_atanr2            , 'f', "n:nn"   , 't', "arctangent in radians given sides x and y"         },
    /*---(range info functions)------------*/
-   /*> { "dist"       ,  0, CALC__dist              , 'f', "v:r"    , 'r', "geometric distance between beg and end locations"  , "" , ""            , ""            , ""            },   <* 
-    *> { "tabs"       ,  0, CALC__tabs              , 'f', "v:r"    , 'r', "number of tabs in range"                           , "" , ""            , ""            , ""            },   <* 
-    *> { "cols"       ,  0, CALC__cols              , 'f', "v:r"    , 'r', "number of columns in range"                        , "" , ""            , ""            , ""            },   <* 
-    *> { "rows"       ,  0, CALC__rows              , 'f', "v:r"    , 'r', "number of rows in range"                           , "" , ""            , ""            , ""            },   <*/
+   { "dist"       ,  4, ycalc_dist              , 'f', "v:r"    , 'r', "geometric distance between beg and end locations"  , "" , ""            , ""            , ""            },
+   { "tabs"       ,  4, ycalc_tabs              , 'f', "v:r"    , 'r', "number of tabs in range"                           , "" , ""            , ""            , ""            },
+   { "z_size"     ,  6, ycalc_tabs              , 'f', "v:r"    , 'r', "number of tabs in range"                           , "" , ""            , ""            , ""            },
+   { "cols"       ,  4, ycalc_cols              , 'f', "v:r"    , 'r', "number of columns in range"                        , "" , ""            , ""            , ""            },
+   { "x_size"     ,  6, ycalc_cols              , 'f', "v:r"    , 'r', "number of columns in range"                        , "" , ""            , ""            , ""            },
+   { "rows"       ,  4, ycalc_rows              , 'f', "v:r"    , 'r', "number of rows in range"                           , "" , ""            , ""            , ""            },
+   { "y_size"     ,  6, ycalc_rows              , 'f', "v:r"    , 'r', "number of rows in range"                           , "" , ""            , ""            , ""            },
    { "sum"        ,  3, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     , "" , ""            , ""            , ""            },
    { "s"          ,  1, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     , "" , ""            , ""            , ""            },
-   /*> { "count"      ,  0, CALC__count             , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" , "count"       , ""            , ""            },   <* 
-    *> { "numbers"    ,  0, CALC__count             , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" , "count"       , ""            , ""            },   <* 
-    *> { "c"          ,  0, CALC__count             , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" , "count"       , ""            , ""            },   <* 
-    *> { "counts"     ,  0, CALC__counts            , 'f', "v:r"    , 'r', "count of string cells in range"                    , "" , ""            , ""            , ""            },   <* 
-    *> { "strings"    ,  0, CALC__counts            , 'f', "v:r"    , 'r', "count of string cells in range"                    , "" , ""            , ""            , ""            },   <* 
-    *> { "counta"     ,  0, CALC__counta            , 'f', "v:r"    , 'r', "count of filled cells in range"                    , "" , "counta"      , ""            , ""            },   <* 
-    *> { "filled"     ,  0, CALC__counta            , 'f', "v:r"    , 'r', "count of filled cells in range"                    , "" , "counta"      , ""            , ""            },   <* 
-    *> { "countb"     ,  0, CALC__countb            , 'f', "v:r"    , 'r', "count of blank cells in range"                     , "" , "countblank"  , ""            , ""            },   <* 
-    *> { "blanks"     ,  0, CALC__countb            , 'f', "v:r"    , 'r', "count of blank cells in range"                     , "" , "countblank"  , ""            , ""            },   <* 
-    *> { "counte"     ,  0, CALC__counte            , 'f', "v:r"    , 'r', "count of every cell in range"                      , "" , ""            , ""            , ""            },   <* 
-    *> { "every"      ,  0, CALC__counte            , 'f', "v:r"    , 'r', "count of every cell in range"                      , "" , ""            , ""            , ""            },   <* 
-    *> { "avg"        ,  0, CALC__average           , 'f', "v:r"    , 'r', "average of numeric cells in range"                 , "" , ""            , ""            , ""            },   <* 
-    *> { "mean"       ,  0, CALC__average           , 'f', "v:r"    , 'r', "average of numeric cells in range"                 , "" , ""            , ""            , ""            },   <* 
-    *> { "min"        ,  0, CALC__minimum           , 'f', "v:r"    , 'r', "minimum value in range"                            , "" , ""            , ""            , ""            },   <* 
-    *> { "max"        ,  0, CALC__maximum           , 'f', "v:r"    , 'r', "maximum value in range"                            , "" , ""            , ""            , ""            },   <* 
-    *> { "range"      ,  0, CALC__range             , 'f', "v:r"    , 'r', "difference between min and max in range"           , "" , ""            , ""            , ""            },   <* 
-    *> { "qtr0"       ,  0, CALC__minimum           , 'f', "v:r"    , 'r', "minimum value in range"                            , "" , ""            , ""            , ""            },   <* 
-    *> { "qtr1"       ,  0, CALC__quarter1          , 'f', "v:r"    , 'r', "first quarter value in range"                      , "" , ""            , ""            , ""            },   <* 
-    *> { "qtr2"       ,  0, CALC__average           , 'f', "v:r"    , 'r', "second quarter (average) value in range"           , "" , ""            , ""            , ""            },   <* 
-    *> { "qtr3"       ,  0, CALC__quarter3          , 'f', "v:r"    , 'r', "third quarter value in range"                      , "" , ""            , ""            , ""            },   <* 
-    *> { "qtr4"       ,  0, CALC__maximum           , 'f', "v:r"    , 'r', "maximum value in range"                            , "" , ""            , ""            , ""            },   <* 
-    *> { "rangeq"     ,  0, CALC__rangeq            , 'f', "v:r"    , 'r', "difference between q1 and q3 in range"             , "" , ""            , ""            , ""            },   <* 
-    *> { "median"     ,  0, CALC__median            , 'f', "v:r"    , 'r', "median value in range"                             , "" , ""            , ""            , ""            },   <* 
-    *> { "mode"       ,  0, CALC__mode              , 'f', "v:r"    , 'r', "mode of range"                                     , "" , ""            , ""            , ""            },   <* 
-    *> { "stddev"     ,  0, CALC__stddev            , 'f', "v:r"    , 'r', "standard deviation in range"                       , "" , ""            , ""            , ""            },   <*/
+   { "count"      ,  5, ycalc_numbers           , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" , "count"       , ""            , ""            },
+   { "numbers"    ,  7, ycalc_numbers           , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" , "count"       , ""            , ""            },
+   { "strings"    ,  7, ycalc_strings           , 'f', "v:r"    , 'r', "count of string cells in range"                    , "" , ""            , ""            , ""            },
+   { "filled"     ,  6, ycalc_filled            , 'f', "v:r"    , 'r', "count of filled cells in range"                    , "" , "counta"      , ""            , ""            },
+   { "blanks"     ,  6, ycalc_blanks            , 'f', "v:r"    , 'r', "count of blank cells in range"                     , "" , "countblank"  , ""            , ""            },
+   { "every"      ,  5, ycalc_every             , 'f', "v:r"    , 'r', "count of every cell in range"                      , "" , ""            , ""            , ""            },
+   { "pointers"   ,  6, ycalc_pointers          , 'f', "v:r"    , 'r', "count of every cell in range"                      , "" , ""            , ""            , ""            },
+   { "empty"      ,  5, ycalc_empty             , 'f', "v:r"    , 'r', "count of every cell in range"                      , "" , ""            , ""            , ""            },
+   { "calcs"      ,  5, ycalc_calcs             , 'f', "v:r"    , 'r', "count of every cell in range"                      , "" , ""            , ""            , ""            },
+   { "avg"        ,  3, ycalc_average           , 'f', "v:r"    , 'r', "average of numeric cells in range"                 , "" , ""            , ""            , ""            },
+   { "mean"       ,  4, ycalc_average           , 'f', "v:r"    , 'r', "average of numeric cells in range"                 , "" , ""            , ""            , ""            },
+   { "min"        ,  3, ycalc_min               , 'f', "v:r"    , 'r', "minimum value in range"                            , "" , ""            , ""            , ""            },
+   { "max"        ,  3, ycalc_max               , 'f', "v:r"    , 'r', "maximum value in range"                            , "" , ""            , ""            , ""            },
+   { "range"      ,  5, ycalc_range             , 'f', "v:r"    , 'r', "difference between min and max in range"           , "" , ""            , ""            , ""            },
+   { "qtr0"       ,  4, ycalc_min               , 'f', "v:r"    , 'r', "minimum value in range"                            , "" , ""            , ""            , ""            },
+   { "qtr1"       ,  4, ycalc_quarter1          , 'f', "v:r"    , 'r', "first quarter value in range"                      , "" , ""            , ""            , ""            },
+   { "qtr2"       ,  4, ycalc_median            , 'f', "v:r"    , 'r', "second quarter (average) value in range"           , "" , ""            , ""            , ""            },
+   { "qtr3"       ,  4, ycalc_quarter3          , 'f', "v:r"    , 'r', "third quarter value in range"                      , "" , ""            , ""            , ""            },
+   { "qtr4"       ,  4, ycalc_max               , 'f', "v:r"    , 'r', "maximum value in range"                            , "" , ""            , ""            , ""            },
+   { "rangeq"     ,  6, ycalc_rangeq            , 'f', "v:r"    , 'r', "difference between q1 and q3 in range"             , "" , ""            , ""            , ""            },
+   { "median"     ,  6, ycalc_median            , 'f', "v:r"    , 'r', "median value in range"                             , "" , ""            , ""            , ""            },
+   { "mode"       ,  4, ycalc_mode              , 'f', "v:r"    , 'r', "mode of range"                                     , "" , ""            , ""            , ""            },
+   { "stddev"     ,  6, ycalc_stddev            , 'f', "v:r"    , 'r', "standard deviation in range"                       , "" , ""            , ""            , ""            },
+   { "skew"       ,  4, ycalc_skew              , 'f', "v:r"    , 'r', "quartile-based skewness measure"                   , "" , ""            , ""            , ""            },
    /*---(end-of-s_funcs)--------------------*/
    { "END"        ,  0, NULL                    , '-', ""       , '-', ""                                                  },
 };
@@ -533,7 +532,7 @@ yCALC_label_config      (void *a_who_named, void *a_who_at, void *a_labeler)
    }
    g_labeler    = a_labeler;
    /*---(set the dep root)---------------*/
-   ycalc_call_who_named ("ROOT", NULL, &myCALC.rroot);
+   ycalc_call_who_named ("ROOT", YCALC_FULL, NULL, &myCALC.rroot);
    DEBUG_PROG   yLOG_point   ("rroot"     , myCALC.rroot);
    --rce;  if (myCALC.rroot == NULL) {
       DEBUG_PROG   yLOG_note    ("must create a node named ¸ROOT¸ for yCALC to operate");
@@ -649,9 +648,9 @@ ycalc__unit_quiet       (void)
 char       /*----: set up program urgents/debugging --------------------------*/
 ycalc__unit_loud        (void)
 {
-   char       *x_args [5]  = { "yCALC_debug","@@kitchen","@@CALC", "@@SORT", "@@YRPN" };
-   yURG_logger (5, x_args);
-   yURG_urgs   (5, x_args);
+   char       *x_args [6]  = { "yCALC_debug","@@kitchen","@@calc", "@@SORT", "@@YRPN" , "@@YSTR" };
+   yURG_logger (6, x_args);
+   yURG_urgs   (6, x_args);
    DEBUG_CALC   yLOG_info     ("yCALC"    , yCALC_version   ());
    myCALC.trouble = G_NO_ERROR;
    yCALC_init ('s');

@@ -10,8 +10,8 @@ tDEP_INFO   g_dep_info [MAX_DEPTYPE] = {
    {  G_DEP_REQUIRE, G_DEP_PROVIDE, G_DEP_DIRREQ , "requires another cell for its value"                ,  0  ,  0  ,  0   },
    {  G_DEP_PROVIDE, G_DEP_REQUIRE, G_DEP_DIRPRO , "provides its value to another cell"                 ,  0  ,  0  ,  0   },
 
-   {  G_DEP_POINTER, G_DEP_CELL   , G_DEP_DIRREQ , "pointer that provides dependency indirection"       ,  0  ,  0  ,  0   },
-   {  G_DEP_CELL   , G_DEP_POINTER, G_DEP_DIRPRO , "data item/cell that provides the data"              ,  0  ,  0  ,  0   },
+   {  G_DEP_POINTER, G_DEP_TARGET , G_DEP_DIRREQ , "pointer that provides dependency indirection"       ,  0  ,  0  ,  0   },
+   {  G_DEP_TARGET , G_DEP_POINTER, G_DEP_DIRPRO , "data item/cell that provides the data"              ,  0  ,  0  ,  0   },
 
    {  G_DEP_RANGE  , G_DEP_ENTRY  , G_DEP_DIRREQ , "range that provides dependency indirection"         ,  0  ,  0  ,  0   },
    {  G_DEP_ENTRY  , G_DEP_RANGE  , G_DEP_DIRPRO , "individual cell that makes up a range"              ,  0  ,  0  ,  0   },
@@ -54,7 +54,7 @@ ycalc__deps_new         (tDEP_LINK **a_dep)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
-   void       *x_mem       = NULL;
+   void       *x_new       = NULL;
    tDEP_LINK  *x_dep       = NULL;
    int         x_tries     =    0;
    /*---(header)-------------------------*/
@@ -78,17 +78,18 @@ ycalc__deps_new         (tDEP_LINK **a_dep)
    /*---(create)-------------------------*/
    DEBUG_DEPS   yLOG_note    ("malloc");
    /*> DEBUG_DEPS   yLOG_snote   ("malloc");                                          <*/
-   while (x_dep == NULL && x_tries < 10) {
-      x_dep = (tDEP_LINK *) malloc (sizeof (tDEP_LINK));
+   while (x_new == NULL && x_tries < 10) {
+      x_new = malloc (sizeof (tDEP_LINK));
       ++x_tries;
    }
    DEBUG_DEPS   yLOG_value   ("tries"     , x_tries);
    /*> DEBUG_DEPS   yLOG_sint    (x_tries);                                  <*/
-   --rce;  if (x_dep == NULL) {
+   --rce;  if (x_new == NULL) {
       DEBUG_DEPS   yLOG_snote   ("FAILED");
       DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
+   x_dep = (tDEP_LINK *) x_new;
    /*---(dep fields)---------------------*/
    DEBUG_DEPS   yLOG_note    ("dep pointers");
    /*> DEBUG_DEPS   yLOG_snote   ("dep pointers");                                    <*/
@@ -268,7 +269,7 @@ ycalc_deps_init         (void)
 char         /*-> tbd --------------------------------[ ------ [fz.842.041.24]*/ /*-[01.0000.013.T]-*/ /*-[--.---.---.--]-*/
 ycalc__deproot_wipe     (void *a_owner, void *a_deproot, int a_seq, int a_lvl)
 {
-   yCALC_disable (a_deproot);
+   yCALC_disable (&a_deproot);
    return 0;
 }
 
@@ -311,7 +312,7 @@ ycalc__deps_purge       (void)
    c      = 0;
    while (r_curr != NULL) {
       r_next = r_curr->rprev;
-      yCALC_disable (r_curr);
+      yCALC_disable (&r_curr);
       r_curr = r_next;
       ++c;
    }
@@ -413,12 +414,84 @@ ycalc__deps_abbr        (char a_index)
 
 
 /*====================------------------------------------====================*/
+/*===----                        shared functions                      ----===*/
+/*====================------------------------------------====================*/
+static void  o___SHARED__________o () { return; }
+
+char
+ycalc_deps_validate     (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         =  -10;          /* return code for errors         */
+   char        rc          =    0;          /* generic return code            */
+   char        x_index     =    0;          /* dependency type table index    */
+   /*---(header)-------------------------*/
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   /*---(defense source)-----------------*/
+   DEBUG_DEPS   yLOG_point   ("a_source"  , a_source);
+   --rce;  if (a_source     == NULL)   {
+      DEBUG_DEPS yLOG_note      ("source pointer is null");
+      DEBUG_DEPS yLOG_exitr     (__FUNCTION__, rce);
+      return rce; 
+   }
+   DEBUG_DEPS   yLOG_point   ("*a_source" , *a_source);
+   --rce;  if (*a_source    == NULL)   {
+      DEBUG_DEPS yLOG_note      ("source is null");
+      DEBUG_DEPS yLOG_exitr     (__FUNCTION__, rce);
+      return rce; 
+   }
+   DEBUG_DEPS   yLOG_info    ("label"     , ycalc_call_labeler (*a_source));
+   DEBUG_DEPS   yLOG_value   ("nreq"      , (*a_source)->nreq);
+   /*---(defense target)-----------------*/
+   DEBUG_DEPS   yLOG_point   ("a_target"  , a_target);
+   --rce;  if (a_target     == NULL)   {
+      DEBUG_DEPS yLOG_note      ("target pointer is null");
+      DEBUG_DEPS yLOG_exitr     (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DEPS   yLOG_point   ("*a_target" , *a_target);
+   --rce;  if (*a_target     == NULL)   {
+      DEBUG_DEPS yLOG_note      ("target is null");
+      DEBUG_DEPS yLOG_exitr     (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DEPS   yLOG_info    ("label"     , ycalc_call_labeler (*a_target));
+   DEBUG_DEPS   yLOG_value   ("npro"      , (*a_target)->npro);
+   /*---(check link back to root)--------*/
+   --rce;  if (*a_target == myCALC.rroot)  {
+      DEBUG_DEPS yLOG_note      ("can not delete a route back to root");
+      DEBUG_DEPS yLOG_exitr     (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(check circlular link)-----------*/
+   --rce;  if (*a_source == *a_target) {
+      DEBUG_DEPS   yLOG_note    ("source and target are same");
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(check type)---------------------*/
+   DEBUG_DEPS   yLOG_char    ("a_type"    , a_type);
+   x_index     = ycalc__deps_index (a_type);
+   DEBUG_DEPS   yLOG_value   ("dep index" , x_index);
+   --rce;  if (x_index      <  0) {
+      DEBUG_DEPS   yLOG_note    ("dependency type not found");
+      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+   return x_index;
+}
+
+
+
+/*====================------------------------------------====================*/
 /*===----                      create a dependency                     ----===*/
 /*====================------------------------------------====================*/
 static void  o___CREATE__________o () { return; }
 
 tDEP_LINK*   /*-> create a requires dependency -------[ ------ [fp.C43.123.61]*/ /*-[02.0000.017.!]-*/ /*-[--.---.---.--]-*/
-ycalc__deps_create_req  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
+ycalc__deps_create_req  (char a_type, char a_index, tDEP_ROOT **a_source, tDEP_ROOT **a_target)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
@@ -427,13 +500,14 @@ ycalc__deps_create_req  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(check for existing requires)----*/
-   DEBUG_DEPS   yLOG_info    ("src label" , ycalc_call_labeler (a_source));
-   DEBUG_DEPS   yLOG_value   ("src nreqs" , a_source->nreq);
-   x_next = a_source->reqs;
-   DEBUG_DEPS   yLOG_value   ("src head"  , a_source->reqs);
+   DEBUG_DEPS   yLOG_info    ("source"    , ycalc_call_labeler (*a_source));
+   DEBUG_DEPS   yLOG_info    ("target"    , ycalc_call_labeler (*a_target));
+   DEBUG_DEPS   yLOG_value   ("src nreqs" , (*a_source)->nreq);
+   x_next = (*a_source)->reqs;
+   DEBUG_DEPS   yLOG_value   ("src head"  , (*a_source)->reqs);
    while (x_next != NULL) {
-      DEBUG_DEPS   yLOG_info    ("trg label" , ycalc_call_labeler (x_next->source));
-      if (x_next->target == a_target) {
+      DEBUG_DEPS   yLOG_info    ("check"     , ycalc_call_labeler (x_next->target));
+      if (x_next->target == *a_target) {
          DEBUG_DEPS   yLOG_note    ("found existsing updating count");
          DEBUG_DEPS   yLOG_value   ("found"     , ++x_next->count);
          DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
@@ -453,8 +527,8 @@ ycalc__deps_create_req  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
    /*---(assign basics)---------------*/
    DEBUG_DEPS   yLOG_note    ("assign basic values");
    x_req->type     = a_type;
-   x_req->source   = a_source;
-   x_req->target   = a_target;
+   x_req->source   = *a_source;
+   x_req->target   = *a_target;
    x_req->count    = 1;
    /*---(add to dep counters)---------*/
    DEBUG_DEPS   yLOG_note    ("increment dependency table counters");
@@ -462,22 +536,22 @@ ycalc__deps_create_req  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
    ++(g_dep_info [a_index].total);
    /*---(hook it up to cell)----------*/
    DEBUG_DEPS   yLOG_note    ("hook up dependency into root linked list");
-   if (a_source->reqs == NULL) {
-      a_source->reqs = x_req;
+   if ((*a_source)->reqs == NULL) {
+      (*a_source)->reqs = x_req;
    } else {
-      x_next = a_source->reqs;
+      x_next = (*a_source)->reqs;
       while (x_next->next != NULL)  x_next = x_next->next;
       x_next->next         = x_req;
       x_req->prev          = x_next;
    }
-   ++a_source->nreq;
+   ++(*a_source)->nreq;
    /*---(complete)-----------------------*/
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return x_req;
 }
 
 tDEP_LINK*   /*-> create a provides dependency -------[ ------ [fp.C43.123.62]*/ /*-[02.0000.017.!]-*/ /*-[--.---.---.--]-*/
-ycalc__deps_create_pro  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
+ycalc__deps_create_pro  (char a_type, char a_index, tDEP_ROOT **a_source, tDEP_ROOT **a_target)
 {
    /*---(locals)-----------+-----------+-*/
    char        rc          =    0;
@@ -486,12 +560,13 @@ ycalc__deps_create_pro  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(check for existing requires)----*/
-   DEBUG_DEPS   yLOG_info    ("src label" , ycalc_call_labeler (a_source));
-   DEBUG_DEPS   yLOG_value   ("src npros" , a_source->npro);
-   x_next = a_source->pros;
+   DEBUG_DEPS   yLOG_info    ("source"    , ycalc_call_labeler (*a_source));
+   DEBUG_DEPS   yLOG_info    ("target"    , ycalc_call_labeler (*a_target));
+   DEBUG_DEPS   yLOG_value   ("src npros" , (*a_source)->npro);
+   x_next = (*a_source)->pros;
    while (x_next != NULL) {
-      DEBUG_DEPS   yLOG_info    ("trg label" , ycalc_call_labeler (x_next->source));
-      if (x_next->target == a_target) {
+      DEBUG_DEPS   yLOG_info    ("check"     , ycalc_call_labeler (x_next->target));
+      if (x_next->target == *a_target) {
          DEBUG_DEPS   yLOG_note    ("found existsing updating count");
          DEBUG_DEPS   yLOG_value   ("found"     , ++x_next->count);
          DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
@@ -511,8 +586,8 @@ ycalc__deps_create_pro  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
    /*---(assign basics)---------------*/
    DEBUG_DEPS   yLOG_note    ("assign basic values");
    x_pro->type     = ycalc__deps_abbr (a_index);
-   x_pro->source   = a_source;
-   x_pro->target   = a_target;
+   x_pro->source   = *a_source;
+   x_pro->target   = *a_target;
    x_pro->count    = 1;
    /*---(add to dep counters)---------*/
    DEBUG_DEPS   yLOG_note    ("increment dependency table counters");
@@ -520,22 +595,22 @@ ycalc__deps_create_pro  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
    ++(g_dep_info [a_index].total);
    /*---(hook it up to cell)----------*/
    DEBUG_DEPS   yLOG_note    ("hook up dependency into cell linked list");
-   if (a_source->pros == NULL) {
-      a_source->pros = x_pro;
+   if ((*a_source)->pros == NULL) {
+      (*a_source)->pros = x_pro;
    } else {
-      x_next = a_source->pros;
+      x_next = (*a_source)->pros;
       while (x_next->next != NULL)  x_next = x_next->next;
       x_next->next         = x_pro;
       x_pro->prev          = x_next;
    }
-   ++a_source->npro;
+   ++(*a_source)->npro;
    /*---(complete)-----------------------*/
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return x_pro;
 }
 
 char         /*-> create a two-way dependency --------[ ------ [ge.M88.15#.B6]*/ /*-[01.0000.526.H]-*/ /*-[--.---.---.--]-*/
-ycalc_deps_create       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
+ycalc_deps_create       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;          /* return code for errors         */
@@ -545,46 +620,17 @@ ycalc_deps_create       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
    tDEP_LINK  *x_provide   = NULL;    /* new provides entry                   */
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
-   /*---(defense: null pointers)---------*/
-   DEBUG_DEPS   yLOG_point   ("a_source"  , a_source);
-   --rce;  if (a_source     == NULL)   {
-      DEBUG_DEPS yLOG_note      ("source is null");
-      DEBUG_DEPS yLOG_exit      (__FUNCTION__);
+   /*---(defense)------------------------*/
+   rc = ycalc_deps_validate (a_type, a_source, a_target);
+   DEBUG_DEPS   yLOG_value   ("validate"  , rc);
+   --rce;  if (rc <  0) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DEPS   yLOG_info    ("src label" , ycalc_call_labeler (a_source));
-   DEBUG_DEPS   yLOG_point   ("a_target"  , a_target);
-   --rce;  if (a_target     == NULL)   {
-      DEBUG_DEPS yLOG_note      ("target is null");
-      DEBUG_DEPS yLOG_exit      (__FUNCTION__);
-      return rce;
-   }
-   DEBUG_DEPS   yLOG_info    ("trg label" , ycalc_call_labeler (a_target));
-   /*---(defense: linking back to root)--*/
-   --rce;  if (a_target     == myCALC.rroot)  {
-      DEBUG_DEPS yLOG_note      ("can not route back to root");
-      DEBUG_DEPS yLOG_exit      (__FUNCTION__);
-      return rce;
-   }
-   /*---(defense: circular ref)----------*/
-   --rce;  if (a_source     == a_target) {
-      DEBUG_DEPS   yLOG_note    ("source and target are same");
-      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
-   /*---(defense: type)------------------*/
-   DEBUG_DEPS   yLOG_char    ("a_type"    , a_type);
-   x_index     = ycalc__deps_index (a_type);
-   DEBUG_DEPS   yLOG_value   ("dep index" , x_index);
-   --rce;  if (x_index      <  0) {
-      DEBUG_DEPS   yLOG_note    ("dependency type not found");
-      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
+   x_index = rc;
    /*---(check for circlular ref)--------*/
    DEBUG_DEPS   yLOG_note    ("check for potential circular reference");
-   rc     = ycalc__deps_circle (0, a_target, a_source, rand());
-   /*> rc     = DEP_circle (0, a_target, a_source, rand());                           <*/
+   rc     = ycalc__deps_circle (0, *a_target, *a_source, rand());
    DEBUG_DEPS   yLOG_value   ("circle rc" , rc);
    --rce;  if (rc  <  0) {
       DEBUG_DEPS   yLOG_note    ("request would cause a circular reference");
@@ -593,8 +639,7 @@ ycalc_deps_create       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
    }
    /*---(check if target needs unroot)---*/
    DEBUG_DEPS   yLOG_note    ("check target for unrooting");
-   rc = ycalc__deps_rooting (a_target, G_DEP_UNROOT);
-   /*> rc = DEP_rooting (a_target, G_DEP_UNROOT);                                     <*/
+   rc = ycalc__deps_rooting (*a_target, G_DEP_UNROOT);
    if (rc <  0) {
       DEBUG_DEPS   yLOG_note    ("target could not be properly unrooted");
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
@@ -621,21 +666,12 @@ ycalc_deps_create       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
    x_provide->match     = x_require;
    /*---(check if source needs rooting)--*/
    DEBUG_DEPS   yLOG_note    ("check source for rooting");
-   rc = ycalc__deps_rooting (a_source, G_DEP_ROOT);
-   /*> rc = DEP_rooting (a_source, G_DEP_ROOT);                                       <*/
+   rc = ycalc__deps_rooting (*a_source, G_DEP_ROOT);
    --rce;  if (rc <  0) {
       DEBUG_DEPS   yLOG_note    ("source could not be properly rooted");
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   /*---(check for dup linking)----------*/
-   /*> rc = DEP_check (0, a_source, 'n', rand());                                     <*/
-   /*> rc = DEP_checkall ('n');                                                       <* 
-    *> if (rc <  0) {                                                                 <* 
-    *>    DEBUG_DEPS   yLOG_note    ("failed dependency check");                      <* 
-    *>    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);                                   <* 
-    *>    return rce;                                                                 <* 
-    *> }                                                                              <*/
    /*---(complete)-----------------------*/
    DEBUG_DEPS   yLOG_note    ("all actions complete");
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
@@ -651,20 +687,20 @@ yCALC_create       (char a_type, char *a_source, char *a_target)
    tDEP_ROOT  *x_source    = NULL;
    tDEP_ROOT  *x_target    = NULL;
    /*---(get ends)-----------------------*/
-   rc = ycalc_call_who_named (a_source, NULL, &x_source);
+   rc = ycalc_call_who_named (a_source, YCALC_FULL, NULL, &x_source);
    --rce;  if (rc <  0) {
       DEBUG_DEPS   yLOG_note    ("source could not be identified");
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   rc = ycalc_call_who_named (a_target, NULL, &x_target);
+   rc = ycalc_call_who_named (a_target, YCALC_FULL, NULL, &x_target);
    --rce;  if (rc <  0) {
       DEBUG_DEPS   yLOG_note    ("target could not be identified");
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
       return rce;
    }
    /*---(call real function)-------------*/
-   rc = ycalc_deps_create (a_type, x_source, x_target);
+   rc = ycalc_deps_create (a_type, &x_source, &x_target);
    --rce;  if (rc <  0) {
       DEBUG_DEPS   yLOG_note    ("could not create dependency");
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
@@ -683,7 +719,7 @@ yCALC_create       (char a_type, char *a_source, char *a_target)
 static void  o___DELETE__________o () { return; }
 
 char         /*-> remove a requires dependency -------[ ------ [fe.933.143.31]*/ /*-[03.0000.016.!]-*/ /*-[--.---.---.--]-*/
-ycalc__deps_delete_req  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
+ycalc__deps_delete_req  (char a_type, char a_index, tDEP_ROOT **a_source, tDEP_ROOT **a_target)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;
@@ -693,12 +729,12 @@ ycalc__deps_delete_req  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(check for existing requires)----*/
-   DEBUG_DEPS   yLOG_info    ("src label" , ycalc_call_labeler (a_source));
-   DEBUG_DEPS   yLOG_value   ("src nreqs" , a_source->nreq);
-   x_next = a_source->reqs;
+   DEBUG_DEPS   yLOG_info    ("src label" , ycalc_call_labeler (*a_source));
+   DEBUG_DEPS   yLOG_value   ("src nreqs" , (*a_source)->nreq);
+   x_next = (*a_source)->reqs;
    --rce; while (x_next != NULL) {
       DEBUG_DEPS   yLOG_info    ("trg label" , ycalc_call_labeler (x_next->target));
-      if (x_next->target == a_target) {
+      if (x_next->target == *a_target) {
          DEBUG_DEPS   yLOG_note    ("found existing");
          rc = ycalc__deps_free (&x_next);
          if (rc != 0)  {
@@ -721,7 +757,7 @@ ycalc__deps_delete_req  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
 }
 
 char         /*-> remove a provides dependency -------[ ------ [fe.933.143.31]*/ /*-[03.0000.016.!]-*/ /*-[--.---.---.--]-*/
-ycalc__deps_delete_pro  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
+ycalc__deps_delete_pro  (char a_type, char a_index, tDEP_ROOT **a_source, tDEP_ROOT **a_target)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;
@@ -731,12 +767,12 @@ ycalc__deps_delete_pro  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(check for existing requires)----*/
-   DEBUG_DEPS   yLOG_info    ("src label" , ycalc_call_labeler (a_source));
-   DEBUG_DEPS   yLOG_value   ("nprovide"  , a_source->npro);
-   x_next = a_source->pros;
+   DEBUG_DEPS   yLOG_info    ("src label" , ycalc_call_labeler (*a_source));
+   DEBUG_DEPS   yLOG_value   ("nprovide"  , (*a_source)->npro);
+   x_next = (*a_source)->pros;
    --rce; while (x_next != NULL) {
       DEBUG_DEPS   yLOG_info    ("trg label" , ycalc_call_labeler (x_next->target));
-      if (x_next->target == a_target) {
+      if (x_next->target == *a_target) {
          DEBUG_DEPS   yLOG_note    ("found existing");
          rc = ycalc__deps_free (&x_next);
          if (rc != 0)  {
@@ -759,59 +795,25 @@ ycalc__deps_delete_pro  (char a_type, char a_index, tDEP_ROOT *a_source, tDEP_RO
 }
 
 char         /*-> remove a two-way dependency --------[ ------ [ge.P79.15#.I6]*/ /*-[02.0000.345.3]-*/ /*-[--.---.---.--]-*/
-ycalc_deps_delete       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
-{  /*---(design notes)--------------------------------------------------------*/
-   /* removes a two-way dependency so that the dependency tree remains        */
-   /* accurate and unneeded cells are removed.  it is important that these    */
-   /* entries remain in a well-formed dependency graph so all necessary cells */
-   /* are calculated at the right times.                                      */
-   /*---(header)-------------------------*//*---------------------------------*/
+ycalc_deps_delete       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target)
+{
+   /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;          /* return code for errors         */
    char        rc          =    0;          /* generic return code            */
    char        x_index     =    0;          /* dependency type table index    */
-   tDEP_LINK  *x_require   = NULL;    /* new requires entry                   */
-   tDEP_LINK  *x_provide   = NULL;    /* new provides entry                   */
    char        x_type      =  ' ';
-   /*---(defense: null pointers)---------*/
-   DEBUG_DEPS   yLOG_point   ("a_source"  , a_source);
-   --rce;  if (a_source     == NULL)   {
-      DEBUG_DEPS yLOG_note      ("source is null");
-      DEBUG_DEPS yLOG_exit      (__FUNCTION__);
-      return rce; 
-   }
-   DEBUG_DEPS   yLOG_info    ("src label" , ycalc_call_labeler (a_source));
-   DEBUG_DEPS   yLOG_value   ("nreq"  , a_source->nreq);
-   DEBUG_DEPS   yLOG_point   ("a_target"  , a_target);
-   --rce;  if (a_target     == NULL)   {
-      DEBUG_DEPS yLOG_note      ("target is null");
-      DEBUG_DEPS yLOG_exit      (__FUNCTION__);
+   tDEP_LINK  *x_next      = NULL;    /* new provides entry                   */
+   int         x_proreal   =    0;
+   /*---(defense)------------------------*/
+   rc = ycalc_deps_validate (a_type, a_source, a_target);
+   DEBUG_DEPS   yLOG_value   ("validate"  , rc);
+   --rce;  if (rc <  0) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DEPS   yLOG_info    ("trg label" , ycalc_call_labeler (a_target));
-   DEBUG_DEPS   yLOG_value   ("nprovide"  , a_target->npro);
-   /*---(defense: linking back to root)--*/
-   --rce;  if (a_target     == myCALC.rroot)  {
-      DEBUG_DEPS yLOG_note      ("can not delete a route back to root");
-      DEBUG_DEPS yLOG_exit      (__FUNCTION__);
-      return rce;
-   }
-   /*---(defense: circular ref)----------*/
-   --rce;  if (a_source     == a_target) {
-      DEBUG_DEPS   yLOG_note    ("source and target are same");
-      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
-   /*---(defense: type)------------------*/
-   DEBUG_DEPS   yLOG_char    ("a_type"    , a_type);
-   x_index     = ycalc__deps_index (a_type);
-   DEBUG_DEPS   yLOG_value   ("dep index" , x_index);
-   --rce;  if (x_index      <  0) {
-      DEBUG_DEPS   yLOG_note    ("dependency type not found");
-      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
-      return rce;
-   }
+   x_index = rc;
    /*---(delete require)-----------------*/
    rc   = ycalc__deps_delete_req (a_type, x_index, a_source, a_target);
    --rce;  if (rc <  0) {
@@ -819,7 +821,7 @@ ycalc_deps_delete       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   DEBUG_DEPS   yLOG_value   ("nreq"  , a_source->nreq);
+   DEBUG_DEPS   yLOG_value   ("nreq"  , (*a_source)->nreq);
    /*---(delete provide)-----------------*/
    x_index     = ycalc__deps_match (a_type);
    DEBUG_DEPS   yLOG_value   ("dep index" , x_index);
@@ -829,16 +831,16 @@ ycalc_deps_delete       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   DEBUG_DEPS   yLOG_value   ("nprovide"  , a_target->npro);
+   DEBUG_DEPS   yLOG_value   ("nprovide"  , (*a_target)->npro);
    /*---(check if source needs unroot)---*/
    --rce;
-   if        (a_source           == myCALC.rroot) {
+   if        (*a_source  == myCALC.rroot) {
       DEBUG_DEPS   yLOG_note    ("source is root, so no unrooting, done");
-   } else if (a_source->nreq >  0) {
+   } else if ((*a_source)->nreq >  0) {
       DEBUG_DEPS   yLOG_note    ("source has requires, so leave alone");
    } else {
       DEBUG_DEPS   yLOG_note    ("must check/unroot source");
-      rc = ycalc__deps_rooting (a_source, G_DEP_UNROOT);
+      rc = ycalc__deps_rooting (*a_source, G_DEP_UNROOT);
       if (rc <  0) {
          DEBUG_DEPS   yLOG_note    ("source could not be properly unrooted");
          DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
@@ -846,30 +848,44 @@ ycalc_deps_delete       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target)
       }
    }
    /*---(check on target)----------------*/
-   g_valuer (a_target->owner, &x_type, NULL, NULL);
-   if        (a_source           == myCALC.rroot) {
+   x_next = (*a_target)->pros;
+   while (x_next != NULL) {
+      if (x_next->type != G_DEP_ENTRY)  ++x_proreal;
+      x_next = x_next->next;
+   }
+   g_valuer ((*a_target)->owner, &x_type, NULL, NULL);
+   /*---(already well connected)---------*/
+   if        (*a_source  == myCALC.rroot) {
       DEBUG_DEPS   yLOG_note    ("source was root, so this is unrooting, done");
-   } else if (a_target->npro >  0) {
-      DEBUG_DEPS   yLOG_note    ("target already connected to tree");
-   } else if (a_target->nreq >  0) {
+   }
+   else if (x_proreal >  0) {
+      DEBUG_DEPS   yLOG_note    ("target already hard-connected to tree");
+   }
+   /*---(not connected at all)-----------*/
+   else if ((*a_target)->npro == 0 && (*a_target)->nreq >  0) {
       DEBUG_DEPS   yLOG_note    ("target is still needed, must root");
-      rc = ycalc__deps_rooting (a_target, G_DEP_ROOT);
+      rc = ycalc__deps_rooting (*a_target, G_DEP_ROOT);
       if (rc <  0) {
          DEBUG_DEPS   yLOG_note    ("target could not be properly rooted");
          DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
          return rce;
       }
-   } else if (x_type == '-') {
+   }
+   /*---(range-connected only)-----------*/
+   else if ((*a_target)->nreq >  0) {
+      DEBUG_DEPS   yLOG_note    ("leave attached as is");
+   }
+   else if (x_type == '-') {
       DEBUG_DEPS   yLOG_note    ("target is a zombie and not required, delete");
-      rc = g_reaper (a_target->owner);
-      /*> rc = CELL_delete (CHG_NOHIST, a_target->tab, a_target->col, a_target->row);   <*/
+      rc = ycalc_call_reaper (a_target);
       if (rc != 0) {
          DEBUG_DEPS   yLOG_note    ("target could not be properly deleted");
          DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
          return rce;
       }
-      a_target == NULL;
-   } else {
+      *a_target == NULL;
+   }
+   else {
       DEBUG_DEPS   yLOG_note    ("target is now independent, nothing to do");
    }
    /*---(complete)-----------------------*/
@@ -887,20 +903,20 @@ yCALC_delete       (char a_type, char *a_source, char *a_target)
    tDEP_ROOT  *x_source    = NULL;
    tDEP_ROOT  *x_target    = NULL;
    /*---(get ends)-----------------------*/
-   rc = ycalc_call_who_named (a_source, NULL, &x_source);
+   rc = ycalc_call_who_named (a_source, YCALC_MUST, NULL, &x_source);
    --rce;  if (rc <  0) {
       DEBUG_DEPS   yLOG_note    ("source could not be identified");
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   rc = ycalc_call_who_named (a_target, NULL, &x_target);
+   rc = ycalc_call_who_named (a_target, YCALC_MUST, NULL, &x_target);
    --rce;  if (rc <  0) {
       DEBUG_DEPS   yLOG_note    ("target could not be identified");
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
       return rce;
    }
    /*---(call real function)-------------*/
-   rc = ycalc_deps_delete (a_type, x_source, x_target);
+   rc = ycalc_deps_delete (a_type, &x_source, &x_target);
    --rce;  if (rc <  0) {
       DEBUG_DEPS   yLOG_note    ("could not delete dependency");
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
@@ -959,7 +975,7 @@ ycalc__deps_rooting     (tDEP_ROOT *a_curr, char a_type)
          break;
       case G_DEP_UNROOT    : 
          DEBUG_DEPS   yLOG_note    ("perfect root found, unrooting");
-         rc = ycalc_deps_delete (G_DEP_REQUIRE, myCALC.rroot, a_curr);
+         rc = ycalc_deps_delete (G_DEP_REQUIRE, &(myCALC.rroot), &a_curr);
          if (rc != 0) {
             DEBUG_DEPS   yLOG_note    ("could not delete root dependency");
             DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
@@ -977,7 +993,7 @@ ycalc__deps_rooting     (tDEP_ROOT *a_curr, char a_type)
       switch (a_type) {
       case G_DEP_ROOT      : 
          DEBUG_DEPS   yLOG_note    ("independent cell, rooting");
-         rc = ycalc_deps_create (G_DEP_REQUIRE, myCALC.rroot, a_curr);
+         rc = ycalc_deps_create (G_DEP_REQUIRE, &(myCALC.rroot), &a_curr);
          if (rc != 0) {
             DEBUG_DEPS   yLOG_note    ("could not create root dependency");
             DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
@@ -1028,7 +1044,7 @@ ycalc__deps_rooting     (tDEP_ROOT *a_curr, char a_type)
    while (x_next != NULL) {
       if (x_next->target == myCALC.rroot && x_roots > 0) {
          DEBUG_DEPS   yLOG_note    ("found reduntant root, cleaning");
-         rc = ycalc_deps_delete (G_DEP_REQUIRE, myCALC.rroot, a_curr);
+         rc = ycalc_deps_delete (G_DEP_REQUIRE, &(myCALC.rroot), &a_curr);
       }
       ++x_roots;
       x_next = x_next->next;
@@ -1136,11 +1152,18 @@ ycalc_deps_wipe         (tDEP_ROOT *a_deproot)
    while (x_next != NULL) {
       DEBUG_DEPS    yLOG_point   ("x_next"      , x_next);
       x_save = x_next->next;
-      DEBUG_DEPS   yLOG_complex ("target"    , "ptr=%9p, label=%s", x_next->target, ycalc_call_labeler (x_next->target));
-      rc = ycalc_deps_delete (x_next->type, a_deproot, x_next->target);
+      DEBUG_DEPS   yLOG_complex ("target"    , "type=%c, ptr=%9p, label=%s", x_next->type, x_next->target, ycalc_call_labeler (x_next->target));
+      if (x_next->type == G_DEP_POINTER) {
+         rc = ycalc_range_delete (a_deproot, x_next->target);
+      } else {
+         rc = ycalc_deps_delete  (x_next->type, &a_deproot, &(x_next->target));
+      }
       DEBUG_DEPS   yLOG_value   ("nreq"      , a_deproot->nreq);
       x_next = x_save;
    }
+   /*---(unhook from ranges)-------------*/
+   DEBUG_DEPS   yLOG_value   ("npro"      , a_deproot->npro);
+   ycalc_range_unhook (a_deproot);
    /*---(check if rooted)----------------*/
    DEBUG_DEPS   yLOG_value   ("npro"      , a_deproot->npro);
    DEBUG_DEPS   yLOG_point   ("pros"      , a_deproot->pros);
@@ -1152,7 +1175,7 @@ ycalc_deps_wipe         (tDEP_ROOT *a_deproot)
       DEBUG_DEPS   yLOG_point   ("rroot"     , myCALC.rroot);
       if (a_deproot->pros->target == myCALC.rroot) {
          DEBUG_DEPS   yLOG_note    ("unrooting");
-         rc = ycalc_deps_delete (G_DEP_REQUIRE, myCALC.rroot, a_deproot);
+         rc = ycalc_deps_delete (G_DEP_REQUIRE, &(myCALC.rroot), &a_deproot);
       }
    }
    /*---(complete)-----------------------*/
@@ -1179,12 +1202,12 @@ ycalc__unit_deps        (char *a_question, char *a_label)
    char        x_list      [LEN_RECD ];
    char        x_label     [LEN_LABEL];
    char        rc          =    0;
+   int         c           =    0;
    /*---(preprare)-----------------------*/
    strcpy (ycalc__unit_answer, "yCALC            : question not understood");
    if (a_label == NULL)   strlcpy (x_label, "---"  , LEN_LABEL);
    else                   strlcpy (x_label, a_label, LEN_LABEL);
-   rc = ycalc__mock_named (x_label, &x_owner, &x_deproot);
-   /*> rc = ycalc_call_who_named (x_label, &x_owner, &x_deproot);                     <*/
+   rc = ycalc_call_who_named (x_label, YCALC_LOOK, &x_owner, &x_deproot);
    /*---(dependency list)----------------*/
    if      (strcmp (a_question, "count"    )      == 0) {
       x_dep  = myCALC.dhead; while (x_dep  != NULL) { ++x_fore; x_dep  = x_dep ->dnext; }
@@ -1199,7 +1222,7 @@ ycalc__unit_deps        (char *a_question, char *a_label)
          snprintf (ycalc__unit_answer, LEN_RECD, "yCALC deps reqs  : %-5s (--) -", x_label);
       } else {
          ycalc_audit_disp_reqs (x_deproot, x_list);
-         snprintf (ycalc__unit_answer, LEN_RECD, "yCALC deps reqs  : %-5s (%2d) %-.40s", x_label, x_deproot->nreq, x_list);
+         snprintf (ycalc__unit_answer, LEN_RECD, "yCALC deps reqs  : %-5s (%2d) %s", x_label, x_deproot->nreq, x_list);
       }
    }
    else if (strcmp (a_question, "provides"    )   == 0) {
@@ -1207,7 +1230,15 @@ ycalc__unit_deps        (char *a_question, char *a_label)
          snprintf (ycalc__unit_answer, LEN_RECD, "yCALC deps pros  : %-5s (--) -", x_label);
       } else {
          ycalc_audit_disp_pros (x_deproot, x_list);
-         snprintf (ycalc__unit_answer, LEN_RECD, "yCALC deps pros  : %-5s (%2d) %-.40s", x_label, x_deproot->npro, x_list);
+         snprintf (ycalc__unit_answer, LEN_RECD, "yCALC deps pros  : %-5s (%2d) %s", x_label, x_deproot->npro, x_list);
+      }
+   }
+   else if (strcmp (a_question, "overview"    )   == 0) {
+      if (x_deproot == NULL) {
+         snprintf (ycalc__unit_answer, LEN_RECD, "yCALC deps over  : %-5s nreq --, npro -- (range --, real --)", x_label);
+      } else {
+         c = ycalc_range_nonrange (x_deproot);
+         snprintf (ycalc__unit_answer, LEN_RECD, "yCALC deps over  : %-5s nreq %2d, npro %2d (range %2d, real %2d)", x_label, x_deproot->nreq, x_deproot->npro, x_deproot->npro - c, c);
       }
    }
    /*---(complete)-----------------------*/

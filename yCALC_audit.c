@@ -16,7 +16,7 @@ const tyCALC_TYPES  g_ycalc_types [YCALC_MAX_TYPE] = {
    {  YCALC_DATA_ADDR   , "address"    , '&', 'y', '-', 'y', '-', "address pointer to use in other formulas"           },
    {  YCALC_DATA_RANGE  , "range"      , '&', 'y', '-', 'y', '-', "range pointer to use in other formulas"             },
    {  YCALC_DATA_MERGED , "merged"     , '<', '-', '-', 'y', '-', "empty cell used to present merged information"      },
-   {  YCALC_DATA_ERROR  , "error"      , ' ', '-', '-', '-', 'e', "error status"                                       },
+   {  YCALC_DATA_ERROR  , "error"      , ' ', '-', '-', 'y', 'e', "error status"                                       },
    /*---type------------ -terse-------- -pre -rpn calc -dep -res ---description--------------------------------------- */
    {  0                 , ""           ,  0 ,  0 ,  0 ,  0 ,  0 , ""                                                   },
 };
@@ -432,7 +432,7 @@ ycalc_classify_label    (char *a_label)
       return rce;
    }
    /*---(get owner/deproot)--------------*/
-   rc = g_who_named  (a_label, &x_owner, &x_deproot);
+   rc = g_who_named  (a_label, YCALC_MUST, &x_owner, &x_deproot);
    DEBUG_CALC   yLOG_value   ("who_named"  , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
@@ -479,7 +479,7 @@ yCALC_handle            (char *a_label)
       return rce;
    }
    /*---(get label)----------------------*/
-   rc = g_who_named  (a_label, &x_owner, &x_deproot);
+   rc = ycalc_call_who_named  (a_label, YCALC_FULL, &x_owner, &x_deproot);
    DEBUG_CALC   yLOG_value   ("who_named"  , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
@@ -489,7 +489,7 @@ yCALC_handle            (char *a_label)
    DEBUG_CALC   yLOG_point   ("x_deproot"  , x_deproot);
    /*---(fill pointers)------------------*/
    rc = g_pointer (x_owner, &x_source, &x_type, &x_value, &x_string);
-   DEBUG_CALC   yLOG_value   ("valuer"     , rc);
+   DEBUG_CALC   yLOG_value   ("pointer"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -543,6 +543,13 @@ yCALC_handle            (char *a_label)
          return rce;
       }
    }
+   /*---(call reaper)--------------------*/
+   rc = ycalc_call_reaper (&x_deproot);
+   DEBUG_CALC   yLOG_value   ("reaper"    , rc);
+   --rce;  if (rc == 0) {
+      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -586,14 +593,7 @@ ycalc__sort_prep   (char *a_list)
    s_narray = 0;
    --rce;  while (p != NULL) {
       DEBUG_SORT    yLOG_info    ("parse"     , p);
-      ycalc_call_who_named (p, NULL, &x_deproot);
-      DEBUG_SORT    yLOG_point   ("x_deproot" , x_deproot);
-      if (x_deproot == NULL)  {
-         DEBUG_SORT    yLOG_note    ("could not find deproot, EXITING");
-         DEBUG_SORT    yLOG_exit    (__FUNCTION__);
-         return rce;
-      }
-      rc = g_addresser (x_deproot->owner, &x, &y, &z);
+      rc = str2gyges (p, &x, &y, &z, NULL, 0);
       DEBUG_SORT    yLOG_value   ("rc"        , rc);
       if (rc < 0)  {
          DEBUG_SORT    yLOG_note    ("could not parse, EXITING");
@@ -605,7 +605,7 @@ ycalc__sort_prep   (char *a_list)
       ++x;
       ++y;
       DEBUG_SORT    yLOG_complex ("inserted"  , "z=%04d, x=%04d, y=%04d", z, x, y);
-      s_array [s_narray] = (z * 100000000) + (x * 100000) + (y * 10);
+      s_array [s_narray] = (z * 10000000) + (x * 10000) + y;
       DEBUG_SORT    yLOG_pair    (s_narray         , s_array [s_narray]);
       p = strtok_r (NULL  , q, &r);
       ++s_narray;
@@ -671,21 +671,15 @@ ycalc__sort_wrap   (char *a_list)
    strcpy (a_list, ",");
    for (i = 0; i < s_narray; ++i) {
       DEBUG_SORT    yLOG_value   ("value"   , s_array[i]);
-      z     = s_array[i] / 100000000;
-      x     = (s_array[i] - (z * 100000000))  / 100000;
-      y     = (s_array[i] - (z * 100000000) - (x * 100000))         / 10;
+      z     = s_array[i] / 10000000;
+      x     = (s_array[i] - (z * 10000000))  / 10000;
+      y     = (s_array[i] - (z * 10000000) - (x * 10000));
       DEBUG_SORT    yLOG_complex ("removed"   , "z=%04d, x=%04d, y=%04d", z, x, y);
       --z;
       --x;
       --y;
       DEBUG_SORT    yLOG_complex ("parts"     , "z=%04d, x=%04d, y=%04d", z, x, y);
-      ycalc_call_who_at (x, y, z, NULL, &x_deproot);
-      if (x_deproot == NULL)  {
-         DEBUG_SORT    yLOG_note    ("could not find deproot, EXITING");
-         DEBUG_SORT    yLOG_exit    (__FUNCTION__);
-         return rce;
-      }
-      strlcpy (x_label, ycalc_call_labeler (x_deproot), LEN_LABEL);
+      str4gyges (x, y, z, 0, x_label);
       DEBUG_SORT    yLOG_info    ("label"   , x_label);
       strcat (a_list, x_label);
       strcat (a_list, ",");

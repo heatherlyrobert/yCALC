@@ -31,7 +31,7 @@
 #define     G_DEP_PROVIDE        'p'
 
 #define     G_DEP_POINTER        'P'
-#define     G_DEP_CELL           'c'
+#define     G_DEP_TARGET         't'
 
 #define     G_DEP_RANGE          ':'
 #define     G_DEP_ENTRY          '.'
@@ -62,7 +62,7 @@ char        yCALC_label_config      (void *a_who_named, void *a_who_at   , void 
 char        yCALC_value_config      (void *a_valuer   , void *a_addresser, void *a_special);
 
 char        yCALC_enable            (void *a_owner);
-char        yCALC_disable           (void *a_deproot);
+char        yCALC_disable           (void **a_deproot);
 
 char        yCALC_create            (char a_type, char *a_source, char *a_target);
 char        yCALC_delete            (char a_type, char *a_source, char *a_target);
@@ -76,6 +76,7 @@ char        yCALC_seq_full          (void *a_consumer);
 char        yCALC_seq_downdown      (long a_stamp   , void *a_consumer);
 char        yCALC_seq_downup        (long a_stamp   , void *a_consumer);
 
+char        yCALC_calculate         (void);
 
 
 #endif

@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2d"
-#define YCALC_VER_TXT   "range dependencies in place and unit tested.  still need calc logic"
+#define YCALC_VER_NUM   "0.2e"
+#define YCALC_VER_TXT   "big modifications to pass pointers-to-pointers"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -32,8 +32,8 @@
 
 
 /*---(label config)-------------------*/
-extern char    (*g_who_named)   (char *a_label, void **a_owner, void **a_deproot);        /* pass label of thing, get back deproot of thing  */
-extern char    (*g_who_at   )   (int x, int y, int z, void **a_owner, void **a_deproot);  /* pass coordinates, get back deproot of thing     */
+extern char    (*g_who_named)   (char *a_label, char a_force, void **a_owner, void **a_deproot);        /* pass label of thing, get back deproot of thing  */
+extern char    (*g_who_at   )   (int x, int y, int z, char a_force, void **a_owner, void **a_deproot);  /* pass coordinates, get back deproot of thing     */
 extern char*   (*g_labeler  )   (void *a_owner);        /* pass deproot->owner, get back label of thing    */
 /*---(struct config)-----------------*/
 extern char    (*g_enabler  )   (void *a_owner, void *a_deproot);
@@ -46,6 +46,19 @@ extern char    (*g_special  )   (void *a_owner, char  a_what, double *a_value , 
 /*---(sequencing)---------------------*/
 extern char    (*g_consumer )   (void *a_owner, void *a_deproot, int a_seq, int a_lvl);
 
+
+
+typedef     struct      cCALC       tCALC;         /* cell calculation entry    */
+typedef     struct      cTERMS      tTERMS;
+typedef     struct      cFUNCS      tFUNCS;
+typedef     struct      cFCAT       tFCAT;
+typedef     struct      cDEP_LINK   tDEP_LINK;
+typedef     struct      cDEP_ROOT   tDEP_ROOT;
+typedef     struct      cDEP_INFO   tDEP_INFO;
+
+
+
+
 /*
  * calculation types
  *    f = function call
@@ -56,24 +69,22 @@ extern char    (*g_consumer )   (void *a_owner, void *a_deproot, int a_seq, int 
  *    v = value from another cell value field
  *    x = noop
  */
-typedef     struct   cCALC  tCALC;         /* cell calculation entry    */
 struct cCALC {
    /*---(owner)-------------*/
-   void     *deproot;         /* pointer to the cell that owns this calc      */
+   void       *deproot;         /* pointer to the cell that owns this calc    */
    /*---(contents)----------*/
-   char      t;               /* type of calculation element                  */
-   double    v;               /* numeric literal                              */
-   char     *s;               /* string literal                               */
-   void     *r;               /* reference pointer                            */
-   void    (*f) (void);       /* function pointer                             */
+   char        t;               /* type of calculation element                */
+   double      v;               /* numeric literal                            */
+   char       *s;               /* string literal                             */
+   tDEP_ROOT  *r;               /* reference pointer                          */
+   void      (*f) (void);       /* function pointer                           */
    /*---(linked-list)-------*/
-   tCALC    *next;            /* pointer to next calc                         */
-   tCALC    *prev;            /* pointer to next calc                         */
+   tCALC      *next;            /* pointer to next calc                       */
+   tCALC      *prev;            /* pointer to next calc                       */
    /*---(done)--------------*/
 };
 
 #define     MAX_TERM     20
-typedef     struct cTERMS   tTERMS;
 struct cTERMS {
    char        type;
    char       *abbr;
@@ -86,7 +97,6 @@ extern tTERMS      s_terms [MAX_TERM];
 extern int  g_nfunc;
 extern int  g_ndups;
 #define     MAX_FUNCS       1000
-typedef struct cFUNCS  tFUNCS;
 struct  cFUNCS {
    char        name        [20];       /* operator symbol/name                */
    char        len;                    /* length of name                      */
@@ -100,7 +110,6 @@ extern const tFUNCS  g_ycalc_funcs [MAX_FUNCS];
 
 
 #define     MAX_FCAT          50
-typedef struct cFCAT tFCAT;
 struct cFCAT {
    char        fcat;
    char        desc        [LEN_DESC];
@@ -120,9 +129,6 @@ extern char   ycalc__unit_answer [LEN_STR ];
 
 extern double      a, b, c, d, e;
 extern int         m, n, o, len;
-extern double      tot, min, max;
-extern int         cnt, cnta, cnts, cntb, cntr;
-extern double      entries     [1000];
 extern char       *q, *r, *s;
 extern char        t           [LEN_RECD];
 extern char        g_nada      [5];
@@ -132,9 +138,6 @@ extern char        g_nada      [5];
 
 
 /*===[[ DEPENDENCIES ]]=======================================================*/
-typedef     struct      cDEP_LINK   tDEP_LINK;
-typedef     struct      cDEP_ROOT   tDEP_ROOT;
-typedef     struct      cDEP_INFO   tDEP_INFO;
 
 
 
@@ -147,7 +150,7 @@ typedef     struct      cDEP_INFO   tDEP_INFO;
 struct      cDEP_ROOT {
    /*---(tie to owner)------*/
    void       *owner;
-   short       range;
+   int         range;
    /*---(calculation)-------*/
    char       *rpn;          /* rpn version of formula                        */
    int         ncalc;        /* number of calculation tokens                  */
@@ -155,9 +158,9 @@ struct      cDEP_ROOT {
    tCALC      *ctail;        /* pointer to tail of calculation chain          */
    int         cuse;         /* number of times calculated                    */
    /*---(dependencies)------*/
-   char        nreq;         /* number of required cells                      */
+   int         nreq;         /* number of required cells                      */
    tDEP_LINK  *reqs;         /* incomming predesesors to this calc            */
-   char        npro;         /* number of dependent cells                     */
+   int         npro;         /* number of dependent cells                     */
    tDEP_LINK  *pros;         /* outgoing successors to this calc              */
    /*---(sequencing)--------*/
    int         slevel;       /* sequence level                                */
@@ -235,16 +238,15 @@ extern char S_DEP_LIKE [10];
 
 typedef struct cMOCK  tMOCK;
 struct  cMOCK {
-   char        label       [LEN_LABEL];
+   char       *label;
    char        type;
-   char        *source;
+   char       *source;
    double      value;
    char       *string;
    char       *print;
-   int         x;
-   int         y;
-   int         z;
    void       *ycalc;
+   tMOCK      *next;
+   tMOCK      *prev;
 };
 extern tMOCK   s_mocks     [500];
 
@@ -261,6 +263,11 @@ struct cLOCAL {
    /*---(testing)-----------*/
    int         argc;
    char       *argv        [20];
+   /*---(mock)--------------*/
+   tMOCK      *mroot;
+   tMOCK      *mhead;
+   tMOCK      *mtail;
+   int         mcount;
    /*---(dep_root)----------*/
    tDEP_ROOT  *rroot;
    tDEP_ROOT  *rhead;
@@ -346,6 +353,12 @@ extern int       g_error;
 #define       G_SPECIAL_ZPOS     'Z'
 
 
+#define        YCALC_FULL        'f'
+#define        YCALC_MUST        'y'
+#define        YCALC_LOOK        '-'
+
+
+
 
 /*===[[ OBJECT TYPES ]]=======================================================*/
 #define   YCALC_MAX_TYPE    15
@@ -390,8 +403,8 @@ char        ycalc__deps_purge       (void);
 char        ycalc_deps_wrap         (void);
 char*       ycalc__unit_deps        (char *a_question, char *a_label);
 char        ycalc_deps_wipe         (tDEP_ROOT *a_curr);
-char        ycalc_deps_create       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target);
-char        ycalc_deps_delete       (char a_type, tDEP_ROOT *a_source, tDEP_ROOT *a_target);
+char        ycalc_deps_create       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target);
+char        ycalc_deps_delete       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target);
 
 char        ycalc__deps_rooting     (tDEP_ROOT *a_curr, char a_type);
 char        ycalc__deps_circle      (int a_level, tDEP_ROOT *a_source, tDEP_ROOT *a_target, long a_stamp);
@@ -419,9 +432,12 @@ char        ycalc__unit_end         (void);
 
 
 int         ycalc_range_init        (void);
-int         ycalc_range_label       (int n);
+char*       ycalc_range_label       (int n);
+int         ycalc_range_nonrange    (tDEP_ROOT *a_deproot);
+char        ycalc_range_delete      (tDEP_ROOT *a_deproot, tDEP_ROOT *a_range);
+char        ycalc_range_unhook      (tDEP_ROOT *a_deproot);
 char        ycalc_range_deproot     (char *a_name, tDEP_ROOT **a_deproot);
-char        ycalc_range_use         (tDEP_ROOT *a_src, int bx, int ex, int by, int ey, int z);
+char        ycalc_range_use         (tDEP_ROOT *a_src, int bx, int ex, int by, int ey, int bz, int ez, tDEP_ROOT **a_range);
 char        ycalc_range_include     (tDEP_ROOT *a_src, int x, int y, int z);
 
 
@@ -463,13 +479,14 @@ char        ycalc__unit_stackset    (int   a_num);
 
 /*---(mock overall)-------------------*/
 char        ycalc__mock_prepare     (void);
+char        ycalc__mock_cleanup     (void);
 /*---(exist)--------------------------*/
 char        ycalc__mock_enabler     (void *a_owner, void *a_deproot);
 char        ycalc__mock_pointer     (void *a_owner, char **a_source, char **a_type, double **a_value, char **a_string);
 char        ycalc__mock_reaper      (void *a_owner);
 /*---(label)--------------------------*/
-char        ycalc__mock_named       (char *a_label, void **a_owner, void **a_deproot);
-char        ycalc__mock_whos_at     (int x, int y, int z, void **a_owner, void **a_deproot);
+char        ycalc__mock_named       (char *a_label      , char a_force, void **a_owner, void **a_deproot);
+char        ycalc__mock_whos_at     (int x, int y, int z, char a_force, void **a_owner, void **a_deproot);
 char*       ycalc__mock_labeler     (void *a_owner);
 /*---(value)--------------------------*/
 char        ycalc__mock_valuer      (void *a_thing, char *a_type, double *a_value, char **a_string);
@@ -494,8 +511,9 @@ char        ycalc__seq_list         (char *a_list);
 
 
 /*===[ CALLS ]============================================*/
-char        ycalc_call_who_named    (char *a_label, void **a_owner, void **a_deproot);
-char        ycalc_call_who_at       (int x, int y, int z, void **a_owner, void **a_deproot);
+char        ycalc_call_reaper       (tDEP_ROOT **a_deproot);
+char        ycalc_call_who_named    (char *a_label,       char a_force, void **a_owner, void **a_deproot);
+char        ycalc_call_who_at       (int x, int y, int z, char a_force, void **a_owner, void **a_deproot);
 char*       ycalc_call_labeler      (tDEP_ROOT *a_deproot);
 
 
@@ -566,8 +584,6 @@ void        ycalc_strim             (void);
 void        ycalc_etrim             (void);
 void        ycalc_mtrim             (void);
 void        ycalc_printstr          (void);
-void        ycalc_printstr          (void);
-void        ycalc_printnum          (void);
 void        ycalc_printnum          (void);
 void        ycalc_lpad              (void);
 void        ycalc_rpad              (void);
@@ -677,7 +693,30 @@ void        ycalc_atanr             (void);
 void        ycalc_atan2             (void);
 void        ycalc_atanr2            (void);
 
+void        ycalc_dist              (void);
+void        ycalc_tabs              (void);
+void        ycalc_cols              (void);
+void        ycalc_rows              (void);
 void        ycalc_sum               (void);
+void        ycalc_every             (void);
+void        ycalc_filled            (void);
+void        ycalc_numbers           (void);
+void        ycalc_strings           (void);
+void        ycalc_blanks            (void);
+void        ycalc_pointers          (void);
+void        ycalc_empty             (void);
+void        ycalc_calcs             (void);
+void        ycalc_min               (void);
+void        ycalc_max               (void);
+void        ycalc_range             (void);
+void        ycalc_average           (void);
+void        ycalc_quarter1          (void);
+void        ycalc_median            (void);
+void        ycalc_quarter3          (void);
+void        ycalc_rangeq            (void);
+void        ycalc_mode              (void);
+void        ycalc_stddev            (void);
+void        ycalc_skew              (void);
 
 
 #endif
