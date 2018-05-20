@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2e"
-#define YCALC_VER_TXT   "big modifications to pass pointers-to-pointers"
+#define YCALC_VER_NUM   "0.2f"
+#define YCALC_VER_TXT   "clean up new deps pointers-to-pointers on build, exec, and math"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -353,9 +353,9 @@ extern int       g_error;
 #define       G_SPECIAL_ZPOS     'Z'
 
 
-#define        YCALC_FULL        'f'
-#define        YCALC_MUST        'y'
-#define        YCALC_LOOK        '-'
+#define        YCALC_FULL        'f'    /* create owner && deproot            */
+#define        YCALC_OWNR        'y'    /* create owner only                  */
+#define        YCALC_LOOK        '-'    /* do not create, just look           */
 
 
 

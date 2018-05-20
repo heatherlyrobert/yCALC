@@ -731,7 +731,7 @@ ycalc_execute_label     (char *a_label)
       return rce;
    }
    /*---(get owner/deproot)--------------*/
-   rc = g_who_named  (a_label, YCALC_MUST, &x_owner, &x_deproot);
+   rc = g_who_named  (a_label, YCALC_OWNR, &x_owner, &x_deproot);
    DEBUG_CALC   yLOG_value   ("who_named"  , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);

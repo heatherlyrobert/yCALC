@@ -326,7 +326,7 @@ ycalc_call_who_named    (char *a_label, char a_force, void **a_owner, void **a_d
    }
    /*---(callback)-----------------------*/
    rc = g_who_named (a_label, a_force, &x_owner, &x_deproot);
-   DEBUG_CALC   yLOG_value   ("rc"        , rc);
+   DEBUG_CALC   yLOG_value   ("who named" , rc);
    --rce;  if (rc < 0) {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;

@@ -903,13 +903,13 @@ yCALC_delete       (char a_type, char *a_source, char *a_target)
    tDEP_ROOT  *x_source    = NULL;
    tDEP_ROOT  *x_target    = NULL;
    /*---(get ends)-----------------------*/
-   rc = ycalc_call_who_named (a_source, YCALC_MUST, NULL, &x_source);
+   rc = ycalc_call_who_named (a_source, YCALC_OWNR, NULL, &x_source);
    --rce;  if (rc <  0) {
       DEBUG_DEPS   yLOG_note    ("source could not be identified");
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   rc = ycalc_call_who_named (a_target, YCALC_MUST, NULL, &x_target);
+   rc = ycalc_call_who_named (a_target, YCALC_OWNR, NULL, &x_target);
    --rce;  if (rc <  0) {
       DEBUG_DEPS   yLOG_note    ("target could not be identified");
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);

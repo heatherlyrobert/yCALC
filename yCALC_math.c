@@ -51,7 +51,8 @@ ycalc_modulus      (void)
 {
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, ((int) b) % ((int) a));
+   if (a != 0)  ycalc_pushval (__FUNCTION__, ((int) b) % ((int) a));
+   else         ycalc_pushval (__FUNCTION__, 0);
    return;
 }
 
