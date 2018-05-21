@@ -141,7 +141,7 @@ yCALC_disable           (void **a_deproot)
    }
    /*---(wipe)---------------------------*/
    ycalc_calc_wipe     (x_deproot);
-   ycalc_deps_wipe     (x_deproot);
+   ycalc_deps_wipe     (&x_deproot);
    ycalc__seq_del      (x_deproot);
    /*---(check on provides)--------------*/
    DEBUG_DEPS   yLOG_value   ("npro"      , x_deproot->npro);
@@ -249,7 +249,7 @@ ycalc_call_reaper       (tDEP_ROOT **a_deproot)
       return rce;
    }
    /*---(clear from range)---------------*/
-   rc = ycalc_range_unhook (*a_deproot);
+   rc = ycalc_range_unhook (a_deproot);
    DEBUG_CALC   yLOG_value   ("unhook"    , rc);
    --rce;  if (rc < 0 ) {
       DEBUG_PROG   yLOG_note    ("can not remove from ranges");

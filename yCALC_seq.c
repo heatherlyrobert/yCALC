@@ -35,18 +35,24 @@ ycalc__seq_clear        (void)
 {
    /*---(locals)-----------+-----------+-*/
    tDEP_ROOT  *x_next      = NULL;
-   char        i           = 0;
-   int         c           = 0;
+   char        i           =    0;
+   int         c           =    0;
+   int         x_len       =    0;
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(walk through list)--------------*/
    DEBUG_CALC   yLOG_note    ("resetting cell calc exec fields");
    x_next = myCALC.rroot;
    while (x_next != NULL) {
+      DEBUG_CALC   yLOG_point   ("x_next"    , x_next);
       DEBUG_CALC   yLOG_info    ("label"     , ycalc_call_labeler (x_next));
+      x_len = strllen (ycalc_call_labeler (x_next), LEN_LABEL);
+      DEBUG_CALC   yLOG_value   ("x_len"     , x_len);
+      DEBUG_CALC   yLOG_point   ("rnext"     , x_next->rnext);
       x_next->slevel = -1;
       x_next->snext  = NULL;
       x_next->sprev  = NULL;
+      if (x_next == x_next->rnext)  break;
       x_next = x_next->rnext;
       ++c;
    }

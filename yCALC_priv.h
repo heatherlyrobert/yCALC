@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2h"
-#define YCALC_VER_TXT   "fixed audit unit test which toughened the config/status"
+#define YCALC_VER_NUM   "0.2i"
+#define YCALC_VER_TXT   "ranges are now handling the basic unit testing !!!!!!!"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -402,7 +402,7 @@ char        ycalc_deps_init         (void);
 char        ycalc__deps_purge       (void);
 char        ycalc_deps_wrap         (void);
 char*       ycalc__unit_deps        (char *a_question, char *a_label);
-char        ycalc_deps_wipe         (tDEP_ROOT *a_curr);
+char        ycalc_deps_wipe         (tDEP_ROOT **a_deproot);
 char        ycalc_deps_create       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target);
 char        ycalc_deps_delete       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target);
 
@@ -435,7 +435,7 @@ int         ycalc_range_init        (void);
 char*       ycalc_range_label       (int n);
 int         ycalc_range_nonrange    (tDEP_ROOT *a_deproot);
 char        ycalc_range_delete      (tDEP_ROOT *a_deproot, tDEP_ROOT *a_range);
-char        ycalc_range_unhook      (tDEP_ROOT *a_deproot);
+char        ycalc_range_unhook      (tDEP_ROOT **a_deproot);
 char        ycalc_range_deproot     (char *a_name, tDEP_ROOT **a_deproot);
 char        ycalc_range_use         (tDEP_ROOT *a_src, int bx, int ex, int by, int ey, int bz, int ez, tDEP_ROOT **a_range);
 char        ycalc_range_include     (tDEP_ROOT *a_src, int x, int y, int z);

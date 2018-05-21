@@ -364,6 +364,7 @@ ycalc__mock_enabler     (void *a_owner, void *a_deproot)
       return rce;
    }
    x_mock = (tMOCK *) a_owner;
+   DEBUG_DEPS   yLOG_snote   (x_mock->label);
    DEBUG_DEPS   yLOG_spoint  (x_mock->ycalc);
    --rce;  if (a_deproot != NULL && x_mock->ycalc != NULL) {
       DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
@@ -425,14 +426,13 @@ ycalc__mock_named       (char *a_label, char a_force, void **a_owner, void **a_d
       }
       x_owner = x_owner->next;
    }
-   DEBUG_DEPS   yLOG_point   ("x_owner"    , x_owner);
    /*---(handle failure)-----------------*/
+   DEBUG_DEPS   yLOG_point   ("x_owner"    , x_owner);
    --rce;  if (x_owner == NULL && a_force == YCALC_LOOK) {
       DEBUG_PROG   yLOG_note    ("owner does not exist and only in look mode");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DEPS   yLOG_point   ("x_owner"    , x_owner);
    --rce;  if (x_owner == NULL) {
       DEBUG_DEPS   yLOG_note    ("create a new one");
       rc = ycalc__mock_new_labeled (a_label, &x_owner);
@@ -440,8 +440,8 @@ ycalc__mock_named       (char *a_label, char a_force, void **a_owner, void **a_d
          DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
+      DEBUG_DEPS   yLOG_point   ("x_owner"    , x_owner);
    }
-   DEBUG_DEPS   yLOG_point   ("x_owner"    , x_owner);
    --rce;  if (x_owner == NULL) {
       DEBUG_DEPS   yLOG_note    ("FAILURE");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);

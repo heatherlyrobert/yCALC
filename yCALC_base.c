@@ -232,7 +232,6 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "numbers"    ,  7, ycalc_numbers           , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" , "count"       , ""            , ""            },
    { "strings"    ,  7, ycalc_strings           , 'f', "v:r"    , 'r', "count of string cells in range"                    , "" , ""            , ""            , ""            },
    { "filled"     ,  6, ycalc_filled            , 'f', "v:r"    , 'r', "count of filled cells in range"                    , "" , "counta"      , ""            , ""            },
-   { "blanks"     ,  6, ycalc_blanks            , 'f', "v:r"    , 'r', "count of blank cells in range"                     , "" , "countblank"  , ""            , ""            },
    { "every"      ,  5, ycalc_every             , 'f', "v:r"    , 'r', "count of every cell in range"                      , "" , ""            , ""            , ""            },
    { "pointers"   ,  6, ycalc_pointers          , 'f', "v:r"    , 'r', "count of every cell in range"                      , "" , ""            , ""            , ""            },
    { "empty"      ,  5, ycalc_empty             , 'f', "v:r"    , 'r', "count of every cell in range"                      , "" , ""            , ""            , ""            },

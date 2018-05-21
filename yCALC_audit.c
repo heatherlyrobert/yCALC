@@ -224,7 +224,7 @@ ycalc_shared_clear        (tDEP_ROOT *a_deproot, char *a_type, double *a_value, 
    }
    /*---(clear dependencies)----------*/
    DEBUG_CALC   yLOG_note    ("wipe removable dependencies");
-   if (a_deproot != NULL)  rc = ycalc_deps_wipe  (a_deproot);
+   if (a_deproot != NULL)  rc = ycalc_deps_wipe  (&a_deproot);
    DEBUG_CALC   yLOG_value   ("cleanser"  , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
