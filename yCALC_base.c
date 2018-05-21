@@ -532,10 +532,22 @@ yCALC_label_config      (void *a_who_named, void *a_who_at, void *a_labeler)
    }
    g_labeler    = a_labeler;
    /*---(set the dep root)---------------*/
-   ycalc_call_who_named ("ROOT", YCALC_FULL, NULL, &myCALC.rroot);
+   rc = ycalc_call_who_named ("ROOT", YCALC_FULL, &myCALC.mroot, &myCALC.rroot);
+   DEBUG_PROG   yLOG_value   ("make root" , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_PROG   yLOG_point   ("mroot"     , myCALC.mroot);
+   --rce;  if (myCALC.mroot == NULL) {
+      DEBUG_PROG   yLOG_note    ("must create a owner named ¸ROOT¸ for yCALC to operate");
+      DEBUG_PROG   yLOG_error   ("rroot"     , "without this, all dependencies fail");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    DEBUG_PROG   yLOG_point   ("rroot"     , myCALC.rroot);
    --rce;  if (myCALC.rroot == NULL) {
-      DEBUG_PROG   yLOG_note    ("must create a node named ¸ROOT¸ for yCALC to operate");
+      DEBUG_PROG   yLOG_note    ("must create a owner named ¸ROOT¸ for yCALC to operate");
       DEBUG_PROG   yLOG_error   ("rroot"     , "without this, all dependencies fail");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;

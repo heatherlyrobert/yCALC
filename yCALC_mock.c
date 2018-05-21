@@ -427,7 +427,13 @@ ycalc__mock_named       (char *a_label, char a_force, void **a_owner, void **a_d
    }
    DEBUG_DEPS   yLOG_point   ("x_owner"    , x_owner);
    /*---(handle failure)-----------------*/
-   --rce;  if (x_owner == NULL && a_force != YCALC_LOOK) {
+   --rce;  if (x_owner == NULL && a_force == YCALC_LOOK) {
+      DEBUG_PROG   yLOG_note    ("owner does not exist and only in look mode");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DEPS   yLOG_point   ("x_owner"    , x_owner);
+   --rce;  if (x_owner == NULL) {
       DEBUG_DEPS   yLOG_note    ("create a new one");
       rc = ycalc__mock_new_labeled (a_label, &x_owner);
       if (rc < 0) {
@@ -742,6 +748,7 @@ ycalc__unit_mock        (char *a_question, char *a_label)
    char        x_onote     [LEN_LABEL];
    char        x_dnote     [LEN_LABEL];
    char        x_string    [LEN_RECD ];
+   char        x_type      =  '?';
    double      x_value     =  0.0;
    /*---(preprare)-----------------------*/
    strcpy (ycalc__unit_answer, "yCALC            : question not understood");
@@ -765,6 +772,9 @@ ycalc__unit_mock        (char *a_question, char *a_label)
    /*---(value)--------------------------*/
    if      (x_owner == NULL)              x_value = 0.0;
    else                                   x_value = x_owner->value;
+   /*---(type)---------------------------*/
+   if      (x_owner == NULL)              x_type  = '?';
+   else                                   x_type  = x_owner->type;
    /*---(dependency list)----------------*/
    if      (strcmp (a_question, "count"    )      == 0) {
       x_owner  = myCALC.mhead; while (x_owner  != NULL) { ++x_fore; x_owner  = x_owner ->next; }
@@ -787,10 +797,10 @@ ycalc__unit_mock        (char *a_question, char *a_label)
       snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock status: %-5s %-8s %-10s %s", x_label, x_rnote, x_onote, x_dnote);
    }
    else if (strcmp (a_question, "value"    )      == 0) {
-      snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock value : %-5s %c %8.2lf :%-.45s:", x_label, x_owner->type, x_value, x_string);
+      snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock value : %-5s %c %8.2lf :%-.45s:", x_label, x_type, x_value, x_string);
    }
    else if (strcmp (a_question, "double"   )      == 0) {
-      snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock double: %-5s %c %16.6lf", x_label, x_owner->type, x_value);
+      snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock double: %-5s %c %16.6lf", x_label, x_type, x_value);
    }
    /*---(complete)-----------------------*/
    return ycalc__unit_answer;

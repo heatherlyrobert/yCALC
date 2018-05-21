@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2g"
-#define YCALC_VER_TXT   "fixed seq unit test; added unit testing for div/mod by zero/blank"
+#define YCALC_VER_NUM   "0.2h"
+#define YCALC_VER_TXT   "fixed audit unit test which toughened the config/status"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
