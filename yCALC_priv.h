@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2i"
-#define YCALC_VER_TXT   "ranges are now handling the basic unit testing !!!!!!!"
+#define YCALC_VER_NUM   "0.2k"
+#define YCALC_VER_TXT   "trig functions unit tested also using ranges, approx, and roundn"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20

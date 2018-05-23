@@ -320,7 +320,6 @@ ycalc__mock_prepare     (void)
 {
    char        rc          =    0;
    myCALC.mroot = NULL;
-   if (rc == 0)  rc = ycalc__mock_new_labeled ("ROOT", &myCALC.mroot);
    if (rc == 0)  rc = yCALC_exist_config (ycalc__mock_enabler, ycalc__mock_pointer, ycalc__mock_reaper);
    if (rc == 0)  rc = yCALC_label_config (ycalc__mock_named  , ycalc__mock_whos_at, ycalc__mock_labeler);
    if (rc == 0)  rc = yCALC_value_config (ycalc__mock_valuer , ycalc__mock_address, ycalc__mock_special);

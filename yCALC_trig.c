@@ -7,6 +7,10 @@
 static const double DEG2RAD = 3.1415927 / 180.0;
 static const double RAD2DEG = 180.0 / 3.1415927;
 
+#define        TRIG_ZERO      -0.000001
+#define        TRIG_MIN        0.00001
+#define        TRIG_MAX        9999999
+
 
 
 typedef struct cTRIG  tTRIG;
@@ -29,14 +33,12 @@ ycalc_trig_init         (void)
       s_trig [i].si = sin ((double) a * DEG2RAD);
       s_trig [i].co = cos ((double) a * DEG2RAD);
       s_trig [i].ta = tan ((double) a * DEG2RAD);
-      if ( i % 900 == 0)  s_trig[i].ta = 0.0;
+      if ( i ==  900)  s_trig[i].ta =  TRIG_MAX;
+      if ( i == 2700)  s_trig[i].ta =  TRIG_MAX;
    }
    /*---(complete)-----------------------*/
    return 0;
 }
-
-#define        TRIG_MIN        0.00001
-#define        TRIG_MAX        9999999
 
 
 
@@ -186,9 +188,9 @@ ycalc_sec           (void)
 {
    ycalc_cos     ();
    a = ycalc_popval (__FUNCTION__);
-   if      (a >= 0 && a <  TRIG_MIN)   ycalc_pushval (__FUNCTION__,  TRIG_MAX);
-   else if (a <  0 && a > -TRIG_MIN)   ycalc_pushval (__FUNCTION__, -TRIG_MAX);
-   else                                ycalc_pushval (__FUNCTION__, 1 / a);
+   if      (a >  TRIG_ZERO && a <  TRIG_MIN)   ycalc_pushval (__FUNCTION__,  TRIG_MAX);
+   else if (a <= 0         && a > -TRIG_MIN)   ycalc_pushval (__FUNCTION__, -TRIG_MAX);
+   else                                        ycalc_pushval (__FUNCTION__, 1 / a);
    return;
 }
 
@@ -205,9 +207,9 @@ ycalc_csc           (void)
 {
    ycalc_sin     ();
    a = ycalc_popval (__FUNCTION__);
-   if      (a >= 0 && a <  TRIG_MIN)   ycalc_pushval (__FUNCTION__,  TRIG_MAX);
-   else if (a <  0 && a > -TRIG_MIN)   ycalc_pushval (__FUNCTION__, -TRIG_MAX);
-   else                                ycalc_pushval (__FUNCTION__, 1 / a);
+   if      (a >  TRIG_ZERO && a <  TRIG_MIN)   ycalc_pushval (__FUNCTION__,  TRIG_MAX);
+   else if (a <=  0        && a > -TRIG_MIN)   ycalc_pushval (__FUNCTION__, -TRIG_MAX);
+   else                                        ycalc_pushval (__FUNCTION__, 1 / a);
    return;
 }
 
@@ -290,9 +292,9 @@ ycalc_ccosr         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.000.04]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_hvsin          (void)
 {
-   ycalc_cos     ();
+   ycalc_vsin    ();
    a = ycalc_popval (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, (1 - a) / 2);
+   ycalc_pushval (__FUNCTION__, a / 2);
    return;
 }
 
@@ -307,9 +309,9 @@ ycalc_hvsinr         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.000.04]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_hvcos          (void)
 {
-   ycalc_cos     ();
+   ycalc_vcos    ();
    a = ycalc_popval (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, (1 + a) / 2);
+   ycalc_pushval (__FUNCTION__, a / 2);
    return;
 }
 
@@ -324,9 +326,9 @@ ycalc_hvcosr         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.000.04]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_hcsin          (void)
 {
-   ycalc_sin     ();
+   ycalc_csin     ();
    a = ycalc_popval (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, (1 - a) / 2);
+   ycalc_pushval (__FUNCTION__, a / 2);
    return;
 }
 
@@ -341,9 +343,9 @@ ycalc_hcsinr         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.000.04]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_hccos          (void)
 {
-   ycalc_sin     ();
+   ycalc_ccos     ();
    a = ycalc_popval (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, (1 + a) / 2);
+   ycalc_pushval (__FUNCTION__, a / 2);
    return;
 }
 
@@ -360,9 +362,9 @@ ycalc_xsec          (void)
 {
    ycalc_cos     ();
    a = ycalc_popval (__FUNCTION__);
-   if      (a >= 0 && a <  TRIG_MIN)   ycalc_pushval (__FUNCTION__,  TRIG_MAX);
-   else if (a <  0 && a > -TRIG_MIN)   ycalc_pushval (__FUNCTION__, -TRIG_MAX);
-   else                                ycalc_pushval (__FUNCTION__, (1 / a) - 1);
+   if      (a >  TRIG_ZERO && a <  TRIG_MIN)   ycalc_pushval (__FUNCTION__,  TRIG_MAX);
+   else if (a <= 0         && a > -TRIG_MIN)   ycalc_pushval (__FUNCTION__, -TRIG_MAX);
+   else                                        ycalc_pushval (__FUNCTION__, (1 / a) - 1);
    return;
 }
 
@@ -379,9 +381,9 @@ ycalc_xcsc          (void)
 {
    ycalc_sin     ();
    a = ycalc_popval (__FUNCTION__);
-   if      (a >= 0 && a <  TRIG_MIN)   ycalc_pushval (__FUNCTION__,  TRIG_MAX);
-   else if (a <  0 && a > -TRIG_MIN)   ycalc_pushval (__FUNCTION__, -TRIG_MAX);
-   else                                ycalc_pushval (__FUNCTION__, (1 / a) - 1);
+   if      (a > TRIG_ZERO && a <  TRIG_MIN)   ycalc_pushval (__FUNCTION__,  TRIG_MAX);
+   else if (a <= 0        && a > -TRIG_MIN)   ycalc_pushval (__FUNCTION__, -TRIG_MAX);
+   else                                       ycalc_pushval (__FUNCTION__, (1 / a) - 1);
    return;
 }
 
@@ -424,6 +426,8 @@ ycalc_asin          (void)
 {
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, asin(a) * RAD2DEG);
+   ycalc_pushval (__FUNCTION__, 3);
+   ycalc_rround ();
    return;
 }
 
@@ -432,6 +436,8 @@ ycalc_asinr         (void)
 {
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, asin(a));
+   ycalc_pushval (__FUNCTION__, 3);
+   ycalc_rround ();
    return;
 }
 
@@ -440,6 +446,8 @@ ycalc_acos          (void)
 {
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, acos(a) * RAD2DEG);
+   ycalc_pushval (__FUNCTION__, 3);
+   ycalc_rround ();
    return;
 }
 
@@ -448,6 +456,8 @@ ycalc_acosr         (void)
 {
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, acos(a));
+   ycalc_pushval (__FUNCTION__, 3);
+   ycalc_rround ();
    return;
 }
 
@@ -456,6 +466,8 @@ ycalc_atan          (void)
 {
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, atan(a) * RAD2DEG);
+   ycalc_pushval (__FUNCTION__, 3);
+   ycalc_rround ();
    return;
 }
 
@@ -464,6 +476,8 @@ ycalc_atanr         (void)
 {
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, atan(a));
+   ycalc_pushval (__FUNCTION__, 3);
+   ycalc_rround ();
    return;
 }
 
@@ -473,6 +487,8 @@ ycalc_atan2         (void)
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, atan2 (b,a) * RAD2DEG);
+   ycalc_pushval (__FUNCTION__, 3);
+   ycalc_rround ();
    return;
 }
 
@@ -482,6 +498,8 @@ ycalc_atanr2        (void)
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, atan2 (b,a));
+   ycalc_pushval (__FUNCTION__, 3);
+   ycalc_rround ();
    return;
 }
 

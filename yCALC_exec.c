@@ -763,6 +763,7 @@ ycalc_execute_auto      (void *a_owner, tDEP_ROOT *a_deproot, int a_seq, int a_l
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    DEBUG_CALC   yLOG_point   ("a_owner"    , a_owner);
    DEBUG_CALC   yLOG_point   ("a_deproot"  , a_deproot);
+   DEBUG_CALC   yLOG_info    ("label"      , ycalc_call_labeler (a_deproot));
    /*---(fill pointers)------------------*/
    rc = g_pointer (a_owner, &x_source, &x_type, &x_value, &x_string);
    DEBUG_CALC   yLOG_value   ("pointer"    , rc);
