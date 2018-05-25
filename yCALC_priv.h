@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2k"
-#define YCALC_VER_TXT   "trig functions unit tested also using ranges, approx, and roundn"
+#define YCALC_VER_NUM   "0.2l"
+#define YCALC_VER_TXT   "finished up porting basic trig function unit testing from gyges"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -684,6 +684,20 @@ void        ycalc_hccosr            (void);
 /*------*/
 void        ycalc_crd               (void);
 void        ycalc_crdr              (void);
+void        ycalc_sag               (void);
+void        ycalc_sagr              (void);
+void        ycalc_apo               (void);
+void        ycalc_apor              (void);
+void        ycalc_csg               (void);
+void        ycalc_csgr              (void);
+void        ycalc_hcrd              (void);
+void        ycalc_hcrdr             (void);
+void        ycalc_scrd              (void);
+void        ycalc_scrdr             (void);
+void        ycalc_vcrd              (void);
+void        ycalc_vcrdr             (void);
+void        ycalc_hvcrd             (void);
+void        ycalc_hvcrdr            (void);
 void        ycalc_asin              (void);
 void        ycalc_asinr             (void);
 void        ycalc_acos              (void);
