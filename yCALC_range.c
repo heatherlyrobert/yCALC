@@ -904,9 +904,9 @@ ycalc__rel_driver    (char *a_type)
    tDEP_ROOT  *x_deproot   = NULL;
    ycalc_pushref     (__FUNCTION__, myCALC.deproot);
    ycalc_popval_plus (__FUNCTION__, G_SPECIAL_ALLPOS);
-   if (a_type [0] == 'x')   m += ycalc_popval      (__FUNCTION__);
-   if (a_type [1] == 'y')   n += ycalc_popval      (__FUNCTION__);
    if (a_type [2] == 'z')   o += ycalc_popval      (__FUNCTION__);
+   if (a_type [1] == 'y')   n += ycalc_popval      (__FUNCTION__);
+   if (a_type [0] == 'x')   m += ycalc_popval      (__FUNCTION__);
    ycalc_call_who_at (m, n, o, YCALC_FULL, NULL, &x_deproot);
    ycalc_pushref     (__FUNCTION__, x_deproot);
    return;
@@ -917,6 +917,50 @@ void ycalc_rel_y         (void)  { return ycalc__rel_driver ("_y_"); }
 void ycalc_rel_z         (void)  { return ycalc__rel_driver ("__z"); }
 void ycalc_rel_xy        (void)  { return ycalc__rel_driver ("xy_"); }
 void ycalc_rel_xyz       (void)  { return ycalc__rel_driver ("xyz"); }
+
+void
+ycalc__abs_driver    (char *a_type)
+{
+
+   tDEP_ROOT  *x_deproot   = NULL;
+   ycalc_pushref     (__FUNCTION__, myCALC.deproot);
+   ycalc_popval_plus (__FUNCTION__, G_SPECIAL_ALLPOS);
+   if (a_type [2] == 'z')   o  = ycalc_popval      (__FUNCTION__);
+   if (a_type [1] == 'y')   n  = ycalc_popval      (__FUNCTION__);
+   if (a_type [0] == 'x')   m  = ycalc_popval      (__FUNCTION__);
+   ycalc_call_who_at (m, n, o, YCALC_FULL, NULL, &x_deproot);
+   ycalc_pushref     (__FUNCTION__, x_deproot);
+   return;
+}
+
+void ycalc_abs_x         (void)  { return ycalc__abs_driver ("x__"); }
+void ycalc_abs_y         (void)  { return ycalc__abs_driver ("_y_"); }
+void ycalc_abs_z         (void)  { return ycalc__abs_driver ("__z"); }
+void ycalc_abs_xy        (void)  { return ycalc__abs_driver ("xy_"); }
+void ycalc_abs_xyz       (void)  { return ycalc__abs_driver ("xyz"); }
+
+void
+ycalc__off_driver    (char *a_type)
+{
+
+   tDEP_ROOT  *x_deproot   = NULL;
+   ycalc_popval_plus (__FUNCTION__, G_SPECIAL_ALLPOS);
+   if (a_type [2] == 'z')   o += ycalc_popval      (__FUNCTION__);
+   if (a_type [1] == 'y')   n += ycalc_popval      (__FUNCTION__);
+   if (a_type [0] == 'x')   m += ycalc_popval      (__FUNCTION__);
+   ycalc_call_who_at (m, n, o, YCALC_FULL, NULL, &x_deproot);
+   ycalc_pushref     (__FUNCTION__, x_deproot);
+   return;
+}
+
+void ycalc_off_x         (void)  { return ycalc__off_driver ("x__"); }
+void ycalc_off_y         (void)  { return ycalc__off_driver ("_y_"); }
+void ycalc_off_z         (void)  { return ycalc__off_driver ("__z"); }
+void ycalc_off_xy        (void)  { return ycalc__off_driver ("xy_"); }
+void ycalc_off_xyz       (void)  { return ycalc__off_driver ("xyz"); }
+
+
+
 
 /*> void    /+-> tbd --------------------------------[ ------ [fv.850.470.77]+/ /+-[01.0000.05#.!]-+/ /+-[--.---.---.--]-+/   <* 
  *> CALC__offset        (char *a_func, int x, int y, int z)                                                                   <* 

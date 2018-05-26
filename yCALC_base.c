@@ -266,10 +266,21 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "stddev"     ,  6, ycalc_stddev            , 'f', "v:r"    , 'r', "standard deviation in range"                       },
    { "skew"       ,  4, ycalc_skew              , 'f', "v:r"    , 'r', "quartile-based skewness measure"                   },
    /*---(address functions)---------------*/
-   /*> { "Rc"         ,  0, ycalc_rel_x             , 'f', "r:v"    , 'a', "create a reference relative to current"            },   <* 
-    *> { "rC"         ,  0, ycalc_rel_y             , 'f', "r:v"    , 'a', "create a reference relative to current"            },   <* 
-    *> { "RC"         ,  0, ycalc_rel_xy            , 'f', "r:vv"   , 'a', "create a reference relative to current"            },   <*/
-   { "RCT"        ,  0, ycalc_rel_xyz           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   { "relx"       ,  4, ycalc_rel_x             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
+   { "rely"       ,  4, ycalc_rel_y             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
+   { "relz"       ,  4, ycalc_rel_z             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
+   { "relxy"      ,  5, ycalc_rel_xy            , 'f', "r:vv"   , 'a', "create a reference relative to current"            },
+   { "rela"       ,  4, ycalc_rel_xyz           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   { "absx"       ,  4, ycalc_abs_x             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
+   { "absy"       ,  4, ycalc_abs_y             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
+   { "absz"       ,  4, ycalc_abs_z             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
+   { "absxy"      ,  5, ycalc_abs_xy            , 'f', "r:vv"   , 'a', "create a reference relative to current"            },
+   { "absa"       ,  4, ycalc_abs_xyz           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   { "offx"       ,  4, ycalc_off_x             , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
+   { "offy"       ,  4, ycalc_off_y             , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
+   { "offz"       ,  4, ycalc_off_z             , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
+   { "offxy"      ,  5, ycalc_off_xy            , 'f', "r:rvv"  , 'a', "create a reference relative to current"            },
+   { "offa"       ,  4, ycalc_off_xyz           , 'f', "r:rvvv" , 'a', "create a reference relative to current"            },
    /*> { "loc"        ,  0, ycalc_loc               , 'f', "a:vvv"  , 'a', "create a cell reference from tab, col, row"        },   <* 
     *> { "loc_i"      ,  0, ycalc_loci              , 'f', "a:vv"   , 'a', "create a cell reference from col, row, same tab"   },   <* 
     *> { "l"          ,  0, ycalc_loci              , 'f', "a:vv"   , 'a', "create a cell reference from col, row, same tab"   },   <* 

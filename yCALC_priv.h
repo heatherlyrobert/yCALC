@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2m"
-#define YCALC_VER_TXT   "finished up statistics formulas unit testing port from gyges"
+#define YCALC_VER_NUM   "0.2n"
+#define YCALC_VER_TXT   "very simple calculated references and unit testing successful"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -739,5 +739,15 @@ void        ycalc_rel_y             (void);
 void        ycalc_rel_z             (void);
 void        ycalc_rel_xy            (void);
 void        ycalc_rel_xyz           (void);
+void        ycalc_abs_x             (void);
+void        ycalc_abs_y             (void);
+void        ycalc_abs_z             (void);
+void        ycalc_abs_xy            (void);
+void        ycalc_abs_xyz           (void);
+void        ycalc_off_x             (void);
+void        ycalc_off_y             (void);
+void        ycalc_off_z             (void);
+void        ycalc_off_xy            (void);
+void        ycalc_off_xyz           (void);
 
 #endif
