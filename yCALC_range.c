@@ -891,3 +891,216 @@ ycalc_stddev       (void)
 }
 
 
+
+/*====================------------------------------------====================*/
+/*===----                        offset functions                      ----===*/
+/*====================------------------------------------====================*/
+void  o___OFFSET__________o () { return; }
+
+void
+ycalc__rel_driver    (char *a_type)
+{
+
+   tDEP_ROOT  *x_deproot   = NULL;
+   ycalc_pushref     (__FUNCTION__, myCALC.deproot);
+   ycalc_popval_plus (__FUNCTION__, G_SPECIAL_ALLPOS);
+   if (a_type [0] == 'x')   m += ycalc_popval      (__FUNCTION__);
+   if (a_type [1] == 'y')   n += ycalc_popval      (__FUNCTION__);
+   if (a_type [2] == 'z')   o += ycalc_popval      (__FUNCTION__);
+   ycalc_call_who_at (m, n, o, YCALC_FULL, NULL, &x_deproot);
+   ycalc_pushref     (__FUNCTION__, x_deproot);
+   return;
+}
+
+void ycalc_rel_x         (void)  { return ycalc__rel_driver ("x__"); }
+void ycalc_rel_y         (void)  { return ycalc__rel_driver ("_y_"); }
+void ycalc_rel_z         (void)  { return ycalc__rel_driver ("__z"); }
+void ycalc_rel_xy        (void)  { return ycalc__rel_driver ("xy_"); }
+void ycalc_rel_xyz       (void)  { return ycalc__rel_driver ("xyz"); }
+
+/*> void    /+-> tbd --------------------------------[ ------ [fv.850.470.77]+/ /+-[01.0000.05#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__offset        (char *a_func, int x, int y, int z)                                                                   <* 
+ *> {                                                                                                                         <* 
+ *>    /+---(locals)-----------+-----------+-+/                                                                               <* 
+ *>    char        rc;                                                                                                        <* 
+ *>    int         x_tab;                                                                                                     <* 
+ *>    int         x_col;                                                                                                     <* 
+ *>    int         x_row;                                                                                                     <* 
+ *>    int         x_abs;                                                                                                     <* 
+ *>    tCELL      *x_base;                                                                                                    <* 
+ *>    tCELL      *x_new;                                                                                                     <* 
+ *>    /+---(get the base reference)---------+/                                                                               <* 
+ *>    x_base = CALC__popref (a_func      , ++s_narg);                                                                        <* 
+ *>    if (x_base == NULL) return;                                                                                            <* 
+ *>    /+---(parse base reference)-----------+/                                                                               <* 
+ *>    rc = LOC_coords (x_base, &x_tab, &x_col, &x_row);                                                                      <* 
+ *>    if (rc    <  0   )   {                                                                                                 <* 
+ *>       ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_ADDR , "base reference could not be parsed");                     <* 
+ *>       return;                                                                                                             <* 
+ *>    }                                                                                                                      <* 
+ *>    /+---(calc offset reference)----------+/                                                                               <* 
+ *>    x_tab += a_tab;                                                                                                        <* 
+ *>    x_col += a_col;                                                                                                        <* 
+ *>    x_row += a_row;                                                                                                        <* 
+ *>    rc     = LOC_legal  (x_tab, x_col, x_row, CELL_FIXED);                                                                 <* 
+ *>    if (rc    <  0   )   {                                                                                                 <* 
+ *>       ERROR_add (s_me, PERR_EVAL, s_neval, a_func, TERR_ADDR , "new offset reference is not valid");                      <* 
+ *>       return;                                                                                                             <* 
+ *>    }                                                                                                                      <* 
+ *>    /+---(identify new cell)--------------+/                                                                               <* 
+ *>    x_new  = LOC_cell_at_loc   (x_tab, x_col, x_row);                                                                      <* 
+ *>    if      (x_new == NULL)                      CALC_pushval (__FUNCTION__, 0);                                           <* 
+ *>    else if (x_new->s == NULL)                   CALC_pushval (__FUNCTION__, 0);                                           <* 
+ *>    else if (x_new->t == 'n' || x_new->t == 'f') CALC_pushval (__FUNCTION__, x_new->v_num);                                <* 
+ *>    else                                         CALC_pushstr (__FUNCTION__, x_new->s);                                    <* 
+ *>    /+---(complete)-----------------------+/                                                                               <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <* 
+ *>                                                                                                                           <* 
+ *> void    /+-> tbd --------------------------------[ ------ [fv.220.000.02]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__offs          (void)                                                                                                <* 
+ *> {                                                                                                                         <* 
+ *>    n = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    m = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    o = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    CALC__offset  (__FUNCTION__,     o,    m,    n);                                                                       <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <* 
+ *>                                                                                                                           <* 
+ *> void    /+-> tbd --------------------------------[ ------ [fv.210.000.02]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__index         (void)                                                                                                <* 
+ *> {                                                                                                                         <* 
+ *>    n = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    m = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    CALC__offset  ("offt",     0,    m,    n);                                                                             <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <* 
+ *>                                                                                                                           <* 
+ *> void    /+-> tbd --------------------------------[ ------ [fv.210.000.02]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__offt          (void)                                                                                                <* 
+ *> {                                                                                                                         <* 
+ *>    n = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    CALC__offset  ("offt",     n,    0,    0);                                                                             <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <* 
+ *>                                                                                                                           <* 
+ *> void    /+-> tbd --------------------------------[ ------ [fv.210.000.02]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__offc          (void)                                                                                                <* 
+ *> {                                                                                                                         <* 
+ *>    n = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    CALC__offset  ("offc",     0,    n,    0);                                                                             <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <* 
+ *>                                                                                                                           <* 
+ *> void    /+-> tbd --------------------------------[ ------ [fv.210.000.02]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__offr          (void)                                                                                                <* 
+ *> {                                                                                                                         <* 
+ *>    n = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    CALC__offset  ("offr",     0,    0,    n);                                                                             <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <* 
+ *>                                                                                                                           <* 
+ *> void    /+-> tbd --------------------------------[ ------ [fv.430.320.16]+/ /+-[01.0000.0A#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__loc_driver    (short a_tab, short a_col, short a_row)                                                               <* 
+ *> {                                                                                                                         <* 
+ *>    char   rc;                                                                                                             <* 
+ *>    tCELL *x_new;                                                                                                          <* 
+ *>    rc = LOC_legal  (a_tab, a_col, a_row, CELL_FIXED);                                                                     <* 
+ *>    if (rc    <  0   )   {                                                                                                 <* 
+ *>       ERROR_add (s_me, PERR_EVAL, s_neval, __FUNCTION__, TERR_ADDR , "address created is not legal");                     <* 
+ *>       return;                                                                                                             <* 
+ *>    }                                                                                                                      <* 
+ *>    x_new  = LOC_cell_at_loc   (a_tab, a_col, a_row);                                                                      <* 
+ *>    DEP_delcalcref (s_me);                                                                                                 <* 
+ *>    DEP_create     (G_DEP_CALCREF, s_me, x_new);                                                                           <* 
+ *>    CALC_pushref (__FUNCTION__, x_new);                                                                                    <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <* 
+ *>                                                                                                                           <* 
+ *> void    /+-> tbd --------------------------------[ ------ [fv.220.000.02]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__loc           (void)                                                                                                <* 
+ *> {                                                                                                                         <* 
+ *>    n = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    m = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    o = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    CALC__loc_driver (o, m, n);                                                                                            <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <* 
+ *>                                                                                                                           <* 
+ *> void    /+-> tbd --------------------------------[ ------ [fv.210.000.02]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__loci          (void)                                                                                                <* 
+ *> {                                                                                                                         <* 
+ *>    n = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    m = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    CALC__loc_driver (s_me->tab, m, n);                                                                                    <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <* 
+ *>                                                                                                                           <* 
+ *> void    /+-> tbd --------------------------------[ ------ [fv.210.000.02]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__loct          (void)                                                                                                <* 
+ *> {                                                                                                                         <* 
+ *>    o = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    CALC__loc_driver (o, s_me->col, s_me->row);                                                                            <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <* 
+ *>                                                                                                                           <* 
+ *> void    /+-> tbd --------------------------------[ ------ [fv.210.000.02]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__locc          (void)                                                                                                <* 
+ *> {                                                                                                                         <* 
+ *>    m = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    CALC__loc_driver (s_me->tab, m, s_me->row);                                                                            <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <* 
+ *>                                                                                                                           <* 
+ *> void    /+-> tbd --------------------------------[ ------ [fv.210.000.02]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__locr          (void)                                                                                                <* 
+ *> {                                                                                                                         <* 
+ *>    n = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    CALC__loc_driver (s_me->tab, s_me->col, n);                                                                            <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <* 
+ *>                                                                                                                           <* 
+ *> void    /+-> tbd --------------------------------[ ------ [fv.220.000.02]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__loco          (void)                                                                                                <* 
+ *> {                                                                                                                         <* 
+ *>    n = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    m = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    o = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    CALC__loc_driver (s_me->tab + o, s_me->col + m, s_me->row + n);                                                        <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <* 
+ *>                                                                                                                           <* 
+ *> void    /+-> tbd --------------------------------[ ------ [fv.210.000.02]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__locoi         (void)                                                                                                <* 
+ *> {                                                                                                                         <* 
+ *>    n = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    m = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    CALC__loc_driver (s_me->tab    , s_me->col + m, s_me->row + n);                                                        <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <* 
+ *>                                                                                                                           <* 
+ *> void    /+-> tbd --------------------------------[ ------ [fv.210.000.02]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__locot         (void)                                                                                                <* 
+ *> {                                                                                                                         <* 
+ *>    o = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    CALC__loc_driver (s_me->tab + o, s_me->col    , s_me->row    );                                                        <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <* 
+ *>                                                                                                                           <* 
+ *> void    /+-> tbd --------------------------------[ ------ [fv.210.000.02]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__lococ         (void)                                                                                                <* 
+ *> {                                                                                                                         <* 
+ *>    m = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    CALC__loc_driver (s_me->tab    , s_me->col + m, s_me->row    );                                                        <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <* 
+ *>                                                                                                                           <* 
+ *> void    /+-> tbd --------------------------------[ ------ [fv.210.000.02]+/ /+-[00.0000.00#.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> CALC__locor         (void)                                                                                                <* 
+ *> {                                                                                                                         <* 
+ *>    n = CALC__popval (__FUNCTION__, ++s_narg);                                                                             <* 
+ *>    CALC__loc_driver (s_me->tab    , s_me->col    , s_me->row + n);                                                        <* 
+ *>    return;                                                                                                                <* 
+ *> }                                                                                                                         <*/
+
+

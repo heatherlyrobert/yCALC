@@ -233,38 +233,67 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "atan2"      ,  5, ycalc_atan2             , 'f', "n:nn"   , 't', "arctangent in degrees given sides x and y"         },
    { "atanr2"     ,  6, ycalc_atanr2            , 'f', "n:nn"   , 't', "arctangent in radians given sides x and y"         },
    /*---(range info functions)------------*/
-   { "dist"       ,  4, ycalc_dist              , 'f', "v:r"    , 'r', "geometric distance between beg and end locations"  , "" , ""            , ""            , ""            },
-   { "tabs"       ,  4, ycalc_tabs              , 'f', "v:r"    , 'r', "number of tabs in range"                           , "" , ""            , ""            , ""            },
-   { "z_size"     ,  6, ycalc_tabs              , 'f', "v:r"    , 'r', "number of tabs in range"                           , "" , ""            , ""            , ""            },
-   { "cols"       ,  4, ycalc_cols              , 'f', "v:r"    , 'r', "number of columns in range"                        , "" , ""            , ""            , ""            },
-   { "x_size"     ,  6, ycalc_cols              , 'f', "v:r"    , 'r', "number of columns in range"                        , "" , ""            , ""            , ""            },
-   { "rows"       ,  4, ycalc_rows              , 'f', "v:r"    , 'r', "number of rows in range"                           , "" , ""            , ""            , ""            },
-   { "y_size"     ,  6, ycalc_rows              , 'f', "v:r"    , 'r', "number of rows in range"                           , "" , ""            , ""            , ""            },
-   { "sum"        ,  3, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     , "" , ""            , ""            , ""            },
-   { "s"          ,  1, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     , "" , ""            , ""            , ""            },
-   { "count"      ,  5, ycalc_numbers           , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" , "count"       , ""            , ""            },
-   { "numbers"    ,  7, ycalc_numbers           , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" , "count"       , ""            , ""            },
-   { "strings"    ,  7, ycalc_strings           , 'f', "v:r"    , 'r', "count of string cells in range"                    , "" , ""            , ""            , ""            },
-   { "filled"     ,  6, ycalc_filled            , 'f', "v:r"    , 'r', "count of filled cells in range"                    , "" , "counta"      , ""            , ""            },
-   { "every"      ,  5, ycalc_every             , 'f', "v:r"    , 'r', "count of every cell in range"                      , "" , ""            , ""            , ""            },
-   { "pointers"   ,  6, ycalc_pointers          , 'f', "v:r"    , 'r', "count of every cell in range"                      , "" , ""            , ""            , ""            },
-   { "empty"      ,  5, ycalc_empty             , 'f', "v:r"    , 'r', "count of every cell in range"                      , "" , ""            , ""            , ""            },
-   { "calcs"      ,  5, ycalc_calcs             , 'f', "v:r"    , 'r', "count of every cell in range"                      , "" , ""            , ""            , ""            },
-   { "avg"        ,  3, ycalc_average           , 'f', "v:r"    , 'r', "average of numeric cells in range"                 , "" , ""            , ""            , ""            },
-   { "mean"       ,  4, ycalc_average           , 'f', "v:r"    , 'r', "average of numeric cells in range"                 , "" , ""            , ""            , ""            },
-   { "min"        ,  3, ycalc_min               , 'f', "v:r"    , 'r', "minimum value in range"                            , "" , ""            , ""            , ""            },
-   { "max"        ,  3, ycalc_max               , 'f', "v:r"    , 'r', "maximum value in range"                            , "" , ""            , ""            , ""            },
-   { "range"      ,  5, ycalc_range             , 'f', "v:r"    , 'r', "difference between min and max in range"           , "" , ""            , ""            , ""            },
-   { "qtr0"       ,  4, ycalc_min               , 'f', "v:r"    , 'r', "minimum value in range"                            , "" , ""            , ""            , ""            },
-   { "qtr1"       ,  4, ycalc_quarter1          , 'f', "v:r"    , 'r', "first quarter value in range"                      , "" , ""            , ""            , ""            },
-   { "qtr2"       ,  4, ycalc_median            , 'f', "v:r"    , 'r', "second quarter (average) value in range"           , "" , ""            , ""            , ""            },
-   { "qtr3"       ,  4, ycalc_quarter3          , 'f', "v:r"    , 'r', "third quarter value in range"                      , "" , ""            , ""            , ""            },
-   { "qtr4"       ,  4, ycalc_max               , 'f', "v:r"    , 'r', "maximum value in range"                            , "" , ""            , ""            , ""            },
-   { "rangeq"     ,  6, ycalc_rangeq            , 'f', "v:r"    , 'r', "difference between q1 and q3 in range"             , "" , ""            , ""            , ""            },
-   { "median"     ,  6, ycalc_median            , 'f', "v:r"    , 'r', "median value in range"                             , "" , ""            , ""            , ""            },
-   { "mode"       ,  4, ycalc_mode              , 'f', "v:r"    , 'r', "mode of range"                                     , "" , ""            , ""            , ""            },
-   { "stddev"     ,  6, ycalc_stddev            , 'f', "v:r"    , 'r', "standard deviation in range"                       , "" , ""            , ""            , ""            },
-   { "skew"       ,  4, ycalc_skew              , 'f', "v:r"    , 'r', "quartile-based skewness measure"                   , "" , ""            , ""            , ""            },
+   { "dist"       ,  4, ycalc_dist              , 'f', "v:r"    , 'r', "geometric distance between beg and end locations"  },
+   { "tabs"       ,  4, ycalc_tabs              , 'f', "v:r"    , 'r', "number of tabs in range"                           },
+   { "z_size"     ,  6, ycalc_tabs              , 'f', "v:r"    , 'r', "number of tabs in range"                           },
+   { "cols"       ,  4, ycalc_cols              , 'f', "v:r"    , 'r', "number of columns in range"                        },
+   { "x_size"     ,  6, ycalc_cols              , 'f', "v:r"    , 'r', "number of columns in range"                        },
+   { "rows"       ,  4, ycalc_rows              , 'f', "v:r"    , 'r', "number of rows in range"                           },
+   { "y_size"     ,  6, ycalc_rows              , 'f', "v:r"    , 'r', "number of rows in range"                           },
+   { "sum"        ,  3, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     },
+   { "s"          ,  1, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     },
+   { "count"      ,  5, ycalc_numbers           , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" },
+   { "numbers"    ,  7, ycalc_numbers           , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" },
+   { "strings"    ,  7, ycalc_strings           , 'f', "v:r"    , 'r', "count of string cells in range"                    },
+   { "filled"     ,  6, ycalc_filled            , 'f', "v:r"    , 'r', "count of filled cells in range"                    , "" },
+   { "every"      ,  5, ycalc_every             , 'f', "v:r"    , 'r', "count of every cell in range"                      },
+   { "pointers"   ,  6, ycalc_pointers          , 'f', "v:r"    , 'r', "count of every cell in range"                      },
+   { "empty"      ,  5, ycalc_empty             , 'f', "v:r"    , 'r', "count of every cell in range"                      },
+   { "calcs"      ,  5, ycalc_calcs             , 'f', "v:r"    , 'r', "count of every cell in range"                      },
+   { "avg"        ,  3, ycalc_average           , 'f', "v:r"    , 'r', "average of numeric cells in range"                 },
+   { "mean"       ,  4, ycalc_average           , 'f', "v:r"    , 'r', "average of numeric cells in range"                 },
+   { "min"        ,  3, ycalc_min               , 'f', "v:r"    , 'r', "minimum value in range"                            },
+   { "max"        ,  3, ycalc_max               , 'f', "v:r"    , 'r', "maximum value in range"                            },
+   { "range"      ,  5, ycalc_range             , 'f', "v:r"    , 'r', "difference between min and max in range"           },
+   { "qtr0"       ,  4, ycalc_min               , 'f', "v:r"    , 'r', "minimum value in range"                            },
+   { "qtr1"       ,  4, ycalc_quarter1          , 'f', "v:r"    , 'r', "first quarter value in range"                      },
+   { "qtr2"       ,  4, ycalc_median            , 'f', "v:r"    , 'r', "second quarter (average) value in range"           },
+   { "qtr3"       ,  4, ycalc_quarter3          , 'f', "v:r"    , 'r', "third quarter value in range"                      },
+   { "qtr4"       ,  4, ycalc_max               , 'f', "v:r"    , 'r', "maximum value in range"                            },
+   { "rangeq"     ,  6, ycalc_rangeq            , 'f', "v:r"    , 'r', "difference between q1 and q3 in range"             },
+   { "median"     ,  6, ycalc_median            , 'f', "v:r"    , 'r', "median value in range"                             },
+   { "mode"       ,  4, ycalc_mode              , 'f', "v:r"    , 'r', "mode of range"                                     },
+   { "stddev"     ,  6, ycalc_stddev            , 'f', "v:r"    , 'r', "standard deviation in range"                       },
+   { "skew"       ,  4, ycalc_skew              , 'f', "v:r"    , 'r', "quartile-based skewness measure"                   },
+   /*---(address functions)---------------*/
+   /*> { "Rc"         ,  0, ycalc_rel_x             , 'f', "r:v"    , 'a', "create a reference relative to current"            },   <* 
+    *> { "rC"         ,  0, ycalc_rel_y             , 'f', "r:v"    , 'a', "create a reference relative to current"            },   <* 
+    *> { "RC"         ,  0, ycalc_rel_xy            , 'f', "r:vv"   , 'a', "create a reference relative to current"            },   <*/
+   { "RCT"        ,  0, ycalc_rel_xyz           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   /*> { "loc"        ,  0, ycalc_loc               , 'f', "a:vvv"  , 'a', "create a cell reference from tab, col, row"        },   <* 
+    *> { "loc_i"      ,  0, ycalc_loci              , 'f', "a:vv"   , 'a', "create a cell reference from col, row, same tab"   },   <* 
+    *> { "l"          ,  0, ycalc_loci              , 'f', "a:vv"   , 'a', "create a cell reference from col, row, same tab"   },   <* 
+    *> { "loc_t"      ,  0, ycalc_loct              , 'f', "a:v"    , 'a', "create a cell reference from tab, same col, row"   },   <* 
+    *> { "loc_c"      ,  0, ycalc_locc              , 'f', "a:v"    , 'a', "create a cell reference from col, same tab, row"   },   <* 
+    *> { "loc_r"      ,  0, ycalc_locr              , 'f', "a:v"    , 'a', "create a cell reference from row, same tab, col"   },   <* 
+    *> { "loco"       ,  0, ycalc_loco              , 'f', "a:vvv"  , 'a', "create offset reference from tab, col, row"        },   <* 
+    *> { "loco_i"     ,  0, ycalc_locoi             , 'f', "a:vv"   , 'a', "create offset reference from col, row, same tab"   },   <* 
+    *> { "loco_t"     ,  0, ycalc_locot             , 'f', "a:v"    , 'a', "create offset reference from tab, same col, row"   },   <* 
+    *> { "loco_c"     ,  0, ycalc_lococ             , 'f', "a:v"    , 'a', "create offset reference from col, same tab, row"   },   <* 
+    *> { "loco_r"     ,  0, ycalc_locor             , 'f', "a:v"    , 'a', "create offset reference from row, same tab, col"   },   <* 
+    *> { "off"        ,  0, ycalc_offs              , 'f', "?:vvv"  , 'f', "contents of cell offset from current tab,col,row"  },   <* 
+    *> { "off_t"      ,  0, ycalc_offt              , 'f', "?:v"    , 'f', "contents of cell offset from current tab"          },   <* 
+    *> { "off_c"      ,  0, ycalc_offc              , 'f', "?:v"    , 'f', "contents of cell offset from current col"          },   <* 
+    *> { "off_r"      ,  0, ycalc_offr              , 'f', "?:v"    , 'f', "contents of cell offset from current row"          },   <* 
+    *> { "off_i"      ,  0, ycalc_index             , 'f', "?:vv"   , 'f', "contents of cell offset from current col,row"      },   <* 
+    *> { "index"      ,  0, ycalc_index             , 'f', "?:vv"   , 'f', "contents of cell offset from current col,row"      },   <* 
+    *> { "i"          ,  0, ycalc_index             , 'f', "?:vv"   , 'f', "contents of cell offset from current col,row"      },   <*/
+   /*---(lookup functions)----------------*/
+   /*> { "vlookup"    ,  0, ycalc_vlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to right of one matching n"     },   <* 
+    *> { "v"          ,  0, ycalc_vlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to right of one matching n"     },   <* 
+    *> { "hlookup"    ,  0, ycalc_hlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to down of one matching n"      },   <* 
+    *> { "h"          ,  0, ycalc_hlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to down of one matching n"      },   <* 
+    *> { "entry"      ,  0, ycalc_entry             , 'f', "?:r"    , 'f', "first entry next to or above current in range"     },   <*/
    /*---(end-of-s_funcs)--------------------*/
    { "END"        ,  0, NULL                    , '-', ""       , '-', ""                                                  },
 };

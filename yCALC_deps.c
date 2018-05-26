@@ -927,6 +927,41 @@ yCALC_delete       (char a_type, char *a_source, char *a_target)
    return 0;
 }
 
+char         /*-> remove a two-way dependency --------[ ------ [ge.833.132.31]*/ /*-[02.0000.10#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_deps_delcalcref   (tDEP_ROOT *a_deproot)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         =  -10;
+   tDEP_LINK  *x_next      = NULL;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   /*---(defense: null pointers)---------*/
+   DEBUG_DEPS   yLOG_info    ("DEFENSES"  , "make sure this is processable");
+   DEBUG_DEPS   yLOG_point   ("a_deproot" , a_deproot);
+   --rce;  if (a_deproot     == NULL)   {
+      DEBUG_DEPS   yLOG_value   ("FAILED"    , rce);
+      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
+   DEBUG_DEPS   yLOG_info    ("label"     , ycalc_call_labeler (a_deproot));
+   /*---(review calculated deps)---------*/
+   --rce;
+   x_next = a_deproot->reqs;
+   while (x_next != NULL) {
+      DEBUG_DEPS   yLOG_info    ("label"     , ycalc_call_labeler (x_next->target));
+      DEBUG_DEPS   yLOG_char    ("type"      , x_next->type);
+      if (x_next->type != G_DEP_CALCREF) {
+         DEBUG_DEPS   yLOG_note    ("wrong type, skipping");
+      } else {
+         rc = ycalc_deps_delete (G_DEP_CALCREF, &(a_deproot), &x_next);
+      }
+      x_next = x_next->next;
+   }
+   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/

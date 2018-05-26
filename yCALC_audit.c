@@ -848,24 +848,24 @@ ycalc_iserror       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_xpos          (void)
 {
-   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_XPOS);
-   ycalc_pushval (__FUNCTION__, a);
+   m = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_XPOS);
+   ycalc_pushval (__FUNCTION__, m);
    return;
 }
 
 void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_ypos          (void)
 {
-   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_YPOS);
-   ycalc_pushval (__FUNCTION__, a);
+   m = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_YPOS);
+   ycalc_pushval (__FUNCTION__, m);
    return;
 }
 
 void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_zpos          (void)
 {
-   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_ZPOS);
-   ycalc_pushval (__FUNCTION__, a);
+   m = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_ZPOS);
+   ycalc_pushval (__FUNCTION__, m);
    return;
 }
 

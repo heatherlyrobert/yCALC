@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2l"
-#define YCALC_VER_TXT   "finished up porting basic trig function unit testing from gyges"
+#define YCALC_VER_NUM   "0.2m"
+#define YCALC_VER_TXT   "finished up statistics formulas unit testing port from gyges"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -351,6 +351,7 @@ extern int       g_error;
 #define       G_SPECIAL_XPOS     'X'
 #define       G_SPECIAL_YPOS     'Y'
 #define       G_SPECIAL_ZPOS     'Z'
+#define       G_SPECIAL_ALLPOS   '@'
 
 
 #define        YCALC_FULL        'f'    /* create owner && deproot            */
@@ -405,6 +406,7 @@ char*       ycalc__unit_deps        (char *a_question, char *a_label);
 char        ycalc_deps_wipe         (tDEP_ROOT **a_deproot);
 char        ycalc_deps_create       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target);
 char        ycalc_deps_delete       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target);
+char        ycalc_deps_delcalcref   (tDEP_ROOT *a_deproot);
 
 char        ycalc__deps_rooting     (tDEP_ROOT *a_curr, char a_type);
 char        ycalc__deps_circle      (int a_level, tDEP_ROOT *a_source, tDEP_ROOT *a_target, long a_stamp);
@@ -732,5 +734,10 @@ void        ycalc_mode              (void);
 void        ycalc_stddev            (void);
 void        ycalc_skew              (void);
 
+void        ycalc_rel_x             (void);
+void        ycalc_rel_y             (void);
+void        ycalc_rel_z             (void);
+void        ycalc_rel_xy            (void);
+void        ycalc_rel_xyz           (void);
 
 #endif

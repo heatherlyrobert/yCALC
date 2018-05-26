@@ -378,6 +378,13 @@ ycalc_popval_plus       (char *a_func, char a_what)
          g_addresser (x_deproot->owner, &x, &y, &z);
          return z;
          break;
+      case G_SPECIAL_ALLPOS :
+         g_addresser (x_deproot->owner, &x, &y, &z);
+         m = x;
+         n = y;
+         o = z;
+         return 0;
+         break;
       }
    }
    /*---(complete)-----------------------*/

@@ -1020,9 +1020,6 @@ SCRP          v21  (TRIG  ) normal and extended trignometry functions         
      get      v21  check the rads formulas vs degrees   ycalc__unit_mock            "double"         , "0e1"                                                                              s_equal     yCALC mock double: 0e1   =        20.000000                                                                    
      get      v21  check conversion back to degrees     ycalc__unit_mock            "double"         , "0e2"                                                                              u_round/1   yCALC mock double: 0e2   =      -156.800000                                                                    
 
-
-
-
    GROUP      v21  complete                                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  verify program teardown                                            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.018))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
