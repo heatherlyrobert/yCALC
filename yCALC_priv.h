@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2p"
-#define YCALC_VER_TXT   "really cleaned up with double pointers.  all units, except range, successful"
+#define YCALC_VER_NUM   "0.2q"
+#define YCALC_VER_TXT   "FIXED SEGFAULT with malloc due to my stupid touching free pointers!!!!"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -227,8 +227,8 @@ struct cDEP_INFO {
 tDEP_INFO   g_dep_info [MAX_DEPTYPE];
 
 #define     G_DEP_DIRNONE        ' '
-#define     G_DEP_DIRREQ         '-'
-#define     G_DEP_DIRPRO         '+'
+#define     G_DEP_DIRREQ         '>'
+#define     G_DEP_DIRPRO         '<'
 
 extern char S_DEP_REQS [10];
 extern char S_DEP_PROS [10];

@@ -317,6 +317,7 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    int         a;
    tDEP_ROOT  *x_range     = NULL;
    tDEP_ROOT  *x_temp      = NULL;
+   void       *x_owner     = NULL;
    /*---(check for range operator)-------*/
    DEBUG_CALC   yLOG_note    ("check for range operator");
    if (strcmp (a_token, "..") != 0)    return 0;
@@ -339,7 +340,8 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
       return rc;
    }
    /*---(delete first ref)---------------*/
-   rc = ycalc_deps_delete (G_DEP_REQUIRE, &a_deproot, &(a_calc->prev->prev->r), NULL);
+   x_owner = a_calc->prev->prev->r->owner;
+   rc = ycalc_deps_delete (G_DEP_REQUIRE, &a_deproot, &(a_calc->prev->prev->r), &x_owner);
    if (rc <  0) {     
       rc = YCALC_ERROR_BUILD_DEP;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
@@ -349,7 +351,8 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    /*> ycalc_call_who_at (x_beg, y_beg, z_beg, YCALC_LOOK, NULL, &x_temp);            <*/
    /*> ycalc_call_reaper (NULL, &x_temp);                                             <*/
    /*---(delete second ref)--------------*/
-   rc = ycalc_deps_delete (G_DEP_REQUIRE, &a_deproot, &(a_calc->prev->r), NULL);
+   x_owner = a_calc->prev->r->owner;
+   rc = ycalc_deps_delete (G_DEP_REQUIRE, &a_deproot, &(a_calc->prev->r), &x_owner);
    if (rc <  0) {     
       rc = YCALC_ERROR_BUILD_DEP;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);

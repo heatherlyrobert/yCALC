@@ -213,15 +213,7 @@ ycalc_range_unhook      (void **a_owner, tDEP_ROOT **a_deproot)
    /*---(prepare)------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    DEBUG_CALC   yLOG_point   ("a_owner"    , a_owner);
-   --rce;  if (a_owner == NULL) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_CALC   yLOG_point   ("*a_owner"   , *a_owner);
-   --rce;  if (*a_owner == NULL) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
+   if (a_owner != NULL)  DEBUG_CALC   yLOG_point   ("*a_owner"   , *a_owner);
    DEBUG_CALC   yLOG_point   ("a_deproot"  , a_deproot);
    --rce;  if (a_deproot == NULL) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);

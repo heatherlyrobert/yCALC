@@ -142,10 +142,6 @@ yCALC_disable           (void **a_owner, void **a_deproot)
    /*---(wipe)---------------------------*/
    ycalc_calc_wipe      (*a_deproot);
    ycalc_deps_wipe_reqs (a_owner, a_deproot);
-   --rce;  if (*a_owner == NULL) {
-      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, -rce);
-      return -rce;
-   }
    ycalc__seq_del       (*a_deproot);
    --rce;  if (*a_deproot == NULL) {
       DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, -rce);
@@ -204,7 +200,6 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
    char        rc          =    0;
    int         x_pro_real  =    0;
    char        x_type      =  '-';
-   void       *x_owner     = NULL;
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -228,7 +223,6 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
       return rce;
    }
    DEBUG_CALC   yLOG_info    ("label"     , ycalc_call_labeler (*a_deproot));
-   x_owner = (*a_deproot)->owner;
    /*---(check reqs)---------------------*/
    DEBUG_CALC   yLOG_value   ("nreq"      , (*a_deproot)->nreq);
    --rce;  if ((*a_deproot)->nreq > 0) {
@@ -284,7 +278,7 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
    *a_deproot = NULL;
    /*---(call reaper on owner)-----------*/
    if (x_type == YCALC_DATA_BLANK) {
-      rc = g_reaper (&x_owner);
+      rc = g_reaper (a_owner);
       DEBUG_CALC   yLOG_value   ("reaper"    , rc);
       --rce;  if (rc < 0 ) {
          DEBUG_PROG   yLOG_note    ("reaper was not successful");
@@ -294,7 +288,6 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
    } else {
       DEBUG_PROG   yLOG_note    ("cell is now independent");
    }
-   if (a_owner != NULL)  *a_owner = x_owner;
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;

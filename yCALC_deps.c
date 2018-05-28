@@ -621,6 +621,7 @@ ycalc_deps_create       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target
    char        x_index     =    0;          /* dependency type table index    */
    tDEP_LINK  *x_require   = NULL;    /* new requires entry                   */
    tDEP_LINK  *x_provide   = NULL;    /* new provides entry                   */
+   char        x_dir       =  '-';
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -631,6 +632,12 @@ ycalc_deps_create       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target
       return rce;
    }
    x_index = rc;
+   x_dir = g_dep_info [x_index].dir;
+   DEBUG_DEPS   yLOG_char    ("dir"       , x_dir);
+   --rce;  if (x_dir != G_DEP_DIRREQ) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(check for circlular ref)--------*/
    DEBUG_DEPS   yLOG_note    ("check for potential circular reference");
    rc     = ycalc__deps_circle (0, *a_target, *a_source, rand());
@@ -809,6 +816,7 @@ ycalc_deps_delete       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target
    char        x_type      =  ' ';
    tDEP_LINK  *x_next      = NULL;    /* new provides entry                   */
    int         x_proreal   =    0;
+   char        x_dir       =  '-';
    /*---(defense)------------------------*/
    rc = ycalc_deps_validate (a_type, a_source, a_target);
    DEBUG_DEPS   yLOG_value   ("validate"  , rc);
@@ -817,6 +825,14 @@ ycalc_deps_delete       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target
       return rce;
    }
    x_index = rc;
+   x_dir = g_dep_info [x_index].dir;
+   DEBUG_DEPS   yLOG_char    ("dir"       , x_dir);
+   --rce;  if (x_dir != G_DEP_DIRREQ) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DEPS   yLOG_point   ("a_finish"  , a_finish);
+   if (a_finish != NULL)  DEBUG_DEPS   yLOG_point   ("*a_finish" , *a_finish);
    /*---(delete require)-----------------*/
    rc   = ycalc__deps_delete_req (a_type, x_index, a_source, a_target);
    --rce;  if (rc <  0) {
@@ -836,6 +852,8 @@ ycalc_deps_delete       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target
    }
    DEBUG_DEPS   yLOG_value   ("nprovide"  , (*a_target)->npro);
    /*---(check if source needs unroot)---*/
+   DEBUG_DEPS   yLOG_note    ("review the source");
+   DEBUG_DEPS   yLOG_info    ("source"    , ycalc_call_labeler (*a_source));
    --rce;
    if        (*a_source  == myCALC.rroot) {
       DEBUG_DEPS   yLOG_note    ("source is root, so no unrooting, done");
@@ -851,6 +869,8 @@ ycalc_deps_delete       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target
       }
    }
    /*---(check on target)----------------*/
+   DEBUG_DEPS   yLOG_note    ("review the target");
+   DEBUG_DEPS   yLOG_info    ("target"    , ycalc_call_labeler (*a_target));
    x_next = (*a_target)->pros;
    while (x_next != NULL) {
       if (x_next->type != G_DEP_ENTRY)  ++x_proreal;
@@ -1191,7 +1211,7 @@ ycalc_deps_wipe_reqs    (void **a_owner, tDEP_ROOT **a_deproot)
    /*---(begin)--------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    DEBUG_DEPS   yLOG_point   ("a_owner"   , a_owner);
-   DEBUG_DEPS   yLOG_point   ("*a_owner"  , *a_owner);
+   if (a_owner != NULL)  DEBUG_DEPS   yLOG_point   ("*a_owner"  , *a_owner);
    DEBUG_DEPS   yLOG_point   ("a_deproot" , a_deproot);
    DEBUG_DEPS   yLOG_point   ("*a_deproot", *a_deproot);
    /*---(reqs)---------------------------*/
@@ -1226,7 +1246,7 @@ ycalc_deps_wipe_reqs    (void **a_owner, tDEP_ROOT **a_deproot)
          DEBUG_DEPS   yLOG_point   ("rroot"     , myCALC.rroot);
          if ((*a_deproot)->pros->target == myCALC.rroot) {
             DEBUG_DEPS   yLOG_note    ("unrooting");
-            rc = ycalc_deps_delete (G_DEP_REQUIRE, &(myCALC.rroot), a_deproot, NULL);
+            rc = ycalc_deps_delete (G_DEP_REQUIRE, &(myCALC.rroot), a_deproot, a_owner);
          }
       }
    }
