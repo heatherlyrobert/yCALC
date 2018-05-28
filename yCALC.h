@@ -18,6 +18,7 @@
 #define       YCALC_DATA_NLIKE   '9'
 #define       YCALC_DATA_ADDR    '&'
 #define       YCALC_DATA_RANGE   ':'
+#define       YCALC_DATA_INTERN  '­'
 #define       YCALC_DATA_MERGED  '+'
 #define       YCALC_DATA_ERROR   'E'
 
@@ -62,7 +63,7 @@ char        yCALC_label_config      (void *a_who_named, void *a_who_at   , void 
 char        yCALC_value_config      (void *a_valuer   , void *a_addresser, void *a_special);
 
 char        yCALC_enable            (void *a_owner);
-char        yCALC_disable           (void **a_deproot);
+char        yCALC_disable           (void **a_owner, void **a_deproot);
 
 char        yCALC_create            (char a_type, char *a_source, char *a_target);
 char        yCALC_delete            (char a_type, char *a_source, char *a_target);

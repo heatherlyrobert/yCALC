@@ -338,29 +338,26 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
-   /*> if (x_beg > x_end)  { a = x_beg;  x_beg = x_end;  x_end = a; }                 <* 
-    *> if (y_beg > y_end)  { a = y_beg;  y_beg = y_end;  y_end = a; }                 <* 
-    *> if (z_beg > z_end)  { a = z_beg;  z_beg = z_end;  z_end = a; }                 <*/
    /*---(delete first ref)---------------*/
-   rc = ycalc_deps_delete (G_DEP_REQUIRE, &a_deproot, &(a_calc->prev->prev->r));
+   rc = ycalc_deps_delete (G_DEP_REQUIRE, &a_deproot, &(a_calc->prev->prev->r), NULL);
    if (rc <  0) {     
       rc = YCALC_ERROR_BUILD_DEP;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
    a_calc->prev->prev->t = G_TYPE_NOOP;
-   ycalc_call_who_at (x_beg, y_beg, z_beg, YCALC_LOOK, NULL, &x_temp);
-   ycalc_call_reaper (&x_temp);
+   /*> ycalc_call_who_at (x_beg, y_beg, z_beg, YCALC_LOOK, NULL, &x_temp);            <*/
+   /*> ycalc_call_reaper (NULL, &x_temp);                                             <*/
    /*---(delete second ref)--------------*/
-   rc = ycalc_deps_delete (G_DEP_REQUIRE, &a_deproot, &(a_calc->prev->r));
+   rc = ycalc_deps_delete (G_DEP_REQUIRE, &a_deproot, &(a_calc->prev->r), NULL);
    if (rc <  0) {     
       rc = YCALC_ERROR_BUILD_DEP;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
    a_calc->prev->t = G_TYPE_NOOP;
-   ycalc_call_who_at (x_end, y_end, z_end, YCALC_LOOK, NULL, &x_temp);
-   ycalc_call_reaper (&x_temp);
+   /*> ycalc_call_who_at (x_end, y_end, z_end, YCALC_LOOK, NULL, &x_temp);            <*/
+   /*> ycalc_call_reaper (NULL, &x_temp);                                             <*/
    /*---(set dependencies)---------------*/
    DEBUG_CALC   yLOG_note    ("set dedendencies");
    DEBUG_DEPS   yLOG_complex ("range"     , "bx=%4d, ex=%4d, by=%4d, ey=%4d, z=%4d", x_beg, x_end, y_beg, y_end, z_beg);

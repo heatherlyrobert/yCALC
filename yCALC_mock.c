@@ -340,8 +340,8 @@ ycalc__mock_cleanup     (void)
    while (x_owner != NULL) {
       x_save  = x_owner->next;
       DEBUG_DEPS   yLOG_point   ("before"     , x_owner);
-      ycalc_call_reaper (&(x_owner->ycalc));
-      ycalc__mock_free (&x_owner);
+      ycalc_call_reaper (&x_owner, &(x_owner->ycalc));
+      ycalc__mock_free  (&x_owner);
       DEBUG_DEPS   yLOG_point   ("after"      , x_owner);
       x_owner = x_save;
    }
@@ -503,8 +503,30 @@ ycalc__mock_labeler     (void *a_owner)
 }
 
 char
-ycalc__mock_reaper      (void *a_owner)
+ycalc__mock_reaper      (void **a_owner)
 {
+   char        rce         =  -10;
+   char        rc          =    0;
+   tMOCK      *x_mock      = NULL;
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   DEBUG_DEPS   yLOG_point   ("a_owner"   , a_owner);
+   --rce;  if (a_owner  == NULL) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DEPS   yLOG_point   ("*a_owner"  , *a_owner);
+   --rce;  if (*a_owner  == NULL) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   x_mock = (tMOCK *) *a_owner;
+   DEBUG_DEPS   yLOG_point   ("ycalc"     , x_mock->ycalc);
+   rc = ycalc__mock_free (a_owner);
+   --rce;  if (rc < 0) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

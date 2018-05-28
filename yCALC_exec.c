@@ -511,6 +511,8 @@ ycalc__exec_prepare     (tDEP_ROOT *a_deproot, char *a_type, double *a_value, ch
    s_owner  = a_deproot->owner;
    s_neval  = 0;
    g_error  = 0;
+   /*---(clear calcrefs)-----------------*/
+   ycalc_deps_delcalcref (a_deproot);
    /*---(complete)-------------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;

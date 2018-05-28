@@ -15,6 +15,7 @@ const tyCALC_TYPES  g_ycalc_types [YCALC_MAX_TYPE] = {
    {  YCALC_DATA_NLIKE  , "num-like"   , '~', 'y', 'y', 'y', '=', "numeric formula derived from another cell"          },
    {  YCALC_DATA_ADDR   , "address"    , '&', 'y', '-', 'y', '-', "address pointer to use in other formulas"           },
    {  YCALC_DATA_RANGE  , "range"      , '&', 'y', '-', 'y', '-', "range pointer to use in other formulas"             },
+   {  YCALC_DATA_INTERN , "internal"   , '­', 'y', '-', 'y', '-', "an actual internal range to use in other formulas"  },
    {  YCALC_DATA_MERGED , "merged"     , '<', '-', '-', 'y', '-', "empty cell used to present merged information"      },
    {  YCALC_DATA_ERROR  , "error"      , ' ', '-', '-', 'y', 'e', "error status"                                       },
    /*---type------------ -terse-------- -pre -rpn calc -dep -res ---description--------------------------------------- */
@@ -207,7 +208,7 @@ ycalc_shared_verify       (char **a_source, char *a_type, double *a_value, char 
 }
 
 char
-ycalc_shared_clear        (tDEP_ROOT *a_deproot, char *a_type, double *a_value, char **a_string)
+ycalc_classify_clear    (void **a_owner, tDEP_ROOT **a_deproot, char *a_type, double *a_value, char **a_string)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;           /* return code for errors         */
@@ -216,7 +217,7 @@ ycalc_shared_clear        (tDEP_ROOT *a_deproot, char *a_type, double *a_value, 
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(clear calculation)-----------*/
    DEBUG_CALC   yLOG_note    ("wipe existing calculations/rpn");
-   if (a_deproot != NULL)  rc = ycalc_calc_wipe  (a_deproot);
+   if (a_deproot != NULL)  rc = ycalc_calc_wipe  (*a_deproot);
    DEBUG_CALC   yLOG_value   ("calc"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
@@ -224,7 +225,7 @@ ycalc_shared_clear        (tDEP_ROOT *a_deproot, char *a_type, double *a_value, 
    }
    /*---(clear dependencies)----------*/
    DEBUG_CALC   yLOG_note    ("wipe removable dependencies");
-   if (a_deproot != NULL)  rc = ycalc_deps_wipe  (&a_deproot);
+   if (a_deproot != NULL)  rc = ycalc_deps_wipe_reqs (a_owner, a_deproot);
    DEBUG_CALC   yLOG_value   ("cleanser"  , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
@@ -269,9 +270,10 @@ ycalc__classify_content   (char **a_source, char *a_type, double *a_value)
       DEBUG_CALC   yLOG_note    ("formula prefix found");
       /*---(handle types)-------------------*/
       if      (*a_source [0] == '&') {
-         if (strstr (*a_source, "..") != NULL)  *a_type = YCALC_DATA_RANGE;
-         else                                   *a_type = YCALC_DATA_ADDR;
+         if (strstr (*a_source, "..") == NULL)  *a_type = YCALC_DATA_ADDR;
+         else                                   *a_type = YCALC_DATA_RANGE;
       }
+      else if (*a_source [0] == '­')  *a_type = YCALC_DATA_INTERN;
       else if (*a_source [0] == '=')  *a_type = YCALC_DATA_NFORM;
       else if (*a_source [0] == '#')  *a_type = YCALC_DATA_SFORM;
       else if (*a_source [0] == '~')  *a_type = YCALC_DATA_NLIKE;
@@ -297,7 +299,7 @@ ycalc__classify_content   (char **a_source, char *a_type, double *a_value)
 }
 
 char
-ycalc_classify_trusted  (tDEP_ROOT *a_deproot, char **a_source, char *a_type, double *a_value, char **a_string)
+ycalc_classify_trusted  (void **a_owner, tDEP_ROOT **a_deproot, char **a_source, char *a_type, double *a_value, char **a_string)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;           /* return code for errors         */
@@ -305,12 +307,18 @@ ycalc_classify_trusted  (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(clear)--------------------------*/
-   rc = ycalc_shared_clear (a_deproot, a_type, a_value, a_string);
+   rc = ycalc_classify_clear (a_owner, a_deproot, a_type, a_value, a_string);
    DEBUG_CALC   yLOG_value   ("clear"     , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   DEBUG_CALC   yLOG_point   ("*a_owner"  , *a_owner);
+   --rce;  if (*a_owner == NULL) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_CALC   yLOG_point   ("*a_deproot", *a_deproot);
    /*---(reset all values)---------------*/
    DEBUG_CALC   yLOG_note    ("initialize to blank data item");
    *a_type   = YCALC_DATA_BLANK;
@@ -334,7 +342,7 @@ ycalc_classify_trusted  (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
 }
 
 char
-ycalc_classify_detail   (tDEP_ROOT *a_deproot, char **a_source, char *a_type, double *a_value, char **a_string)
+ycalc_classify_detail   (void **a_owner, tDEP_ROOT **a_deproot, char **a_source, char *a_type, double *a_value, char **a_string)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;           /* return code for errors         */
@@ -346,13 +354,6 @@ ycalc_classify_detail   (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(defense)------------------------*/
-   DEBUG_CALC   yLOG_point   ("a_deproot" , a_deproot);
-   /*> --rce;  if (a_deproot == NULL) {                                               <* 
-    *>    DEBUG_CALC   yLOG_note    ("a_deproot not set, nothing to do");             <* 
-    *>    DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);                              <* 
-    *>    return rce;                                                                 <* 
-    *> }                                                                              <*/
    /*---(prepare)------------------------*/
    rc = ycalc_shared_verify (a_source, a_type, a_value, a_string);
    DEBUG_CALC   yLOG_value   ("verify"    , rc);
@@ -361,7 +362,7 @@ ycalc_classify_detail   (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
       return rce;
    }
    /*---(prepare)------------------------*/
-   rc = ycalc_classify_trusted (a_deproot, a_source, a_type, a_value, a_string);
+   rc = ycalc_classify_trusted (a_owner, a_deproot, a_source, a_type, a_value, a_string);
    DEBUG_CALC   yLOG_value   ("trusted"   , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
@@ -373,7 +374,7 @@ ycalc_classify_detail   (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
 }
 
 char
-ycalc_classify_owner    (void *a_owner, tDEP_ROOT *a_deproot)
+ycalc_classify_owner    (void **a_owner, tDEP_ROOT **a_deproot)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;           /* return code for errors         */
@@ -392,20 +393,29 @@ ycalc_classify_owner    (void *a_owner, tDEP_ROOT *a_deproot)
    /*---(defense)------------------------*/
    DEBUG_CALC   yLOG_point   ("a_owner"   , a_owner);
    --rce;  if (a_owner == NULL) {
-      DEBUG_CALC   yLOG_note    ("a_owner not set, nothing to do");
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_CALC   yLOG_point   ("*a_owner"  , *a_owner);
+   --rce;  if (a_owner == NULL) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    DEBUG_CALC   yLOG_point   ("a_deproot" , a_deproot);
+   --rce;  if (a_deproot == NULL) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_CALC   yLOG_point   ("*a_deproot", *a_deproot);
    /*---(fill pointers)------------------*/
-   rc = g_pointer (a_owner, &x_source, &x_type, &x_value, &x_string);
+   rc = g_pointer (*a_owner, &x_source, &x_type, &x_value, &x_string);
    DEBUG_CALC   yLOG_value   ("pointer"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(prepare)------------------------*/
-   rc = ycalc_classify_detail     (a_deproot, x_source, x_type, x_value, x_string);
+   rc = ycalc_classify_detail     (a_owner, a_deproot, x_source, x_type, x_value, x_string);
    DEBUG_CALC   yLOG_value   ("detail"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
@@ -439,7 +449,7 @@ ycalc_classify_label    (char *a_label)
       return rce;
    }
    /*---(call classify)------------------*/
-   rc = ycalc_classify_owner (x_owner, x_deproot);
+   rc = ycalc_classify_owner (&x_owner, &x_deproot);
    DEBUG_CALC   yLOG_value   ("owner"      , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
@@ -502,7 +512,7 @@ yCALC_handle            (char *a_label)
       return rce;
    }
    /*---(classify)-----------------------*/
-   rc = ycalc_classify_trusted (x_deproot, x_source, x_type, x_value, x_string);
+   rc = ycalc_classify_trusted (&x_owner, &x_deproot, x_source, x_type, x_value, x_string);
    DEBUG_CALC   yLOG_value   ("classify"  , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
@@ -522,6 +532,7 @@ yCALC_handle            (char *a_label)
       return rce;
    }
    /*---(build)--------------------------*/
+   DEBUG_CALC   yLOG_note    ("now consider build and execution");
    DEBUG_CALC   yLOG_char    ("*x_type"   , *x_type);
    DEBUG_CALC   yLOG_info    ("valid"     , YCALC_GROUP_RPN);
    if (strchr (YCALC_GROUP_RPN , *x_type) != NULL) {
@@ -544,7 +555,8 @@ yCALC_handle            (char *a_label)
       }
    }
    /*---(call reaper)--------------------*/
-   rc = ycalc_call_reaper (&x_deproot);
+   DEBUG_CALC   yLOG_note    ("then, cleanup as necessary");
+   rc = ycalc_call_reaper (&x_owner, &x_deproot);
    DEBUG_CALC   yLOG_value   ("reaper"    , rc);
    --rce;  if (rc == 0) {
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);

@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2n"
-#define YCALC_VER_TXT   "very simple calculated references and unit testing successful"
+#define YCALC_VER_NUM   "0.2o"
+#define YCALC_VER_TXT   "really cleaned up with double pointers in handlers now.  audit unit testing successful"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -38,7 +38,7 @@ extern char*   (*g_labeler  )   (void *a_owner);        /* pass deproot->owner, 
 /*---(struct config)-----------------*/
 extern char    (*g_enabler  )   (void *a_owner, void *a_deproot);
 extern char    (*g_pointer  )   (void *a_owner, char **a_source, char **a_type, double **a_value , char **a_string);
-extern char    (*g_reaper   )   (void *a_owner);        /* pass deproot->owner, tries to kill thing        */
+extern char    (*g_reaper   )   (void **a_owner);        /* pass deproot->owner, tries to kill thing        */
 /*---(value config)-------------------*/
 extern char    (*g_valuer   )   (void *a_owner, char *a_type, double *a_value , char **a_string);
 extern char    (*g_addresser)   (void *a_owner, int *x, int *y, int *z);
@@ -403,10 +403,11 @@ char        ycalc_deps_init         (void);
 char        ycalc__deps_purge       (void);
 char        ycalc_deps_wrap         (void);
 char*       ycalc__unit_deps        (char *a_question, char *a_label);
-char        ycalc_deps_wipe         (tDEP_ROOT **a_deproot);
+
 char        ycalc_deps_create       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target);
-char        ycalc_deps_delete       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target);
+char        ycalc_deps_delete       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target, void **a_owner);
 char        ycalc_deps_delcalcref   (tDEP_ROOT *a_deproot);
+char        ycalc_deps_wipe_reqs    (void **a_owner, tDEP_ROOT **a_deproot);
 
 char        ycalc__deps_rooting     (tDEP_ROOT *a_curr, char a_type);
 char        ycalc__deps_circle      (int a_level, tDEP_ROOT *a_source, tDEP_ROOT *a_target, long a_stamp);
@@ -414,10 +415,10 @@ char        ycalc__deps_circle      (int a_level, tDEP_ROOT *a_source, tDEP_ROOT
 /*===[[ AUDIT ]]==========================================*/
 /*---(classify)-----------------------*/
 char        ycalc_shared_verify     (char **a_source, char *a_type, double *a_value, char **a_string);
-char        ycalc_shared_clear      (tDEP_ROOT *a_deproot, char *a_type, double *a_value, char **a_string);
-char        ycalc_classify_trusted  (tDEP_ROOT *a_deproot, char **a_source, char *a_type, double *a_value, char **a_string);
-char        ycalc_classify_detail   (tDEP_ROOT *a_deproot, char **a_source, char *a_type, double *a_value, char **a_string);
-char        ycalc_classify_owner    (void *a_owner, tDEP_ROOT *a_deproot);
+char        ycalc_classify_clear    (void **a_owner, tDEP_ROOT **a_deproot, char *a_type, double *a_value, char **a_string);
+char        ycalc_classify_trusted  (void **a_owner, tDEP_ROOT **a_deproot, char **a_source, char *a_type, double *a_value, char **a_string);
+char        ycalc_classify_detail   (void **a_owner, tDEP_ROOT **a_deproot, char **a_source, char *a_type, double *a_value, char **a_string);
+char        ycalc_classify_owner    (void **a_owner, tDEP_ROOT **a_deproot);
 char        ycalc_classify_label    (char *a_label);
 
 char        ycalc_audit_init        (void);
@@ -437,7 +438,7 @@ int         ycalc_range_init        (void);
 char*       ycalc_range_label       (int n);
 int         ycalc_range_nonrange    (tDEP_ROOT *a_deproot);
 char        ycalc_range_delete      (tDEP_ROOT *a_deproot, tDEP_ROOT *a_range);
-char        ycalc_range_unhook      (tDEP_ROOT **a_deproot);
+char        ycalc_range_unhook      (void **a_owner, tDEP_ROOT **a_deproot);
 char        ycalc_range_deproot     (char *a_name, tDEP_ROOT **a_deproot);
 char        ycalc_range_use         (tDEP_ROOT *a_src, int bx, int ex, int by, int ey, int bz, int ez, tDEP_ROOT **a_range);
 char        ycalc_range_include     (tDEP_ROOT *a_src, int x, int y, int z);
@@ -485,7 +486,7 @@ char        ycalc__mock_cleanup     (void);
 /*---(exist)--------------------------*/
 char        ycalc__mock_enabler     (void *a_owner, void *a_deproot);
 char        ycalc__mock_pointer     (void *a_owner, char **a_source, char **a_type, double **a_value, char **a_string);
-char        ycalc__mock_reaper      (void *a_owner);
+char        ycalc__mock_reaper      (void **a_owner);
 /*---(label)--------------------------*/
 char        ycalc__mock_named       (char *a_label      , char a_force, void **a_owner, void **a_deproot);
 char        ycalc__mock_whos_at     (int x, int y, int z, char a_force, void **a_owner, void **a_deproot);
@@ -513,7 +514,7 @@ char        ycalc__seq_list         (char *a_list);
 
 
 /*===[ CALLS ]============================================*/
-char        ycalc_call_reaper       (tDEP_ROOT **a_deproot);
+char        ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot);
 char        ycalc_call_who_named    (char *a_label,       char a_force, void **a_owner, void **a_deproot);
 char        ycalc_call_who_at       (int x, int y, int z, char a_force, void **a_owner, void **a_deproot);
 char*       ycalc_call_labeler      (tDEP_ROOT *a_deproot);

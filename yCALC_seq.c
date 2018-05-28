@@ -140,42 +140,42 @@ ycalc__seq_del          (tDEP_ROOT *a_deproot)
    char        x_level     = 0;
    char        rce         = -10;
    /*---(header)-------------------------*/
-   DEBUG_CALC   yLOG_senter  (__FUNCTION__);
+   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(defense : cell)-----------------*/
-   DEBUG_CALC   yLOG_spoint  (a_deproot);
+   DEBUG_CALC   yLOG_point   ("a_deproot" , a_deproot);
    --rce;  if (a_deproot == NULL) {
-      DEBUG_CALC   yLOG_snote   ("NULL cell");
-      DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
+      DEBUG_CALC   yLOG_note    ("NULL cell");
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_CALC   yLOG_sinfo   ("label"     , ycalc_call_labeler (a_deproot));
+   DEBUG_CALC   yLOG_info    ("label"     , ycalc_call_labeler (a_deproot));
    /*---(defense : unassigned)-----------*/
    x_level = a_deproot->slevel;
-   DEBUG_CALC   yLOG_svalue  ("x_level"   , x_level);
+   DEBUG_CALC   yLOG_value   ("x_level"   , x_level);
    --rce;  if (x_level < 0) {
-      DEBUG_CALC   yLOG_snote   ("unassigned already");
-      DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
+      DEBUG_CALC   yLOG_note    ("unassigned already");
+      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return -(rce);
    }
    /*---(next)---------------------------*/
-   DEBUG_CALC   yLOG_snote   ("forward");
+   DEBUG_CALC   yLOG_note    ("forward");
    if (a_deproot->snext == NULL)  s_tails [x_level]     = a_deproot->sprev;
    else                           a_deproot->snext->sprev = a_deproot->sprev;
    /*---(prev)---------------------------*/
-   DEBUG_CALC   yLOG_snote   ("backward");
+   DEBUG_CALC   yLOG_note    ("backward");
    if (a_deproot->sprev == NULL)  s_heads [x_level]     = a_deproot->snext;
    else                        a_deproot->sprev->snext = a_deproot->snext;
    /*---(update cell)--------------------*/
-   DEBUG_CALC   yLOG_snote   ("clear");
+   DEBUG_CALC   yLOG_note    ("clear");
    a_deproot->slevel   = -1;
    a_deproot->sprev    = NULL;
    a_deproot->snext    = NULL;
    /*---(update totals)------------------*/
-   DEBUG_CALC   yLOG_snote   ("counts");
+   DEBUG_CALC   yLOG_note    ("counts");
    --(s_count [x_level]);
    --s_total;
    /*---(complete)-----------------------*/
-   DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
+   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

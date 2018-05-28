@@ -189,22 +189,22 @@ ycalc_range_delete      (tDEP_ROOT *a_deproot, tDEP_ROOT *a_range)
    while (x_next != NULL) {
       DEBUG_CALC   yLOG_char    ("link type" , x_next->type);
       DEBUG_DEPS   yLOG_complex ("target"    , ycalc_call_labeler (x_next->target));
-      rc = ycalc_deps_delete (x_next->type, &(x_next->source), &(x_next->target));
+      rc = ycalc_deps_delete (x_next->type, &(x_next->source), &(x_next->target), NULL);
       DEBUG_CALC   yLOG_value   ("delete"    , rc);
-      rc = ycalc_call_reaper (&(x_next->target));
+      rc = ycalc_call_reaper (&x_next, &(x_next->target));
       DEBUG_CALC   yLOG_value   ("reaper"    , rc);
       x_next = x_next->next;
    }
    /*---(delete link)--------------------*/
-   rc = ycalc_deps_delete (G_DEP_POINTER, &a_deproot, &a_range);
+   rc = ycalc_deps_delete (G_DEP_POINTER, &a_deproot, &a_range, NULL);
    rc = ycalc_range_wipe  (n);
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
-char
-ycalc_range_unhook      (tDEP_ROOT **a_deproot)
+char         /*-> unhook an entry from all ranges ----[ ------ [ge.A34.142.41]*/ /*-[02.0000.515.5]-*/ /*-[--.---.---.--]-*/
+ycalc_range_unhook      (void **a_owner, tDEP_ROOT **a_deproot)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -212,6 +212,16 @@ ycalc_range_unhook      (tDEP_ROOT **a_deproot)
    tDEP_LINK  *x_next      = NULL;
    /*---(prepare)------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   DEBUG_CALC   yLOG_point   ("a_owner"    , a_owner);
+   --rce;  if (a_owner == NULL) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_CALC   yLOG_point   ("*a_owner"   , *a_owner);
+   --rce;  if (*a_owner == NULL) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    DEBUG_CALC   yLOG_point   ("a_deproot"  , a_deproot);
    --rce;  if (a_deproot == NULL) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
@@ -232,7 +242,7 @@ ycalc_range_unhook      (tDEP_ROOT **a_deproot)
       /*---(check for range)-------------*/
       if (x_next->type == G_DEP_ENTRY) {
          DEBUG_DEPS   yLOG_complex ("target"    , ycalc_call_labeler (x_next->target));
-         rc = ycalc_deps_delete  (G_DEP_RANGE, &(x_next->target), a_deproot);
+         rc = ycalc_deps_delete  (G_DEP_RANGE, &(x_next->target), a_deproot, a_owner);
          DEBUG_CALC   yLOG_value   ("delete"    , rc);
       }
       /*---(go to next)------------------*/
@@ -282,6 +292,7 @@ ycalc_range_add         (int bx, int ex, int by, int ey, int bz, int ez)
    tDEP_ROOT  *x_dst       = NULL;
    void       *x_owner     = NULL;
    char        x_type      =  '-';
+   char       *x_source    = NULL;
    /*---(begin)--------------------------*/
    DEBUG_DEPS    yLOG_enter   (__FUNCTION__);
    DEBUG_DEPS    yLOG_complex ("range"     , "bx=%4d, ex=%4d, by=%4d, ey=%4d, bz=%4d, ez=%4d", bx, ex, by, ey, bz, ez);
@@ -306,6 +317,10 @@ ycalc_range_add         (int bx, int ex, int by, int ey, int bz, int ez)
    rc = ycalc_call_who_named (t, YCALC_FULL, &x_owner, &x_range);
    s_ranges [n].ycalc = x_range;
    x_range->range = n;
+   /*> rc = g_pointer (x_owner, &x_source, &x_type, NULL, NULL);                      <*/
+   /*> if (*x_source != NULL)  free (*x_source);                                      <* 
+    *> *x_source = strdup (t);                                                        <* 
+    *> x_type   = YCALC_DATA_RANGE;                                                   <*/
    /*---(tie all cells)------------------*/
    DEBUG_DEPS    yLOG_note    ("assign entries");
    for (y_pos = by; y_pos <= ey; ++y_pos) {
@@ -322,7 +337,7 @@ ycalc_range_add         (int bx, int ex, int by, int ey, int bz, int ez)
             if (x_type  == YCALC_DATA_BLANK)        continue;
             /*---(create dependency)--------*/
             rc = ycalc_call_who_at (x_pos, y_pos, z_pos, YCALC_FULL, &x_owner, &x_dst);
-            DEBUG_DEPS   yLOG_info    ("target"    , ycalc_call_labeler (x_dst));
+            DEBUG_DEPS   yLOG_info    ("assign"    , ycalc_call_labeler (x_dst));
             rc  = ycalc_deps_create (G_DEP_RANGE, &x_range, &x_dst);
             if (rc  <  0)                           break;
             /*---(done)---------------------*/
@@ -908,7 +923,9 @@ ycalc__rel_driver    (char *a_type)
    if (a_type [1] == 'y')   n += ycalc_popval      (__FUNCTION__);
    if (a_type [0] == 'x')   m += ycalc_popval      (__FUNCTION__);
    ycalc_call_who_at (m, n, o, YCALC_FULL, NULL, &x_deproot);
+   DEBUG_CALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));
    ycalc_pushref     (__FUNCTION__, x_deproot);
+   ycalc_deps_create (G_DEP_CALCREF, &(myCALC.deproot), &x_deproot);
    return;
 }
 
