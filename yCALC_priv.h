@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2o"
-#define YCALC_VER_TXT   "really cleaned up with double pointers in handlers now.  audit unit testing successful"
+#define YCALC_VER_NUM   "0.2p"
+#define YCALC_VER_TXT   "really cleaned up with double pointers.  all units, except range, successful"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
