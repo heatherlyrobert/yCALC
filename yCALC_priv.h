@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2q"
-#define YCALC_VER_TXT   "FIXED SEGFAULT with malloc due to my stupid touching free pointers!!!!"
+#define YCALC_VER_NUM   "0.2r"
+#define YCALC_VER_TXT   "FIXED ANOTHER SEGFAULT in longer range unit test 02.  awesome!!!"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20

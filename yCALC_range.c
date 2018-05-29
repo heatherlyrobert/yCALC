@@ -159,7 +159,10 @@ ycalc_range_delete      (tDEP_ROOT *a_deproot, tDEP_ROOT *a_range)
    char        rce         =  -10;
    char        rc          =    0;
    tDEP_LINK  *x_next      = NULL;
+   tDEP_LINK  *x_save      = NULL;
    int         n           =   -1;
+   void       *x_owner     = NULL;
+   tDEP_ROOT  *x_deproot   = NULL;
    /*---(prepare)------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    DEBUG_CALC   yLOG_point   ("a_deproot"  , a_deproot);
@@ -181,19 +184,22 @@ ycalc_range_delete      (tDEP_ROOT *a_deproot, tDEP_ROOT *a_range)
    DEBUG_CALC   yLOG_value   ("npro"      , a_range->npro);
    --rce;  if (a_range->npro > 1) {
       DEBUG_CALC   yLOG_note    ("range required by other deproots");
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
-      return 0;
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
    /*---(remove data items)--------------*/
    x_next = a_range->reqs;
    while (x_next != NULL) {
+      x_save    = x_next->next;
+      x_deproot = x_next->target;
+      x_owner   = x_next->target->owner;
       DEBUG_CALC   yLOG_char    ("link type" , x_next->type);
       DEBUG_DEPS   yLOG_complex ("target"    , ycalc_call_labeler (x_next->target));
-      rc = ycalc_deps_delete (x_next->type, &(x_next->source), &(x_next->target), NULL);
+      rc = ycalc_deps_delete (x_next->type, &(x_next->source), &(x_next->target), &(x_next->target->owner));
       DEBUG_CALC   yLOG_value   ("delete"    , rc);
-      rc = ycalc_call_reaper (&x_next, &(x_next->target));
-      DEBUG_CALC   yLOG_value   ("reaper"    , rc);
-      x_next = x_next->next;
+      /*> rc = ycalc_call_reaper (&x_owner, &x_deproot);                              <*/
+      /*> DEBUG_CALC   yLOG_value   ("reaper"    , rc);                               <*/
+      x_next = x_save;
    }
    /*---(delete link)--------------------*/
    rc = ycalc_deps_delete (G_DEP_POINTER, &a_deproot, &a_range, NULL);
@@ -210,6 +216,7 @@ ycalc_range_unhook      (void **a_owner, tDEP_ROOT **a_deproot)
    char        rce         =  -10;
    char        rc          =    0;
    tDEP_LINK  *x_next      = NULL;
+   tDEP_LINK  *x_save      = NULL;
    /*---(prepare)------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    DEBUG_CALC   yLOG_point   ("a_owner"    , a_owner);
@@ -229,6 +236,7 @@ ycalc_range_unhook      (void **a_owner, tDEP_ROOT **a_deproot)
    DEBUG_CALC   yLOG_value   ("npro"      , (*a_deproot)->npro);
    x_next = (*a_deproot)->pros;
    while (x_next != NULL) {
+      x_save = x_next->next;
       /*---(filter)----------------------*/
       DEBUG_CALC   yLOG_char    ("link type" , x_next->type);
       /*---(check for range)-------------*/
@@ -238,7 +246,7 @@ ycalc_range_unhook      (void **a_owner, tDEP_ROOT **a_deproot)
          DEBUG_CALC   yLOG_value   ("delete"    , rc);
       }
       /*---(go to next)------------------*/
-      x_next = x_next->next;
+      x_next = x_save;
       /*---(done)------------------------*/
    }
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
@@ -402,7 +410,10 @@ ycalc_range_include     (tDEP_ROOT *a_src, int x, int y, int z)
       if (s_ranges [i].ey   <  y)   continue;
       x_range = s_ranges [i].ycalc;
       rc  = ycalc_deps_create (G_DEP_RANGE, &x_range, &a_src);
-      if (rc  <  0)  return rc;
+      if (rc  <  0) {
+         DEBUG_DEPS    yLOG_exitr   (__FUNCTION__, rc);
+         return rc;
+      }
    }
    DEBUG_DEPS    yLOG_exit    (__FUNCTION__);
    return 0;

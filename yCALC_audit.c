@@ -525,11 +525,13 @@ yCALC_handle            (char *a_label)
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   rc = ycalc_range_include (x_deproot, x, y, z);
-   DEBUG_CALC   yLOG_value   ("ranges"    , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+   if (*x_type != YCALC_DATA_BLANK) {
+      rc = ycalc_range_include (x_deproot, x, y, z);
+      DEBUG_CALC   yLOG_value   ("ranges"    , rc);
+      --rce;  if (rc < 0) {
+         DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
    }
    /*---(build)--------------------------*/
    DEBUG_CALC   yLOG_note    ("now consider build and execution");

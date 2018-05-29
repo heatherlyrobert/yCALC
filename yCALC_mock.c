@@ -516,11 +516,20 @@ ycalc__mock_reaper      (void **a_owner)
    }
    DEBUG_DEPS   yLOG_point   ("*a_owner"  , *a_owner);
    --rce;  if (*a_owner  == NULL) {
-      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, -rce);
+      return -rce;
    }
    x_mock = (tMOCK *) *a_owner;
    DEBUG_DEPS   yLOG_point   ("ycalc"     , x_mock->ycalc);
+   --rce;  if (x_mock->ycalc  != NULL) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DEPS   yLOG_char    ("type"      , x_mock->type);
+   --rce;  if (x_mock->type  != YCALC_DATA_BLANK) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    rc = ycalc__mock_free (a_owner);
    --rce;  if (rc < 0) {
       DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
@@ -734,6 +743,11 @@ ycalc__mock_whole       (char *a_label, char *a_source, char a_format, char a_de
    }
    /*---(classify)-----------------------*/
    rc = yCALC_handle (a_label);
+   rc = ycalc_call_who_named (a_label, YCALC_LOOK, &x_owner, NULL);
+   if (x_owner == NULL) {
+      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
    /*---(handle results)-----------------*/
    if (strchr ("=n", x_owner->type) != NULL) {
       strl4main (x_owner->value, t, a_decs, a_format, LEN_RECD);

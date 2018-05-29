@@ -1224,8 +1224,9 @@ ycalc_deps_wipe_reqs    (void **a_owner, tDEP_ROOT **a_deproot)
       DEBUG_DEPS   yLOG_complex ("target"    , "type=%c, ptr=%9p, label=%s", x_next->type, x_next->target, ycalc_call_labeler (x_next->target));
       if (x_next->type == G_DEP_POINTER) {
          rc = ycalc_range_delete (*a_deproot, x_next->target);
+         if (rc < 0)  rc = ycalc_deps_delete  (x_next->type, a_deproot, &(x_next->target), &(x_next->target->owner));
       } else {
-         rc = ycalc_deps_delete  (x_next->type, a_deproot, &(x_next->target), NULL);
+         rc = ycalc_deps_delete  (x_next->type, a_deproot, &(x_next->target), &(x_next->target->owner));
       }
       DEBUG_DEPS   yLOG_value   ("nreq"      , (*a_deproot)->nreq);
       x_next = x_save;

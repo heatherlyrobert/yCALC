@@ -212,11 +212,20 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(if just a owner)----------------*/
    DEBUG_CALC   yLOG_point   ("*a_deproot", *a_deproot);
    --rce;  if (*a_deproot == NULL)  {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+      rc = g_reaper (a_owner);
+      DEBUG_CALC   yLOG_value   ("reaper"    , rc);
+      --rce;  if (rc < 0 ) {
+         DEBUG_PROG   yLOG_note    ("reaper was not successful");
+         DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+      return 0;
    }
+   /*---(defense)------------------------*/
    DEBUG_CALC   yLOG_point   ("owner"     , (*a_deproot)->owner);
    --rce;  if ((*a_deproot)->owner == NULL)  {
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
