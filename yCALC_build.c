@@ -458,7 +458,7 @@ ycalc__build_reference  (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
       rc = YCALC_ERROR_BUILD_DEP;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
    }
-   rc = ycalc_range_include (x_ref, x, y, z);
+   rc = ycalc_range_include (&x_ref, x, y, z);
    DEBUG_CALC   yLOG_value   ("ranges"    , rc);
    /*---(complete)--------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);

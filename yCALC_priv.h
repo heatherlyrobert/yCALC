@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2r"
-#define YCALC_VER_TXT   "FIXED ANOTHER SEGFAULT in longer range unit test 02.  awesome!!!"
+#define YCALC_VER_NUM   "0.2s"
+#define YCALC_VER_TXT   "solved range inclusion problems on owners without deproots for range unit 02"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -440,8 +440,8 @@ int         ycalc_range_nonrange    (tDEP_ROOT *a_deproot);
 char        ycalc_range_delete      (tDEP_ROOT *a_deproot, tDEP_ROOT *a_range);
 char        ycalc_range_unhook      (void **a_owner, tDEP_ROOT **a_deproot);
 char        ycalc_range_deproot     (char *a_name, tDEP_ROOT **a_deproot);
-char        ycalc_range_use         (tDEP_ROOT *a_src, int bx, int ex, int by, int ey, int bz, int ez, tDEP_ROOT **a_range);
-char        ycalc_range_include     (tDEP_ROOT *a_src, int x, int y, int z);
+char        ycalc_range_use         (tDEP_ROOT  *a_src, int bx, int ex, int by, int ey, int bz, int ez, tDEP_ROOT **a_range);
+char        ycalc_range_include     (tDEP_ROOT **a_src, int x, int y, int z);
 
 
 /*===[ BUILD ]============================================*/
