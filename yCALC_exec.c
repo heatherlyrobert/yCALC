@@ -153,7 +153,7 @@ ycalc_pushval           (char *a_func, double a_value)
 {
    /*---(defense: stack overflow)--------*/
    if (s_nstack >= S_MAX_STACK) {
-      myCALC.trouble = G_ERROR_STACK;
+      myCALC.trouble = YCALC_ERROR_STACK;
       return 0;
    }
    /*---(update stack item)--------------*/
@@ -172,7 +172,7 @@ ycalc_pushstr           (char *a_func, char *a_string)
 {
    /*---(defense: stack overflow)--------*/
    if (s_nstack >= S_MAX_STACK) {
-      myCALC.trouble = G_ERROR_STACK;
+      myCALC.trouble = YCALC_ERROR_STACK;
       return 0;
    }
    /*---(update stack item)--------------*/
@@ -191,7 +191,7 @@ ycalc_pushref           (char *a_func, void *a_thing)
 {
    /*---(defense: stack overflow)--------*/
    if (s_nstack >= S_MAX_STACK) {
-      myCALC.trouble = G_ERROR_STACK;
+      myCALC.trouble = YCALC_ERROR_STACK;
       return 0;
    }
    if (a_thing      == NULL     )  return -2;
@@ -225,7 +225,7 @@ ycalc_popval            (char *a_func)
    tDEP_ROOT  *x_deproot   = NULL;
    /*---(prepare)------------------------*/
    if (s_nstack <= 0) {
-      myCALC.trouble = G_ERROR_STACK;
+      myCALC.trouble = YCALC_ERROR_STACK;
       return 0.0;
    }
    --s_nstack;
@@ -239,7 +239,7 @@ ycalc_popval            (char *a_func)
       break;
    case S_TYPE_REF :
       if (g_valuer == NULL) {
-         myCALC.trouble = G_ERROR_CONF;
+         myCALC.trouble = YCALC_ERROR_CONF;
          return 0.0;
       }
       x_deproot = s_stack [s_nstack].ref;
@@ -248,7 +248,7 @@ ycalc_popval            (char *a_func)
       break;
    }
    /*---(complete)-----------------------*/
-   myCALC.trouble = G_ERROR_STACK;
+   myCALC.trouble = YCALC_ERROR_STACK;
    return 0.0;
 }
 
@@ -269,7 +269,7 @@ ycalc_popstr            (char *a_func)
    tDEP_ROOT  *x_deproot   = NULL;
    /*---(prepare)------------------------*/
    if (s_nstack <= 0) {
-      myCALC.trouble = G_ERROR_STACK;
+      myCALC.trouble = YCALC_ERROR_STACK;
       return strndup (g_nada, LEN_RECD);
    }
    --s_nstack;
@@ -284,7 +284,7 @@ ycalc_popstr            (char *a_func)
    case S_TYPE_REF :
       s_string = NULL;
       if (g_valuer == NULL) {
-         myCALC.trouble = G_ERROR_CONF;
+         myCALC.trouble = YCALC_ERROR_CONF;
          return  strndup (g_nada, LEN_RECD);
       }
       x_deproot = s_stack [s_nstack].ref;
@@ -293,7 +293,7 @@ ycalc_popstr            (char *a_func)
       else                  return  strndup (s_string, LEN_RECD);
    }
    /*---(complete)-----------------------*/
-   myCALC.trouble = G_ERROR_STACK;
+   myCALC.trouble = YCALC_ERROR_STACK;
    return strndup (g_nada, LEN_RECD);
 }
 
@@ -304,25 +304,25 @@ ycalc_popref            (char *a_func)
    tDEP_ROOT  *x_deproot   = NULL;
    /*---(prepare)------------------------*/
    if (s_nstack <= 0) {
-      myCALC.trouble = G_ERROR_STACK;
+      myCALC.trouble = YCALC_ERROR_STACK;
       return strndup (g_nada, LEN_RECD);
    }
    --s_nstack;
    /*---(handle stack types)-------------*/
    switch (s_stack[s_nstack].typ) {
    case S_TYPE_NUM :
-      myCALC.trouble = G_ERROR_POINTER;
+      myCALC.trouble = YCALC_ERROR_EXEC_PTR;
       return  NULL;
       break;
    case S_TYPE_STR :
-      myCALC.trouble = G_ERROR_POINTER;
+      myCALC.trouble = YCALC_ERROR_EXEC_PTR;
       return  NULL;
       break;
    case S_TYPE_REF :
       return s_stack [s_nstack].ref;
    }
    /*---(complete)-----------------------*/
-   myCALC.trouble = G_ERROR_STACK;
+   myCALC.trouble = YCALC_ERROR_STACK;
    return NULL;
 }
 
@@ -333,7 +333,7 @@ ycalc_popval_plus       (char *a_func, char a_what)
    tDEP_ROOT  *x_deproot   = NULL;
    /*---(prepare)------------------------*/
    if (s_nstack <= 0) {
-      myCALC.trouble = G_ERROR_STACK;
+      myCALC.trouble = YCALC_ERROR_STACK;
       return strndup (g_nada, LEN_RECD);
    }
    --s_nstack;
@@ -345,7 +345,7 @@ ycalc_popval_plus       (char *a_func, char a_what)
       break;
    case S_TYPE_REF :
       if (g_valuer == NULL) {
-         myCALC.trouble = G_ERROR_CONF;
+         myCALC.trouble = YCALC_ERROR_CONF;
          return  strndup (g_nada, LEN_RECD);
       }
       x_deproot = s_stack [s_nstack].ref;
@@ -388,7 +388,7 @@ ycalc_popval_plus       (char *a_func, char a_what)
       }
    }
    /*---(complete)-----------------------*/
-   myCALC.trouble = G_ERROR_STACK;
+   myCALC.trouble = YCALC_ERROR_STACK;
    return strndup (g_nada, LEN_RECD);
 }
 
@@ -399,7 +399,7 @@ ycalc_popstr_plus       (char *a_func, char a_what)
    tDEP_ROOT  *x_deproot   = NULL;
    /*---(prepare)------------------------*/
    if (s_nstack <= 0) {
-      myCALC.trouble = G_ERROR_STACK;
+      myCALC.trouble = YCALC_ERROR_STACK;
       return strndup (g_nada, LEN_RECD);
    }
    --s_nstack;
@@ -412,7 +412,7 @@ ycalc_popstr_plus       (char *a_func, char a_what)
    case S_TYPE_REF :
       s_string = NULL;
       if (g_valuer  == NULL || g_special == NULL) {
-         myCALC.trouble = G_ERROR_CONF;
+         myCALC.trouble = YCALC_ERROR_CONF;
          return  strndup (g_nada, LEN_RECD);
       }
       x_deproot = s_stack [s_nstack].ref;
@@ -458,7 +458,7 @@ ycalc_popstr_plus       (char *a_func, char a_what)
       }
    }
    /*---(complete)-----------------------*/
-   myCALC.trouble = G_ERROR_STACK;
+   myCALC.trouble = YCALC_ERROR_STACK;
    return strndup (g_nada, LEN_RECD);
 }
 

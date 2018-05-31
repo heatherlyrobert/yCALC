@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2s"
-#define YCALC_VER_TXT   "solved range inclusion problems on owners without deproots for range unit 02"
+#define YCALC_VER_NUM   "0.2t"
+#define YCALC_VER_TXT   "added all gyges time/date functions and unit tested"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -298,16 +298,10 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 
 
 #define     G_NO_ERROR         '-'
-#define     G_ERROR_BUILD      'b'
-#define     G_ERROR_STACK      's'
-#define     G_ERROR_CONF       'c'
-#define     G_ERROR_EXEC       'e'
 #define     G_ERROR_RANGE      'R'
-#define     G_ERROR_DEPEND     'D'
-#define     G_ERROR_TOKEN      'E'
-#define     G_ERROR_POINTER    'p'
-#define     G_ERROR_UNKNOWN    'U'
 
+#define     YCALC_ERROR_CONF       'C'
+#define     YCALC_ERROR_STACK      's'
 #define     YCALC_ERROR_BUILD_RPN  'r'
 #define     YCALC_ERROR_BUILD_REF  '@'
 #define     YCALC_ERROR_BUILD_DEP  'd'
@@ -316,14 +310,17 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 #define     YCALC_ERROR_BUILD_RNG  ':'
 #define     YCALC_ERROR_BUILD_TOK  '?'
 
+#define     YCALC_ERROR_EXEC_PTR   '*'
+#define     YCALC_ERROR_EXEC_FMT   'F'
+#define     YCALC_ERROR_EXEC_DATE  'D'
 #define     YCALC_ERROR_EXEC_BRNG  '<'
 #define     YCALC_ERROR_EXEC_ERNG  '>'
 
+#define     YCALC_ERROR_UNKNOWN    'U'
 
 extern int       g_error;
 
 
-#define     YCALC_ERROR_DEREF    '*'
 
 
 #define     G_TYPE_EMPTY        '-'
@@ -358,6 +355,10 @@ extern int       g_error;
 #define        YCALC_OWNR        'y'    /* create owner only                  */
 #define        YCALC_LOOK        '-'    /* do not create, just look           */
 
+
+
+typedef   unsigned long long   ullong;
+extern long   time_zone;
 
 
 
@@ -750,5 +751,24 @@ void        ycalc_off_y             (void);
 void        ycalc_off_z             (void);
 void        ycalc_off_xy            (void);
 void        ycalc_off_xyz           (void);
+
+void        ycalc_now               (void);
+void        ycalc_now               (void);
+void        ycalc_year              (void);
+void        ycalc_month             (void);
+void        ycalc_day               (void);
+void        ycalc_hour              (void);
+void        ycalc_minute            (void);
+void        ycalc_second            (void);
+void        ycalc_weekday           (void);
+void        ycalc_weeknum           (void);
+void        ycalc_daynum            (void);
+void        ycalc_timevalue         (void);
+void        ycalc_timevalue         (void);
+void        ycalc_date              (void);
+void        ycalc_time              (void);
+void        ycalc_datepart          (void);
+void        ycalc_timepart          (void);
+void        ycalc_timezonesec       (void);
 
 #endif

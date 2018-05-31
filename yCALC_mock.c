@@ -835,7 +835,7 @@ ycalc__unit_mock        (char *a_question, char *a_label)
       snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock value : %-5s %c %8.2lf :%-.45s:", x_label, x_type, x_value, x_string);
    }
    else if (strcmp (a_question, "double"   )      == 0) {
-      snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock double: %-5s %c %16.6lf", x_label, x_type, x_value);
+      snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock double: %-5s %c %22.6lf", x_label, x_type, x_value);
    }
    /*---(complete)-----------------------*/
    return ycalc__unit_answer;

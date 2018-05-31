@@ -40,9 +40,12 @@ const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR] = {
    { YCALC_ERROR_BUILD_CIR , 'b' , "#b/cir"   , "dependence would create a circular loop"            },
    { YCALC_ERROR_BUILD_PNT , 'b' , "#b/pnt"   , "pointer dest label/ref is not addr/range type"      },
    { YCALC_ERROR_BUILD_TOK , 'b' , "#b/tok"   , "rpn token could not be recognized"                  },
+   { YCALC_ERROR_EXEC_FMT  , 'e' , "#e/fmt"   , "input data format could not be interpreted"         },
+   { YCALC_ERROR_EXEC_DATE , 'e' , "#e/dat"   , "date/time value not in a legal range"               },
+   { YCALC_ERROR_EXEC_BRNG , 'e' , "#e/beg"   , "beginning of range not legal"                       },
+   { YCALC_ERROR_EXEC_ERNG , 'e' , "#e/end"   , "end of range not legal"                             },
    { G_ERROR_RANGE         , 'b' , "#range"   , ""                                                   },
-   { G_ERROR_TOKEN         , 'b' , "#token"   , ""                                                   },
-   { G_ERROR_UNKNOWN       , 'b' , "#boom"    , ""                                                   },
+   { YCALC_ERROR_UNKNOWN   , 'b' , "#boom"    , ""                                                   },
    /* ---abbr-------------- stage   --disp-     ---description-------------------------------------  */
    { 0                     ,  0  , ""         , ""                                                   },
 };
@@ -981,7 +984,7 @@ ycalc_pointer       (void)
    x_ref = ycalc_popref (__FUNCTION__);
    DEBUG_CALC   yLOG_point   ("x_ref"     , x_ref);
    if (x_ref == NULL) {
-      myCALC.trouble = G_ERROR_POINTER;
+      myCALC.trouble = YCALC_ERROR_EXEC_PTR;
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return;
    }
@@ -989,7 +992,7 @@ ycalc_pointer       (void)
    x_beg = x_ref->chead;
    DEBUG_CALC   yLOG_point   ("x_beg"     , x_beg);
    if (x_beg == NULL || x_beg->t != G_TYPE_REF || x_beg->r == NULL) {
-      myCALC.trouble = G_ERROR_POINTER;
+      myCALC.trouble = YCALC_ERROR_EXEC_PTR;
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return;
    }
@@ -1002,14 +1005,14 @@ ycalc_pointer       (void)
    }
    /*---(second)-------------------------*/
    if (x_ref->ncalc != 3) {
-      myCALC.trouble = G_ERROR_POINTER;
+      myCALC.trouble = YCALC_ERROR_EXEC_PTR;
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return;
    }
    x_end = x_beg->next;
    DEBUG_CALC   yLOG_point   ("x_end"     , x_end);
    if (x_end == NULL || x_end->t != G_TYPE_REF || x_end->r == NULL) {
-      myCALC.trouble = G_ERROR_POINTER;
+      myCALC.trouble = YCALC_ERROR_EXEC_PTR;
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return;
    }
@@ -1019,7 +1022,7 @@ ycalc_pointer       (void)
    x_end = x_beg->next;
    DEBUG_CALC   yLOG_point   ("x_end"     , x_end);
    if (x_end == NULL || x_end->t != G_TYPE_NOOP) {
-      myCALC.trouble = G_ERROR_POINTER;
+      myCALC.trouble = YCALC_ERROR_EXEC_PTR;
       return;
    }
    /*---(complete)-----------------------*/

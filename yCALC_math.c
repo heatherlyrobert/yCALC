@@ -427,4 +427,291 @@ ycalc_approx        (void)
 }
 
 
+/*====================------------------------------------====================*/
+/*===----                    date and time functions                   ----===*/
+/*====================------------------------------------====================*/
+void  o___TIME____________o () { return; }
+
+/* >> there are only six logic functions in excel (office.microsoft.com)...
+ *     - VALUED         : NOW, TODAY, DATEVALUE, TIMEVALUE
+ *     - HELPERS        : YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, WEEKDAY
+ *     - left off       : YEARFRAC, WORKDAY, NETWORKDAYS, EOMONTH, EDATE,
+ *                        DAYS360
+ */
+
+long   time_zone  = 0;
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.01]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_now           (void)
+{
+   ycalc_pushval (__FUNCTION__, time (NULL));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_year          (void)
+{
+   char temp[100];
+   a = ycalc_popval (__FUNCTION__);
+   time_t  xtime = (time_t) a;
+   strftime (temp, 100, "%Y", localtime (&xtime));
+   ycalc_pushval (__FUNCTION__, atoi (temp));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_month         (void)
+{
+   char temp[100];
+   a = ycalc_popval (__FUNCTION__);
+   time_t  xtime = (time_t) a;
+   strftime (temp, 100, "%m", localtime (&xtime));
+   ycalc_pushval (__FUNCTION__, atoi (temp));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_day           (void)
+{
+   char temp[100];
+   a = ycalc_popval (__FUNCTION__);
+   time_t  xtime = (time_t) a;
+   strftime (temp, 100, "%d", localtime (&xtime));
+   ycalc_pushval (__FUNCTION__, atoi (temp));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_hour          (void)
+{
+   char temp[100];
+   a = ycalc_popval (__FUNCTION__);
+   time_t  xtime = (time_t) a;
+   strftime (temp, 100, "%H", localtime (&xtime));
+   ycalc_pushval (__FUNCTION__, atoi (temp));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_minute        (void)
+{
+   char temp[100];
+   a = ycalc_popval (__FUNCTION__);
+   time_t  xtime = (time_t) a;
+   strftime (temp, 100, "%M", localtime (&xtime));
+   ycalc_pushval (__FUNCTION__, atoi (temp));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_second        (void)
+{
+   char temp[100];
+   a = ycalc_popval (__FUNCTION__);
+   time_t  xtime = (time_t) a;
+   strftime (temp, 100, "%S", localtime (&xtime));
+   ycalc_pushval (__FUNCTION__, atoi (temp));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_weekday       (void)
+{
+   char temp[100];
+   a = ycalc_popval (__FUNCTION__);
+   time_t  xtime = (time_t) a;
+   strftime (temp, 100, "%w", localtime (&xtime));
+   ycalc_pushval (__FUNCTION__, atoi (temp));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_weeknum       (void)
+{
+   char temp[100];
+   a = ycalc_popval (__FUNCTION__);
+   time_t  xtime = (time_t) a;
+   strftime (temp, 100, "%W", localtime (&xtime));
+   ycalc_pushval (__FUNCTION__, atoi (temp));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_daynum        (void)
+{
+   char temp[100];
+   a = ycalc_popval (__FUNCTION__);
+   time_t  xtime = (time_t) a;
+   strftime (temp, 100, "%j", localtime (&xtime));
+   ycalc_pushval (__FUNCTION__, atoi (temp));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.D80.0A0.A3]*/ /*-[05.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_timevalue     (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   int         se = 0;
+   int         mn = 0;
+   int         hr = 0;
+   int         mo = 0;
+   int         dy = 0;
+   int         yr = 0;
+   int         rc = 0;
+   struct tm  *temp;
+   ullong      x_now;
+   /*---(set defaults)-------------------*/
+   x_now = time (NULL);
+   temp = localtime(&x_now);
+   se = temp->tm_sec;
+   mn = temp->tm_min;
+   hr = temp->tm_hour;
+   dy = temp->tm_mday;
+   mo = temp->tm_mon + 1;
+   yr = temp->tm_year + 1900;
+   /*---(pop string)---------------------*/
+   r   = ycalc_popstr(__FUNCTION__);
+   /*---(attempt to read)----------------*/
+   rc  = sscanf (r, "%d/%d/%d %d:%d:%d", &mo, &dy, &yr, &hr, &mn, &se);
+   if (rc < 6) {
+      rc  = sscanf (r, "%d/%d/%d %d:%d", &mo, &dy, &yr, &hr, &mn);
+      if (rc < 5) {
+         rc  = sscanf (r, "%d/%d/%d", &mo, &dy, &yr);
+         if (rc < 4) {
+            rc  = sscanf (r, "%d:%d:%d", &hr, &mn, &se);
+            if (rc < 3) {
+               rc  = sscanf (r, "%d/%d", &mo, &dy);
+               if (rc < 2) {
+                  rc  = sscanf (r, "%d:%d", &hr, &mn);
+                  if (rc < 2) {
+                     g_error = YCALC_ERROR_EXEC_FMT;
+                     return;
+                  }
+               }
+            }
+         }
+      }
+   }
+   /*---(convert)------------------------*/
+   temp->tm_sec  = se;
+   temp->tm_min  = mn;
+   temp->tm_hour = hr;
+   temp->tm_mday = dy;
+   temp->tm_mon  = mo - 1;
+   if      (yr <  70  ) temp->tm_year = 100 + yr;
+   else if (yr <  100 ) temp->tm_year = yr;
+   else if (yr <  1970) {
+      g_error = YCALC_ERROR_EXEC_DATE;
+      return;
+   }
+   else if (yr >  2037) {
+      g_error = YCALC_ERROR_EXEC_DATE;
+      return;
+   }
+   else if (yr >= 1900) temp->tm_year = yr - 1900;
+   time_t  xtime = mktime(temp);
+   /*---(complete)-----------------------*/
+   ycalc_pushval (__FUNCTION__, (double) xtime);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.750.050.53]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_date          (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   struct tm  *temp;
+   time_t      x_time;
+   ullong      x_now;
+   int         yr = 0;
+   /*---(set defaults)-------------------*/
+   x_now = time (NULL);
+   temp = localtime (&x_now);
+   /*---(get numbers)--------------------*/
+   temp->tm_sec  = 0;
+   temp->tm_min  = 0;
+   temp->tm_hour = 0;
+   temp->tm_mday = ycalc_popval (__FUNCTION__);
+   temp->tm_mon  = ycalc_popval (__FUNCTION__) - 1;
+   yr            = ycalc_popval (__FUNCTION__);
+   if      (yr <  70  ) temp->tm_year = 100 + yr;
+   else if (yr <  100 ) temp->tm_year = yr;
+   else if (yr <  1970) {
+      g_error = YCALC_ERROR_EXEC_DATE;
+      return;
+   }
+   else if (yr >  2037) {
+      g_error = YCALC_ERROR_EXEC_DATE;
+      return;
+   }
+   else if (yr >= 1900) temp->tm_year = yr - 1900;
+   time_t  xtime = mktime (temp);
+   /*---(complete)-----------------------*/
+   ycalc_pushval (__FUNCTION__, (double) xtime);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.430.040.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_time          (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   struct tm  *temp;
+   time_t      x_time;
+   ullong      x_now;
+   /*---(set defaults)-------------------*/
+   x_now = time (NULL);
+   temp = localtime (&x_now);
+   /*---(get numbers)--------------------*/
+   temp->tm_sec  = ycalc_popval (__FUNCTION__);
+   temp->tm_min  = ycalc_popval (__FUNCTION__);
+   temp->tm_hour = ycalc_popval (__FUNCTION__);
+   time_t  xtime = mktime (temp);
+   /*---(complete)-----------------------*/
+   ycalc_pushval (__FUNCTION__, (double) xtime);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.430.030.02]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_datepart      (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   struct tm  *temp;
+   ullong      x_time;
+   /*---(set defaults)-------------------*/
+   a = ycalc_popval (__FUNCTION__);
+   x_time = (time_t) a;
+   temp = localtime (&x_time);
+   /*---(get numbers)--------------------*/
+   temp->tm_sec  = 0;
+   temp->tm_min  = 0;
+   temp->tm_hour = 0;
+   time_t  xtime = mktime(temp);
+   /*---(complete)-----------------------*/
+   ycalc_pushval (__FUNCTION__, (double) xtime);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.420.020.03]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_timepart      (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   struct tm  *temp;
+   ullong      x_time;
+   /*---(set defaults)-------------------*/
+   b = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, b);
+   ycalc_datepart ();
+   a = ycalc_popval (__FUNCTION__);
+   /*---(complete)-----------------------*/
+   ycalc_pushval (__FUNCTION__, (b - a));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.420.020.03]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_timezonesec   (void)
+{
+   ycalc_pushval (__FUNCTION__, time_zone);
+   return;
+}
+
+
 

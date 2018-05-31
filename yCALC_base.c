@@ -305,6 +305,29 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
     *> { "hlookup"    ,  0, ycalc_hlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to down of one matching n"      },   <* 
     *> { "h"          ,  0, ycalc_hlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to down of one matching n"      },   <* 
     *> { "entry"      ,  0, ycalc_entry             , 'f', "?:r"    , 'f', "first entry next to or above current in range"     },   <*/
+   /*---(date functions)------------------*/
+   { "today"      ,  5, ycalc_now               , 'f', "v:"     , 'd', "current unix epoch (time number) in seconds"       },
+   { "now"        ,  3, ycalc_now               , 'f', "v:"     , 'd', "current unix epoch (time number) in seconds"       },
+   { "year"       ,  4, ycalc_year              , 'f', "v:v"    , 'd', "year number of time number"                        },
+   { "month"      ,  5, ycalc_month             , 'f', "v:v"    , 'd', "month number (0-11) of time number"                },
+   { "mon"        ,  3, ycalc_month             , 'f', "v:v"    , 'd', "month number (0-11) of time number"                },
+   { "day"        ,  3, ycalc_day               , 'f', "v:v"    , 'd', "day number (0-31) of time number"                  },
+   { "hour"       ,  4, ycalc_hour              , 'f', "v:v"    , 'd', "hour number (0-23) of time number"                 },
+   { "hrs"        ,  3, ycalc_hour              , 'f', "v:v"    , 'd', "hour number (0-23) of time number"                 },
+   { "minute"     ,  6, ycalc_minute            , 'f', "v:v"    , 'd', "minute number (0-59) of time number"               },
+   { "min"        ,  3, ycalc_minute            , 'f', "v:v"    , 'd', "minute number (0-59) of time number"               },
+   { "second"     ,  6, ycalc_second            , 'f', "v:v"    , 'd', "second number (0-59) of time number"               },
+   { "sec"        ,  3, ycalc_second            , 'f', "v:v"    , 'd', "second number (0-59) of time number"               },
+   { "weekday"    ,  7, ycalc_weekday           , 'f', "v:v"    , 'd', "weekday number (0-6) of time number"               },
+   { "weeknum"    ,  7, ycalc_weeknum           , 'f', "v:v"    , 'd', "week number (0-54) of time number"                 },
+   { "daynum"     ,  6, ycalc_daynum            , 'f', "v:v"    , 'd', "week number (0-54) of time number"                 },
+   { "datevalue"  ,  9, ycalc_timevalue         , 'f', "v:s"    , 'd', "converts string format date to epoch number"       },
+   { "dv"         ,  2, ycalc_timevalue         , 'f', "v:s"    , 'd', "converts string format date to epoch number"       },
+   { "date"       ,  4, ycalc_date              , 'f', "v:vvv"  , 'd', "turns year, month, day values into eqoch number"   },
+   { "time"       ,  4, ycalc_time              , 'f', "v:vvv"  , 'd', "turns hour, min, sec values into eqoch number"     },
+   { "datepart"   ,  8, ycalc_datepart          , 'f', "v:v"    , 'd', "incremental epoch yy:mm:dd part of epoch number"   },
+   { "timepart"   ,  8, ycalc_timepart          , 'f', "v:v"    , 'd', "incremental epoch hh:mm:ss part of epoch number"   },
+   { "tzsec"      ,  5, ycalc_timezonesec       , 'f', "v:"     , 'd', "number of seconds to adjust epoch for localtime"   },
    /*---(end-of-s_funcs)--------------------*/
    { "END"        ,  0, NULL                    , '-', ""       , '-', ""                                                  },
 };
@@ -401,6 +424,8 @@ ycalc_status_update     (char a_step)
 {
    /*---(locals)-----------+-----+-----+-*/
    int         x_pos       =    0;
+   struct tm  *temp;
+   ullong      x_now       =    0;
    /*---(position)-----------------------*/
    if (a_step == 0) {
       myCALC.status = '-';
@@ -422,6 +447,10 @@ ycalc_status_update     (char a_step)
       myCALC.status = 'O';
       myCALC.status_detail [8] = 'o';
    }
+   /*---(time)---------------------------*/
+   x_now     = 0;
+   temp      = gmtime (&x_now);
+   time_zone = mktime (temp);
    /*---(display)------------------------*/
    DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
    DEBUG_PROG   yLOG_info    ("detail"    , myCALC.status_detail);
