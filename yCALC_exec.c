@@ -194,7 +194,9 @@ ycalc_pushref           (char *a_func, void *a_thing)
       myCALC.trouble = YCALC_ERROR_STACK;
       return 0;
    }
-   if (a_thing      == NULL     )  return -2;
+   if (a_thing      == NULL     ) {
+      return 0;
+   }
    /*---(update stack item)--------------*/
    s_stack[s_nstack].typ = S_TYPE_REF;
    s_stack[s_nstack].ref = a_thing;

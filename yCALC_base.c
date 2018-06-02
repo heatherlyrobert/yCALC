@@ -136,16 +136,20 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "ssevenc"    ,  7, ycalc_ssevenc           , 'f', "s:s"    , 'c', "remove all non-7bit safe chars in n"               },
    /*---(object audit functions)----------*/
    { "type"       ,  4, ycalc_type              , 'f', "n:a"    , 'i', "returns the type character as a value"             },
+   { "t"          ,  1, ycalc_type              , 'f', "n:a"    , 'i', "returns the type character as a value"             },
    { "isblank"    ,  7, ycalc_isblank           , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
    { "isvalue"    ,  7, ycalc_isvalue           , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
    { "istext"     ,  6, ycalc_istext            , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
    { "iscalc"     ,  6, ycalc_iscalc            , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
    { "islit"      ,  5, ycalc_islit             , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
    { "xpos"       ,  4, ycalc_xpos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
+   { "x"          ,  1, ycalc_xpos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
    { "col"        ,  3, ycalc_xpos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
    { "ypos"       ,  4, ycalc_ypos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
+   { "y"          ,  1, ycalc_ypos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
    { "row"        ,  3, ycalc_ypos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
    { "zpos"       ,  4, ycalc_zpos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
+   { "z"          ,  1, ycalc_zpos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
    { "tab"        ,  3, ycalc_zpos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
    { "ispoint"    ,  7, ycalc_ispoint           , 'f', "t:a"    , 'i', "T if cell a is cell or range pointer"              },
    { "iserror"    ,  7, ycalc_iserror           , 'f', "t:a"    , 'i', "T if cell a is in error status"                    },
@@ -280,31 +284,24 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "offy"       ,  4, ycalc_off_y             , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
    { "offz"       ,  4, ycalc_off_z             , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
    { "offxy"      ,  5, ycalc_off_xy            , 'f', "r:rvv"  , 'a', "create a reference relative to current"            },
-   { "offa"       ,  4, ycalc_off_xyz           , 'f', "r:rvvv" , 'a', "create a reference relative to current"            },
-   /*> { "loc"        ,  0, ycalc_loc               , 'f', "a:vvv"  , 'a', "create a cell reference from tab, col, row"        },   <* 
-    *> { "loc_i"      ,  0, ycalc_loci              , 'f', "a:vv"   , 'a', "create a cell reference from col, row, same tab"   },   <* 
-    *> { "l"          ,  0, ycalc_loci              , 'f', "a:vv"   , 'a', "create a cell reference from col, row, same tab"   },   <* 
-    *> { "loc_t"      ,  0, ycalc_loct              , 'f', "a:v"    , 'a', "create a cell reference from tab, same col, row"   },   <* 
-    *> { "loc_c"      ,  0, ycalc_locc              , 'f', "a:v"    , 'a', "create a cell reference from col, same tab, row"   },   <* 
-    *> { "loc_r"      ,  0, ycalc_locr              , 'f', "a:v"    , 'a', "create a cell reference from row, same tab, col"   },   <* 
-    *> { "loco"       ,  0, ycalc_loco              , 'f', "a:vvv"  , 'a', "create offset reference from tab, col, row"        },   <* 
-    *> { "loco_i"     ,  0, ycalc_locoi             , 'f', "a:vv"   , 'a', "create offset reference from col, row, same tab"   },   <* 
-    *> { "loco_t"     ,  0, ycalc_locot             , 'f', "a:v"    , 'a', "create offset reference from tab, same col, row"   },   <* 
-    *> { "loco_c"     ,  0, ycalc_lococ             , 'f', "a:v"    , 'a', "create offset reference from col, same tab, row"   },   <* 
-    *> { "loco_r"     ,  0, ycalc_locor             , 'f', "a:v"    , 'a', "create offset reference from row, same tab, col"   },   <* 
-    *> { "off"        ,  0, ycalc_offs              , 'f', "?:vvv"  , 'f', "contents of cell offset from current tab,col,row"  },   <* 
-    *> { "off_t"      ,  0, ycalc_offt              , 'f', "?:v"    , 'f', "contents of cell offset from current tab"          },   <* 
-    *> { "off_c"      ,  0, ycalc_offc              , 'f', "?:v"    , 'f', "contents of cell offset from current col"          },   <* 
-    *> { "off_r"      ,  0, ycalc_offr              , 'f', "?:v"    , 'f', "contents of cell offset from current row"          },   <* 
-    *> { "off_i"      ,  0, ycalc_index             , 'f', "?:vv"   , 'f', "contents of cell offset from current col,row"      },   <* 
-    *> { "index"      ,  0, ycalc_index             , 'f', "?:vv"   , 'f', "contents of cell offset from current col,row"      },   <* 
-    *> { "i"          ,  0, ycalc_index             , 'f', "?:vv"   , 'f', "contents of cell offset from current col,row"      },   <*/
+   { "index"      ,  5, ycalc_off_xy            , 'f', "r:rvv"  , 'a', "create a reference relative to current"            },
+   { "offset"     ,  6, ycalc_off_xyz           , 'f', "r:rvvv" , 'a', "create a reference relative to current"            },
+   { "address"    ,  7, ycalc_address           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   { "addr"       ,  4, ycalc_address           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
    /*---(lookup functions)----------------*/
-   /*> { "vlookup"    ,  0, ycalc_vlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to right of one matching n"     },   <* 
-    *> { "v"          ,  0, ycalc_vlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to right of one matching n"     },   <* 
-    *> { "hlookup"    ,  0, ycalc_hlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to down of one matching n"      },   <* 
-    *> { "h"          ,  0, ycalc_hlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to down of one matching n"      },   <* 
-    *> { "entry"      ,  0, ycalc_entry             , 'f', "?:r"    , 'f', "first entry next to or above current in range"     },   <*/
+   { "vlookup"    ,  7, ycalc_vlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "v"          ,  1, ycalc_vlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "hlookup"    ,  7, ycalc_hlookup           , 'f', "?:rsv"  , 'f', "contents of cell x below one matching n"     },
+   { "h"          ,  1, ycalc_hlookup           , 'f', "?:rsv"  , 'f', "contents of cell x below one matching n"     },
+   /*> { "vr"         ,  2, ycalc_vrow              , 'f', "v:rsv"  , 'f', "contents of cell x to right of one matching n"     },   <* 
+    *> { "vra"        ,  3, ycalc_vabsrow           , 'f', "v:rsv"  , 'f', "contents of cell x to right of one matching n"     },   <* 
+    *> { "vc"         ,  2, ycalc_vcol              , 'f', "v:rsv"  , 'f', "contents of cell x to right of one matching n"     },   <* 
+    *> { "vca"        ,  3, ycalc_vabscol           , 'f', "v:rsv"  , 'f', "contents of cell x to right of one matching n"     },   <* 
+    *> { "ve"         ,  2, ycalc_vfound            , 'f', "v:rsv"  , 'f', "contents of cell x to right of one matching n"     },   <* 
+    *> { "vt"         ,  2, ycalc_vtype             , 'f', "s:rsv"  , 'f', "contents of cell x to right of one matching n"     },   <*/
+   /*> { "hlookup"    ,  0, ycalc_hlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to down of one matching n"      },   <* 
+    *> { "h"          ,  0, ycalc_hlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to down of one matching n"      },   <*/
+   /*> { "entry"      ,  0, ycalc_entry             , 'f', "?:r"    , 'f', "first entry next to or above current in range"     },   <*/
    /*---(date functions)------------------*/
    { "today"      ,  5, ycalc_now               , 'f', "v:"     , 'd', "current unix epoch (time number) in seconds"       },
    { "now"        ,  3, ycalc_now               , 'f', "v:"     , 'd', "current unix epoch (time number) in seconds"       },

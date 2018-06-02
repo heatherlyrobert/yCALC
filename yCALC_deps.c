@@ -984,7 +984,7 @@ ycalc_deps_delcalcref   (tDEP_ROOT *a_deproot)
       if (x_next->type != G_DEP_CALCREF) {
          DEBUG_DEPS   yLOG_note    ("wrong type, skipping");
       } else {
-         rc = ycalc_deps_delete (G_DEP_CALCREF, &(a_deproot), &x_next, NULL);
+         rc = ycalc_deps_delete (G_DEP_CALCREF, &(a_deproot), &(x_next->target), &(x_next->target->owner));
       }
       x_next = x_next->next;
    }

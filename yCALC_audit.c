@@ -44,6 +44,7 @@ const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR] = {
    { YCALC_ERROR_EXEC_DATE , 'e' , "#e/dat"   , "date/time value not in a legal range"               },
    { YCALC_ERROR_EXEC_BRNG , 'e' , "#e/beg"   , "beginning of range not legal"                       },
    { YCALC_ERROR_EXEC_ERNG , 'e' , "#e/end"   , "end of range not legal"                             },
+   { YCALC_ERROR_EXEC_MISS , 'e' , "#e/mis"   , "lookup or index function can not find result"       },
    { G_ERROR_RANGE         , 'b' , "#range"   , ""                                                   },
    { YCALC_ERROR_UNKNOWN   , 'b' , "#boom"    , ""                                                   },
    /* ---abbr-------------- stage   --disp-     ---description-------------------------------------  */

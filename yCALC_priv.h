@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2t"
-#define YCALC_VER_TXT   "added all gyges time/date functions and unit tested"
+#define YCALC_VER_NUM   "0.2u"
+#define YCALC_VER_TXT   "vlookup and hlookup are in and have basic unit testing"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -315,6 +315,7 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 #define     YCALC_ERROR_EXEC_DATE  'D'
 #define     YCALC_ERROR_EXEC_BRNG  '<'
 #define     YCALC_ERROR_EXEC_ERNG  '>'
+#define     YCALC_ERROR_EXEC_MISS  '£'
 
 #define     YCALC_ERROR_UNKNOWN    'U'
 
@@ -751,6 +752,16 @@ void        ycalc_off_y             (void);
 void        ycalc_off_z             (void);
 void        ycalc_off_xy            (void);
 void        ycalc_off_xyz           (void);
+void        ycalc_address           (void);
+
+void        ycalc_vlookup           (void);
+void        ycalc_hlookup           (void);
+/*> void        ycalc_vrow              (void);                                       <* 
+ *> void        ycalc_vcol              (void);                                       <* 
+ *> void        ycalc_vabsrow           (void);                                       <* 
+ *> void        ycalc_vabscol           (void);                                       <* 
+ *> void        ycalc_vfound            (void);                                       <* 
+ *> void        ycalc_vtype             (void);                                       <*/
 
 void        ycalc_now               (void);
 void        ycalc_now               (void);
