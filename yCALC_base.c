@@ -289,19 +289,11 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "address"    ,  7, ycalc_address           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
    { "addr"       ,  4, ycalc_address           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
    /*---(lookup functions)----------------*/
-   { "vlookup"    ,  7, ycalc_vlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to right of one matching n"     },
-   { "v"          ,  1, ycalc_vlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to right of one matching n"     },
-   { "hlookup"    ,  7, ycalc_hlookup           , 'f', "?:rsv"  , 'f', "contents of cell x below one matching n"     },
-   { "h"          ,  1, ycalc_hlookup           , 'f', "?:rsv"  , 'f', "contents of cell x below one matching n"     },
-   /*> { "vr"         ,  2, ycalc_vrow              , 'f', "v:rsv"  , 'f', "contents of cell x to right of one matching n"     },   <* 
-    *> { "vra"        ,  3, ycalc_vabsrow           , 'f', "v:rsv"  , 'f', "contents of cell x to right of one matching n"     },   <* 
-    *> { "vc"         ,  2, ycalc_vcol              , 'f', "v:rsv"  , 'f', "contents of cell x to right of one matching n"     },   <* 
-    *> { "vca"        ,  3, ycalc_vabscol           , 'f', "v:rsv"  , 'f', "contents of cell x to right of one matching n"     },   <* 
-    *> { "ve"         ,  2, ycalc_vfound            , 'f', "v:rsv"  , 'f', "contents of cell x to right of one matching n"     },   <* 
-    *> { "vt"         ,  2, ycalc_vtype             , 'f', "s:rsv"  , 'f', "contents of cell x to right of one matching n"     },   <*/
-   /*> { "hlookup"    ,  0, ycalc_hlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to down of one matching n"      },   <* 
-    *> { "h"          ,  0, ycalc_hlookup           , 'f', "?:rsv"  , 'f', "contents of cell x to down of one matching n"      },   <*/
-   /*> { "entry"      ,  0, ycalc_entry             , 'f', "?:r"    , 'f', "first entry next to or above current in range"     },   <*/
+   { "vlookup"    ,  7, ycalc_vlookup           , 'f', "r:rsv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "v"          ,  1, ycalc_vlookup           , 'f', "r:rsv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "hlookup"    ,  7, ycalc_hlookup           , 'f', "r:rsv"  , 'f', "contents of cell x below one matching n"     },
+   { "h"          ,  1, ycalc_hlookup           , 'f', "r:rsv"  , 'f', "contents of cell x below one matching n"     },
+   { "entry"      ,  5, ycalc_entry             , 'f', "r:v"    , 'f', "first entry next to or above current in range"     },
    /*---(date functions)------------------*/
    { "today"      ,  5, ycalc_now               , 'f', "v:"     , 'd', "current unix epoch (time number) in seconds"       },
    { "now"        ,  3, ycalc_now               , 'f', "v:"     , 'd', "current unix epoch (time number) in seconds"       },

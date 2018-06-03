@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2u"
-#define YCALC_VER_TXT   "vlookup and hlookup are in and have basic unit testing"
+#define YCALC_VER_NUM   "0.2v"
+#define YCALC_VER_TXT   "entry function is in and has basic unit testing"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -756,12 +756,8 @@ void        ycalc_address           (void);
 
 void        ycalc_vlookup           (void);
 void        ycalc_hlookup           (void);
-/*> void        ycalc_vrow              (void);                                       <* 
- *> void        ycalc_vcol              (void);                                       <* 
- *> void        ycalc_vabsrow           (void);                                       <* 
- *> void        ycalc_vabscol           (void);                                       <* 
- *> void        ycalc_vfound            (void);                                       <* 
- *> void        ycalc_vtype             (void);                                       <*/
+void        ycalc_entry             (void);
+void        ycalc_index             (void);
 
 void        ycalc_now               (void);
 void        ycalc_now               (void);

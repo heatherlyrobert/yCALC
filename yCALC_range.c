@@ -1004,6 +1004,8 @@ SHARED__rangeparse (char *a_func)
 /*====================------------------------------------====================*/
 void  o___SPREADSHEET_____o () { return; }
 
+static tDEP_ROOT  *s_deproot_last = NULL;
+
 void    /*-> search left column in range --------[ ------ [fv.A71.030.E7]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc__lookup_common  (char a_dir)
 {
@@ -1014,7 +1016,6 @@ ycalc__lookup_common  (char a_dir)
    void       *x_owner     = NULL;
    tDEP_ROOT  *x_deproot   = NULL;
    char        x_type      =  '-';
-   double      x_value     =  0.0;
    char       *x_string    = NULL;
    int         x_off       =    0;
    int         y_off       =    0;
@@ -1026,6 +1027,7 @@ ycalc__lookup_common  (char a_dir)
    char        t           [LEN_LABEL];
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    DEBUG_CALC   yLOG_char    ("a_dir"      , a_dir);
+   s_deproot_last = NULL;
    /*---(get values)---------------------*/
    if (a_dir == 'v')  x_off = ycalc_popval (__FUNCTION__);
    else               y_off = ycalc_popval (__FUNCTION__);
@@ -1064,7 +1066,7 @@ ycalc__lookup_common  (char a_dir)
          if (rc  <  0)                                          continue;
          if (x_owner  ==  NULL)                                 continue;
          /*---(look at the value)--------*/
-         rc = g_valuer (x_owner, &x_type, &x_value, &x_string);
+         rc = g_valuer (x_owner, &x_type, NULL, &x_string);
          DEBUG_CALC   yLOG_value   ("valuer"     , rc);
          if (rc  <  0)                                          continue;
          /*---(filter)-------------------*/
@@ -1089,6 +1091,7 @@ ycalc__lookup_common  (char a_dir)
          DEBUG_CALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));
          ycalc_pushref     (__FUNCTION__, x_deproot);
          ycalc_deps_create (G_DEP_CALCREF, &(myCALC.deproot), &x_deproot);
+         s_deproot_last = x_deproot;
          DEBUG_CALC   yLOG_exit    (__FUNCTION__);
          return;
       }
@@ -1104,6 +1107,63 @@ ycalc__lookup_common  (char a_dir)
 
 void ycalc_vlookup       (void)  { return ycalc__lookup_common ('v'); }
 void ycalc_hlookup       (void)  { return ycalc__lookup_common ('h'); }
+
+void
+ycalc_entry             (void)
+{
+   char        rc          =    0;
+   int         y_cur       =    0;
+   int         y_max       =    0;
+   int         y_min       =    0;
+   int         x_cur       =    0;
+   int         x_off       =    0;
+   int         z_cur       =    0;
+   void       *x_owner     = NULL;
+   char        x_type      =  '-';
+   tDEP_ROOT  *x_deproot   = NULL;
+   x_off = ycalc_popval (__FUNCTION__);
+   ycalc_pushref     (__FUNCTION__, myCALC.deproot);
+   ycalc_popval_plus (__FUNCTION__, G_SPECIAL_ALLPOS);
+   x_cur = m;
+   y_max = n;
+   z_cur = o;
+   y_min = 0;
+   for (y_cur = y_max; y_cur >= y_min; --y_cur) {
+      /*---(see what's there)---------*/
+      rc = ycalc_call_who_at  (x_cur - x_off, y_cur, z_cur, YCALC_LOOK, &x_owner, &x_deproot);
+      DEBUG_CALC   yLOG_value   ("who_at"     , rc);
+      DEBUG_CALC   yLOG_point   ("x_owner"    , x_owner);
+      if (rc  <  0)                                          continue;
+      if (x_owner  ==  NULL)                                 continue;
+      /*---(look at the value)--------*/
+      rc = g_valuer (x_owner, &x_type, NULL, NULL);
+      DEBUG_CALC   yLOG_value   ("valuer"     , rc);
+      if (rc  <  0)                                          continue;
+      /*---(filter)-------------------*/
+      DEBUG_CALC   yLOG_char    ("x_type"    , x_type);
+      if (x_type == YCALC_DATA_BLANK)                       continue;
+      /*---(save)---------------------*/
+      rc = ycalc_call_who_at  (x_cur - x_off, y_cur, z_cur, YCALC_FULL, &x_owner, &x_deproot);
+      DEBUG_CALC   yLOG_value   ("who_at"     , rc);
+      DEBUG_CALC   yLOG_point   ("x_owner"    , x_owner);
+      DEBUG_CALC   yLOG_point   ("x_deproot"  , x_deproot);
+      if (rc  <  0 || x_owner == NULL || x_deproot == NULL) {
+         rc = -1;
+         break;
+      }
+      DEBUG_CALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));
+      ycalc_pushref     (__FUNCTION__, x_deproot);
+      ycalc_deps_create (G_DEP_CALCREF, &(myCALC.deproot), &x_deproot);
+      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
+   /*---(nothing found)------------------*/
+   g_error = YCALC_ERROR_EXEC_MISS;
+   myCALC.trouble = YCALC_ERROR_EXEC_MISS;
+   /*---(complete)-----------------------*/
+   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   return;
+}
 
 
 
