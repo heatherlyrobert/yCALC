@@ -19,6 +19,7 @@ char*   (*g_adjuster )   (char *a_label, int x, int y, int z);        /* pass de
 char    (*g_addresser)   (void *a_owner, int  *x, int *y, int *z);
 char    (*g_valuer   )   (void *a_owner, char *a_type, double *a_value  , char   **a_string);
 char    (*g_special  )   (void *a_owner, char  a_what, double *a_value , char   **a_string);
+char    (*g_printer  )   (void *a_owner);
 
 
 

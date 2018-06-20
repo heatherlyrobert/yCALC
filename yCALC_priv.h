@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2v"
-#define YCALC_VER_TXT   "entry function is in and has basic unit testing"
+#define YCALC_VER_NUM   "0.2w"
+#define YCALC_VER_TXT   "all but new merge functions are up and working in unit test again"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -43,6 +43,7 @@ extern char    (*g_reaper   )   (void **a_owner);        /* pass deproot->owner,
 extern char    (*g_valuer   )   (void *a_owner, char *a_type, double *a_value , char **a_string);
 extern char    (*g_addresser)   (void *a_owner, int *x, int *y, int *z);
 extern char    (*g_special  )   (void *a_owner, char  a_what, double *a_value , char   **a_string);
+extern char    (*g_printer  )   (void *a_owner);
 /*---(sequencing)---------------------*/
 extern char    (*g_consumer )   (void *a_owner, void *a_deproot, int a_seq, int a_lvl);
 
@@ -333,10 +334,6 @@ extern int       g_error;
 
 
 
-#define       G_SPECIAL_TYPE     'T'
-#define       G_SPECIAL_LABEL    'L'
-#define       G_SPECIAL_SOURCE   'S'
-#define       G_SPECIAL_PRINT    'P'
 
 #define       G_SPECIAL_RPN      'R'
 #define       G_SPECIAL_NCALC    '0'
@@ -351,10 +348,6 @@ extern int       g_error;
 #define       G_SPECIAL_ZPOS     'Z'
 #define       G_SPECIAL_ALLPOS   '@'
 
-
-#define        YCALC_FULL        'f'    /* create owner && deproot            */
-#define        YCALC_OWNR        'y'    /* create owner only                  */
-#define        YCALC_LOOK        '-'    /* do not create, just look           */
 
 
 
@@ -497,6 +490,7 @@ char*       ycalc__mock_labeler     (void *a_owner);
 char        ycalc__mock_valuer      (void *a_thing, char *a_type, double *a_value, char **a_string);
 char        ycalc__mock_address     (void *a_thing, int  *x, int *y, int *z);
 char        ycalc__mock_special     (void *a_owner, char a_what, double *a_value, char **a_string);
+char        ycalc__mock_printer     (void *a_owner);
 /*---(unit testing)-------------------*/
 char        ycalc__mock_special_set (char *a_label, char *a_source, double a_value, char *a_print);
 char        ycalc__mock_source      (char *a_label, char *a_source);

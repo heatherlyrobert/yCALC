@@ -56,6 +56,7 @@ ycalc__seq_clear        (void)
       x_next = x_next->rnext;
       ++c;
    }
+   DEBUG_CALC   yLOG_value   ("target"    , myCALC.rcount);
    DEBUG_CALC   yLOG_value   ("cleared"   , c);
    DEBUG_CALC   yLOG_note    ("resetting calc exec heads and tails");
    for (i = 0; i < MAX_EXEC; ++i) {
@@ -271,18 +272,23 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, l
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   DEBUG_CALC   yLOG_sinfo   ("label"     , ycalc_call_labeler (a_deproot));
-   DEBUG_CALC   yLOG_value   ("npro"  , a_deproot->npro);
-   DEBUG_CALC   yLOG_value   ("nreq"  , a_deproot->nreq);
+   DEBUG_CALC   yLOG_info    ("label"     , ycalc_call_labeler (a_deproot));
+   DEBUG_CALC   yLOG_value   ("npro"      , a_deproot->npro);
+   DEBUG_CALC   yLOG_value   ("nreq"      , a_deproot->nreq);
    g_consumer = a_consumer;
    /*---(prepare)------------------------*/
    ycalc__seq_clear ();
    /*---(recurse)------------------------*/
-   if (a_dir_rec == 'u')  x_dep = a_deproot->pros;
-   else                   x_dep = a_deproot->reqs;
+   if (a_dir_rec == 'u') {
+      x_dep = a_deproot->pros;
+      x_sub = a_deproot->npro;
+   } else {
+      x_dep = a_deproot->reqs;
+      x_sub = a_deproot->nreq;
+   }
    while (x_dep != NULL) {
       ++i;
-      DEBUG_CALC   yLOG_value   ("recurse"   , i);
+      DEBUG_CALC   yLOG_complex ("recurse"   , "%d of %d, %s", i, x_sub, ycalc_call_labeler (x_dep->target));
       ycalc__seq_recursion (0, x_dep, a_dir_rec, a_stamp);
       x_dep = x_dep->next;
    }

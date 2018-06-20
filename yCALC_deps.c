@@ -1259,6 +1259,374 @@ ycalc_deps_wipe_reqs    (void **a_owner, tDEP_ROOT **a_deproot)
 
 
 /*====================------------------------------------====================*/
+/*===----                       merging locations                      ----===*/
+/*====================------------------------------------====================*/
+static void  o___MERGING_________o () { return; }
+
+char         /*-> find the merge source --------------[ leaf   [gp.420.113.30]*/ /*-[01.0000.306.#]-*/ /*-[--.---.---.--]-*/
+ycalc__merge_source     (void *a_deproot, void **a_source)
+{  /*---(design notes)--------------------------------------------------------*/
+   /* identify the source of the current cells merge                          */
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   tDEP_ROOT  *x_deproot   = NULL;
+   tDEP_LINK  *x_next      = NULL;
+   /*---(begin)--------------------------*/
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   /*---(defenses)-----------------------*/
+   DEBUG_DEPS   yLOG_point   ("a_deproot" , a_deproot);
+   --rce;  if (a_deproot  == NULL) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   x_deproot = (tDEP_ROOT *) a_deproot;
+   DEBUG_DEPS   yLOG_point   ("a_source"  , a_source);
+   --rce;  if (a_source  == NULL) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   *a_source = NULL;
+   /*---(find head)----------------------*/
+   x_next = x_deproot->pros;
+   while (x_next != NULL) {
+      DEBUG_DEPS   yLOG_point   ("x_next"    , x_next);
+      DEBUG_DEPS   yLOG_char    ("type"      , x_next->type);
+      if (G_DEP_BLEED == x_next->type) {
+         DEBUG_DEPS   yLOG_note    ("FOUND");
+         break;
+      }
+      x_next = x_next->next;
+   }
+   /*---(save)---------------------------*/
+   --rce;  if (x_next == NULL) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   *a_source = x_next->target;
+   /*---(complete)-----------------------*/
+   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+/*> char         /+-> check for merge-type cell ----------[ leaf   [fe.430.116.50]+/ /+-[00.0000.056.#]-+/ /+-[--.---.---.--]-+/   <* 
+ *> ycalc__merge_valid      (tCELL *a_curr)                                                                                        <* 
+ *> {  /+---(design notes)--------------------------------------------------------+/                                               <* 
+ *>    /+ check if a cell is a merge/bleed type cell                              +/                                               <* 
+ *>    /+---(locals)-----------+-----------+-+/                                                                                    <* 
+ *>    char        rce         = -10;                                                                                              <* 
+ *>    /+---(defenses)-----------------------+/                                                                                    <* 
+ *>    --rce;  if (a_curr       == NULL)  return rce;  /+ must be '<'             +/                                               <* 
+ *>    --rce;  if (a_curr->s    == NULL)  return rce;  /+ must be '<'             +/                                               <* 
+ *>    --rce;  if (a_curr->l    != 1   )  return rce;  /+ must be '<'             +/                                               <* 
+ *>    --rce;  if (a_curr->s[0] != '<' )  return rce;  /+ must be '<'             +/                                               <* 
+ *>    --rce;  if (a_curr->col  <= 0   )  return rce;  /+ must have room          +/                                               <* 
+ *>    /+---(complete)-----------------------+/                                                                                    <* 
+ *>    return 0;                                                                                                                   <* 
+ *> }                                                                                                                              <*/
+
+/*> tCELL*       /+-> check to left for merge ------------[ ------ [fp.530.123.32]+/ /+-[01.0000.016.#]-+/ /+-[--.---.---.--]-+/   <* 
+ *> ycalc_merge_left     (tCELL *a_curr)                                                                                           <* 
+ *> {  /+---(design notes)--------------------------------------------------------+/                                               <* 
+ *>    /+ if possible, merge with the cells to the left                           +/                                               <* 
+ *>    /+---(locals)-----------+-----------+-+/                                                                                    <* 
+ *>    tCELL      *x_left      = NULL;                                                                                             <* 
+ *>    /+> tCELL      *x_save      = NULL;                                                <+/                                      <* 
+ *>    int         i           = 0;                                                                                                <* 
+ *>    /+---(defenses)-----------------------+/                                                                                    <* 
+ *>    if (CELL__merge_valid (a_curr) < 0)  return a_curr;                                                                         <* 
+ *>    /+---(find real head)-----------------+/                                                                                    <* 
+ *>    /+> x_save = a_curr;                                                               <+/                                      <* 
+ *>    for (i = a_curr->col - 1; i >= 0; --i) {                                                                                    <* 
+ *>       x_left  = LOC_cell_at_loc (a_curr->tab, i, a_curr->row);                                                                 <* 
+ *>       if (x_left    == NULL)                      return NULL;                                                                 <* 
+ *>       if (x_left->l == 1 && x_left->s[0] == '<')  continue;  /+ should merge  +/                                               <* 
+ *>       break;                                                                                                                   <* 
+ *>    }                                                                                                                           <* 
+ *>    /+---(complete)-----------------------+/                                                                                    <* 
+ *>    return x_left;                                                                                                              <* 
+ *> }                                                                                                                              <*/
+
+/*> char         /+-> add merges to right ----------------[ ------ [fe.860.165.65]+/ /+-[02.0000.026.P]-+/ /+-[--.---.---.--]-+/   <* 
+ *> ycalc_merge_right    (tCELL *a_left)                                                                                           <* 
+ *> {  /+---(design notes)--------------------------------------------------------+/                                               <* 
+ *>    /+ add all applicable cells to the right into the merge                    +/                                               <* 
+ *>    /+---(locals)-----------+-----------+-+/                                                                                    <* 
+ *>    char        rce         =  -10;                                                                                             <* 
+ *>    char        rc          =    0;                                                                                             <* 
+ *>    tCELL      *x_right     = NULL;                                                                                             <* 
+ *>    tCELL      *x_merged    = NULL;                                                                                             <* 
+ *>    int         i           =    0;                                                                                             <* 
+ *>    int         c           =    0;                                                                                             <* 
+ *>    /+---(header)-------------------------+/                                                                                    <* 
+ *>    /+---(defenses)-----------------------+/                                                                                    <* 
+ *>    --rce;  if (a_left == NULL)  return rce;                                                                                    <* 
+ *>    /+---(merge)--------------------------+/                                                                                    <* 
+ *>    for (i = 1; i <= MAX_MERGE; ++i) {                                                                                          <* 
+ *>       /+---(get next)--------------------+/                                                                                    <* 
+ *>       x_right = LOC_cell_at_loc (a_left->tab, a_left->col + i, a_left->row);                                                   <* 
+ *>       /+---(filter)----------------------+/                                                                                    <* 
+ *>       if (CELL__merge_valid (x_right) < 0)  return c;                                                                          <* 
+ *>       ++c;                                                                                                                     <* 
+ *>       /+---(label)-----------------------+/                                                                                    <* 
+ *>       x_right->t = CTYPE_MERGE;                                                                                                <* 
+ *>       x_right->f = '+';                                                                                                        <* 
+ *>       x_right->a = '+';                                                                                                        <* 
+ *>       /+---(check existing)--------------+/                                                                                    <* 
+ *>       x_merged = DEP_merge_source (x_right);                                                                                   <* 
+ *>       if (x_merged != NULL) {                                                                                                  <* 
+ *>          if (x_merged == a_left)                 continue; /+ already correct +/                                               <* 
+ *>          rc = DEP_delete (G_DEP_MERGED, x_merged, x_right);                                                                    <* 
+ *>          --rce;  if (rc < 0)  return rce;                                                                                      <* 
+ *>       }                                                                                                                        <* 
+ *>       /+---(new merge)-------------------+/                                                                                    <* 
+ *>       rc = DEP_create (G_DEP_MERGED, a_left, x_right);                                                                         <* 
+ *>       --rce;  if (rc < 0)  return rce;                                                                                         <* 
+ *>    }                                                                                                                           <* 
+ *>    /+---(complete)-----------------------+/                                                                                    <* 
+ *>    return c;                                                                                                                   <* 
+ *> }                                                                                                                              <*/
+
+/*> char         /+-> remove merges to right -------------[ ------ [fe.C53.154.45]+/ /+-[02.0000.016.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> ycalc_unmerge_right     (tCELL *a_left)                                                                                        <* 
+ *> {  /+---(design notes)--------------------------------------------------------+/                                               <* 
+ *>    /+ remove merge from all applicable cells to the right                     +/                                               <* 
+ *>    /+---(locals)-----------+-----------+-+/                                                                                    <* 
+ *>    char        rce         =  -10;                                                                                             <* 
+ *>    char        rc          =    0;                                                                                             <* 
+ *>    tCELL      *x_right     = NULL;                                                                                             <* 
+ *>    tCELL      *x_merged    = NULL;                                                                                             <* 
+ *>    int         i           =    0;                                                                                             <* 
+ *>    /+---(header)-----------------------------+/                                                                                <* 
+ *>    DEBUG_CELL  yLOG_enter  (__FUNCTION__);                                                                                     <* 
+ *>    DEBUG_CELL  yLOG_point  ("a_left"    , a_left);                                                                             <* 
+ *>    /+---(defenses)-----------------------+/                                                                                    <* 
+ *>    --rce;  if (a_left == NULL) {                                                                                               <* 
+ *>       DEBUG_CELL  yLOG_exitr  (__FUNCTION__, rce);                                                                             <* 
+ *>       return rce;                                                                                                              <* 
+ *>    }                                                                                                                           <* 
+ *>    /+---(merge)--------------------------+/                                                                                    <* 
+ *>    for (i = 1; i < MAX_MERGE; ++i) {                                                                                           <* 
+ *>       DEBUG_CELL  yLOG_value  ("i"         , i);                                                                               <* 
+ *>       /+---(get next)--------------------+/                                                                                    <* 
+ *>       x_right = LOC_cell_at_loc (a_left->tab, a_left->col + i, a_left->row);                                                   <* 
+ *>       DEBUG_CELL  yLOG_point  ("x_right"   , x_right);                                                                         <* 
+ *>       if (x_right == NULL) {                                                                                                   <* 
+ *>          DEBUG_CELL  yLOG_exit   (__FUNCTION__);                                                                               <* 
+ *>          return 0;                                                                                                             <* 
+ *>       }                                                                                                                        <* 
+ *>       /+---(filter)----------------------+/                                                                                    <* 
+ *>       rc = CELL__merge_valid (x_right);                                                                                        <* 
+ *>       DEBUG_CELL  yLOG_value  ("valid_rc"  , rc);                                                                              <* 
+ *>       if (rc < 0) {                                                                                                            <* 
+ *>          DEBUG_CELL  yLOG_exit   (__FUNCTION__);                                                                               <* 
+ *>          return 0;                                                                                                             <* 
+ *>       }                                                                                                                        <* 
+ *>       /+---(label)-----------------------+/                                                                                    <* 
+ *>       DEBUG_CELL  yLOG_note   ("turn into string");                                                                            <* 
+ *>       x_right->t = CTYPE_STR;                                                                                                  <* 
+ *>       x_right->f = '?';                                                                                                        <* 
+ *>       x_right->a = '<';                                                                                                        <* 
+ *>       /+---(unmerge)---------------------+/                                                                                    <* 
+ *>       x_merged = DEP_merge_source (x_right);                                                                                   <* 
+ *>       DEBUG_CELL  yLOG_point  ("x_merged"  , x_merged);                                                                        <* 
+ *>       if (x_merged != NULL) {                                                                                                  <* 
+ *>          rc = DEP_delete (G_DEP_MERGED, x_merged, x_right);                                                                    <* 
+ *>          DEBUG_CELL  yLOG_value  ("dep_rc"    , rc);                                                                           <* 
+ *>       }                                                                                                                        <* 
+ *>       /+---(reprint)---------------------+/                                                                                    <* 
+ *>       rc = CELL_printable (x_right);  /+ with no dependency now, not automatic +/                                              <* 
+ *>       DEBUG_CELL  yLOG_value  ("print_rc"  , rc);                                                                              <* 
+ *>    }                                                                                                                           <* 
+ *>    DEBUG_CELL  yLOG_note   ("done with loop");                                                                                 <* 
+ *>    /+---(complete)-----------------------+/                                                                                    <* 
+ *>    DEBUG_CELL  yLOG_exit   (__FUNCTION__);                                                                                     <* 
+ *>    return 0;                                                                                                                   <* 
+ *> }                                                                                                                              <*/
+
+/*> char         /+-> coordinate a merge -----------------[ ------ [ge.640.134.44]+/ /+-[02.0000.013.6]-+/ /+-[--.---.---.--]-+/   <* 
+ *> ycalc_merge          (tCELL *a_curr)                                                                                           <* 
+ *> {  /+---(design notes)--------------------------------------------------------+/                                               <* 
+ *>    /+ when adding a cell with a merge indicator, try to add to existing merge +/                                               <* 
+ *>    /+---(locals)-----------+-----------+-+/                                                                                    <* 
+ *>    char        rce         = -10;                                                                                              <* 
+ *>    char        rc          =   0;                                                                                              <* 
+ *>    tCELL      *x_left      = NULL;                                                                                             <* 
+ *>    /+---(look left)----------------------+/                                                                                    <* 
+ *>    x_left = CELL__merge_left (a_curr);                                                                                         <* 
+ *>    /+---(check for broken merge)---------+/                                                                                    <* 
+ *>    --rce;  if (x_left == NULL) {                                                                                               <* 
+ *>       rc = CELL__merge_valid (a_curr);                                                                                         <* 
+ *>       if (rc >=  0) {                                                                                                          <* 
+ *>          a_curr->t = CTYPE_STR;                                                                                                <* 
+ *>          a_curr->f = '?';                                                                                                      <* 
+ *>          a_curr->a = '<';                                                                                                      <* 
+ *>          rc = CELL__unmerge_right (a_curr);                                                                                    <* 
+ *>          if (rc < 0)  return rce;                                                                                              <* 
+ *>          return rce + 1;                                                                                                       <* 
+ *>       }                                                                                                                        <* 
+ *>       x_left = a_curr;                                                                                                         <* 
+ *>    }                                                                                                                           <* 
+ *>    /+---(merge right)--------------------+/                                                                                    <* 
+ *>    rc = CELL__merge_right (x_left);                                                                                            <* 
+ *>    --rce;  if (rc < 0)  return rce;                                                                                            <* 
+ *>    /+---(complete)-----------------------+/                                                                                    <* 
+ *>    return 0;                                                                                                                   <* 
+ *> }                                                                                                                              <*/
+
+/*> tCELL*       /+-> remove a merged cell dependency ----[ ------ [gp.C54.163.63]+/ /+-[02.0000.214.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> DEP_delmerge       (                                                                                                           <* 
+ *>       /+----------+-----------+-----------------------------------------------+/                                               <* 
+ *>       tCELL      *a_source)   /+ cell with the calculation                    +/                                               <* 
+ *> {  /+---(design notes)--------------------------------------------------------+/                                               <* 
+ *>    /+---(header)-------------------------+//+---------------------------------+/                                               <* 
+ *>    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);                                                                                   <* 
+ *>    /+---(locals)-----------+-----------+-+/                                                                                    <* 
+ *>    char        rce         =  -10;                                                                                             <* 
+ *>    tDEP       *x_next      = NULL;                                                                                             <* 
+ *>    char        rc          =    0;                                                                                             <* 
+ *>    int         i           = 0;                                                                                                <* 
+ *>    tCELL      *x_target    = NULL;                                                                                             <* 
+ *>    tCELL      *x_testing   = NULL;                                                                                             <* 
+ *>    /+---(defense: null pointers)---------+/                                                                                    <* 
+ *>    DEBUG_DEPS   yLOG_info    ("DEFENSES"  , "make sure this is processable");                                                  <* 
+ *>    DEBUG_DEPS   yLOG_point   ("source"    , a_source);                                                                         <* 
+ *>    --rce;  if (a_source     == NULL)   {                                                                                       <* 
+ *>       DEBUG_DEPS   yLOG_value   ("FAILED"    , rce);                                                                           <* 
+ *>       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);                                                                                <* 
+ *>       return NULL;                                                                                                             <* 
+ *>    }                                                                                                                           <* 
+ *>    DEBUG_DEPS   yLOG_info    ("label"     , a_source->label);                                                                  <* 
+ *>    /+---(find merge source)--------------+/                                                                                    <* 
+ *>    --rce;                                                                                                                      <* 
+ *>    x_next = a_source->provides;                                                                                                <* 
+ *>    DEBUG_DEPS   yLOG_point   ("next"      , x_next);                                                                           <* 
+ *>    while (x_next != NULL) {                                                                                                    <* 
+ *>       DEBUG_DEPS   yLOG_info    ("target"    , x_next->target->label);                                                         <* 
+ *>       DEBUG_DEPS   yLOG_char    ("type"      , x_next->type);                                                                  <* 
+ *>       if (x_next->type != G_DEP_BLEED) {                                                                                       <* 
+ *>          DEBUG_DEPS   yLOG_note    ("wrong type, skipping");                                                                   <* 
+ *>          x_next = x_next->next;                                                                                                <* 
+ *>          DEBUG_DEPS   yLOG_point   ("next"      , x_next);                                                                     <* 
+ *>          continue;                                                                                                             <* 
+ *>       }                                                                                                                        <* 
+ *>       DEBUG_DEPS   yLOG_note    ("FOUND TARGET");                                                                              <* 
+ *>       x_target = x_next->target;                                                                                               <* 
+ *>       break;                                                                                                                   <* 
+ *>    }                                                                                                                           <* 
+ *>    if (x_target == NULL)  return NULL;                                                                                         <* 
+ *>    /+---(delete ref and to right)--------+/                                                                                    <* 
+ *>    for (i = a_source->col; i < NCOL; ++i) {                                                                                    <* 
+ *>       DEBUG_DEPS   yLOG_value   ("check col" , i);                                                                             <* 
+ *>       x_testing = LOC_cell_at_loc (a_source->tab, i, a_source->row);                                                           <* 
+ *>       DEBUG_DEPS   yLOG_point   ("cell"      , x_testing);                                                                     <* 
+ *>       if (x_testing            == NULL       )  break;                                                                         <* 
+ *>       DEBUG_DEPS   yLOG_info    ("label"     , x_testing->label);                                                              <* 
+ *>       DEBUG_DEPS   yLOG_char    ("type"      , x_testing->t);                                                                  <* 
+ *>       if (x_testing->t != CTYPE_MERGE)  break;                                                                                 <* 
+ *>       DEBUG_DEPS   yLOG_note    ("wack connection");                                                                           <* 
+ *>       DEP_delete (G_DEP_MERGED, x_target, x_testing);                                                                          <* 
+ *>       x_testing->t = 's';                                                                                                      <* 
+ *>       CELL_printable (x_testing);                                                                                              <* 
+ *>    }                                                                                                                           <* 
+ *>    /+---(complete)-----------------------+/                                                                                    <* 
+ *>    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);                                                                                   <* 
+ *>    return x_target;                                                                                                            <* 
+ *> }                                                                                                                              <*/
+
+/*> char         /+-> remove source of merge -------------[ ------ [ge.732.134.32]+/ /+-[01.0000.204.!]-+/ /+-[--.---.---.--]-+/   <* 
+ *> DEP_delmergeroot   (tCELL *a_target)                                                                                           <* 
+ *> {                                                                                                                              <* 
+ *>    /+---(header)-------------------------+//+---------------------------------+/                                               <* 
+ *>    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);                                                                                   <* 
+ *>    /+---(locals)-----------+-----------+-+/                                                                                    <* 
+ *>    char        rce         =  -10;                                                                                             <* 
+ *>    char        rc          =    0;                                                                                             <* 
+ *>    tCELL      *x_source    = NULL;                                                                                             <* 
+ *>    /+---(defense: null pointers)---------+/                                                                                    <* 
+ *>    DEBUG_DEPS   yLOG_info    ("DEFENSES"  , "make sure this is processable");                                                  <* 
+ *>    DEBUG_DEPS   yLOG_point   ("target"    , a_target);                                                                         <* 
+ *>    --rce;  if (a_target     == NULL)   {                                                                                       <* 
+ *>       DEBUG_DEPS   yLOG_value   ("FAILED"    , rce);                                                                           <* 
+ *>       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);                                                                                <* 
+ *>       return rce;                                                                                                              <* 
+ *>    }                                                                                                                           <* 
+ *>    DEBUG_DEPS   yLOG_info    ("label"     , a_target->label);                                                                  <* 
+ *>    x_source = LOC_cell_at_loc (a_target->tab, a_target->col + 1, a_target->row);                                               <* 
+ *>    --rce;  if (x_source    == NULL       ) {                                                                                   <* 
+ *>       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);                                                                                <* 
+ *>       return rce;                                                                                                              <* 
+ *>    }                                                                                                                           <* 
+ *>    --rce;  if (x_source->t != CTYPE_MERGE) {                                                                                   <* 
+ *>       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);                                                                                <* 
+ *>       return rce;                                                                                                              <* 
+ *>    }                                                                                                                           <* 
+ *>    DEP_delmerge (x_source);                                                                                                    <* 
+ *>    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);                                                                                   <* 
+ *>    return 0;                                                                                                                   <* 
+ *> }                                                                                                                              <*/
+
+/*> char         /+-> check and coordinate an unmerge ----[ ------ [ge.630.133.34]+/ /+-[01.0000.013.4]-+/ /+-[--.---.---.--]-+/   <* 
+ *> ycalc_unmerge           (void  *a_curr)                                                                                        <* 
+ *> {  /+---(design notes)--------------------------------------------------------+/                                               <* 
+ *>    /+ checks whether a larger merge must be split by a cell change            +/                                               <* 
+ *>    /+---(locals)-----------+-----------+-+/                                                                                    <* 
+ *>    char        rce         = -10;                                                                                              <* 
+ *>    char        rc          =   0;                                                                                              <* 
+ *>    tCELL      *x_merged    = NULL;                                                                                             <* 
+ *>    /+---(defenses)-----------------------+/                                                                                    <* 
+ *>    --rce;  if (CELL__merge_valid (a_curr) >= 0)  return rce;                                                                   <* 
+ *>    /+---(check merge status)-------------+/                                                                                    <* 
+ *>    x_merged = DEP_merge_source (a_curr);                                                                                       <* 
+ *>    /+---(unmerge)------------------------+/                                                                                    <* 
+ *>    if (x_merged != NULL) {                                                                                                     <* 
+ *>       DEP_delete (G_DEP_MERGED, x_merged, a_curr);                                                                             <* 
+ *>       a_curr->t = CTYPE_STR;                                                                                                   <* 
+ *>       a_curr->f = '?';                                                                                                         <* 
+ *>       a_curr->a = '<';                                                                                                         <* 
+ *>    }                                                                                                                           <* 
+ *>    /+---(merge right)--------------------+/                                                                                    <* 
+ *>    rc = CELL__merge_right (a_curr);                                                                                            <* 
+ *>    --rce;  if (rc < 0)  return rce;                                                                                            <* 
+ *>    /+---(complete)-----------------------+/                                                                                    <* 
+ *>    return 0;                                                                                                                   <* 
+ *> }                                                                                                                              <*/
+
+
+/*====================------------------------------------====================*/
+/*===----                       external information                   ----===*/
+/*====================------------------------------------====================*/
+static void  o___EXTERNAL________o () { return; }
+
+int
+yCALC_nreq              (void *a_deproot)
+{
+   tDEP_ROOT  *x_deproot   = NULL;
+   if (a_deproot == NULL)   return 0;
+   x_deproot = (tDEP_ROOT *) a_deproot;
+   return x_deproot->nreq;
+}
+
+int
+yCALC_npro              (void *a_deproot)
+{
+   tDEP_ROOT  *x_deproot   = NULL;
+   if (a_deproot == NULL)   return 0;
+   x_deproot = (tDEP_ROOT *) a_deproot;
+   return x_deproot->npro;
+}
+
+char
+yCALC_stamp             (void *a_deproot, long a_stamp)
+{
+   tDEP_ROOT  *x_deproot   = NULL;
+   if (a_deproot == NULL)        return 0;
+   x_deproot = (tDEP_ROOT *) a_deproot;
+   if (x_deproot->u == a_stamp)  return 1;
+   return 0;
+}
+
+
+/*====================------------------------------------====================*/
 /*===----                         unit testing                         ----===*/
 /*====================------------------------------------====================*/
 static void  o___UNIT_TEST_______o () { return; }

@@ -85,9 +85,6 @@ SCRP          v21  (BUILD ) verify various build error messages               
      exec     v21  execute the calculation              yCALC_handle                "0k11"                                                                                                i_lesser    0                                                                                                    
      get      v21  check the value                      ycalc__unit_mock            "value"          , "0k11"                                                                             s_equal     yCALC mock value : 0k11  E     0.00 :#b/rpn  (pos 15):                                               
 
-
-
-
    GROUP      v21  complete                                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  verify program teardown                                            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.030))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -95,3 +92,33 @@ SCRP          v21  (BUILD ) verify various build error messages               
 
 
 
+#23456789-12  123  123456789-123456789-123456789-12345  123456789-123456789-123456  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  123456789-  123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-123456789-  -  123456789-123456789- 
+#==(verb)===  ver  ===========(description)===========  =====(function)===========  ========================(arguments)=================================================================  ==(test)==  ==========================(results)=================================================================  t  ========(var)======= 
+SCRP          v21  (BUILD ) cell merges for gyges                                     yCALC_build                                                                                           ((01.---))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  setup the program                    ycalc__unit_quiet                                                                                                                 i_equal     0                                                                                                    
+     exec     v21  prepare mock data                    ycalc__mock_prepare                                                                                                               i_equal     0                                                                                                    
+
+   GROUP      v21  start with simple successes                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  very long string in initial position                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((02.003))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  set the source                       ycalc__mock_whole           "0c2"  , "supercalifragalistic_and_fantastical"                                 , 's', 0, '<', 5      i_equal     0                                                                                                    
+     get      v21  check the printable                  ycalc__unit_mock            "print"          , "0c2"                                                                              s_equal     yCALC mock print : 0c2     4:sup>:                                                           
+
+   COND       v21  long string in second position                                     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((02.003))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  set the source                       ycalc__mock_whole           "0d2"  , "amazing_balls_of_flaming_water"                                       , 's', 0, '<', 8      i_equal     0                                                                                                    
+     get      v21  check the printable                  ycalc__unit_mock            "print"          , "0c2"                                                                              s_equal     yCALC mock print : 0c2     4:sup>:                                                           
+     get      v21  check the printable                  ycalc__unit_mock            "print"          , "0d2"                                                                              s_equal     yCALC mock print : 0d2     7:amazin>:                                                        
+
+   COND       v21  change to merge in second                                          - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((02.003))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  set the source                       ycalc__mock_whole           "0d2"  , "<"                                                                    , 's', 0, '<', 8      i_equal     0                                                                                                    
+     get      v21  check the printable                  ycalc__unit_mock            "print"          , "0c2"                                                                              s_equal     yCALC mock print : 0c2     5:super:                                                          
+     get      v21  check the printable                  ycalc__unit_mock            "print"          , "0d2"                                                                              s_equal     yCALC mock print : 0d2     7:califr>:                                                        
+
+
+
+   GROUP      v21  complete                                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+   COND       v21  verify program teardown                                            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.030))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+     exec     v21  wrap-up the program                  ycalc__unit_end                                                                                                                   i_equal     0                                                                                                    

@@ -477,6 +477,7 @@ yCALC_init              (char a_style)
    g_valuer    = NULL;
    g_addresser = NULL;
    g_special   = NULL;
+   g_printer   = NULL;
    /*---(initialize)---------------------*/
    DEBUG_PROG   yLOG_note    ("running sub-initializations");
    ycalc_audit_init  ();
@@ -632,7 +633,7 @@ yCALC_label_config      (void *a_who_named, void *a_who_at, void *a_labeler)
 }
 
 char
-yCALC_value_config      (void *a_valuer, void *a_addresser, void *a_special)
+yCALC_value_config      (void *a_valuer, void *a_addresser, void *a_special, void *a_printer)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -670,6 +671,14 @@ yCALC_value_config      (void *a_valuer, void *a_addresser, void *a_special)
       return rce;
    }
    g_special = a_special;
+   /*---(update printer)-----------------*/
+   DEBUG_PROG   yLOG_point   ("printer"   , a_printer);
+   --rce;  if (a_printer   == NULL) {
+      DEBUG_PROG   yLOG_error   ("valuer"    , "without this callback, display can not be updated");
+      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   g_printer   = a_printer;
    /*---(update)-------------------------*/
    DEBUG_PROG   yLOG_note    ("updating status");
    ycalc_status_update ('v');

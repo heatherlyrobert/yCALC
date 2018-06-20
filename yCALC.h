@@ -23,6 +23,15 @@
 #define       YCALC_DATA_ERROR   'E'
 
 
+#define        YCALC_FULL        'f'    /* create owner && deproot            */
+#define        YCALC_OWNR        'y'    /* create owner only                  */
+#define        YCALC_LOOK        '-'    /* do not create, just look           */
+
+#define       G_SPECIAL_TYPE     'T'
+#define       G_SPECIAL_LABEL    'L'
+#define       G_SPECIAL_SOURCE   'S'
+#define       G_SPECIAL_PRINT    'P'
+
 
 /*---(dependency types)---------------*/
 
@@ -60,7 +69,7 @@ char        yCALC_wrap              (void);
 
 char        yCALC_exist_config      (void *a_enabler  , void *a_pionter  , void *a_reaper );
 char        yCALC_label_config      (void *a_who_named, void *a_who_at   , void *a_labeler);
-char        yCALC_value_config      (void *a_valuer   , void *a_addresser, void *a_special);
+char        yCALC_value_config      (void *a_valuer   , void *a_addresser, void *a_special, void *a_printer);
 
 char        yCALC_enable            (void *a_owner);
 char        yCALC_disable           (void **a_owner, void **a_deproot);
@@ -78,6 +87,14 @@ char        yCALC_seq_downdown      (long a_stamp   , void *a_consumer);
 char        yCALC_seq_downup        (long a_stamp   , void *a_consumer);
 
 char        yCALC_calculate         (void);
+
+
+int         yCALC_nreq              (void *a_deproot);
+int         yCALC_npro              (void *a_deproot);
+char        yCALC_stamp             (void *a_deproot, long a_stamp);
+
+
+
 
 
 #endif
