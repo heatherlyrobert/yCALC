@@ -559,11 +559,11 @@ ycalc__exec_wrap        (char *a_type, double *a_value, char **a_string)
       return rce;
    }
    /*---(results)------------------------*/
-   if (*a_type == '=') {
+   if      (*a_type == YCALC_DATA_NFORM) {
       *a_value = ycalc_popval (__FUNCTION__);
       DEBUG_CALC   yLOG_value   ("value"     , *a_value);
    }
-   if (*a_type == '#') {
+   else if (*a_type == YCALC_DATA_SFORM) {
       *a_string = ycalc_popstr (__FUNCTION__);
       DEBUG_CALC   yLOG_info    ("string"    , *a_string);
    }
@@ -782,9 +782,16 @@ ycalc_execute_auto      (void *a_owner, tDEP_ROOT *a_deproot, int a_seq, int a_l
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(prepare)------------------------*/
+   /*---(execute)------------------------*/
    rc = ycalc_execute_detail      (a_deproot, x_source, x_type, x_value, x_string);
    DEBUG_CALC   yLOG_value   ("detail"    , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(printable)----------------------*/
+   rc = g_printer (a_owner);
+   DEBUG_CALC   yLOG_value   ("printer"   , rc);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;

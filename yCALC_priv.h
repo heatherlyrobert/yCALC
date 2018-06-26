@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2w"
-#define YCALC_VER_TXT   "all but new merge functions are up and working in unit test again"
+#define YCALC_VER_NUM   "0.2x"
+#define YCALC_VER_TXT   "merge functions passed unit testing"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -239,15 +239,24 @@ extern char S_DEP_LIKE [10];
 
 typedef struct cMOCK  tMOCK;
 struct  cMOCK {
+   /*---(main)------------*/
    char       *label;
    char        type;
    char       *source;
    double      value;
    char       *string;
+   /*---(printable)-------*/
+   int         width;
+   char        align;
+   char        format;
+   int         decs;
    char       *print;
+   /*---(ycalc)-----------*/
    void       *ycalc;
+   /*---(linking)---------*/
    tMOCK      *next;
    tMOCK      *prev;
+   /*---(done)------------*/
 };
 extern tMOCK   s_mocks     [500];
 
@@ -421,6 +430,8 @@ char        ycalc__audit_disp_reqs  (tDEP_ROOT *a_me, char* a_list);
 char        ycalc__audit_disp_pros  (tDEP_ROOT *a_me, char* a_list);
 char        ycalc__audit_disp_like  (tDEP_ROOT *a_me, char* a_list);
 
+
+char        ycalc_merge_count       (tDEP_ROOT *a_deproot);
 
 
 char        ycalc_trouble_clear     (void);

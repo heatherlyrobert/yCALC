@@ -10,97 +10,6 @@
 /*====================------------------------------------====================*/
 static void      o___MOCK____________________o (void) {;}
 
-/*> tMOCK   s_mocks     [500] = {                                                     <* 
- *>    /+---(root)--------------------------------------+/                            <* 
- *>    { "ROOT"   , '-', NULL,     0.00, NULL, NULL,  -1,  -1,  -1,   NULL },         <* 
- *>    /+---(done)--------------------------------------+/                            <* 
- *>    { "0a1"    , '-', NULL,     0.00, NULL, NULL,   0,   0,   0,   NULL },         <* 
- *>    { "0a2"    , '-', NULL,     0.00, NULL, NULL,   0,   1,   0,   NULL },         <* 
- *>    { "0a3"    , '-', NULL,     0.00, NULL, NULL,   0,   2,   0,   NULL },         <* 
- *>    { "0a4"    , '-', NULL,     0.00, NULL, NULL,   0,   3,   0,   NULL },         <* 
- *>    { "0a5"    , '-', NULL,     0.00, NULL, NULL,   0,   4,   0,   NULL },         <* 
- *>    { "0a6"    , '-', NULL,     0.00, NULL, NULL,   0,   5,   0,   NULL },         <* 
- *>    { "0a7"    , '-', NULL,     0.00, NULL, NULL,   0,   6,   0,   NULL },         <* 
- *>    { "0a8"    , '-', NULL,     0.00, NULL, NULL,   0,   7,   0,   NULL },         <* 
- *>    { "0a9"    , '-', NULL,     0.00, NULL, NULL,   0,   8,   0,   NULL },         <* 
- *>    { "0a10"   , '-', NULL,     0.00, NULL, NULL,   0,   9,   0,   NULL },         <* 
- *>    { "0a11"   , '-', NULL,     0.00, NULL, NULL,   0,  10,   0,   NULL },         <* 
- *>    { "0a12"   , '-', NULL,     0.00, NULL, NULL,   0,  11,   0,   NULL },         <* 
- *>    { "0a30"   , '-', NULL,     0.00, NULL, NULL,   0,  29,   0,   NULL },         <* 
- *>    { "0a42"   , '-', NULL,     0.00, NULL, NULL,   0,  41,   0,   NULL },         <* 
- *>    { "1a1"    , '-', NULL,     0.00, NULL, NULL,   0,   0,   1,   NULL },         <* 
- *>    { "1a2"    , '-', NULL,     0.00, NULL, NULL,   0,   1,   1,   NULL },         <* 
- *>    { "1a3"    , '-', NULL,     0.00, NULL, NULL,   0,   2,   1,   NULL },         <* 
- *>    { "1a4"    , '-', NULL,     0.00, NULL, NULL,   0,   3,   1,   NULL },         <* 
- *>    { "0b1"    , '-', NULL,     0.00, NULL, NULL,   1,   0,   0,   NULL },         <* 
- *>    { "0b2"    , '-', NULL,     0.00, NULL, NULL,   1,   1,   0,   NULL },         <* 
- *>    { "0b3"    , '-', NULL,     0.00, NULL, NULL,   1,   2,   0,   NULL },         <* 
- *>    { "0b4"    , '-', NULL,     0.00, NULL, NULL,   1,   3,   0,   NULL },         <* 
- *>    { "0b5"    , '-', NULL,     0.00, NULL, NULL,   1,   4,   0,   NULL },         <* 
- *>    { "0b6"    , '-', NULL,     0.00, NULL, NULL,   1,   5,   0,   NULL },         <* 
- *>    { "0b7"    , '-', NULL,     0.00, NULL, NULL,   1,   6,   0,   NULL },         <* 
- *>    { "0b8"    , '-', NULL,     0.00, NULL, NULL,   1,   7,   0,   NULL },         <* 
- *>    { "0b9"    , '-', NULL,     0.00, NULL, NULL,   1,   8,   0,   NULL },         <* 
- *>    { "0b10"   , '-', NULL,     0.00, NULL, NULL,   1,   9,   0,   NULL },         <* 
- *>    { "0b11"   , '-', NULL,     0.00, NULL, NULL,   1,  10,   0,   NULL },         <* 
- *>    { "0b12"   , '-', NULL,     0.00, NULL, NULL,   1,  11,   0,   NULL },         <* 
- *>    { "0b13"   , '-', NULL,     0.00, NULL, NULL,   1,  12,   0,   NULL },         <* 
- *>    { "0b14"   , '-', NULL,     0.00, NULL, NULL,   1,  13,   0,   NULL },         <* 
- *>    { "0b15"   , '-', NULL,     0.00, NULL, NULL,   1,  14,   0,   NULL },         <* 
- *>    { "0b16"   , '-', NULL,     0.00, NULL, NULL,   1,  15,   0,   NULL },         <* 
- *>    { "0b17"   , '-', NULL,     0.00, NULL, NULL,   1,  17,   0,   NULL },         <* 
- *>    { "0c1"    , '-', NULL,     0.00, NULL, NULL,   2,   0,   0,   NULL },         <* 
- *>    { "0c2"    , '-', NULL,     0.00, NULL, NULL,   2,   1,   0,   NULL },         <* 
- *>    { "0c3"    , '-', NULL,     0.00, NULL, NULL,   2,   2,   0,   NULL },         <* 
- *>    { "0c4"    , '-', NULL,     0.00, NULL, NULL,   2,   3,   0,   NULL },         <* 
- *>    { "0c5"    , '-', NULL,     0.00, NULL, NULL,   2,   4,   0,   NULL },         <* 
- *>    { "0c6"    , '-', NULL,     0.00, NULL, NULL,   2,   5,   0,   NULL },         <* 
- *>    { "0c7"    , '-', NULL,     0.00, NULL, NULL,   2,   6,   0,   NULL },         <* 
- *>    { "0c8"    , '-', NULL,     0.00, NULL, NULL,   2,   7,   0,   NULL },         <* 
- *>    { "0c9"    , '-', NULL,     0.00, NULL, NULL,   2,   8,   0,   NULL },         <* 
- *>    { "0c10"   , '-', NULL,     0.00, NULL, NULL,   2,   9,   0,   NULL },         <* 
- *>    { "0c11"   , '-', NULL,     0.00, NULL, NULL,   2,  10,   0,   NULL },         <* 
- *>    { "0c12"   , '-', NULL,     0.00, NULL, NULL,   2,  11,   0,   NULL },         <* 
- *>    { "0c13"   , '-', NULL,     0.00, NULL, NULL,   2,  12,   0,   NULL },         <* 
- *>    { "0c14"   , '-', NULL,     0.00, NULL, NULL,   2,  13,   0,   NULL },         <* 
- *>    { "0c15"   , '-', NULL,     0.00, NULL, NULL,   2,  14,   0,   NULL },         <* 
- *>    { "0c16"   , '-', NULL,     0.00, NULL, NULL,   2,  15,   0,   NULL },         <* 
- *>    { "0c17"   , '-', NULL,     0.00, NULL, NULL,   2,  16,   0,   NULL },         <* 
- *>    { "0d1"    , '-', NULL,     0.00, NULL, NULL,   3,   0,   0,   NULL },         <* 
- *>    { "0d2"    , '-', NULL,     0.00, NULL, NULL,   3,   1,   0,   NULL },         <* 
- *>    { "0d3"    , '-', NULL,     0.00, NULL, NULL,   3,   2,   0,   NULL },         <* 
- *>    { "0d4"    , '-', NULL,     0.00, NULL, NULL,   3,   3,   0,   NULL },         <* 
- *>    { "0d5"    , '-', NULL,     0.00, NULL, NULL,   3,   4,   0,   NULL },         <* 
- *>    { "0d6"    , '-', NULL,     0.00, NULL, NULL,   3,   5,   0,   NULL },         <* 
- *>    { "0d7"    , '-', NULL,     0.00, NULL, NULL,   3,   6,   0,   NULL },         <* 
- *>    { "0d8"    , '-', NULL,     0.00, NULL, NULL,   3,   7,   0,   NULL },         <* 
- *>    { "0d9"    , '-', NULL,     0.00, NULL, NULL,   3,   8,   0,   NULL },         <* 
- *>    { "0d10"   , '-', NULL,     0.00, NULL, NULL,   3,   9,   0,   NULL },         <* 
- *>    { "0d11"   , '-', NULL,     0.00, NULL, NULL,   3,  10,   0,   NULL },         <* 
- *>    { "0d12"   , '-', NULL,     0.00, NULL, NULL,   3,  11,   0,   NULL },         <* 
- *>    { "0d13"   , '-', NULL,     0.00, NULL, NULL,   3,  12,   0,   NULL },         <* 
- *>    { "0d14"   , '-', NULL,     0.00, NULL, NULL,   3,  13,   0,   NULL },         <* 
- *>    { "0d15"   , '-', NULL,     0.00, NULL, NULL,   3,  14,   0,   NULL },         <* 
-*>    { "0d16"   , '-', NULL,     0.00, NULL, NULL,   3,  15,   0,   NULL },         <* 
-*>    { "0d17"   , '-', NULL,     0.00, NULL, NULL,   3,  16,   0,   NULL },         <* 
-*>    { "0d18"   , '-', NULL,     0.00, NULL, NULL,   3,  17,   0,   NULL },         <* 
-*>    /+---(two-way dependency testing)----------------+/                            <* 
-*>    { "0f6"    , '-', NULL,     0.00, NULL, NULL,   5,   5,   0,   NULL },         <* 
-*>    { "0f7"    , '-', NULL,     0.00, NULL, NULL,   5,   6,   0,   NULL },         <* 
-*>    { "0g6"    , '-', NULL,     0.00, NULL, NULL,   6,   5,   0,   NULL },         <* 
-*>    { "0g7"    , '-', NULL,     0.00, NULL, NULL,   6,   6,   0,   NULL },         <* 
-*>    { "0h8"    , '-', NULL,     0.00, NULL, NULL,   7,   7,   0,   NULL },         <* 
-*>    { "0k11"   , '-', NULL,     0.00, NULL, NULL,  10,  10,   0,   NULL },         <* 
-*>    { "1k11"   , '-', NULL,     0.00, NULL, NULL,  10,  10,   1,   NULL },         <* 
-*>    { "2k11"   , '-', NULL,     0.00, NULL, NULL,  10,  10,   2,   NULL },         <* 
-*>    { "3k11"   , '-', NULL,     0.00, NULL, NULL,  10,  10,   3,   NULL },         <* 
-*>    { "4k11"   , '-', NULL,     0.00, NULL, NULL,  10,  10,   4,   NULL },         <* 
-*>    { "5d50"   , '-', NULL,     0.00, NULL, NULL,   3,  49,   5,   NULL },         <* 
-*>    { "Aa1"    , '-', NULL,     0.00, NULL, NULL,   0,   0,  10,   NULL },         <* 
-*>    /+---(done)--------------------------------------+/                            <* 
-*>    { ""       , '-', NULL,     0.00, NULL, NULL,   0,   0,   0,   NULL },         <* 
-*> };                                                                                <*/
-
 char         /*-> create a new data entry ------------[ ------ [fc.B52.112.94]*/ /*-[40.0000.144.M]-*/ /*-[--.---.---.--]-*/
 ycalc__mock_new          (tMOCK **a_owner)
 {
@@ -144,6 +53,11 @@ ycalc__mock_new          (tMOCK **a_owner)
    x_owner->source = NULL;
    x_owner->value  =  0.0;
    x_owner->string = NULL;
+   x_owner->width  =    8;
+   /*---(printing)-----------------------*/
+   x_owner->align  =  '<';
+   x_owner->format =  'i';
+   x_owner->decs   =    0;
    x_owner->print  = NULL;
    /*---(list)---------------------------*/
    DEBUG_DEPS   yLOG_snote   ("list");
@@ -474,7 +388,7 @@ ycalc__mock_whos_at     (int x, int y, int z, char a_force, void **a_owner, void
    char        x_label     [LEN_LABEL];
    /*---(legal)--------------------------*/
    rc = str4gyges (x, y, z, 0, x_label);
-   if (rc == 0)  rc = ycalc__mock_named (x_label, YCALC_LOOK, a_owner, a_deproot);
+   if (rc == 0)  rc = ycalc__mock_named (x_label, a_force, a_owner, a_deproot);
    /*---(complete)-----------------------*/
    return rc;
 }
@@ -544,34 +458,34 @@ ycalc__mock_pointer     (void *a_owner, char **a_source, char **a_type, double *
 {
    char        rce         =  -10;
    tMOCK      *x_mock      = NULL;
-   DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
-   DEBUG_DEPS   yLOG_spoint  (a_owner);
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   DEBUG_DEPS   yLOG_point   ("a_owner"   , a_owner);
    --rce;  if (a_owner  == NULL) {
-      DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    x_mock    = (tMOCK     *) a_owner;
    if (a_source != NULL) {
-      DEBUG_DEPS   yLOG_spoint  (*a_source);
+      DEBUG_DEPS   yLOG_point   ("*a_source" , *a_source);
       *a_source = &x_mock->source;
-      DEBUG_DEPS   yLOG_spoint  (*a_source);
+      DEBUG_DEPS   yLOG_point   ("*a_source" , *a_source);
    }
    if (a_type  != NULL) {
-      DEBUG_DEPS   yLOG_spoint  (*a_type);
+      DEBUG_DEPS   yLOG_point   ("*a_type"   , *a_type);
       *a_type   = &x_mock->type;
-      DEBUG_DEPS   yLOG_spoint  (*a_type);
+      DEBUG_DEPS   yLOG_point   ("*a_type"   , *a_type);
    }
    if (a_value  != NULL) {
-      DEBUG_DEPS   yLOG_spoint  (*a_value);
+      DEBUG_DEPS   yLOG_point   ("*a_value"  , *a_value);
       *a_value  = &x_mock->value;
-      DEBUG_DEPS   yLOG_spoint  (*a_value);
+      DEBUG_DEPS   yLOG_point   ("*a_value"  , *a_value);
    }
    if (a_string != NULL) {
-      DEBUG_DEPS   yLOG_spoint  (*a_string);
+      DEBUG_DEPS   yLOG_point   ("*a_string" , *a_string);
       *a_string = &x_mock->string;
-      DEBUG_DEPS   yLOG_spoint  (*a_string);
+      DEBUG_DEPS   yLOG_point   ("*a_string" , *a_string);
    }
-   DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
+   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -659,34 +573,148 @@ ycalc__mock_special     (void *a_owner, char a_what, double *a_value, char **a_s
    return 0;
 }
 
-static int   s_decs   =    0;
-static char  s_format =  's';
-static char  s_align  =  '<';
-static int   s_width  =    8;
+
+static int   s_merges =    0;
+static void *s_owners [20];
+static int   s_widths [20];
+
+char         /*-> determine full print width ---------[ ------ [gz.530.321.23]*/ /*-[01.0000.015.!]-*/ /*-[--.---.---.--]-*/
+ycalc__mock_width    (void *a_owner, int *a_width, int *a_merge)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   tMOCK      *x_owner     = NULL;
+   char        x_label     [LEN_LABEL];
+   int         x, y, z;
+   int         i           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   /*---(legal)--------------------------*/
+   DEBUG_DEPS   yLOG_point   ("a_owner"   , a_owner);
+   if (a_owner == NULL) {
+      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   DEBUG_DEPS   yLOG_point   ("a_width"   , a_width);
+   if (a_width == NULL) {
+      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   DEBUG_DEPS   yLOG_point   ("a_merge"   , a_merge);
+   if (a_merge == NULL) {
+      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(initialize)---------------------*/
+   x_owner  = (tMOCK *) a_owner;
+   *a_width = x_owner->width;
+   *a_merge = 0;
+   s_owners [*a_merge] = x_owner;
+   s_widths [*a_merge] = x_owner->width;
+   /*---(look for mergse)----------------*/
+   rc = str2gyges (x_owner->label, &x, &y, &z, 0, 0);
+   DEBUG_DEPS   yLOG_value   ("str2gyges" , rc);
+   if (rc < 0)  {
+      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   DEBUG_DEPS   yLOG_complex ("owner"     , "%-10p, %-5s, %3dx, %3dy, %3dz, %3dw", x_owner, x_owner->label, x, y, z, x_owner->width);
+   for (i = x + 1; i < x + 20; ++i) {
+      rc = str4gyges (i, y, z, 0, x_label);
+      if (rc < 0)  break;
+      rc = ycalc__mock_whos_at (i, y, z, YCALC_LOOK, &x_owner, NULL);
+      if (rc < 0)                              break;
+      if (x_owner == NULL)                     break;
+      if (x_owner->type != YCALC_DATA_MERGED)  break;
+      DEBUG_DEPS   yLOG_complex ("owner"     , "%-10p, %-5s, %3dx, %3dy, %3dz, %3dw", x_owner, x_label, i, y, z, x_owner->width);
+      *a_width += x_owner->width;
+      ++(*a_merge);
+      s_owners [*a_merge] = x_owner;
+      s_widths [*a_merge] = x_owner->width;
+   }
+   DEBUG_DEPS   yLOG_value   ("*a_width"  , *a_width);
+   /*---(complete)-----------------------*/
+   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char         /*-> parse print into merged cells ------[ ------ [gz.641.351.22]*/ /*-[22.0000.015.!]-*/ /*-[--.---.---.--]-*/
+ycalc__mock_parse    (char *a_full, int a_merge)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   tMOCK      *x_owner     = NULL;
+   int         i           = 0;
+   int         w           = 0;             /* available printing width       */
+   int         wa          = 0;             /* adjusted width                 */
+   char       *p           = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
+   DEBUG_DEPS   yLOG_spoint  (a_full);
+   if (a_full == NULL) {
+      DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
+      return 0;
+   }
+   DEBUG_DEPS   yLOG_sint    (a_merge);
+   for (i = 0; i <= a_merge; ++i) {
+      x_owner = s_owners [i];
+      if (x_owner == NULL)  break;
+      w       = s_widths [i];
+      DEBUG_DEPS  yLOG_sint    (w);
+      while (p == NULL)  p = (char*) malloc (w + 1);
+      sprintf (p, "%-*.*s", w, w, a_full + wa);
+      DEBUG_DEPS  yLOG_snote   (p);
+      if (x_owner->print != NULL) {
+         free (x_owner->print);
+         x_owner->print = NULL;
+      }
+      x_owner->print = p;
+      p    = NULL;
+      wa   += w;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
 
 char
 ycalc__mock_printer     (void *a_owner)
 {
+   /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    tMOCK      *x_owner     = NULL;
+   char        s           [LEN_RECD];
    char        t           [LEN_RECD];
    char        x_out       [LEN_RECD];
    char        x_len       =    0;
-   DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
-   DEBUG_DEPS   yLOG_spoint  (a_owner);
+   int         w           =    0;
+   int         c           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   DEBUG_DEPS   yLOG_point   ("a_owner"   , a_owner);
+   /*---(defense)------------------------*/
    --rce;  if (a_owner   == NULL) {
-      DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    x_owner   = (tMOCK     *) a_owner;
+   /*---(contents)-----------------------*/
    if (strchr ("=n", x_owner->type) != NULL) {
-      strl4main (x_owner->value, t, s_decs, s_format, LEN_RECD);
+      strl4main (x_owner->value, s, x_owner->decs, x_owner->format, LEN_RECD);
    } else {
-      if (x_owner->string != NULL)  strlcpy (t, x_owner->string, LEN_RECD);
-      else                          strlcpy (t, x_owner->source, LEN_RECD);
+      if (x_owner->string != NULL)  strlcpy (s, x_owner->string, LEN_RECD);
+      else                          strlcpy (s, x_owner->source, LEN_RECD);
    }
-   strlpad (t, x_out, ' ', s_align, s_width - 1);
-   x_owner->print = strdup (x_out);
+   /*---(pad/trim)-----------------------*/
+   ycalc__mock_width (x_owner, &w, &c);
+   DEBUG_DEPS   yLOG_value   ("w"         , w);
+   DEBUG_DEPS   yLOG_value   ("c"         , c);
+   strlpad (s, t, ' ', x_owner->align, w - 1);
+   sprintf (x_out, "%s ", t);
+   /*---(parse)--------------------------*/
+   ycalc__mock_parse (x_out, c);
+   /*> x_owner->print = strdup (x_out);                                               <*/
+   /*---(complete)-----------------------*/
+   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -754,6 +782,7 @@ ycalc__mock_whole       (char *a_label, char *a_source, char a_format, char a_de
    char        rce         =  -10;
    char        rc          =    0;
    tMOCK      *x_owner     = NULL;
+   tDEP_ROOT  *x_deproot   = NULL;
    char        t           [LEN_RECD];
    char        x_out       [LEN_RECD];
    char        x_len       =    0;
@@ -767,24 +796,23 @@ ycalc__mock_whole       (char *a_label, char *a_source, char a_format, char a_de
       DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   rc = ycalc_call_who_named (a_label, YCALC_OWNR, &x_owner, NULL);
+   rc = ycalc_call_who_named (a_label, YCALC_OWNR, &x_owner, &x_deproot);
    if (x_owner->print  != NULL) {
       free (x_owner->print);
       x_owner->print  = NULL;
    }
+   x_owner->decs   = a_decs;
+   x_owner->format = a_format;
+   x_owner->align  = a_align;
+   x_owner->width  = a_width;
    /*---(classify)-----------------------*/
    rc = yCALC_handle (a_label);
-   rc = ycalc_call_who_named (a_label, YCALC_LOOK, &x_owner, NULL);
+   rc = ycalc_call_who_named (a_label, YCALC_LOOK, &x_owner, &x_deproot);
    if (x_owner == NULL) {
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
       return 0;
    }
    /*---(handle results)-----------------*/
-   s_decs   = a_decs;
-   s_format = a_format;
-   s_align  = a_align;
-   s_width  = a_width;
-   g_printer (x_owner);
    /*> if (strchr ("=n", x_owner->type) != NULL) {                                    <* 
     *>    strl4main (x_owner->value, t, a_decs, a_format, LEN_RECD);                  <* 
     *> } else {                                                                       <* 

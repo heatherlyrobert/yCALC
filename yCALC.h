@@ -9,57 +9,57 @@
 
 
 /*---(object types)-------------------*/
-#define       YCALC_DATA_BLANK   '-'
-#define       YCALC_DATA_STR     's'
-#define       YCALC_DATA_SFORM   '#'
-#define       YCALC_DATA_SLIKE   '5'
-#define       YCALC_DATA_NUM     'n'
-#define       YCALC_DATA_NFORM   '='
-#define       YCALC_DATA_NLIKE   '9'
-#define       YCALC_DATA_ADDR    '&'
-#define       YCALC_DATA_RANGE   ':'
-#define       YCALC_DATA_INTERN  '­'
-#define       YCALC_DATA_MERGED  '+'
-#define       YCALC_DATA_ERROR   'E'
+#define     YCALC_DATA_BLANK      '-'
+#define     YCALC_DATA_STR        's'
+#define     YCALC_DATA_SFORM      '#'
+#define     YCALC_DATA_SLIKE      '5'
+#define     YCALC_DATA_NUM        'n'
+#define     YCALC_DATA_NFORM      '='
+#define     YCALC_DATA_NLIKE      '9'
+#define     YCALC_DATA_ADDR       '&'
+#define     YCALC_DATA_RANGE      ':'
+#define     YCALC_DATA_INTERN     '­'
+#define     YCALC_DATA_MERGED     '<'
+#define     YCALC_DATA_ERROR      'E'
 
 
-#define        YCALC_FULL        'f'    /* create owner && deproot            */
-#define        YCALC_OWNR        'y'    /* create owner only                  */
-#define        YCALC_LOOK        '-'    /* do not create, just look           */
+#define     YCALC_FULL            'f'    /* create owner && deproot            */
+#define     YCALC_OWNR            'y'    /* create owner only                  */
+#define     YCALC_LOOK            '-'    /* do not create, just look           */
 
-#define       G_SPECIAL_TYPE     'T'
-#define       G_SPECIAL_LABEL    'L'
-#define       G_SPECIAL_SOURCE   'S'
-#define       G_SPECIAL_PRINT    'P'
+#define     G_SPECIAL_TYPE        'T'
+#define     G_SPECIAL_LABEL       'L'
+#define     G_SPECIAL_SOURCE      'S'
+#define     G_SPECIAL_PRINT       'P'
 
 
 /*---(dependency types)---------------*/
 
-#define     G_DEP_BLANK          '-'
+#define     G_DEP_BLANK           '-'
 
-#define     G_DEP_REQUIRE        'R'
-#define     G_DEP_PROVIDE        'p'
+#define     G_DEP_REQUIRE         'R'
+#define     G_DEP_PROVIDE         'p'
 
-#define     G_DEP_POINTER        'P'
-#define     G_DEP_TARGET         't'
+#define     G_DEP_POINTER         'P'
+#define     G_DEP_TARGET          't'
 
-#define     G_DEP_RANGE          ':'
-#define     G_DEP_ENTRY          '.'
+#define     G_DEP_RANGE           ':'
+#define     G_DEP_ENTRY           '.'
 
-#define     G_DEP_FORMAT         'F'
-#define     G_DEP_COPY           'f'
+#define     G_DEP_FORMAT          'F'
+#define     G_DEP_COPY            'f'
 
-#define     G_DEP_SOURCE         'S'
-#define     G_DEP_LIKE           'l'
+#define     G_DEP_SOURCE          'S'
+#define     G_DEP_LIKE            'l'
 
-#define     G_DEP_MERGED         'M'
-#define     G_DEP_BLEED          'b'
+#define     G_DEP_MERGED          'M'
+#define     G_DEP_BLEED           'b'
 
-#define     G_DEP_CALCREF        'A'
-#define     G_DEP_ADDRESS        'a'
+#define     G_DEP_CALCREF         'A'
+#define     G_DEP_ADDRESS         'a'
 
-#define     G_DEP_WATCHER        'W'
-#define     G_DEP_STALKED        's'
+#define     G_DEP_WATCHER         'W'
+#define     G_DEP_STALKED         's'
 
 
 char*       yCALC_version           (void);

@@ -169,6 +169,34 @@ ycalc_handle_error      (char a_error, char *a_type, double *a_value, char **a_s
 /*====================------------------------------------====================*/
 static void  o___MERGES__________o () { return; }
 
+char         /*-> check and coordinate an unmerge ----[ ------ [ge.630.133.34]*/ /*-[01.0000.013.4]-*/ /*-[--.---.---.--]-*/
+ycalc_merge_count       (tDEP_ROOT *a_deproot)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   tDEP_LINK  *x_next      = NULL;
+   int         x_cnt       =    0;
+   /*---(header)-------------------------*/
+   DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_CALC   yLOG_spoint  (a_deproot);
+   --rce;  if (a_deproot == NULL) {
+      DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
+      return 0;
+   }
+   /*---(remove all)---------------------*/
+   x_next = a_deproot->pros;
+   while (x_next != NULL) {
+      DEBUG_DEPS   yLOG_schar   (x_next->type);
+      if (x_next->type == G_DEP_MERGED) ++x_cnt;
+      x_next = x_next->next;
+   }
+   DEBUG_DEPS   yLOG_sint    (x_cnt);
+   /*---(complete)-----------------------*/
+   DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
+   return x_cnt;
+}
+
 char         /*-> find the merge source --------------[ leaf   [gp.420.113.30]*/ /*-[01.0000.306.#]-*/ /*-[--.---.---.--]-*/
 ycalc__merge_leftmost   (tDEP_ROOT *a_deproot, tDEP_ROOT **a_origin)
 {
@@ -178,18 +206,95 @@ ycalc__merge_leftmost   (tDEP_ROOT *a_deproot, tDEP_ROOT **a_origin)
    tDEP_LINK  *x_next      = NULL;
    /*---(begin)--------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   if (a_deproot == NULL) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(find head)----------------------*/
    *a_origin = NULL;
-   x_next = x_deproot->pros;
+   x_next = a_deproot->pros;
    while (x_next != NULL) {
       DEBUG_DEPS   yLOG_point   ("x_next"    , x_next);
       DEBUG_DEPS   yLOG_char    ("type"      , x_next->type);
       if (G_DEP_BLEED == x_next->type) {
          DEBUG_DEPS   yLOG_note    ("FOUND");
+         DEBUG_DEPS   yLOG_info    ("label"     , ycalc_call_labeler (x_next->target));
          *a_origin = x_next->target;
          break;
       }
       x_next = x_next->next;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char         /*-> find the merge source --------------[ leaf   [gp.420.113.30]*/ /*-[01.0000.306.#]-*/ /*-[--.---.---.--]-*/
+ycalc__merge_right      (tDEP_ROOT *a_source, tDEP_ROOT *a_deproot)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   int         x, y, z, x_off;
+   int         i           =    0;
+   void       *x_owner     = NULL;
+   tDEP_ROOT  *x_next      = NULL;
+   char      **x_source    = NULL;
+   char       *x_type      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DEPS   yLOG_point   ("a_source"  , a_source);
+   --rce;  if (a_source == NULL)  {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DEPS   yLOG_point   ("a_deproot" , a_deproot);
+   --rce;  if (a_deproot == NULL)  {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(locate source)------------------*/
+   rc = g_addresser (a_source->owner, &x, &y, &z);
+   DEBUG_DEPS   yLOG_value   ("addresser" , rc);
+   if (rc < 0)  {
+      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   DEBUG_DEPS   yLOG_complex ("source"    , "%-10p, %3dx, %3dy, %3dz", a_source, x, y, z);
+   /*---(locate current)-----------------*/
+   rc = g_addresser (a_deproot->owner, &x_off, NULL, NULL);
+   DEBUG_DEPS   yLOG_value   ("addresser" , rc);
+   if (rc < 0)  {
+      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   DEBUG_DEPS   yLOG_complex ("current"   , "%-10p, %3dx, %3dy, %3dz", a_deproot, x_off, y, z);
+   /*---(look for merges)----------------*/
+   for (i = x_off + 1; i < x + 20; ++i) {
+      DEBUG_DEPS   yLOG_value   ("i"         , i);
+      /*---(retrieve)-----------------------*/
+      rc = ycalc_call_who_at (i, y, z, YCALC_LOOK, &x_owner, &x_next);
+      if (rc < 0)                              break;
+      if (x_owner == NULL)                     break;
+      /*---(fill pointers)------------------*/
+      rc = g_pointer (x_owner, &x_source, &x_type, NULL, NULL);
+      DEBUG_CALC   yLOG_value   ("pointer"    , rc);
+      if (rc < 0) {
+         DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+         return 0;
+      }
+      DEBUG_DEPS   yLOG_complex ("owner"     , "%-10p, %3dx, %3dy, %3dz, %c", x_owner, i, y, z, *x_type);
+      if (*x_source != NULL && strcmp (*x_source, "<") != 0)  break;
+      rc = ycalc_call_who_at (i, y, z, YCALC_FULL, &x_owner, &x_next);
+      rc = ycalc_deps_create (G_DEP_MERGED, &a_source, &x_next);
+      DEBUG_DEPS   yLOG_value   ("create"    , rc);
+      if (rc < 0) {
+         DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+         return 0;
+      }
+      *x_type = YCALC_DATA_MERGED;
    }
    /*---(complete)-----------------------*/
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
@@ -207,8 +312,9 @@ ycalc__unmerge_right    (tDEP_ROOT **a_deproot, int a_start)
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    DEBUG_DEPS   yLOG_value   ("a_start"   , a_start);
+   DEBUG_DEPS   yLOG_info    ("label"     , ycalc_call_labeler (a_deproot));
    /*---(remove all)---------------------*/
-   x_next = (*a_deproot)->pros;
+   x_next = (*a_deproot)->reqs;
    DEBUG_DEPS   yLOG_point   ("x_next"    , x_next);
    while (x_next != NULL) {
       DEBUG_DEPS   yLOG_char    ("type"      , x_next->type);
@@ -225,6 +331,8 @@ ycalc__unmerge_right    (tDEP_ROOT **a_deproot, int a_start)
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return 0;
 }
+
+static void *s_origin = NULL;
 
 char         /*-> check and coordinate an unmerge ----[ ------ [ge.630.133.34]*/ /*-[01.0000.013.4]-*/ /*-[--.---.---.--]-*/
 ycalc_unmerge           (tDEP_ROOT **a_deproot, char *a_type)
@@ -258,26 +366,70 @@ ycalc_unmerge           (tDEP_ROOT **a_deproot, char *a_type)
       rc = g_addresser ((*a_deproot)->owner, &x, NULL, NULL);
       rc = ycalc__merge_leftmost (*a_deproot, &x_origin);
       rc = ycalc__unmerge_right (&x_origin, x);
+      s_origin = x_origin->owner;
    }
    /*---(complete)-----------------------*/
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
-/*> char         /+-> check for merge-type cell ----------[ leaf   [fe.430.116.50]+/ /+-[00.0000.056.#]-+/ /+-[--.---.---.--]-+/   <* 
- *> ycalc__merge_valid      (tDEP_ROOT *a_deproot)                                                                                 <* 
- *> {                                                                                                                              <* 
- *>    /+---(locals)-----------+-----+-----+-+/                                                                                    <* 
- *>    char        rce         =  -10;                                                                                             <* 
- *>    /+---(defenses)-----------------------+/                                                                                    <* 
- *>    --rce;  if (a_curr       == NULL)  return rce;  /+ must be '<'             +/                                               <* 
- *>    --rce;  if (a_curr->s    == NULL)  return rce;  /+ must be '<'             +/                                               <* 
- *>    --rce;  if (a_curr->l    != 1   )  return rce;  /+ must be '<'             +/                                               <* 
- *>    --rce;  if (a_curr->s[0] != '<' )  return rce;  /+ must be '<'             +/                                               <* 
- *>    --rce;  if (a_curr->col  <= 0   )  return rce;  /+ must have room          +/                                               <* 
- *>    /+---(complete)-----------------------+/                                                                                    <* 
- *>    return 0;                                                                                                                   <* 
- *> }                                                                                                                              <*/
+char         /*-> coordinate a merge -----------------[ ------ [ge.640.134.44]*/ /*-[02.0000.013.6]-*/ /*-[--.---.---.--]-*/
+ycalc_merge_check    (tDEP_ROOT *a_source)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   int         x, y, z, x_off;
+   int         i           =    0;
+   void       *x_owner     = NULL;
+   tDEP_ROOT  *x_next      = NULL;
+   char      **x_source    = NULL;
+   char       *x_type      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DEPS   yLOG_point   ("a_source"  , a_source);
+   --rce;  if (a_source == NULL)  {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(locate source)------------------*/
+   rc = g_addresser (a_source->owner, &x, &y, &z);
+   DEBUG_DEPS   yLOG_value   ("addresser" , rc);
+   if (rc < 0)  {
+      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   DEBUG_DEPS   yLOG_complex ("source"    , "%-10p, %3dx, %3dy, %3dz", a_source, x, y, z);
+   /*---(look for merges)----------------*/
+   for (i = x + 1; i < x + 20; ++i) {
+      DEBUG_DEPS   yLOG_value   ("i"         , i);
+      /*---(retrieve)-----------------------*/
+      rc = ycalc_call_who_at (i, y, z, YCALC_LOOK, &x_owner, &x_next);
+      if (rc < 0)                              break;
+      if (x_owner == NULL)                     break;
+      /*---(fill pointers)------------------*/
+      rc = g_pointer (x_owner, &x_source, &x_type, NULL, NULL);
+      DEBUG_CALC   yLOG_value   ("pointer"    , rc);
+      if (rc < 0) {
+         DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+         return 0;
+      }
+      DEBUG_DEPS   yLOG_complex ("owner"     , "%-10p, %3dx, %3dy, %3dz, %c", x_owner, i, y, z, *x_type);
+      if (*x_source != NULL && strcmp (*x_source, "<") != 0)  break;
+      rc = ycalc_call_who_at (i, y, z, YCALC_FULL, &x_owner, &x_next);
+      rc = ycalc_deps_create (G_DEP_MERGED, &a_source, &x_next);
+      DEBUG_DEPS   yLOG_value   ("create"    , rc);
+      if (rc < 0) {
+         DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+         return 0;
+      }
+      *x_type = YCALC_DATA_MERGED;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
 
 char         /*-> coordinate a merge -----------------[ ------ [ge.640.134.44]*/ /*-[02.0000.013.6]-*/ /*-[--.---.---.--]-*/
 ycalc_merge          (tDEP_ROOT **a_deproot)
@@ -285,54 +437,89 @@ ycalc_merge          (tDEP_ROOT **a_deproot)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
+   void       *x_owner     = NULL;
    tDEP_ROOT  *x_left      = NULL;
+   char       *x_type      =  '-';
    int         x, y, z;
+   tDEP_ROOT  *x_origin    = NULL;
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(look left)----------------------*/
    rc = g_addresser ((*a_deproot)->owner, &x, &y, &z);
    DEBUG_DEPS   yLOG_value   ("addresser" , rc);
-   if (rc < 0) {
-      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
-      return 0;
+   --rce;  if (rc < 0) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
    DEBUG_DEPS   yLOG_complex ("loc"       , "x=%-4d, y=%-4d, z=%-4d", x, y, z);
-   if (x  < 1) {
-      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
-      return 0;
+   --rce;  if (x  < 1) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
-   rc = ycalc_call_who_at (x - 1, y, z, YCALC_LOOK, NULL, &x_left);
+   /*---(get owner to left)--------------*/
+   rc = ycalc_call_who_at (x - 1, y, z, YCALC_LOOK, &x_owner, &x_left);
    DEBUG_DEPS   yLOG_value   ("who_at"    , rc);
-   if (rc < 0) {
-      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
-      return 0;
+   --rce;  if (rc < 0) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
-   DEBUG_DEPS   yLOG_point   ("x_left"    , x_left);
-   if (x_left == NULL) {
-      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
-      return 0;
+   DEBUG_DEPS   yLOG_point   ("x_owner"   , x_owner);
+   --rce;  if (x_owner == NULL) {
+      DEBUG_DEPS   yLOG_note    ("nothing to the left to merge with");
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
-   /*>                                                                                   <* 
-    *>                                                                                   <* 
-    *>                                                                                   <* 
-    *>                                                                                   <* 
-    *>    x_left = CELL__merge_left (a_curr);                                            <* 
-    *>    /+---(check for broken merge)---------+/                                       <* 
-    *>    --rce;  if (x_left == NULL) {                                                  <* 
-    *>       rc = CELL__merge_valid (a_curr);                                            <* 
-    *>       if (rc >=  0) {                                                             <* 
-    *>          a_curr->t = CTYPE_STR;                                                   <* 
-    *>          a_curr->f = '?';                                                         <* 
-    *>          a_curr->a = '<';                                                         <* 
-    *>          rc = CELL__unmerge_right (a_curr);                                       <* 
-    *>          if (rc < 0)  return rce;                                                 <* 
-    *>          return rce + 1;                                                          <* 
-    *>       }                                                                           <* 
-    *>       x_left = a_curr;                                                            <* 
-    *>    }                                                                              <* 
-    *>    /+---(merge right)--------------------+/                                       <* 
-    *>    rc = CELL__merge_right (x_left);                                               <* 
-    *>    --rce;  if (rc < 0)  return rce;                                               <*/
+   /*> rc = g_pointer (&((*a_deproot)->owner), NULL, &x_type, NULL, NULL);            <*/
+   rc = g_pointer (x_owner, NULL, &x_type, NULL, NULL);
+   DEBUG_DEPS   yLOG_value   ("pointers"  , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DEPS   yLOG_char    ("*x_type"    , *x_type);
+   /*---(handle merge append)------------*/
+   if (*x_type == YCALC_DATA_MERGED) {
+      DEBUG_DEPS   yLOG_note    ("handle appending to existing merge");
+      DEBUG_DEPS   yLOG_point   ("x_left"    , x_left);
+      --rce;  if (x_left == NULL) {
+         DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      rc = ycalc__merge_leftmost (x_left, &x_origin);
+      DEBUG_DEPS   yLOG_value   ("leftmost"  , rc);
+      --rce;  if (rc < 0) {
+         DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      /*> DEBUG_DEPS   yLOG_info    ("x_origin"  , x_origin->owner->label);           <*/
+      rc = ycalc_deps_create (G_DEP_MERGED, &x_origin, a_deproot);
+      DEBUG_DEPS   yLOG_value   ("create"    , rc);
+      --rce;  if (rc < 0) {
+         DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      x_left = x_origin;
+   }
+   /*---(handle new merge)---------------*/
+   else {
+      DEBUG_DEPS   yLOG_note    ("handle new merge");
+      DEBUG_DEPS   yLOG_point   ("x_left"    , x_left);
+      if (x_left == NULL) {
+         rc = ycalc_call_who_at (x - 1, y, z, YCALC_FULL, &x_owner, &x_left);
+      }
+      rc = ycalc_deps_create (G_DEP_MERGED, &x_left  , a_deproot);
+      DEBUG_DEPS   yLOG_value   ("create"    , rc);
+      --rce;  if (rc < 0) {
+         DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+   }
+   /*---(look to the right)--------------*/
+   rc = ycalc__merge_right (x_left, *a_deproot);
+   --rce;  if (rc < 0) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(complete)-----------------------*/
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -405,6 +592,7 @@ ycalc_classify_clear    (void **a_owner, tDEP_ROOT **a_deproot, char *a_type, do
    }
    /*---(clear merges/complex)--------*/
    DEBUG_CALC   yLOG_note    ("wipe merge dependencies");
+   s_origin = NULL;
    if (a_deproot != NULL)  rc = ycalc_unmerge (a_deproot, a_type);
    DEBUG_CALC   yLOG_value   ("unmerge"   , rc);
    --rce;  if (rc < 0) {
@@ -669,6 +857,7 @@ yCALC_handle            (char *a_label)
    char      **x_string    = NULL;
    int         x_len       =    0;
    int         x, y, z;
+   tDEP_ROOT  *x_origin    = NULL;
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -706,6 +895,16 @@ yCALC_handle            (char *a_label)
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(merges)-------------------------*/
+   if (*x_type == YCALC_DATA_MERGED) {
+      rc = ycalc_merge (&x_deproot);
+      if (rc < 0) {
+         *x_type = YCALC_DATA_STR;
+      }
+   } else {
+      rc = ycalc_merge_check    (x_deproot);
+   }
+   DEBUG_CALC   yLOG_value   ("merging"   , rc);
    /*---(ranges)-------------------------*/
    rc = g_addresser (x_owner, &x, &y, &z);
    DEBUG_CALC   yLOG_value   ("addresser" , rc);
@@ -755,9 +954,23 @@ yCALC_handle            (char *a_label)
    DEBUG_CALC   yLOG_note    ("then, cleanup as necessary");
    rc = ycalc_call_reaper (&x_owner, &x_deproot);
    DEBUG_CALC   yLOG_value   ("reaper"    , rc);
-   --rce;  if (rc == 0) {
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
-      return 0;
+   /*---(call printer)-------------------*/
+   if (x_owner != NULL) {
+      if (*x_type == YCALC_DATA_MERGED) {
+         DEBUG_CALC   yLOG_note    ("merged, find source");
+         DEBUG_CALC   yLOG_point   ("x_deproot" , x_deproot);
+         rc = ycalc__merge_leftmost (x_deproot, &x_origin);
+         x_owner = x_origin->owner;
+      }
+      rc = g_printer (x_owner);
+      DEBUG_CALC   yLOG_value   ("printer"   , rc);
+      --rce;  if (rc < 0) {
+         DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+   }
+   if (s_origin != NULL) {
+      rc = g_printer (s_origin);
    }
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
