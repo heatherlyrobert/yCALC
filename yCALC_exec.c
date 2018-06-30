@@ -438,17 +438,17 @@ ycalc_popstr_plus       (char *a_func, char a_what)
          else                  return  strndup (s_string, LEN_RECD);
          break;
       case G_SPECIAL_PROS   :
-         ycalc_audit_disp_pros      (x_deproot, s_list);
+         yCALC_disp_pros      (x_deproot, s_list);
          if (s_list   == NULL) return  strndup (g_nada  , LEN_RECD);
          else                  return  strndup (s_list  , LEN_RECD);
          break;
       case G_SPECIAL_REQS   :
-         ycalc_audit_disp_reqs      (x_deproot, s_list);
+         yCALC_disp_reqs      (x_deproot, s_list);
          if (s_list   == NULL) return  strndup (g_nada  , LEN_RECD);
          else                  return  strndup (s_list  , LEN_RECD);
          break;
       case G_SPECIAL_LIKE   :
-         ycalc_audit_disp_like      (x_deproot, s_list);
+         yCALC_disp_like      (x_deproot, s_list);
          if (s_list   == NULL) return  strndup (g_nada  , LEN_RECD);
          else                  return  strndup (s_list  , LEN_RECD);
          break;

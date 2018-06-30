@@ -87,6 +87,7 @@ char        yCALC_seq_downdown      (long a_stamp   , void *a_consumer);
 char        yCALC_seq_downup        (long a_stamp   , void *a_consumer);
 
 char        yCALC_calculate         (void);
+char        yCALC_calc_from         (void *a_deproot);
 
 
 int         yCALC_nreq              (void *a_deproot);
@@ -94,6 +95,9 @@ int         yCALC_npro              (void *a_deproot);
 char        yCALC_stamp             (void *a_deproot, long a_stamp);
 
 
+char       yCALC_disp_reqs          (void *a_me, char *a_list);
+char       yCALC_disp_pros          (void *a_me, char *a_list);
+char       yCALC_disp_like          (void *a_me, char *a_list);
 
 
 

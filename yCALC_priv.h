@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.2x"
-#define YCALC_VER_TXT   "merge functions passed unit testing"
+#define YCALC_VER_NUM   "0.3a"
+#define YCALC_VER_TXT   "really basic steps working in gyges.  yes, yes, yes."
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20

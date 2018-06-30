@@ -1662,7 +1662,7 @@ ycalc__unit_deps        (char *a_question, char *a_label)
       if (x_deproot == NULL) {
          snprintf (ycalc__unit_answer, LEN_RECD, "yCALC deps reqs  : %-5s (--) -", x_label);
       } else {
-         ycalc_audit_disp_reqs (x_deproot, x_list);
+         yCALC_disp_reqs (x_deproot, x_list);
          snprintf (ycalc__unit_answer, LEN_RECD, "yCALC deps reqs  : %-5s (%2d) %s", x_label, x_deproot->nreq, x_list);
       }
    }
@@ -1670,7 +1670,7 @@ ycalc__unit_deps        (char *a_question, char *a_label)
       if (x_deproot == NULL) {
          snprintf (ycalc__unit_answer, LEN_RECD, "yCALC deps pros  : %-5s (--) -", x_label);
       } else {
-         ycalc_audit_disp_pros (x_deproot, x_list);
+         yCALC_disp_pros (x_deproot, x_list);
          snprintf (ycalc__unit_answer, LEN_RECD, "yCALC deps pros  : %-5s (%2d) %s", x_label, x_deproot->npro, x_list);
       }
    }

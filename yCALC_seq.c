@@ -349,6 +349,9 @@ yCALC_seq_downup   (long a_stamp, void *a_consumer)    { return ycalc__seq_drive
 char         /*-> dependency-based calculation all ---[ ------ [gc.840.026.38]*/ /*-[02.0000.402.1]-*/ /*-[--.---.---.--]-*/
 yCALC_calculate    (void)                              { return ycalc__seq_driver (myCALC.rroot, 'd', 'u', rand() , ycalc_execute_auto); }
 
+char         /*-> dependency-based calculation all ---[ ------ [gc.840.026.38]*/ /*-[02.0000.402.1]-*/ /*-[--.---.---.--]-*/
+yCALC_calc_from    (void *a_deproot)                   { return ycalc__seq_driver (a_deproot   , 'u', 'd', rand() , ycalc_execute_auto); }
+
 
 
 /*====================------------------------------------====================*/
