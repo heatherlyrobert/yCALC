@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.3a"
-#define YCALC_VER_TXT   "really basic steps working in gyges.  yes, yes, yes."
+#define YCALC_VER_NUM   "0.3b"
+#define YCALC_VER_TXT   "lppad and rppad are now working"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -380,15 +380,6 @@ struct cyCALC_TYPES {
 };
 extern const   tyCALC_TYPES  g_ycalc_types [YCALC_MAX_TYPE];
 
-extern char    YCALC_GROUP_ALL    [LEN_LABEL];
-extern char    YCALC_GROUP_RPN    [LEN_LABEL];
-extern char    YCALC_GROUP_CALC   [LEN_LABEL];
-extern char    YCALC_GROUP_DEPS   [LEN_LABEL];
-extern char    YCALC_GROUP_NUM    [LEN_LABEL];
-extern char    YCALC_GROUP_STR    [LEN_LABEL];
-extern char    YCALC_GROUP_POINT  [LEN_LABEL];
-extern char    YCALC_GROUP_ERR    [LEN_LABEL];
-extern char    YCALC_GROUP_FPRE   [LEN_LABEL];
 
 
 

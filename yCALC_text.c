@@ -403,18 +403,18 @@ ycalc_rpad         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.630.000.43]*/ /*-[11.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_lppad        (void)
 {
-   /*> /+---(get arguments)------------------+/                                       <* 
-    *> n = ycalc_popval   (__FUNCTION__);                                             <* 
-    *> r = ycalc_popprint (__FUNCTION__);                                             <* 
-    *> /+---(defense)------------------------+/                                       <* 
-    *> if (r == NULL)  r = strndup (g_nada, LEN_RECD);                                <* 
-    *> if (n     <  0  )  n = 0;                                                      <* 
-    *> /+---(process)------------------------+/                                       <* 
-    *> strltrim (r, ySTR_BOTH, LEN_RECD);                                             <* 
-    *> strlpad (r, t, ' ', '>', n);                                                   <* 
-    *> ycalc_pushstr (__FUNCTION__, t);                                               <* 
-    *> /+---(clean up)-----------------------+/                                       <* 
-    *> free (r);                                                                      <*/
+   /*---(get arguments)------------------*/
+   n = ycalc_popval (__FUNCTION__);
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_PRINT);
+   /*---(defense)------------------------*/
+   if (r == NULL)  r = strndup (g_nada, LEN_RECD);
+   if (n     <  0  )  n = 0;
+   /*---(process)------------------------*/
+   strltrim (r, ySTR_BOTH, LEN_RECD);
+   strlpad (r, t, ' ', '<', n);
+   ycalc_pushstr (__FUNCTION__, t);
+   /*---(clean up)-----------------------*/
+   free (r);
    /*---(complete)-----------------------*/
    return;
 }
@@ -422,18 +422,18 @@ ycalc_lppad        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.630.000.43]*/ /*-[11.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_rppad        (void)
 {
-   /*> /+---(get arguments)------------------+/                                       <* 
-    *> n = ycalc_popval   (__FUNCTION__);                                             <* 
-    *> r = ycalc_popprint (__FUNCTION__);                                             <* 
-    *> /+---(defense)------------------------+/                                       <* 
-    *> if (r == NULL)  r = strndup (g_nada, LEN_RECD);                                <* 
-    *> if (n     <  0  )  n = 0;                                                      <* 
-    *> /+---(process)------------------------+/                                       <* 
-    *> strltrim (r, ySTR_BOTH, LEN_RECD);                                             <* 
-    *> strlpad (r, t, ' ', '<', n);                                                   <* 
-    *> ycalc_pushstr (__FUNCTION__, t);                                               <* 
-    *> /+---(clean up)-----------------------+/                                       <* 
-    *> free (r);                                                                      <*/
+   /*---(get arguments)------------------*/
+   n = ycalc_popval (__FUNCTION__);
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_PRINT);
+   /*---(defense)------------------------*/
+   if (r == NULL)  r = strndup (g_nada, LEN_RECD);
+   if (n     <  0  )  n = 0;
+   /*---(process)------------------------*/
+   strltrim (r, ySTR_BOTH, LEN_RECD);
+   strlpad (r, t, ' ', '>', n);
+   ycalc_pushstr (__FUNCTION__, t);
+   /*---(clean up)-----------------------*/
+   free (r);
    /*---(complete)-----------------------*/
    return;
 }

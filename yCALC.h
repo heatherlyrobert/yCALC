@@ -22,6 +22,18 @@
 #define     YCALC_DATA_MERGED     '<'
 #define     YCALC_DATA_ERROR      'E'
 
+extern char    YCALC_GROUP_ALL    [20];
+extern char    YCALC_GROUP_RPN    [20];
+extern char    YCALC_GROUP_CALC   [20];
+extern char    YCALC_GROUP_DEPS   [20];
+extern char    YCALC_GROUP_NUM    [20];
+extern char    YCALC_GROUP_STR    [20];
+extern char    YCALC_GROUP_POINT  [20];
+extern char    YCALC_GROUP_ERR    [20];
+extern char    YCALC_GROUP_FPRE   [20];
+
+
+
 
 #define     YCALC_FULL            'f'    /* create owner && deproot            */
 #define     YCALC_OWNR            'y'    /* create owner only                  */
