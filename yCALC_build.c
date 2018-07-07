@@ -479,6 +479,8 @@ ycalc__build_value      (tDEP_ROOT *a_thing, tCALC *a_calc, char *a_token)
    x_len = strlen (a_token);
    for (i = 0; i < x_len; ++i) {
       if (strchr (x_valid, a_token [i]) != NULL)  continue;
+      DEBUG_CALC   yLOG_note    ("found a bad character");
+      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return 0;
    }
    /*---(header)-------------------------*/
@@ -521,6 +523,109 @@ ycalc__build_step       (tDEP_ROOT *a_deproot, char *a_token)
    return rc;
 }
 
+char
+ycalc__build_like       (tDEP_ROOT *a_deproot, char **a_source, char *a_type, char *a_rpn)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   void       *x_owner     = NULL;
+   tDEP_ROOT  *x_ref       = NULL;
+   int         x , y , z;
+   int         xo, yo, zo;
+   char      **x_source    = NULL;
+   char       *x_type      = NULL;
+   char        x_work      [LEN_RECD];
+   char       *x_rpn       = &x_work;
+   /*---(header)-------------------------*/
+   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   /*---(check for reference)------------*/
+   DEBUG_CALC   yLOG_note    ("look for like reference");
+   rc = ycalc_call_who_named (*a_source + 1, YCALC_FULL, &x_owner, &x_ref);
+   DEBUG_CALC   yLOG_value   ("who_named" , rc);
+   if (rc < 0) {
+      rc = YCALC_ERROR_BUILD_LIK;
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(check reference)----------------*/
+   DEBUG_CALC   yLOG_point   ("x_owner"   , x_owner);
+   DEBUG_CALC   yLOG_point   ("x_ref"     , x_ref);
+   if (x_owner == NULL || x_ref == NULL) {
+      rc = YCALC_ERROR_BUILD_LIK;
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(set dependency)-----------------*/
+   rc = ycalc_deps_create (G_DEP_SOURCE, &x_ref, &a_deproot);
+   DEBUG_CALC   yLOG_value   ("create"    , rc);
+   if (rc < 0) {
+      rc = YCALC_ERROR_BUILD_DEP;
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(get original source)------------*/
+   rc = g_pointer (x_owner, &x_source, &x_type, NULL, NULL);
+   DEBUG_CALC   yLOG_value   ("pointers"  , rc);
+   if (rc < 0) {
+      rc = YCALC_ERROR_BUILD_LIK;
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(check source)-------------------*/
+   DEBUG_CALC   yLOG_point   ("*x_source" , *x_source);
+   if (*x_source == NULL) {
+      rc = YCALC_ERROR_BUILD_LIK;
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   DEBUG_CALC   yLOG_info    ("*x_source" , *x_source);
+   /*---(get offset)---------------------*/
+   rc = g_addresser (a_deproot->owner, &xo, &yo, &zo);
+   DEBUG_CALC   yLOG_value   ("cur_addr"  , rc);
+   if (rc < 0) {
+      rc = YCALC_ERROR_BUILD_LIK;
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   DEBUG_CALC   yLOG_complex ("cur_loc"   , "%3dx, %3dy, %3dz", xo, yo, zo);
+   rc = g_addresser (x_ref->owner, &x, &y, &z);
+   DEBUG_CALC   yLOG_value   ("ref_addr"  , rc);
+   if (rc < 0) {
+      rc = YCALC_ERROR_BUILD_LIK;
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   DEBUG_CALC   yLOG_complex ("ref_loc"   , "%3dx, %3dy, %3dz",  x,  y,  z);
+   xo -= x;
+   yo -= y;
+   zo -= z;
+   DEBUG_CALC   yLOG_complex ("offset"    , "%3dx, %3dy, %3dz", xo, yo, zo);
+   /*---(adjust rpn)---------------------*/
+   strlcpy (x_work, *x_source, LEN_RECD);
+   DEBUG_CALC   yLOG_info    ("x_work"    , x_work);
+   rc = yRPN_adjust_norm (&x_rpn, xo, yo, zo, LEN_RECD);
+   DEBUG_CALC   yLOG_value   ("adj_rpn"   , rc);
+   if (rc < 0) {
+      rc = YCALC_ERROR_BUILD_LIK;
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   DEBUG_CALC   yLOG_info    ("x_work"   , x_work);
+   strlcpy (a_rpn, x_work, LEN_RECD);
+   /*---(update type)--------------------*/
+   DEBUG_CALC   yLOG_char    ("*x_type"   , *x_type);
+   if      (*x_type == YCALC_DATA_NFORM)   *a_type = YCALC_DATA_NLIKE;
+   else if (*x_type == YCALC_DATA_SFORM)   *a_type = YCALC_DATA_SLIKE;
+   else {
+      rc = YCALC_ERROR_BUILD_LIK;
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(complete)-------------------------*/
+   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -534,9 +639,10 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
+   char        x_source    [LEN_RECD];
+   char        x_work      [LEN_RECD];
    char        x_rpn       [LEN_RECD];
    int         x_nrpn      =    0;
-   char        x_work      [LEN_RECD];       /* working copy of source string  */
    char       *p           = NULL;           /* strtok current pointer         */
    int         x_len       =    0;
    char        t           [LEN_LABEL];
@@ -557,9 +663,24 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+
+   /*---(check for like formulas)--------*/
+   --rce;  if (*a_type == YCALC_DATA_SLIKE || *a_type == YCALC_DATA_NLIKE) {
+      rc = ycalc__build_like (a_deproot, a_source, a_type, x_work);
+      DEBUG_CALC   yLOG_value   ("like"      , rc);
+      if (rc < 0) {
+         ycalc_handle_error (rc , a_type, a_value, a_string, "like");
+         DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      rc = yRPN_interpret (&x_work, &x_rpn, &x_nrpn, LEN_RECD, 0);
+      DEBUG_CALC   yLOG_value   ("interpret" , rc);
+   } else {
+      strlcpy (x_source, *a_source, LEN_RECD);
+      rc = yRPN_interpret (x_source, &x_rpn, &x_nrpn, LEN_RECD, 0);
+      DEBUG_CALC   yLOG_value   ("interpret" , rc);
+   }
    /*---(generate rpn)-------------------*/
-   rc = yRPN_interpret (*a_source, &x_rpn, &x_nrpn, LEN_RECD, 0);
-   DEBUG_CALC   yLOG_value   ("rc"        , rc);
    DEBUG_CALC   yLOG_value   ("x_nrpn"    , x_nrpn);
    DEBUG_CALC   yLOG_point   ("x_rpn"     , x_rpn);
    --rce;  if (x_nrpn <= 0 || x_rpn == NULL) {

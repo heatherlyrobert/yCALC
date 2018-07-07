@@ -37,6 +37,7 @@ const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR] = {
    { YCALC_ERROR_BUILD_RPN , 'b' , "#b/rpn"   , "can not convert source to rpn tokens"               },
    { YCALC_ERROR_BUILD_REF , 'b' , "#b/ref"   , "label/ref null, not allowed, or not real"           },
    { YCALC_ERROR_BUILD_DEP , 'b' , "#b/dep"   , "dependence failed on legal label/ref"               },
+   { YCALC_ERROR_BUILD_LIK , 'b' , "#b/lik"   , "build of a like formula failed"                     },
    { YCALC_ERROR_BUILD_CIR , 'b' , "#b/cir"   , "dependence would create a circular loop"            },
    { YCALC_ERROR_BUILD_PNT , 'b' , "#b/pnt"   , "pointer dest label/ref is not addr/range type"      },
    { YCALC_ERROR_BUILD_TOK , 'b' , "#b/tok"   , "rpn token could not be recognized"                  },

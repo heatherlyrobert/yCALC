@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.3b"
-#define YCALC_VER_TXT   "lppad and rppad are now working"
+#define YCALC_VER_NUM   "0.3c"
+#define YCALC_VER_TXT   "like formula logic runs, but not unit tested yet"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -315,6 +315,7 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 #define     YCALC_ERROR_BUILD_RPN  'r'
 #define     YCALC_ERROR_BUILD_REF  '@'
 #define     YCALC_ERROR_BUILD_DEP  'd'
+#define     YCALC_ERROR_BUILD_LIK  '~'
 #define     YCALC_ERROR_BUILD_CIR  'c'
 #define     YCALC_ERROR_BUILD_PNT  '&'
 #define     YCALC_ERROR_BUILD_RNG  ':'

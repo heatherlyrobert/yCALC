@@ -468,6 +468,10 @@ yCALC_init              (char a_style)
    DEBUG_PROG   yLOG_info    ("detail"    , myCALC.status_detail);
    /*---(functions)----------------------*/
    DEBUG_PROG   yLOG_note    ("clearing function calls");
+   if (a_style == 'g')  yRPN_mode (S_LANG_GYGES);
+   else                 yRPN_mode (S_LANG_CBANG);
+   /*---(functions)----------------------*/
+   DEBUG_PROG   yLOG_note    ("clearing function calls");
    g_who_named = NULL;
    g_who_at    = NULL;
    g_labeler   = NULL;
