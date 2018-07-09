@@ -973,6 +973,14 @@ yCALC_handle            (char *a_label)
    if (s_origin != NULL) {
       rc = g_printer (s_origin);
    }
+   /*---(ripple to likes)----------------*/
+   if (x_deproot != NULL) {
+      rc = ycalc_build_ripple (x_deproot);
+      --rce;  if (rc < 0) {
+         DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+   }
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;

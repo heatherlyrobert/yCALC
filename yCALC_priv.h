@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.3c"
-#define YCALC_VER_TXT   "like formula logic runs, but not unit tested yet"
+#define YCALC_VER_NUM   "0.3d"
+#define YCALC_VER_TXT   "like formulas are up and unit tested.  YES!!!!"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -450,6 +450,7 @@ char        ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char
 char        ycalc_build_detail      (void *a_owner, tDEP_ROOT *a_deproot, char **a_source, char *a_type, double *a_value, char **a_string);
 char        ycalc_build_owner       (void *a_owner, tDEP_ROOT *a_deproot);
 char        ycalc_build_label       (char *a_label);
+char        ycalc_build_ripple      (tDEP_ROOT *a_deproot);
 
 
 

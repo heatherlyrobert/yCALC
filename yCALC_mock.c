@@ -848,6 +848,7 @@ ycalc__unit_mock        (char *a_question, char *a_label)
    char        x_dnote     [LEN_LABEL];
    char        x_string    [LEN_RECD ];
    char        x_print     [LEN_RECD ];
+   char        x_rpn       [LEN_RECD ];
    char        x_type      =  '?';
    double      x_value     =  0.0;
    /*---(preprare)-----------------------*/
@@ -879,6 +880,10 @@ ycalc__unit_mock        (char *a_question, char *a_label)
    if      (x_owner == NULL)              strlcpy (x_print , "", LEN_RECD );
    else if (x_owner->print  != NULL)      strlcpy (x_print , x_owner->print, LEN_RECD );
    else                                   strlcpy (x_print , "", LEN_RECD );
+   /*---(rpn)----------------------------*/
+   if      (x_deproot == NULL)            strlcpy (x_rpn   , "", LEN_RECD );
+   else if (x_deproot->rpn  != NULL)      strlcpy (x_rpn   , x_deproot->rpn, LEN_RECD );
+   else                                   strlcpy (x_rpn   , "", LEN_RECD );
    /*---(dependency list)----------------*/
    if      (strcmp (a_question, "count"    )      == 0) {
       x_owner  = myCALC.mhead; while (x_owner  != NULL) { ++x_fore; x_owner  = x_owner ->next; }
@@ -899,6 +904,9 @@ ycalc__unit_mock        (char *a_question, char *a_label)
    }
    else if (strcmp (a_question, "status"   )      == 0) {
       snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock status: %-5s %-8s %-10s %s", x_label, x_rnote, x_onote, x_dnote);
+   }
+   else if (strcmp (a_question, "rpn"      )      == 0) {
+      snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock rpn   : %2d:%s:", strlen (x_rpn), x_rpn);
    }
    else if (strcmp (a_question, "value"    )      == 0) {
       snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock value : %-5s %c %8.2lf :%-.45s:", x_label, x_type, x_value, x_string);

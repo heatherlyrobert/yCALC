@@ -480,7 +480,6 @@ ycalc__build_value      (tDEP_ROOT *a_thing, tCALC *a_calc, char *a_token)
    for (i = 0; i < x_len; ++i) {
       if (strchr (x_valid, a_token [i]) != NULL)  continue;
       DEBUG_CALC   yLOG_note    ("found a bad character");
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return 0;
    }
    /*---(header)-------------------------*/
@@ -535,7 +534,7 @@ ycalc__build_like       (tDEP_ROOT *a_deproot, char **a_source, char *a_type, ch
    char      **x_source    = NULL;
    char       *x_type      = NULL;
    char        x_work      [LEN_RECD];
-   char       *x_rpn       = &x_work;
+   char        x_rpn       [LEN_RECD];
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(check for reference)------------*/
@@ -556,7 +555,7 @@ ycalc__build_like       (tDEP_ROOT *a_deproot, char **a_source, char *a_type, ch
       return rc;
    }
    /*---(set dependency)-----------------*/
-   rc = ycalc_deps_create (G_DEP_SOURCE, &x_ref, &a_deproot);
+   rc = ycalc_deps_create (G_DEP_SOURCE, &a_deproot, &x_ref);
    DEBUG_CALC   yLOG_value   ("create"    , rc);
    if (rc < 0) {
       rc = YCALC_ERROR_BUILD_DEP;
@@ -579,6 +578,13 @@ ycalc__build_like       (tDEP_ROOT *a_deproot, char **a_source, char *a_type, ch
       return rc;
    }
    DEBUG_CALC   yLOG_info    ("*x_source" , *x_source);
+   /*---(check source type)--------------*/
+   DEBUG_CALC   yLOG_char    ("*x_type"   , *x_type);
+   if (strchr ("=#", *x_type) == NULL) {
+      rc = YCALC_ERROR_BUILD_LIK;
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
    /*---(get offset)---------------------*/
    rc = g_addresser (a_deproot->owner, &xo, &yo, &zo);
    DEBUG_CALC   yLOG_value   ("cur_addr"  , rc);
@@ -603,15 +609,15 @@ ycalc__build_like       (tDEP_ROOT *a_deproot, char **a_source, char *a_type, ch
    /*---(adjust rpn)---------------------*/
    strlcpy (x_work, *x_source, LEN_RECD);
    DEBUG_CALC   yLOG_info    ("x_work"    , x_work);
-   rc = yRPN_adjust_norm (&x_rpn, xo, yo, zo, LEN_RECD);
+   rc = yRPN_adjust_norm (x_work, xo, yo, zo, LEN_RECD, x_rpn);
    DEBUG_CALC   yLOG_value   ("adj_rpn"   , rc);
    if (rc < 0) {
       rc = YCALC_ERROR_BUILD_LIK;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
-   DEBUG_CALC   yLOG_info    ("x_work"   , x_work);
-   strlcpy (a_rpn, x_work, LEN_RECD);
+   DEBUG_CALC   yLOG_info    ("x_rpn"    , x_rpn);
+   strlcpy (a_rpn, x_rpn, LEN_RECD);
    /*---(update type)--------------------*/
    DEBUG_CALC   yLOG_char    ("*x_type"   , *x_type);
    if      (*x_type == YCALC_DATA_NFORM)   *a_type = YCALC_DATA_NLIKE;
@@ -620,6 +626,50 @@ ycalc__build_like       (tDEP_ROOT *a_deproot, char **a_source, char *a_type, ch
       rc = YCALC_ERROR_BUILD_LIK;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
+   }
+   /*---(complete)-------------------------*/
+   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+ycalc_build_ripple      (tDEP_ROOT *a_deproot)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rc          =    0;
+   int         x_count     =    0;
+   int         i           =    0;
+   int         n           =    0;
+   tDEP_LINK  *x_next      = NULL;
+   tDEP_LINK  *x_saved     [LEN_RECD];
+   char        x_label     [LEN_LABEL];
+   /*---(header)-------------------------*/
+   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   /*---(capture dependencies)-----------*/
+   x_count = a_deproot->npro;
+   DEBUG_DEPS   yLOG_value   ("src npros" , x_count);
+   x_next = a_deproot->pros;
+   while (x_next != NULL) {
+      strlcpy (x_label, ycalc_call_labeler (x_next->target), LEN_LABEL);
+      DEBUG_DEPS   yLOG_complex ("check"     , "%c, %s", x_next->type, x_label);
+      if (x_next->type == G_DEP_LIKE) {
+         DEBUG_DEPS   yLOG_note    ("found like");
+         x_saved [n] = x_next;
+         ++n;
+      }
+      x_next = x_next->next;
+   }
+   /*---(handle empty)-------------------*/
+   if (n == 0) {
+      DEBUG_DEPS   yLOG_note    ("no like dependencies found");
+      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   /*---(walk through dependencies)------*/
+   for (i = 0; i < n; ++i) {
+      x_next = x_saved [i];
+      strlcpy (x_label, ycalc_call_labeler (x_next->target), LEN_LABEL);
+      rc = yCALC_handle (x_label);
    }
    /*---(complete)-------------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
@@ -668,7 +718,7 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
    --rce;  if (*a_type == YCALC_DATA_SLIKE || *a_type == YCALC_DATA_NLIKE) {
       rc = ycalc__build_like (a_deproot, a_source, a_type, x_work);
       DEBUG_CALC   yLOG_value   ("like"      , rc);
-      if (rc < 0) {
+      if (rc != 0) {
          ycalc_handle_error (rc , a_type, a_value, a_string, "like");
          DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
@@ -684,7 +734,7 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
    DEBUG_CALC   yLOG_value   ("x_nrpn"    , x_nrpn);
    DEBUG_CALC   yLOG_point   ("x_rpn"     , x_rpn);
    --rce;  if (x_nrpn <= 0 || x_rpn == NULL) {
-      if (rc < 0) {
+      if (rc != 0) {
          sprintf (t, "pos %d", yRPN_errorpos ());
          ycalc_handle_error (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, t);
       } else {
@@ -836,6 +886,43 @@ ycalc_build_label       (char *a_label)
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                         unit testing                         ----===*/
+/*====================------------------------------------====================*/
+static void      o___UNIT_TEST_______________o (void) {;}
+
+char*        /*-> unit testing accessor --------------[ light  [us.IA0.2A5.X3]*/ /*-[02.0000.00#.#]-*/ /*-[--.---.---.--]-*/
+ycalc__unit_build       (char *a_question, char *a_label)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        x_type      =  '-';
+   tDEP_ROOT  *x_deproot   = NULL;
+   char        x_label     [LEN_LABEL];
+   /*---(initialize)---------------------*/
+   strlcpy (ycalc__unit_answer, "yCALC_unit, unknown request", 100);
+   /*> /+---(string testing)-----------------+/                                                                                                                                                                                                                                  <* 
+    *> if      (strncmp (a_question, "top"       , 20)  == 0) {                                                                                                                                                                                                                  <* 
+    *>    if (s_nstack <= 0)   snprintf (ycalc__unit_answer, LEN_STR, "STACK top   (%2d) : %c %8.2lf %-10p %-.30s", s_nstack, S_TYPE_EMPTY, 0.0, NULL, "---");                                                                                                                   <* 
+    *>    else {                                                                                                                                                                                                                                                                 <* 
+    *>       switch (s_stack [s_nstack - 1].typ) {                                                                                                                                                                                                                               <* 
+    *>       case S_TYPE_NUM :                                                                                                                                                                                                                                                   <* 
+    *>       case S_TYPE_STR :                                                                                                                                                                                                                                                   <* 
+    *>          snprintf (ycalc__unit_answer, LEN_STR, "STACK top   (%2d) : %c %8.2lf %-10p %-.30s", s_nstack, s_stack [s_nstack - 1].typ, s_stack [s_nstack - 1].num, s_stack [s_nstack - 1].ref, (s_stack [s_nstack - 1].str == NULL) ? "---" : s_stack [s_nstack - 1].str);   <* 
+    *>          break;                                                                                                                                                                                                                                                           <* 
+    *>       case S_TYPE_REF :                                                                                                                                                                                                                                                   <* 
+    *>          x_deproot = s_stack [s_nstack - 1].ref;                                                                                                                                                                                                                          <* 
+    *>          strlcpy (x_label, ycalc__mock_labeler (x_deproot->owner), LEN_LABEL);                                                                                                                                                                                            <* 
+    *>          snprintf (ycalc__unit_answer, LEN_STR, "STACK top   (%2d) : %c %8.2lf %-10.10s %-.30s", s_nstack, s_stack [s_nstack - 1].typ, s_stack [s_nstack - 1].num, x_label, (s_stack [s_nstack - 1].str == NULL) ? "---" : s_stack [s_nstack - 1].str);                   <* 
+    *>          break;                                                                                                                                                                                                                                                           <* 
+    *>       }                                                                                                                                                                                                                                                                   <* 
+    *>    }                                                                                                                                                                                                                                                                      <* 
+    *> }                                                                                                                                                                                                                                                                         <*/
+   /*---(complete)-----------------------*/
+   return ycalc__unit_answer;
 }
 
 

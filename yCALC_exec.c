@@ -559,13 +559,15 @@ ycalc__exec_wrap        (char *a_type, double *a_value, char **a_string)
       return rce;
    }
    /*---(results)------------------------*/
-   if      (*a_type == YCALC_DATA_NFORM) {
+   switch (*a_type) {
+   case YCALC_DATA_NFORM : case YCALC_DATA_NLIKE :
       *a_value = ycalc_popval (__FUNCTION__);
       DEBUG_CALC   yLOG_value   ("value"     , *a_value);
-   }
-   else if (*a_type == YCALC_DATA_SFORM) {
+      break;
+   case YCALC_DATA_SFORM : case YCALC_DATA_SLIKE :
       *a_string = ycalc_popstr (__FUNCTION__);
       DEBUG_CALC   yLOG_info    ("string"    , *a_string);
+      break;
    }
    /*---(complete)-------------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
