@@ -247,6 +247,15 @@ ycalc__seq_recursion    (int a_level, tDEP_LINK *a_dep, char a_dir, long a_stamp
    return 0;
 }
 
+long
+yCALC_getstamp          (void *a_deproot)
+{
+   tDEP_ROOT  *x_deproot   = NULL;
+   if (a_deproot == NULL)  return -1;
+   x_deproot = (tDEP_ROOT *) a_deproot;
+   return x_deproot->u;
+}
+
 char         /*-> dependency-based calc marking ------[ ------ [fe.I85.584.97]*/ /*-[03.0000.063.!]-*/ /*-[--.---.---.--]-*/
 ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, long a_stamp, void *a_consumer)
 {

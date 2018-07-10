@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.3d"
-#define YCALC_VER_TXT   "like formulas are up and unit tested.  YES!!!!"
+#define YCALC_VER_NUM   "0.3e"
+#define YCALC_VER_TXT   "file read and save is back to working"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20

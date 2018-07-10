@@ -92,6 +92,7 @@ char        yCALC_range             (void *a_source, int x1, int y1, int z1, int
 
 char        yCALC_handle            (char *a_label);
 
+long        yCALC_getstamp          (void *a_deproot);
 char        yCALC_seq_up            (void *a_deproot, void *a_consumer);
 char        yCALC_seq_down          (void *a_deproot, void *a_consumer);
 char        yCALC_seq_full          (void *a_consumer);
