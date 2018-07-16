@@ -943,7 +943,7 @@ yCALC_handle            (char *a_label)
       }
    }
    /*---(calc upward)--------------------*/
-   if (x_deproot != NULL && strchr (YCALC_GROUP_CALC, *x_type) != NULL) {
+   if (x_deproot != NULL) {
       rc = yCALC_seq_up (x_deproot, ycalc_execute_auto);
       DEBUG_CALC   yLOG_value   ("seq"       , rc);
       --rce;  if (rc < 0)  {

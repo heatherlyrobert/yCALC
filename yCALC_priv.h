@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.3e"
-#define YCALC_VER_TXT   "file read and save is back to working"
+#define YCALC_VER_NUM   "0.3f"
+#define YCALC_VER_TXT   "fixed blank cell creation and calculation on literal changes"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
