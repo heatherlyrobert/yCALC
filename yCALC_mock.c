@@ -865,11 +865,12 @@ ycalc__unit_mock        (char *a_question, char *a_label)
    if (x_deproot == NULL)  strlcpy (x_dnote , "-----"   , LEN_LABEL);
    else                    strlcpy (x_dnote , "enabled" , LEN_LABEL);
    /*---(string)-------------------------*/
-   if      (x_owner == NULL)              strlcpy (x_string, "", LEN_RECD );
-   else if (strchr ("s#5E", x_owner->type) == NULL)   strlcpy (x_string, "", LEN_RECD );
-   else if (x_owner->string != NULL)      strlcpy (x_string, x_owner->string, LEN_RECD );
-   else if (x_owner->type == 's' && x_owner->source != NULL)         strlcpy (x_string, x_owner->source, LEN_RECD );
-   else                                   strlcpy (x_string, "", LEN_RECD );
+   if      (x_owner == NULL)                                  strlcpy (x_string, "", LEN_RECD );
+   else if (strchr ("&:", x_owner->type) != NULL)             strlcpy (x_string, x_owner->source, LEN_RECD );
+   else if (strchr ("s#5E", x_owner->type) == NULL)           strlcpy (x_string, "", LEN_RECD );
+   else if (x_owner->string != NULL)                          strlcpy (x_string, x_owner->string, LEN_RECD );
+   else if (x_owner->type == 's' && x_owner->source != NULL)  strlcpy (x_string, x_owner->source, LEN_RECD );
+   else                                                       strlcpy (x_string, "", LEN_RECD );
    /*---(value)--------------------------*/
    if      (x_owner == NULL)              x_value = 0.0;
    else                                   x_value = x_owner->value;

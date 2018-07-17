@@ -46,6 +46,7 @@ const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR] = {
    { YCALC_ERROR_EXEC_BRNG , 'e' , "#e/beg"   , "beginning of range not legal"                       },
    { YCALC_ERROR_EXEC_ERNG , 'e' , "#e/end"   , "end of range not legal"                             },
    { YCALC_ERROR_EXEC_MISS , 'e' , "#e/mis"   , "lookup or index function can not find result"       },
+   { YCALC_ERROR_EXEC_PTR  , 'e' , "#e/ptr"   , "pointer derefenrencing not valid"                   },
    { G_ERROR_RANGE         , 'b' , "#range"   , ""                                                   },
    { YCALC_ERROR_UNKNOWN   , 'b' , "#boom"    , ""                                                   },
    /* ---abbr-------------- stage   --disp-     ---description-------------------------------------  */
@@ -1389,7 +1390,6 @@ ycalc_pointer       (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    tDEP_ROOT  *x_ref       = NULL;
-   tDEP_ROOT  *x_other     = NULL;
    tCALC      *x_beg       = NULL;
    tCALC      *x_end       = NULL;
    /*---(header)-------------------------*/
@@ -1398,7 +1398,7 @@ ycalc_pointer       (void)
    x_ref = ycalc_popref (__FUNCTION__);
    DEBUG_CALC   yLOG_point   ("x_ref"     , x_ref);
    if (x_ref == NULL) {
-      myCALC.trouble = YCALC_ERROR_EXEC_PTR;
+      g_error        = YCALC_ERROR_EXEC_PTR;
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return;
    }
@@ -1406,7 +1406,7 @@ ycalc_pointer       (void)
    x_beg = x_ref->chead;
    DEBUG_CALC   yLOG_point   ("x_beg"     , x_beg);
    if (x_beg == NULL || x_beg->t != G_TYPE_REF || x_beg->r == NULL) {
-      myCALC.trouble = YCALC_ERROR_EXEC_PTR;
+      g_error        = YCALC_ERROR_EXEC_PTR;
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return;
    }

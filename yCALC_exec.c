@@ -245,7 +245,9 @@ ycalc_popval            (char *a_func)
          return 0.0;
       }
       x_deproot = s_stack [s_nstack].ref;
-      g_valuer (x_deproot->owner, NULL, &s_value, NULL);
+      g_valuer (x_deproot->owner, &s_type, &s_value, NULL);
+      if (s_type == YCALC_DATA_ADDR)   g_error = YCALC_ERROR_EXEC_PTR;
+      if (s_type == YCALC_DATA_RANGE)  g_error = YCALC_ERROR_EXEC_PTR;
       return  s_value;
       break;
    }
@@ -290,7 +292,9 @@ ycalc_popstr            (char *a_func)
          return  strndup (g_nada, LEN_RECD);
       }
       x_deproot = s_stack [s_nstack].ref;
-      g_valuer (x_deproot->owner, NULL, NULL, &s_string);
+      g_valuer (x_deproot->owner, &s_type, NULL, &s_string);
+      if (s_type == YCALC_DATA_ADDR)   g_error = YCALC_ERROR_EXEC_PTR;
+      if (s_type == YCALC_DATA_RANGE)  g_error = YCALC_ERROR_EXEC_PTR;
       if (s_string == NULL) return  strndup (g_nada  , LEN_RECD);
       else                  return  strndup (s_string, LEN_RECD);
    }
@@ -313,10 +317,12 @@ ycalc_popref            (char *a_func)
    /*---(handle stack types)-------------*/
    switch (s_stack[s_nstack].typ) {
    case S_TYPE_NUM :
+      g_error        = YCALC_ERROR_EXEC_PTR;
       myCALC.trouble = YCALC_ERROR_EXEC_PTR;
       return  NULL;
       break;
    case S_TYPE_STR :
+      g_error        = YCALC_ERROR_EXEC_PTR;
       myCALC.trouble = YCALC_ERROR_EXEC_PTR;
       return  NULL;
       break;
@@ -530,7 +536,7 @@ ycalc__exec_wrap        (char *a_type, double *a_value, char **a_string)
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(check errors)-------------------*/
    DEBUG_CALC   yLOG_value   ("g_error"   , g_error);
-   --rce;  if (g_error <  0) {
+   --rce;  if (g_error !=  0) {
       *a_type = YCALC_DATA_ERROR;
       ycalc_handle_error (g_error, a_type, a_value, a_string, "");
       /*> a_curr->t = YCALC_DATA_ERROR;                                                            <* 
@@ -538,7 +544,7 @@ ycalc__exec_wrap        (char *a_type, double *a_value, char **a_string)
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   --rce;  if (g_error >  0) {
+   --rce;  if (g_error !=  0) {
       *a_type = YCALC_DATA_ERROR;
       ycalc_handle_error (g_error, a_type, a_value, a_string, "");
       /*> a_curr->t = YCALC_DATA_ERROR;                                                            <* 
@@ -562,10 +568,22 @@ ycalc__exec_wrap        (char *a_type, double *a_value, char **a_string)
    switch (*a_type) {
    case YCALC_DATA_NFORM : case YCALC_DATA_NLIKE :
       *a_value = ycalc_popval (__FUNCTION__);
+      --rce;  if (g_error !=  0) {
+         *a_type = YCALC_DATA_ERROR;
+         ycalc_handle_error (g_error, a_type, a_value, a_string, "");
+         DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
       DEBUG_CALC   yLOG_value   ("value"     , *a_value);
       break;
    case YCALC_DATA_SFORM : case YCALC_DATA_SLIKE :
       *a_string = ycalc_popstr (__FUNCTION__);
+      --rce;  if (g_error !=  0) {
+         *a_type = YCALC_DATA_ERROR;
+         ycalc_handle_error (g_error, a_type, a_value, a_string, "");
+         DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
       DEBUG_CALC   yLOG_info    ("string"    , *a_string);
       break;
    }
