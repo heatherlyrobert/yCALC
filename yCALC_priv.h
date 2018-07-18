@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.3g"
-#define YCALC_VER_TXT   "pointer address multiple indirection working, error msgs, and unit tested"
+#define YCALC_VER_NUM   "0.3h"
+#define YCALC_VER_TXT   "range pointer address multiple indirection working, error msgs, and unit tested"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -322,11 +322,11 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 #define     YCALC_ERROR_BUILD_TOK  '?'
 
 #define     YCALC_ERROR_EXEC_PTR   '*'
+#define     YCALC_ERROR_EXEC_PTRR  'R'
 #define     YCALC_ERROR_EXEC_FMT   'F'
 #define     YCALC_ERROR_EXEC_DATE  'D'
 #define     YCALC_ERROR_EXEC_BRNG  '<'
 #define     YCALC_ERROR_EXEC_ERNG  '>'
-#define     YCALC_ERROR_EXEC_MISS  '£'
 #define     YCALC_ERROR_EXEC_MISS  '£'
 
 #define     YCALC_ERROR_UNKNOWN    'U'

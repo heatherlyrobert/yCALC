@@ -462,7 +462,11 @@ ycalc__range_gather     (char *a_func)
    static tDEP_ROOT *x_saved  = NULL;
    /*---(prepare)------------------------*/
    x_deproot = (tDEP_ROOT *) ycalc_popref (__FUNCTION__);
-   /*> if (x_deproot == x_saved)  return;                                             <*/
+   DEBUG_CALC   yLOG_char    ("range#"    , x_deproot->range);
+   if (x_deproot->range < 0) {
+      g_error        = YCALC_ERROR_EXEC_PTR;
+      return;
+   }
    /*---(initialize)---------------------*/
    s_count_all  = ycalc_range_size (x_deproot->range);
    s_count_fil  = 0;

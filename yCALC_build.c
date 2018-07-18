@@ -342,22 +342,22 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    /*---(delete first ref)---------------*/
    x_owner = a_calc->prev->prev->r->owner;
    rc = ycalc_deps_delete (G_DEP_REQUIRE, &a_deproot, &(a_calc->prev->prev->r), &x_owner);
-   if (rc <  0) {     
-      rc = YCALC_ERROR_BUILD_DEP;
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
-      return rc;
-   }
+   /*> if (rc <  0) {                                                                 <* 
+    *>    rc = YCALC_ERROR_BUILD_DEP;                                                 <* 
+    *>    DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);                               <* 
+    *>    return rc;                                                                  <* 
+    *> }                                                                              <*/
    a_calc->prev->prev->t = G_TYPE_NOOP;
    /*> ycalc_call_who_at (x_beg, y_beg, z_beg, YCALC_LOOK, NULL, &x_temp);            <*/
    /*> ycalc_call_reaper (NULL, &x_temp);                                             <*/
    /*---(delete second ref)--------------*/
    x_owner = a_calc->prev->r->owner;
    rc = ycalc_deps_delete (G_DEP_REQUIRE, &a_deproot, &(a_calc->prev->r), &x_owner);
-   if (rc <  0) {     
-      rc = YCALC_ERROR_BUILD_DEP;
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
-      return rc;
-   }
+   /*> if (rc <  0) {                                                                 <* 
+    *>    rc = YCALC_ERROR_BUILD_DEP;                                                 <* 
+    *>    DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);                               <* 
+    *>    return rc;                                                                  <* 
+    *> }                                                                              <*/
    a_calc->prev->t = G_TYPE_NOOP;
    /*> ycalc_call_who_at (x_end, y_end, z_end, YCALC_LOOK, NULL, &x_temp);            <*/
    /*> ycalc_call_reaper (NULL, &x_temp);                                             <*/
