@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.3h"
-#define YCALC_VER_TXT   "range pointer address multiple indirection working, error msgs, and unit tested"
+#define YCALC_VER_NUM   "0.3i"
+#define YCALC_VER_TXT   "updated range add function to position on correct tab"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20

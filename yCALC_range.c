@@ -305,6 +305,7 @@ ycalc_range_add         (int bx, int ex, int by, int ey, int bz, int ez)
    }
    sprintf (t, "­a%d", n + 1);
    strlcpy (s_ranges [n].name, t, LEN_LABEL);
+   DEBUG_DEPS    yLOG_info    ("range"     , t);
    /*---(assign boundaries---------------*/
    DEBUG_DEPS    yLOG_note    ("assign boundaries");
    s_ranges [n].bx  = bx;
