@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.3i"
-#define YCALC_VER_TXT   "updated range add function to position on correct tab"
+#define YCALC_VER_NUM   "0.3j"
+#define YCALC_VER_TXT   "fixed trouble with merging rules that botched one in testing.gyges"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20

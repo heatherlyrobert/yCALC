@@ -233,6 +233,37 @@ ycalc__merge_leftmost   (tDEP_ROOT *a_deproot, tDEP_ROOT **a_origin)
    return 0;
 }
 
+char         /*-> check and coordinate an unmerge ----[ ------ [ge.630.133.34]*/ /*-[01.0000.013.4]-*/ /*-[--.---.---.--]-*/
+ycalc__unmerge_right    (tDEP_ROOT **a_deproot, int a_start)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tDEP_LINK  *x_next      = NULL;
+   int         x           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   DEBUG_DEPS   yLOG_value   ("a_start"   , a_start);
+   DEBUG_DEPS   yLOG_info    ("label"     , ycalc_call_labeler (a_deproot));
+   /*---(remove all)---------------------*/
+   x_next = (*a_deproot)->reqs;
+   DEBUG_DEPS   yLOG_point   ("x_next"    , x_next);
+   while (x_next != NULL) {
+      DEBUG_DEPS   yLOG_char    ("type"      , x_next->type);
+      if (x_next->type == G_DEP_MERGED) {
+         rc = g_addresser (x_next->target->owner, &x, NULL, NULL);
+         DEBUG_DEPS   yLOG_value   ("x"         , x);
+         if (x >= a_start) {
+            rc = ycalc_deps_delete  (x_next->type, a_deproot, &(x_next->target), &(x_next->target->owner));
+         }
+      }
+      x_next = x_next->next;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
 char         /*-> find the merge source --------------[ leaf   [gp.420.113.30]*/ /*-[01.0000.306.#]-*/ /*-[--.---.---.--]-*/
 ycalc__merge_right      (tDEP_ROOT *a_source, tDEP_ROOT *a_deproot)
 {
@@ -298,37 +329,7 @@ ycalc__merge_right      (tDEP_ROOT *a_source, tDEP_ROOT *a_deproot)
          return 0;
       }
       *x_type = YCALC_DATA_MERGED;
-   }
-   /*---(complete)-----------------------*/
-   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char         /*-> check and coordinate an unmerge ----[ ------ [ge.630.133.34]*/ /*-[01.0000.013.4]-*/ /*-[--.---.---.--]-*/
-ycalc__unmerge_right    (tDEP_ROOT **a_deproot, int a_start)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   tDEP_LINK  *x_next      = NULL;
-   int         x           =    0;
-   /*---(header)-------------------------*/
-   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
-   DEBUG_DEPS   yLOG_value   ("a_start"   , a_start);
-   DEBUG_DEPS   yLOG_info    ("label"     , ycalc_call_labeler (a_deproot));
-   /*---(remove all)---------------------*/
-   x_next = (*a_deproot)->reqs;
-   DEBUG_DEPS   yLOG_point   ("x_next"    , x_next);
-   while (x_next != NULL) {
-      DEBUG_DEPS   yLOG_char    ("type"      , x_next->type);
-      if (x_next->type == G_DEP_MERGED) {
-         rc = g_addresser (x_next->target->owner, &x, NULL, NULL);
-         DEBUG_DEPS   yLOG_value   ("x"         , x);
-         if (x >= a_start) {
-            rc = ycalc_deps_delete  (x_next->type, a_deproot, &(x_next->target), &(x_next->target->owner));
-         }
-      }
-      x_next = x_next->next;
+      rc = ycalc__unmerge_right (&x_next, 0);
    }
    /*---(complete)-----------------------*/
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
@@ -428,6 +429,7 @@ ycalc_merge_check    (tDEP_ROOT *a_source)
          return 0;
       }
       *x_type = YCALC_DATA_MERGED;
+      rc = ycalc__unmerge_right (&x_next, 0);
    }
    /*---(complete)-----------------------*/
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
