@@ -411,7 +411,7 @@ ycalc_lppad        (void)
    if (n     <  0  )  n = 0;
    /*---(process)------------------------*/
    strltrim (r, ySTR_BOTH, LEN_RECD);
-   strlpad (r, t, ' ', '<', n);
+   strlpad (r, t, ' ', '>', n);
    ycalc_pushstr (__FUNCTION__, t);
    /*---(clean up)-----------------------*/
    free (r);
@@ -430,7 +430,7 @@ ycalc_rppad        (void)
    if (n     <  0  )  n = 0;
    /*---(process)------------------------*/
    strltrim (r, ySTR_BOTH, LEN_RECD);
-   strlpad (r, t, ' ', '>', n);
+   strlpad (r, t, ' ', '<', n);
    ycalc_pushstr (__FUNCTION__, t);
    /*---(clean up)-----------------------*/
    free (r);
