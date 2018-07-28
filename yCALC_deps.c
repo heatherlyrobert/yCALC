@@ -1616,12 +1616,22 @@ yCALC_npro              (void *a_deproot)
 }
 
 char
-yCALC_stamp             (void *a_deproot, long a_stamp)
+yCALC_stamp_cmp         (void *a_deproot, long a_stamp)
 {
    tDEP_ROOT  *x_deproot   = NULL;
    if (a_deproot == NULL)        return 0;
    x_deproot = (tDEP_ROOT *) a_deproot;
    if (x_deproot->u == a_stamp)  return 1;
+   return 0;
+}
+
+char
+yCALC_stamp_set         (void *a_deproot, long a_stamp)
+{
+   tDEP_ROOT  *x_deproot   = NULL;
+   if (a_deproot == NULL)        return 0;
+   x_deproot = (tDEP_ROOT *) a_deproot;
+   x_deproot->u = a_stamp;
    return 0;
 }
 

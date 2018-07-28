@@ -15,7 +15,7 @@ const tyCALC_TYPES  g_ycalc_types [YCALC_MAX_TYPE] = {
    {  YCALC_DATA_NLIKE  , "num-like"   , '~', 'y', 'y', 'y', '=', "numeric formula derived from another cell"          },
    {  YCALC_DATA_ADDR   , "address"    , '&', 'y', '-', 'y', '-', "address pointer to use in other formulas"           },
    {  YCALC_DATA_RANGE  , "range"      , '&', 'y', '-', 'y', '-', "range pointer to use in other formulas"             },
-   {  YCALC_DATA_INTERN , "internal"   , '­', 'y', '-', 'y', '-', "an actual internal range to use in other formulas"  },
+   {  YCALC_DATA_INTERN , "internal"   , '­', '-', '-', '-', '-', "an actual internal range to use in other formulas"  },
    {  YCALC_DATA_MERGED , "merged"     , '<', '-', '-', 'y', '-', "empty cell used to present merged information"      },
    {  YCALC_DATA_ERROR  , "error"      , ' ', '-', '-', 'y', 'e', "error status"                                       },
    /*---type------------ -terse-------- -pre -rpn calc -dep -res ---description--------------------------------------- */
@@ -244,7 +244,7 @@ ycalc__unmerge_right    (tDEP_ROOT **a_deproot, int a_start)
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    DEBUG_DEPS   yLOG_value   ("a_start"   , a_start);
-   DEBUG_DEPS   yLOG_info    ("label"     , ycalc_call_labeler (a_deproot));
+   DEBUG_DEPS   yLOG_info    ("label"     , ycalc_call_labeler (*a_deproot));
    /*---(remove all)---------------------*/
    x_next = (*a_deproot)->reqs;
    DEBUG_DEPS   yLOG_point   ("x_next"    , x_next);
@@ -688,12 +688,18 @@ ycalc_classify_trusted  (void **a_owner, tDEP_ROOT **a_deproot, char **a_source,
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(clear)--------------------------*/
-   rc = ycalc_classify_clear (a_owner, a_deproot, a_type, a_value, a_string);
-   DEBUG_CALC   yLOG_value   ("clear"     , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+   DEBUG_CALC   yLOG_value   ("prefix"    , *a_source [0]);
+   if (*a_source [0] != YCALC_DATA_INTERN) {
+      rc = ycalc_classify_clear (a_owner, a_deproot, a_type, a_value, a_string);
+      DEBUG_CALC   yLOG_value   ("clear"     , rc);
+      --rce;  if (rc < 0) {
+         DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+   } else {
+      DEBUG_CALC   yLOG_note    ("do not clear internal summary owners");
    }
+   /*---(defense)------------------------*/
    DEBUG_CALC   yLOG_point   ("*a_owner"  , *a_owner);
    --rce;  if (*a_owner == NULL) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
@@ -701,12 +707,16 @@ ycalc_classify_trusted  (void **a_owner, tDEP_ROOT **a_deproot, char **a_source,
    }
    DEBUG_CALC   yLOG_point   ("*a_deproot", *a_deproot);
    /*---(reset all values)---------------*/
-   DEBUG_CALC   yLOG_note    ("initialize to blank data item");
-   *a_type   = YCALC_DATA_BLANK;
-   *a_value  = 0.0;
-   if (*a_string != NULL) {
-      free (*a_string);
-      *a_string = NULL;
+   if (*a_source [0] != YCALC_DATA_INTERN) {
+      DEBUG_CALC   yLOG_note    ("initialize to blank data item");
+      *a_type   = YCALC_DATA_BLANK;
+      *a_value  = 0.0;
+      if (*a_string != NULL) {
+         free (*a_string);
+         *a_string = NULL;
+      }
+   } else {
+      DEBUG_CALC   yLOG_note    ("do not initialize internal summary owners");
    }
    /*---(prepare)------------------------*/
    rc = ycalc__classify_content   (a_source, a_type, a_value);

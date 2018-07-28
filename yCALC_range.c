@@ -163,6 +163,8 @@ ycalc_range_delete      (tDEP_ROOT *a_deproot, tDEP_ROOT *a_range)
    int         n           =   -1;
    void       *x_owner     = NULL;
    tDEP_ROOT  *x_deproot   = NULL;
+   char      **x_source    = NULL;
+   char       *x_type      = NULL;
    /*---(prepare)------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    DEBUG_CALC   yLOG_point   ("a_deproot"  , a_deproot);
@@ -187,22 +189,34 @@ ycalc_range_delete      (tDEP_ROOT *a_deproot, tDEP_ROOT *a_range)
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(clear label)--------------------*/
+   rc = g_pointer (a_range->owner, &x_source, &x_type, NULL, NULL);
+   *x_type = YCALC_DATA_BLANK;
+   if (*x_source != NULL)  free (*x_source);
+   *x_source = NULL;
    /*---(remove data items)--------------*/
    x_next = a_range->reqs;
    while (x_next != NULL) {
       x_save    = x_next->next;
       x_deproot = x_next->target;
       x_owner   = x_next->target->owner;
+      DEBUG_CALC   yLOG_value   ("nreq"      , a_range->nreq);
       DEBUG_CALC   yLOG_char    ("link type" , x_next->type);
-      DEBUG_DEPS   yLOG_complex ("target"    , ycalc_call_labeler (x_next->target));
+      DEBUG_DEPS   yLOG_complex ("range targ"    , ycalc_call_labeler (x_next->target));
       rc = ycalc_deps_delete (x_next->type, &(x_next->source), &(x_next->target), &(x_next->target->owner));
       DEBUG_CALC   yLOG_value   ("delete"    , rc);
       /*> rc = ycalc_call_reaper (&x_owner, &x_deproot);                              <*/
       /*> DEBUG_CALC   yLOG_value   ("reaper"    , rc);                               <*/
       x_next = x_save;
    }
+   DEBUG_CALC   yLOG_point   ("a_range"   , a_range);
+   DEBUG_CALC   yLOG_value   ("nreq"      , a_range->nreq);
+   DEBUG_CALC   yLOG_point   ("owner"     , a_range->owner);
    /*---(delete link)--------------------*/
-   rc = ycalc_deps_delete (G_DEP_POINTER, &a_deproot, &a_range, NULL);
+   x_owner = a_range->owner;
+   rc = ycalc_deps_delete (G_DEP_POINTER, &a_deproot, &a_range, &x_owner);
+   DEBUG_CALC   yLOG_point   ("a_range"   , a_range);
+   DEBUG_CALC   yLOG_point   ("x_owner"   , x_owner);
    rc = ycalc_range_wipe  (n);
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
@@ -284,15 +298,17 @@ ycalc_range_add         (int bx, int ex, int by, int ey, int bz, int ez)
    char        rce         =  -10;
    char        rc          =    0;
    int         n           =    0;
-   char        t           [LEN_LABEL];
+   char        t           [LEN_DESC ];
    int         x_pos       = 0;             /* iterator -- columns            */
    int         y_pos       = 0;             /* iterator -- rows               */
    int         z_pos       = 0;             /* iterator -- tabs               */
    tDEP_ROOT  *x_range     = NULL;
    tDEP_ROOT  *x_dst       = NULL;
    void       *x_owner     = NULL;
-   char        x_type      =  '-';
-   char       *x_source    = NULL;
+   char       *x_type      = NULL;
+   char      **x_source    = NULL;
+   char        x_beg       [LEN_LABEL];
+   char        x_end       [LEN_LABEL];
    /*---(begin)--------------------------*/
    DEBUG_DEPS    yLOG_enter   (__FUNCTION__);
    DEBUG_DEPS    yLOG_complex ("range"     , "bx=%4d, ex=%4d, by=%4d, ey=%4d, bz=%4d, ez=%4d", bx, ex, by, ey, bz, ez);
@@ -318,10 +334,15 @@ ycalc_range_add         (int bx, int ex, int by, int ey, int bz, int ez)
    rc = ycalc_call_who_named (t, YCALC_FULL, &x_owner, &x_range);
    s_ranges [n].ycalc = x_range;
    x_range->range = n;
-   /*> rc = g_pointer (x_owner, &x_source, &x_type, NULL, NULL);                      <*/
-   /*> if (*x_source != NULL)  free (*x_source);                                      <* 
-    *> *x_source = strdup (t);                                                        <* 
-    *> x_type   = YCALC_DATA_RANGE;                                                   <*/
+   rc = g_pointer (x_owner, &x_source, &x_type, NULL, NULL);
+   *x_type = YCALC_DATA_INTERN;
+   str4gyges (bx, by, bz, NULL, x_beg);
+   str4gyges (ex, ey, ez, NULL, x_end);
+   sprintf (t, "­%s..%s", x_beg, x_end);
+   if (*x_source != NULL)  free (*x_source);
+   *x_source = strdup (t);
+   rc = g_printer (x_owner);
+   DEBUG_DEPS   yLOG_value   ("printer"   , rc);
    /*---(tie all cells)------------------*/
    DEBUG_DEPS    yLOG_note    ("assign entries");
    for (y_pos = by; y_pos <= ey; ++y_pos) {
@@ -334,8 +355,8 @@ ycalc_range_add         (int bx, int ex, int by, int ey, int bz, int ez)
             if (x_owner == NULL)                    continue;
             rc = g_valuer  (x_owner, &x_type, NULL, NULL);
             if (rc  <  0)                           continue;
-            DEBUG_DEPS   yLOG_char    ("type"      , x_type);
-            if (x_type  == YCALC_DATA_BLANK)        continue;
+            DEBUG_DEPS   yLOG_char    ("*type"     , *x_type);
+            if (*x_type  == YCALC_DATA_BLANK)        continue;
             /*---(create dependency)--------*/
             rc = ycalc_call_who_at (x_pos, y_pos, z_pos, YCALC_FULL, &x_owner, &x_dst);
             DEBUG_DEPS   yLOG_info    ("assign"    , ycalc_call_labeler (x_dst));

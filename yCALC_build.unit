@@ -780,9 +780,6 @@ SCRP          v21  (BUILD ) cell merges for gyges                             
      get      v21  check the printable                  ycalc__unit_mock            "print"          ,  "0g8"                                                                             s_equal     yCALC mock print : 0g8     6: of a :                                                         
      get      v21  check the printable                  ycalc__unit_mock            "print"          ,  "0h8"                                                                             s_equal     yCALC mock print : 0h8     6:funk> :                                                         
 
-
-
-
    GROUP      v21  complete                                                           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
    COND       v21  verify program teardown                                            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.030))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  

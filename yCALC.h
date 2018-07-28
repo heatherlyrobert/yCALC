@@ -105,7 +105,8 @@ char        yCALC_calc_from         (void *a_deproot);
 
 int         yCALC_nreq              (void *a_deproot);
 int         yCALC_npro              (void *a_deproot);
-char        yCALC_stamp             (void *a_deproot, long a_stamp);
+char        yCALC_stamp_cmp         (void *a_deproot, long a_stamp);
+char        yCALC_stamp_set         (void *a_deproot, long a_stamp);
 
 
 char       yCALC_disp_reqs          (void *a_me, char *a_list);

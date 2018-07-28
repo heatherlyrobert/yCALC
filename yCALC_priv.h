@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.3k"
-#define YCALC_VER_TXT   "lppad and rppad are now fixed"
+#define YCALC_VER_NUM   "0.3l"
+#define YCALC_VER_TXT   "range addition and delete create labels and clear them"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
