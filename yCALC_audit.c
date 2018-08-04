@@ -320,7 +320,8 @@ ycalc__merge_right      (tDEP_ROOT *a_source, tDEP_ROOT *a_deproot)
          return 0;
       }
       DEBUG_DEPS   yLOG_complex ("owner"     , "%-10p, %3dx, %3dy, %3dz, %c", x_owner, i, y, z, *x_type);
-      if (*x_source != NULL && strcmp (*x_source, "<") != 0)  break;
+      if (*x_source == NULL)                break;
+      if (strcmp (*x_source, "<") != 0)     break;
       rc = ycalc_call_who_at (i, y, z, YCALC_FULL, &x_owner, &x_next);
       rc = ycalc_deps_create (G_DEP_MERGED, &a_source, &x_next);
       DEBUG_DEPS   yLOG_value   ("create"    , rc);
@@ -420,7 +421,8 @@ ycalc_merge_check    (tDEP_ROOT *a_source)
          return 0;
       }
       DEBUG_DEPS   yLOG_complex ("owner"     , "%-10p, %3dx, %3dy, %3dz, %c", x_owner, i, y, z, *x_type);
-      if (*x_source != NULL && strcmp (*x_source, "<") != 0)  break;
+      if (*x_source == NULL)                break;
+      if (strcmp (*x_source, "<") != 0)     break;
       rc = ycalc_call_who_at (i, y, z, YCALC_FULL, &x_owner, &x_next);
       rc = ycalc_deps_create (G_DEP_MERGED, &a_source, &x_next);
       DEBUG_DEPS   yLOG_value   ("create"    , rc);
@@ -685,11 +687,14 @@ ycalc_classify_trusted  (void **a_owner, tDEP_ROOT **a_deproot, char **a_source,
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;           /* return code for errors         */
    char        rc          =    0;           /* return code for errors         */
+   char        x_intern    =  '-';
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_CALC   yLOG_point   ("*a_source" , *a_source);
+   if (*a_source != NULL && *a_source [0] == YCALC_DATA_INTERN) x_intern = 'y';
    /*---(clear)--------------------------*/
-   DEBUG_CALC   yLOG_value   ("prefix"    , *a_source [0]);
-   if (*a_source [0] != YCALC_DATA_INTERN) {
+   if (x_intern != 'y') {
       rc = ycalc_classify_clear (a_owner, a_deproot, a_type, a_value, a_string);
       DEBUG_CALC   yLOG_value   ("clear"     , rc);
       --rce;  if (rc < 0) {
@@ -707,7 +712,7 @@ ycalc_classify_trusted  (void **a_owner, tDEP_ROOT **a_deproot, char **a_source,
    }
    DEBUG_CALC   yLOG_point   ("*a_deproot", *a_deproot);
    /*---(reset all values)---------------*/
-   if (*a_source [0] != YCALC_DATA_INTERN) {
+   if (x_intern != 'y') {
       DEBUG_CALC   yLOG_note    ("initialize to blank data item");
       *a_type   = YCALC_DATA_BLANK;
       *a_value  = 0.0;

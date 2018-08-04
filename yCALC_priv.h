@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.3l"
-#define YCALC_VER_TXT   "range addition and delete create labels and clear them"
+#define YCALC_VER_NUM   "0.3m"
+#define YCALC_VER_TXT   "fix tiny bug merging empty cells into larger merges (and pointer display)"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
