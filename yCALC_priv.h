@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.3m"
-#define YCALC_VER_TXT   "fix tiny bug merging empty cells into larger merges (and pointer display)"
+#define YCALC_VER_NUM   "0.4a"
+#define YCALC_VER_TXT   "update for change (tz_isdst) field in breaking down time"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20

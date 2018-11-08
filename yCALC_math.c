@@ -609,6 +609,7 @@ ycalc_timevalue     (void)
       return;
    }
    else if (yr >= 1900) temp->tm_year = yr - 1900;
+   temp->tm_isdst = -1;   /* ignore daylight savings */
    time_t  xtime = mktime(temp);
    /*---(complete)-----------------------*/
    ycalc_pushval (__FUNCTION__, (double) xtime);
@@ -644,6 +645,7 @@ ycalc_date          (void)
       return;
    }
    else if (yr >= 1900) temp->tm_year = yr - 1900;
+   temp->tm_isdst = -1;  /* ignore daylight savings */
    time_t  xtime = mktime (temp);
    /*---(complete)-----------------------*/
    ycalc_pushval (__FUNCTION__, (double) xtime);
@@ -664,6 +666,7 @@ ycalc_time          (void)
    temp->tm_sec  = ycalc_popval (__FUNCTION__);
    temp->tm_min  = ycalc_popval (__FUNCTION__);
    temp->tm_hour = ycalc_popval (__FUNCTION__);
+   temp->tm_isdst = -1;  /* ignore daylight savings */
    time_t  xtime = mktime (temp);
    /*---(complete)-----------------------*/
    ycalc_pushval (__FUNCTION__, (double) xtime);
@@ -684,6 +687,7 @@ ycalc_datepart      (void)
    temp->tm_sec  = 0;
    temp->tm_min  = 0;
    temp->tm_hour = 0;
+   temp->tm_isdst = -1;  /* ignore daylight savings */
    time_t  xtime = mktime(temp);
    /*---(complete)-----------------------*/
    ycalc_pushval (__FUNCTION__, (double) xtime);
