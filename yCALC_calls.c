@@ -65,6 +65,7 @@ yCALC_enable            (void *a_owner)
    x_deproot->range   = -1;
    /*---(calc fields)--------------------*/
    DEBUG_DEPS   yLOG_snote   ("calc");
+   x_deproot->nrpn    = 0;
    x_deproot->rpn     = NULL;
    x_deproot->ncalc   = 0;
    x_deproot->chead   = NULL;
@@ -201,6 +202,8 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
    char        rc          =    0;
    int         x_pro_real  =    0;
    char        x_type      =  '-';
+   void       *x_owner     = NULL;
+   char        x_label     [LEN_LABEL];
    /*---(header)-------------------------*/
    DEBUG_APIS   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -232,7 +235,8 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
       DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_APIS   yLOG_info    ("label"     , ycalc_call_labeler (*a_deproot));
+   strlcpy (x_label, ycalc_call_labeler (*a_deproot), LEN_LABEL);
+   DEBUG_APIS   yLOG_info    ("label"     , x_label);
    /*---(check reqs)---------------------*/
    DEBUG_APIS   yLOG_value   ("nreq"      , (*a_deproot)->nreq);
    --rce;  if ((*a_deproot)->nreq > 0) {
@@ -277,6 +281,8 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
       DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   rc = g_valuer (*a_owner, &x_type, NULL, NULL);
+   DEBUG_APIS   yLOG_char    ("type"      , x_type);
    /*---(disable deproot)----------------*/
    rc = yCALC_disable (a_owner, a_deproot);
    DEBUG_APIS   yLOG_value   ("disable"   , rc);
@@ -287,8 +293,22 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
    }
    *a_deproot = NULL;
    /*---(call reaper on owner)-----------*/
+   rc = g_who_named  (x_label, YCALC_LOOK, &x_owner, NULL);
+   DEBUG_CALC   yLOG_value   ("who_named"  , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_APIS   yLOG_point   ("x_owner"    , x_owner);
+   --rce;  if (x_owner == NULL) {
+      DEBUG_APIS   yLOG_note    ("cell no longer exists");
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = g_valuer (x_owner, &x_type, NULL, NULL);
+   DEBUG_APIS   yLOG_char    ("type"      , x_type);
    if (x_type == YCALC_DATA_BLANK) {
-      rc = g_reaper (a_owner);
+      rc = g_reaper (&x_owner);
       DEBUG_APIS   yLOG_value   ("reaper"    , rc);
       --rce;  if (rc < 0 ) {
          DEBUG_APIS   yLOG_note    ("reaper was not successful");

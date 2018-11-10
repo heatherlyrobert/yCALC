@@ -244,8 +244,10 @@ ycalc_calc_wipe         (tDEP_ROOT *a_deproot)
    /*---(rpn)----------------------------*/
    DEBUG_CALC   yLOG_spoint  (a_deproot->rpn);
    if (a_deproot->rpn != NULL)  free (a_deproot->rpn);
-   a_deproot->rpn = NULL;
+   a_deproot->rpn  = NULL;
+   a_deproot->nrpn = 0;
    DEBUG_CALC   yLOG_spoint  (a_deproot->rpn);
+   DEBUG_CALC   yLOG_sint    (a_deproot->nrpn);
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -744,7 +746,8 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
       return rce;
    }
    /*---(save the rpn)-------------------*/
-   a_deproot->rpn = strndup (x_rpn, LEN_RECD);
+   a_deproot->rpn  = strndup (x_rpn, LEN_RECD);
+   a_deproot->nrpn = x_nrpn;
    DEBUG_CALC   yLOG_info    ("rpn"       , a_deproot->rpn);
    /*---(initialize)-------------------------*/
    p = ycalc__build_strtok (x_rpn);

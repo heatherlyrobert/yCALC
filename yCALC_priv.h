@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.4a"
-#define YCALC_VER_TXT   "update for change (tz_isdst) field in breaking down time"
+#define YCALC_VER_NUM   "0.4b"
+#define YCALC_VER_TXT   "fixed a reaper problem with losing owner pointer in gyges testing"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -153,6 +153,7 @@ struct      cDEP_ROOT {
    void       *owner;
    int         range;
    /*---(calculation)-------*/
+   int         nrpn;         /* number of rnp tokens                          */
    char       *rpn;          /* rpn version of formula                        */
    int         ncalc;        /* number of calculation tokens                  */
    tCALC      *chead;        /* pointer to head of calculation chain          */

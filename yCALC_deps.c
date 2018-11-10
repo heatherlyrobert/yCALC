@@ -1251,6 +1251,10 @@ ycalc_deps_wipe_reqs    (void **a_owner, tDEP_ROOT **a_deproot)
          }
       }
    }
+   DEBUG_DEPS   yLOG_point   ("a_owner"   , a_owner);
+   if (a_owner != NULL)  DEBUG_DEPS   yLOG_point   ("*a_owner"  , *a_owner);
+   DEBUG_DEPS   yLOG_point   ("a_deproot" , a_deproot);
+   DEBUG_DEPS   yLOG_point   ("*a_deproot", *a_deproot);
    /*---(complete)-----------------------*/
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -1634,6 +1638,49 @@ yCALC_stamp_set         (void *a_deproot, long a_stamp)
    x_deproot->u = a_stamp;
    return 0;
 }
+
+
+
+/*====================------------------------------------====================*/
+/*===----                       helpful accessors                      ----===*/
+/*====================------------------------------------====================*/
+static void  o___ACCESSORS_______o () { return; }
+
+char
+yCALC_show_rpn          (void *a_deproot, int *a_nrpn, char *a_rpn)
+{
+   tDEP_ROOT  *x_deproot   = NULL;
+   if (a_deproot == NULL)  return -1;
+   x_deproot = (tDEP_ROOT *) a_deproot;
+   if (x_deproot->rpn == NULL)  return -2;
+   if (a_nrpn != NULL)  *a_nrpn = x_deproot->nrpn;
+   if (a_rpn  != NULL)  strlcpy (a_rpn, x_deproot->rpn, LEN_RECD);
+   return 0;
+}
+
+char
+yCALC_show_reqs         (void *a_deproot, int *a_nreq, char *a_reqs)
+{
+   tDEP_ROOT  *x_deproot   = NULL;
+   if (a_deproot == NULL)  return -1;
+   x_deproot = (tDEP_ROOT *) a_deproot;
+   if (a_nreq != NULL)  *a_nreq = x_deproot->nreq;
+   if (a_reqs != NULL)  yCALC_disp_reqs (x_deproot, a_reqs);
+   return 0;
+}
+
+char
+yCALC_show_pros         (void *a_deproot, int *a_npro, char *a_pros)
+{
+   tDEP_ROOT  *x_deproot   = NULL;
+   char        x_list      [LEN_RECD ];
+   if (a_deproot == NULL)  return -1;
+   x_deproot = (tDEP_ROOT *) a_deproot;
+   if (a_npro != NULL)  *a_npro = x_deproot->npro;
+   if (a_pros != NULL)  yCALC_disp_pros (x_deproot, a_pros);
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/
