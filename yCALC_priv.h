@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.4b"
-#define YCALC_VER_TXT   "fixed a reaper problem with losing owner pointer in gyges testing"
+#define YCALC_VER_NUM   "0.4c"
+#define YCALC_VER_TXT   "added powers shortcuts from shrike font for 2, 3, 4, and half"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -539,6 +539,9 @@ void        ycalc_decrement         (void);
 void        ycalc_unaryminus        (void);
 /*---(mathmatical)--------------------*/
 void        ycalc_power             (void);
+void        ycalc_power_of_2        (void);
+void        ycalc_power_of_3        (void);
+void        ycalc_power_of_4        (void);
 void        ycalc_abs               (void);
 void        ycalc_trunc             (void);
 void        ycalc_rtrunc            (void);

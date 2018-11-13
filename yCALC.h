@@ -114,9 +114,9 @@ char        yCALC_disp_pros         (void *a_me, char *a_list);
 char        yCALC_disp_like         (void *a_me, char *a_list);
 
 /*--type--- ---accessors----------- ---params---------------------------------*/
-char        yCALC_show_rpn          (void *a_me, int *a_nrpn, char *a_rpn);
-char        yCALC_show_reqs         (void *a_me, int *a_nreq, char *a_reqs);
-char        yCALC_show_pros         (void *a_me, int *a_npro, char *a_pros);
+char        yCALC_show_rpn          (void *a_deproot, int *a_nrpn, char *a_rpn);
+char        yCALC_show_reqs         (void *a_deproot, int *a_nreq, char *a_reqs);
+char        yCALC_show_pros         (void *a_deproot, int *a_npro, char *a_pros);
 
 
 

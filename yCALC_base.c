@@ -46,6 +46,9 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "+:"         ,  2, ycalc_noop              , 'o', "n:n"    , 'm', "ansi-c unary plus (no effect)"                     },
    /*---(mathmatical functions)-----------*/
    { "exp"        ,  3, ycalc_power             , 'f', "n:nn"   , 'm', "x raised to the power of y"                        },
+   { "Æ"          ,  1, ycalc_power_of_2        , 'f', "n:n"    , 'm', "x raised to the power of 2"                        },
+   { "Ç"          ,  1, ycalc_power_of_3        , 'f', "n:n"    , 'm', "x raised to the power of 3"                        },
+   { "È"          ,  1, ycalc_power_of_4        , 'f', "n:n"    , 'm', "x raised to the power of 4"                        },
    { "abs"        ,  3, ycalc_abs               , 'f', "n:n"    , 'm', "ansi-c fabs() removes negative sign"               },
    { "trunc"      ,  5, ycalc_trunc             , 'f', "n:n"    , 'm', "truncate to the nearest integer value"             },
    { "truncn"     ,  6, ycalc_rtrunc            , 'f', "n:nn"   , 'm', "truncate to y decimal places"                      },
@@ -54,9 +57,10 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "ceil"       ,  4, ycalc_ceiling           , 'f', "n:n"    , 'm', "raise up to the nearest integer"                   },
    { "floor"      ,  5, ycalc_floor             , 'f', "n:n"    , 'm', "push down to the nearest integer"                  },
    { "sqrt"       ,  4, ycalc_sqrt              , 'f', "n:n"    , 'm', "ansi-c square root"                                },
+   { "Î"          ,  1, ycalc_sqrt              , 'f', "n:n"    , 'm', "ansi-c square root"                                },
    { "cbrt"       ,  4, ycalc_cbrt              , 'f', "n:n"    , 'm', "cube root of x"                                    },
-   { "sqr"        ,  3, ycalc_sqr               , 'f', "n:n"    , 'm', "square of x"                                       },
-   { "cube"       ,  4, ycalc_cube              , 'f', "n:n"    , 'm', "cube of x"                                         },
+   { "sqr"        ,  3, ycalc_power_of_2        , 'f', "n:n"    , 'm', "square of x"                                       },
+   { "cube"       ,  4, ycalc_power_of_3        , 'f', "n:n"    , 'm', "cube of x"                                         },
    { "rand"       ,  4, ycalc_rand              , 'f', "n:"     , 'm', "random number betreen 0 and 1"                     },
    { "randr"      ,  5, ycalc_randr             , 'f', "n:nn"   , 'm', "random number betreen x and y"                     },
    /*---(relational operators)------------*/

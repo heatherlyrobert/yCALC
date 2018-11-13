@@ -100,6 +100,33 @@ ycalc_power        (void)
    return;
 }
 
+void    /*-> tbd --------------------------------[ ------ [fv.320.010.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_power_of_2   (void)
+{
+   int   i = 0;
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, a * a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.010.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_power_of_3   (void)
+{
+   int   i = 0;
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, a * a * a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.010.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_power_of_4   (void)
+{
+   int   i = 0;
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, a * a * a * a);
+   return;
+}
+
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_abs           (void)
 {
