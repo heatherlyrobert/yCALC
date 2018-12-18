@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.4c"
-#define YCALC_VER_TXT   "added powers shortcuts from shrike font for 2, 3, 4, and half"
+#define YCALC_VER_NUM   "0.4d"
+#define YCALC_VER_TXT   "tiny cleanup while updating gyges"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20

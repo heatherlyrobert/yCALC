@@ -103,6 +103,7 @@ char        yCALC_calculate         (void);
 char        yCALC_calc_from         (void *a_deproot);
 
 
+int         yCALC_type              (void *a_deproot);
 int         yCALC_nreq              (void *a_deproot);
 int         yCALC_npro              (void *a_deproot);
 char        yCALC_stamp_cmp         (void *a_deproot, long a_stamp);
