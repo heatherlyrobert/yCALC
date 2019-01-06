@@ -7,7 +7,7 @@
 tLOCAL      myCALC;
 
 double      a, b, c, d, e;
-int         m, n, o, len;
+int         s_buf, m, n, o, len;
 char       *q, *r, *s;
 char        t           [LEN_RECD];
 char        g_nada       [5] = "";
@@ -123,6 +123,7 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "upper"      ,  5, ycalc_upper             , 'f', "s:s"    , 'c', "change all chars in n to upper case"               },
    { "char"       ,  4, ycalc_char              , 'f', "s:n"    , 'c', "change x into an ascii character with that code"   },
    { "code"       ,  4, ycalc_code              , 'f', "n:s"    , 'c', "return ascii value of first char in n"             },
+   { "val"        ,  3, ycalc_value             , 'f', "n:s"    , 'c', "ansi-c atof() to convert text number into value"   },
    { "value"      ,  5, ycalc_value             , 'f', "n:s"    , 'c', "ansi-c atof() to convert text number into value"   },
    { "salpha"     ,  6, ycalc_salpha            , 'f', "s:s"    , 'c', "change all non-alphabetic chars in n to '_'"       },
    { "salphac"    ,  7, ycalc_salphac           , 'f', "s:s"    , 'c', "remove all non-alphabetic chars in n"              },
@@ -243,11 +244,13 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    /*---(range info functions)------------*/
    { "dist"       ,  4, ycalc_dist              , 'f', "v:r"    , 'r', "geometric distance between beg and end locations"  },
    { "tabs"       ,  4, ycalc_tabs              , 'f', "v:r"    , 'r', "number of tabs in range"                           },
-   { "z_size"     ,  6, ycalc_tabs              , 'f', "v:r"    , 'r', "number of tabs in range"                           },
+   { "b_size"     ,  6, ycalc_tabs              , 'f', "v:r"    , 'r', "number of tabs in range"                           },
    { "cols"       ,  4, ycalc_cols              , 'f', "v:r"    , 'r', "number of columns in range"                        },
    { "x_size"     ,  6, ycalc_cols              , 'f', "v:r"    , 'r', "number of columns in range"                        },
    { "rows"       ,  4, ycalc_rows              , 'f', "v:r"    , 'r', "number of rows in range"                           },
    { "y_size"     ,  6, ycalc_rows              , 'f', "v:r"    , 'r', "number of rows in range"                           },
+   { "levels"     ,  6, ycalc_levels            , 'f', "v:r"    , 'r', "number of rows in range"                           },
+   { "z_size"     ,  6, ycalc_levels            , 'f', "v:r"    , 'r', "number of rows in range"                           },
    { "sum"        ,  3, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     },
    { "s"          ,  1, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     },
    { "count"      ,  5, ycalc_numbers           , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" },
@@ -258,6 +261,8 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "pointers"   ,  6, ycalc_pointers          , 'f', "v:r"    , 'r', "count of every cell in range"                      },
    { "empty"      ,  5, ycalc_empty             , 'f', "v:r"    , 'r', "count of every cell in range"                      },
    { "calcs"      ,  5, ycalc_calcs             , 'f', "v:r"    , 'r', "count of every cell in range"                      },
+   { "errors"     ,  6, ycalc_errors            , 'f', "v:r"    , 'r', "count of every cell in range"                      },
+   { "blanks"     ,  6, ycalc_blanks            , 'f', "v:r"    , 'r', "count of every cell in range"                      },
    { "avg"        ,  3, ycalc_average           , 'f', "v:r"    , 'r', "average of numeric cells in range"                 },
    { "mean"       ,  4, ycalc_average           , 'f', "v:r"    , 'r', "average of numeric cells in range"                 },
    { "min"        ,  3, ycalc_min               , 'f', "v:r"    , 'r', "minimum value in range"                            },
@@ -274,24 +279,30 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "stddev"     ,  6, ycalc_stddev            , 'f', "v:r"    , 'r', "standard deviation in range"                       },
    { "skew"       ,  4, ycalc_skew              , 'f', "v:r"    , 'r', "quartile-based skewness measure"                   },
    /*---(address functions)---------------*/
+   { "relb"       ,  4, ycalc_rel_b             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
    { "relx"       ,  4, ycalc_rel_x             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
    { "rely"       ,  4, ycalc_rel_y             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
-   { "relz"       ,  4, ycalc_rel_z             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
    { "relxy"      ,  5, ycalc_rel_xy            , 'f', "r:vv"   , 'a', "create a reference relative to current"            },
-   { "rela"       ,  4, ycalc_rel_xyz           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   { "relbxy"     ,  6, ycalc_rel_bxy           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   { "rela"       ,  4, ycalc_rel_bxy           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   { "relative"   ,  8, ycalc_rel_bxy           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   { "absb"       ,  4, ycalc_abs_b             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
    { "absx"       ,  4, ycalc_abs_x             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
    { "absy"       ,  4, ycalc_abs_y             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
-   { "absz"       ,  4, ycalc_abs_z             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
    { "absxy"      ,  5, ycalc_abs_xy            , 'f', "r:vv"   , 'a', "create a reference relative to current"            },
-   { "absa"       ,  4, ycalc_abs_xyz           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   { "absa"       ,  4, ycalc_abs_bxy           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   { "absbxy"     ,  6, ycalc_abs_bxy           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   { "absolute"   ,  8, ycalc_abs_bxy           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   { "offb"       ,  4, ycalc_off_b             , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
    { "offx"       ,  4, ycalc_off_x             , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
    { "offy"       ,  4, ycalc_off_y             , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
-   { "offz"       ,  4, ycalc_off_z             , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
    { "offxy"      ,  5, ycalc_off_xy            , 'f', "r:rvv"  , 'a', "create a reference relative to current"            },
    { "index"      ,  5, ycalc_off_xy            , 'f', "r:rvv"  , 'a', "create a reference relative to current"            },
-   { "offset"     ,  6, ycalc_off_xyz           , 'f', "r:rvvv" , 'a', "create a reference relative to current"            },
-   { "address"    ,  7, ycalc_address           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   { "offa"       ,  4, ycalc_off_bxy           , 'f', "r:rvvv" , 'a', "create a reference relative to current"            },
+   { "offbxy"     ,  6, ycalc_off_bxy           , 'f', "r:rvvv" , 'a', "create a reference relative to current"            },
+   { "offset"     ,  6, ycalc_off_bxy           , 'f', "r:rvvv" , 'a', "create a reference relative to current"            },
    { "addr"       ,  4, ycalc_address           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   { "address"    ,  7, ycalc_address           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
    /*---(lookup functions)----------------*/
    { "vlookup"    ,  7, ycalc_vlookup           , 'f', "r:rsv"  , 'f', "contents of cell x to right of one matching n"     },
    { "v"          ,  1, ycalc_vlookup           , 'f', "r:rsv"  , 'f', "contents of cell x to right of one matching n"     },
@@ -472,8 +483,8 @@ yCALC_init              (char a_style)
    DEBUG_PROG   yLOG_info    ("detail"    , myCALC.status_detail);
    /*---(functions)----------------------*/
    DEBUG_PROG   yLOG_note    ("clearing function calls");
-   if (a_style == 'g')  yRPN_mode (YRPN_GYGES);
-   else                 yRPN_mode (YRPN_CBANG);
+   if (a_style == 'g')  yRPN_init (YRPN_GYGES);
+   else                 yRPN_init (YRPN_CBANG);
    /*---(functions)----------------------*/
    DEBUG_PROG   yLOG_note    ("clearing function calls");
    g_who_named = NULL;

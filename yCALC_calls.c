@@ -12,11 +12,11 @@ char    (*g_pointer  )   (void *a_owner, char **a_source, char **a_type, double 
 char    (*g_reaper   )   (void **a_owner);        /* pass deproot->owner, tries to kill thing        */
 
 char    (*g_who_named)   (char *a_label, char a_force, void **a_owner, void **a_deproot);        /* pass label of thing, get back deproot of thing  */
-char    (*g_who_at   )   (int x, int y, int z, char a_force, void **a_owner, void **a_deproot);  /* pass coordinates, get back deproot of thing     */
+char    (*g_who_at   )   (int b, int x, int y, int z, char a_force, void **a_owner, void **a_deproot);  /* pass coordinates, get back deproot of thing     */
 char*   (*g_labeler  )   (void *a_owner);        /* pass deproot->owner, get back label of thing    */
 
-char*   (*g_adjuster )   (char *a_label, int x, int y, int z);        /* pass deproot->owner, get back label of thing    */
-char    (*g_addresser)   (void *a_owner, int  *x, int *y, int *z);
+char*   (*g_adjuster )   (char *a_label, int b, int x, int y, int z);        /* pass deproot->owner, get back label of thing    */
+char    (*g_addresser)   (void *a_owner, int *b, int *x, int *y, int *z);
 char    (*g_valuer   )   (void *a_owner, char *a_type, double *a_value  , char   **a_string);
 char    (*g_special  )   (void *a_owner, char  a_what, double *a_value , char   **a_string);
 char    (*g_printer  )   (void *a_owner);
@@ -37,34 +37,43 @@ yCALC_enable            (void *a_owner)
    tDEP_ROOT  *x_deproot   = NULL;
    int         x_tries     =    0;
    /*---(header)-------------------------*/
-   DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
+   /*> DEBUG_DEPS   yLOG_senter  (__FUNCTION__);                                      <*/
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_DEPS   yLOG_spoint  (a_owner);
+   /*> DEBUG_DEPS   yLOG_spoint  (a_owner);                                           <*/
+   DEBUG_DEPS   yLOG_point   ("a_owner"   , __FUNCTION__);
    --rce;  if (a_owner == NULL) {
-      DEBUG_DEPS   yLOG_snote   ("no owner pointer");
-      DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
+      /*> DEBUG_DEPS   yLOG_snote   ("no owner pointer");                             <*/
+      /*> DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);                              <*/
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(create)-------------------------*/
-   DEBUG_DEPS   yLOG_snote   ("malloc");
+   /*> DEBUG_DEPS   yLOG_snote   ("malloc");                                          <*/
+   DEBUG_DEPS   yLOG_note    ("running malloc");
    while (x_new == NULL && x_tries < 10) {
       x_new = malloc (sizeof (tDEP_ROOT));
       ++x_tries;
    }
-   DEBUG_DEPS   yLOG_svalue  ("tries", x_tries);
-   DEBUG_DEPS   yLOG_spoint  (x_new);
+   /*> DEBUG_DEPS   yLOG_svalue  ("tries", x_tries);                                  <*/
+   DEBUG_DEPS   yLOG_value   ("tries", x_tries);
+   /*> DEBUG_DEPS   yLOG_spoint  (x_new);                                             <*/
+   DEBUG_DEPS   yLOG_point   ("x_new"     , "x_new");
    --rce;  if (x_new == NULL) {
-      DEBUG_DEPS   yLOG_snote   ("FAILED");
-      DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
+      /*> DEBUG_DEPS   yLOG_snote   ("FAILED");                                       <*/
+      /*> DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);                              <*/
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    x_deproot = (tDEP_ROOT *) x_new;
    /*---(calc fields)--------------------*/
-   DEBUG_DEPS   yLOG_snote   ("owner");
+   /*> DEBUG_DEPS   yLOG_snote   ("owner");                                           <*/
+   DEBUG_DEPS   yLOG_note    ("owner");
    x_deproot->owner   = a_owner;
    x_deproot->range   = -1;
    /*---(calc fields)--------------------*/
-   DEBUG_DEPS   yLOG_snote   ("calc");
+   /*> DEBUG_DEPS   yLOG_snote   ("calc");                                            <*/
+   DEBUG_DEPS   yLOG_note    ("calc");
    x_deproot->nrpn    = 0;
    x_deproot->rpn     = NULL;
    x_deproot->ncalc   = 0;
@@ -72,21 +81,25 @@ yCALC_enable            (void *a_owner)
    x_deproot->ctail   = NULL;
    x_deproot->cuse    = 0;
    /*---(dependencies)-------------------*/
-   DEBUG_DEPS   yLOG_snote   ("calc");
+   /*> DEBUG_DEPS   yLOG_snote   ("deps");                                            <*/
+   DEBUG_DEPS   yLOG_note    ("deps");
    x_deproot->reqs    = NULL;
    x_deproot->nreq    = 0;
    x_deproot->pros    = NULL;
    x_deproot->npro    = 0;
    /*---(sequencing)---------------------*/
-   DEBUG_DEPS   yLOG_snote   ("seq");
+   /*> DEBUG_DEPS   yLOG_snote   ("seq");                                             <*/
+   DEBUG_DEPS   yLOG_note    ("seq");
    x_deproot->slevel  = 0;
    x_deproot->snext   = NULL;
    x_deproot->sprev   = NULL;
    /*---(stamp)--------------------------*/
-   DEBUG_DEPS   yLOG_snote   ("stamp");
+   /*> DEBUG_DEPS   yLOG_snote   ("stamp");                                           <*/
+   DEBUG_DEPS   yLOG_note    ("stamp");
    x_deproot->u       = 0;
    /*---(root doubly-linked list)--------*/
-   DEBUG_DEPS   yLOG_snote   ("list");
+   /*> DEBUG_DEPS   yLOG_snote   ("list");                                            <*/
+   DEBUG_DEPS   yLOG_note    ("list");
    x_deproot->rprev   = NULL;
    x_deproot->rnext   = NULL;
    if (myCALC.rtail == NULL) {
@@ -100,14 +113,18 @@ yCALC_enable            (void *a_owner)
    }
    ++myCALC.rcount;
    /*---(save)---------------------------*/
-   DEBUG_DEPS   yLOG_snote   ("save");
-   DEBUG_DEPS   yLOG_spoint  (g_enabler);
+   /*> DEBUG_DEPS   yLOG_snote   ("save");                                            <*/
+   DEBUG_DEPS   yLOG_note    ("save to owner");
+   /*> DEBUG_DEPS   yLOG_spoint  (g_enabler);                                         <*/
+   DEBUG_DEPS   yLOG_point   ("g_enabler" , g_enabler);
    --rce;  if (g_enabler == NULL) {
-      DEBUG_DEPS   yLOG_snote   ("no enabler set");
-      DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
+      /*> DEBUG_DEPS   yLOG_snote   ("no enabler set");                               <*/
+      /*> DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);                              <*/
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
+   /*> DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);                                      <*/
+   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    g_enabler (a_owner, x_deproot);
    /*---(complete)-----------------------*/
    return 0;
@@ -315,6 +332,8 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
          DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
+      *a_owner = x_owner;
+      DEBUG_APIS   yLOG_point   ("*a_owner"   , *a_owner);
    } else {
       DEBUG_APIS   yLOG_note    ("cell is now independent");
    }
@@ -352,15 +371,15 @@ ycalc_call_who_named    (char *a_label, char a_force, void **a_owner, void **a_d
    }
    DEBUG_APIS   yLOG_info    ("a_label"   , a_label);
    /*---(shortcut)-----------------------*/
-   if (strcmp (a_label, x_save) == 0 && a_force == x_sforce) {
-      DEBUG_APIS   yLOG_note    ("shortcut applies");
-      ++x_shorts;
-      if (a_owner   != NULL)   *a_owner   = x_sowner;
-      if (a_deproot != NULL)   *a_deproot = x_sdeproot;
-      DEBUG_APIS   yLOG_value   ("x_shorts"  , x_shorts);
-      DEBUG_APIS   yLOG_exit    (__FUNCTION__);
-      return 0;
-   }
+   /*> if (strcmp (a_label, x_save) == 0 && a_force == x_sforce) {                    <* 
+    *>    DEBUG_APIS   yLOG_note    ("shortcut applies");                             <* 
+    *>    ++x_shorts;                                                                 <* 
+    *>    if (a_owner   != NULL)   *a_owner   = x_sowner;                             <* 
+    *>    if (a_deproot != NULL)   *a_deproot = x_sdeproot;                           <* 
+    *>    DEBUG_APIS   yLOG_value   ("x_shorts"  , x_shorts);                         <* 
+    *>    DEBUG_APIS   yLOG_exit    (__FUNCTION__);                                   <* 
+    *>    return 0;                                                                   <* 
+    *> }                                                                              <*/
    /*---(defense)------------------------*/
    DEBUG_APIS   yLOG_point   ("who_named" , g_who_named);
    --rce;  if (g_who_named == NULL) {
@@ -380,9 +399,10 @@ ycalc_call_who_named    (char *a_label, char a_force, void **a_owner, void **a_d
       DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   DEBUG_APIS   yLOG_point   ("x_deproot" , x_deproot);
    /*---(setup)--------------------------*/
    if (a_force == YCALC_FULL) {
-      DEBUG_APIS   yLOG_point   ("x_deproot" , x_deproot);
+      DEBUG_APIS   yLOG_note    ("fully force creation");
       if (x_deproot == NULL) {
          rc = yCALC_enable (x_owner);
          DEBUG_APIS   yLOG_value   ("enable"    , rc);
@@ -423,7 +443,7 @@ ycalc_call_who_named    (char *a_label, char a_force, void **a_owner, void **a_d
 }
 
 char
-ycalc_call_who_at       (int x, int y, int z, char a_force, void **a_owner, void **a_deproot)
+ycalc_call_who_at       (int b, int x, int y, int z, char a_force, void **a_owner, void **a_deproot)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -446,7 +466,7 @@ ycalc_call_who_at       (int x, int y, int z, char a_force, void **a_owner, void
       return rce;
    }
    /*---(callback)-----------------------*/
-   rc = g_who_at    (x, y, z, a_force, &x_owner, &x_deproot);
+   rc = g_who_at    (b, x, y, z, a_force, &x_owner, &x_deproot);
    DEBUG_APIS   yLOG_value   ("rc"        , rc);
    --rce;  if (rc < 0) {
       DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);
@@ -457,9 +477,10 @@ ycalc_call_who_at       (int x, int y, int z, char a_force, void **a_owner, void
       DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   DEBUG_APIS   yLOG_point   ("x_deproot" , x_deproot);
    /*---(setup)--------------------------*/
    if (a_force == YCALC_FULL) {
-      DEBUG_APIS   yLOG_point   ("x_deproot" , x_deproot);
+      DEBUG_APIS   yLOG_note    ("fully force creation");
       if (x_deproot == NULL) {
          rc = yCALC_enable (x_owner);
          DEBUG_APIS   yLOG_value   ("enable"    , rc);
@@ -467,7 +488,7 @@ ycalc_call_who_at       (int x, int y, int z, char a_force, void **a_owner, void
             DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);
             return rce;
          }
-         rc = g_who_at    (x, y, z, a_force, NULL, &x_deproot);
+         rc = g_who_at    (b, x, y, z, a_force, NULL, &x_deproot);
          DEBUG_APIS   yLOG_value   ("rc"        , rc);
          --rce;  if (rc < 0) {
             DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);

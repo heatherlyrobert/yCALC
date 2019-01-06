@@ -165,7 +165,7 @@ ycalc__build_strtok     (char *a_str)
 }
 
 char
-ycalc__build_coords     (tCALC *a_calc, int *x, int *y, int *z)
+ycalc__build_coords     (tCALC *a_calc, int *b, int *x, int *y, int *z)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -199,7 +199,7 @@ ycalc__build_coords     (tCALC *a_calc, int *x, int *y, int *z)
       return G_ERROR_RANGE;
    }
    /*---(get address)--------------------*/
-   rc = g_addresser (x_deproot->owner, x, y, z);
+   rc = g_addresser (x_deproot->owner, b, x, y, z);
    DEBUG_CALC   yLOG_value   ("addresser" , rc);
    if (rc  < 0) {     
       DEBUG_CALC   yLOG_note    ("not a valid address");
@@ -207,7 +207,7 @@ ycalc__build_coords     (tCALC *a_calc, int *x, int *y, int *z)
       return G_ERROR_RANGE;
    }
    /*---(report out)---------------------*/
-   DEBUG_CALC   yLOG_complex ("address"   , "%4dx, %4dy, %4dz", *x, *y, *z);
+   DEBUG_CALC   yLOG_complex ("address"   , "%4db, %4dx, %4dy, %4dz", *b, *x, *y, *z);
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -314,8 +314,8 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
    char        x_good      =  '-';
-   int         x_beg, y_beg, z_beg;
-   int         x_end, y_end, z_end;
+   int         b_beg, x_beg, y_beg, z_beg;
+   int         b_end, x_end, y_end, z_end;
    int         a;
    tDEP_ROOT  *x_range     = NULL;
    tDEP_ROOT  *x_temp      = NULL;
@@ -326,7 +326,7 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(get starting point)-------------*/
-   rc = ycalc__build_coords  (a_calc->prev->prev, &x_beg, &y_beg, &z_beg);
+   rc = ycalc__build_coords  (a_calc->prev->prev, &b_beg, &x_beg, &y_beg, &z_beg);
    DEBUG_CALC   yLOG_value   ("rc"        , rc);
    if (rc != 0) {     
       rc = YCALC_ERROR_BUILD_RNG;
@@ -334,7 +334,7 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
       return rc;
    }
    /*---(get ending point)---------------*/
-   rc = ycalc__build_coords  (a_calc->prev      , &x_end, &y_end, &z_end);
+   rc = ycalc__build_coords  (a_calc->prev      , &b_end, &x_end, &y_end, &z_end);
    DEBUG_CALC   yLOG_value   ("rc"        , rc);
    if (rc != 0) {     
       rc = YCALC_ERROR_BUILD_RNG;
@@ -365,8 +365,8 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    /*> ycalc_call_reaper (NULL, &x_temp);                                             <*/
    /*---(set dependencies)---------------*/
    DEBUG_CALC   yLOG_note    ("set dedendencies");
-   DEBUG_DEPS   yLOG_complex ("range"     , "bx=%4d, ex=%4d, by=%4d, ey=%4d, z=%4d", x_beg, x_end, y_beg, y_end, z_beg);
-   rc = ycalc_range_use (a_deproot, x_beg, x_end, y_beg, y_end, z_beg, z_end, &x_range);
+   DEBUG_DEPS   yLOG_complex ("range"     , "bb=%4d, eb=%4d, bx=%4d, ex=%4d, by=%4d, ey=%4d, z=%4d", b_beg, b_end, x_beg, x_end, y_beg, y_end, z_beg);
+   rc = ycalc_range_use (a_deproot, b_beg, b_end, x_beg, x_end, y_beg, y_end, z_beg, z_end, &x_range);
    DEBUG_CALC   yLOG_value   ("rc"        , rc);
    if (rc <  0) {     
       rc = YCALC_ERROR_BUILD_DEP;
@@ -389,7 +389,6 @@ ycalc__build_function   (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    char        rc          =    0;
    int         x_len       =    0;
    int         i           =    0;
-   /*> char       *x_valid     = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";   <*/
    /*---(check for function)-------------*/
    DEBUG_CALC   yLOG_note    ("check for function");
    x_len = strlen (a_token);
@@ -427,7 +426,7 @@ ycalc__build_reference  (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
    tDEP_ROOT  *x_ref       = NULL;
-   int         x, y, z;
+   int         b, x, y, z;
    /*---(check for reference)------------*/
    DEBUG_CALC   yLOG_note    ("look for reference");
    rc = ycalc_call_who_named (a_token, YCALC_FULL, NULL, &x_ref);
@@ -454,13 +453,13 @@ ycalc__build_reference  (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    DEBUG_CALC   yLOG_note    ("mark type");
    a_calc->t = G_TYPE_REF;
    /*---(ranges)-------------------------*/
-   rc = g_addresser (x_ref->owner, &x, &y, &z);
+   rc = g_addresser (x_ref->owner, &b, &x, &y, &z);
    DEBUG_CALC   yLOG_value   ("addresser" , rc);
    if (rc < 0) {
       rc = YCALC_ERROR_BUILD_DEP;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
    }
-   rc = ycalc_range_include (&x_ref, x, y, z);
+   rc = ycalc_range_include (&x_ref, b, x, y, z);
    DEBUG_CALC   yLOG_value   ("ranges"    , rc);
    /*---(complete)--------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
@@ -531,8 +530,8 @@ ycalc__build_like       (tDEP_ROOT *a_deproot, char **a_source, char *a_type, ch
    char        rc          =    0;
    void       *x_owner     = NULL;
    tDEP_ROOT  *x_ref       = NULL;
-   int         x , y , z;
-   int         xo, yo, zo;
+   int         b, x , y , z;
+   int         bo, xo, yo, zo;
    char      **x_source    = NULL;
    char       *x_type      = NULL;
    char        x_work      [LEN_RECD];
@@ -588,30 +587,31 @@ ycalc__build_like       (tDEP_ROOT *a_deproot, char **a_source, char *a_type, ch
       return rc;
    }
    /*---(get offset)---------------------*/
-   rc = g_addresser (a_deproot->owner, &xo, &yo, &zo);
+   rc = g_addresser (a_deproot->owner, &bo, &xo, &yo, &zo);
    DEBUG_CALC   yLOG_value   ("cur_addr"  , rc);
    if (rc < 0) {
       rc = YCALC_ERROR_BUILD_LIK;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
-   DEBUG_CALC   yLOG_complex ("cur_loc"   , "%3dx, %3dy, %3dz", xo, yo, zo);
-   rc = g_addresser (x_ref->owner, &x, &y, &z);
+   DEBUG_CALC   yLOG_complex ("cur_loc"   , "%3db, %3dx, %3dy, %3dz", bo, xo, yo, zo);
+   rc = g_addresser (x_ref->owner, &b, &x, &y, &z);
    DEBUG_CALC   yLOG_value   ("ref_addr"  , rc);
    if (rc < 0) {
       rc = YCALC_ERROR_BUILD_LIK;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
-   DEBUG_CALC   yLOG_complex ("ref_loc"   , "%3dx, %3dy, %3dz",  x,  y,  z);
+   DEBUG_CALC   yLOG_complex ("ref_loc"   , "%3db, %3dx, %3dy, %3dz",  b, x,  y,  z);
+   bo -= b;
    xo -= x;
    yo -= y;
    zo -= z;
-   DEBUG_CALC   yLOG_complex ("offset"    , "%3dx, %3dy, %3dz", xo, yo, zo);
+   DEBUG_CALC   yLOG_complex ("offset"    , "%3db, %3dx, %3dy, %3dz", bo, xo, yo, zo);
    /*---(adjust rpn)---------------------*/
    strlcpy (x_work, *x_source, LEN_RECD);
    DEBUG_CALC   yLOG_info    ("x_work"    , x_work);
-   rc = yRPN_adjust_norm (x_work, xo, yo, zo, LEN_RECD, x_rpn);
+   rc = yRPN_addr_normal (x_work, bo, xo, yo, zo, LEN_RECD, x_rpn);
    DEBUG_CALC   yLOG_value   ("adj_rpn"   , rc);
    if (rc < 0) {
       rc = YCALC_ERROR_BUILD_LIK;

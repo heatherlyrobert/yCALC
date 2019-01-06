@@ -19,8 +19,8 @@
 
 
 /* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.4d"
-#define YCALC_VER_TXT   "tiny cleanup while updating gyges"
+#define YCALC_VER_NUM   "0.4e"
+#define YCALC_VER_TXT   "lots of work fixing range after bxyz update, better unit testing"
 
 /*---(string lengths)-----------------*/
 #define     LEN_LABEL   20
@@ -33,7 +33,7 @@
 
 /*---(label config)-------------------*/
 extern char    (*g_who_named)   (char *a_label, char a_force, void **a_owner, void **a_deproot);        /* pass label of thing, get back deproot of thing  */
-extern char    (*g_who_at   )   (int x, int y, int z, char a_force, void **a_owner, void **a_deproot);  /* pass coordinates, get back deproot of thing     */
+extern char    (*g_who_at   )   (int b, int x, int y, int z, char a_force, void **a_owner, void **a_deproot);  /* pass coordinates, get back deproot of thing     */
 extern char*   (*g_labeler  )   (void *a_owner);        /* pass deproot->owner, get back label of thing    */
 /*---(struct config)-----------------*/
 extern char    (*g_enabler  )   (void *a_owner, void *a_deproot);
@@ -41,7 +41,7 @@ extern char    (*g_pointer  )   (void *a_owner, char **a_source, char **a_type, 
 extern char    (*g_reaper   )   (void **a_owner);        /* pass deproot->owner, tries to kill thing        */
 /*---(value config)-------------------*/
 extern char    (*g_valuer   )   (void *a_owner, char *a_type, double *a_value , char **a_string);
-extern char    (*g_addresser)   (void *a_owner, int *x, int *y, int *z);
+extern char    (*g_addresser)   (void *a_owner, int *b, int *x, int *y, int *z);
 extern char    (*g_special  )   (void *a_owner, char  a_what, double *a_value , char   **a_string);
 extern char    (*g_printer  )   (void *a_owner);
 /*---(sequencing)---------------------*/
@@ -124,12 +124,12 @@ extern const tFCAT s_fcats  [MAX_FCAT];
 
 
 
-extern char   ycalc__unit_answer [LEN_STR ];
+extern char   ycalc__unit_answer [LEN_RECD];
 
 
 
 extern double      a, b, c, d, e;
-extern int         m, n, o, len;
+extern int         s_buf, m, n, o, len;
 extern char       *q, *r, *s;
 extern char        t           [LEN_RECD];
 extern char        g_nada      [5];
@@ -313,6 +313,7 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 
 #define     YCALC_ERROR_CONF       'C'
 #define     YCALC_ERROR_STACK      's'
+
 #define     YCALC_ERROR_BUILD_RPN  'r'
 #define     YCALC_ERROR_BUILD_REF  '@'
 #define     YCALC_ERROR_BUILD_DEP  'd'
@@ -322,13 +323,21 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 #define     YCALC_ERROR_BUILD_RNG  ':'
 #define     YCALC_ERROR_BUILD_TOK  '?'
 
+#define     YCALC_ERROR_EXEC_STR   'S'
+#define     YCALC_ERROR_EXEC_VAL   'V'
+#define     YCALC_ERROR_EXEC_REF   'I'
 #define     YCALC_ERROR_EXEC_PTR   '*'
 #define     YCALC_ERROR_EXEC_PTRR  'R'
+#define     YCALC_ERROR_EXEC_CIR   'O'
 #define     YCALC_ERROR_EXEC_FMT   'F'
 #define     YCALC_ERROR_EXEC_DATE  'D'
 #define     YCALC_ERROR_EXEC_BRNG  '<'
 #define     YCALC_ERROR_EXEC_ERNG  '>'
 #define     YCALC_ERROR_EXEC_MISS  '£'
+#define     YCALC_ERROR_EXEC_NADA  'N'
+#define     YCALC_ERROR_EXEC_ERR   'E'
+#define     YCALC_ERROR_EXEC_HUH   '¢'
+#define     YCALC_ERROR_EXEC_OPT   'o'
 
 #define     YCALC_ERROR_UNKNOWN    'U'
 
@@ -355,6 +364,7 @@ extern int       g_error;
 #define       G_SPECIAL_NREQ     '2'
 #define       G_SPECIAL_LIKE     'l'
 #define       G_SPECIAL_LEVEL    's'
+#define       G_SPECIAL_BPOS     'B'
 #define       G_SPECIAL_XPOS     'X'
 #define       G_SPECIAL_YPOS     'Y'
 #define       G_SPECIAL_ZPOS     'Z'
@@ -440,8 +450,8 @@ int         ycalc_range_nonrange    (tDEP_ROOT *a_deproot);
 char        ycalc_range_delete      (tDEP_ROOT *a_deproot, tDEP_ROOT *a_range);
 char        ycalc_range_unhook      (void **a_owner, tDEP_ROOT **a_deproot);
 char        ycalc_range_deproot     (char *a_name, tDEP_ROOT **a_deproot);
-char        ycalc_range_use         (tDEP_ROOT  *a_src, int bx, int ex, int by, int ey, int bz, int ez, tDEP_ROOT **a_range);
-char        ycalc_range_include     (tDEP_ROOT **a_src, int x, int y, int z);
+char        ycalc_range_use         (tDEP_ROOT  *a_src, int bb, int eb, int bx, int ex, int by, int ey, int bz, int ez, tDEP_ROOT **a_range);
+char        ycalc_range_include     (tDEP_ROOT **a_src, int b, int x, int y, int z);
 
 
 /*===[ BUILD ]============================================*/
@@ -490,11 +500,11 @@ char        ycalc__mock_pointer     (void *a_owner, char **a_source, char **a_ty
 char        ycalc__mock_reaper      (void **a_owner);
 /*---(label)--------------------------*/
 char        ycalc__mock_named       (char *a_label      , char a_force, void **a_owner, void **a_deproot);
-char        ycalc__mock_whos_at     (int x, int y, int z, char a_force, void **a_owner, void **a_deproot);
+char        ycalc__mock_whos_at     (int b, int x, int y, int z, char a_force, void **a_owner, void **a_deproot);
 char*       ycalc__mock_labeler     (void *a_owner);
 /*---(value)--------------------------*/
 char        ycalc__mock_valuer      (void *a_thing, char *a_type, double *a_value, char **a_string);
-char        ycalc__mock_address     (void *a_thing, int  *x, int *y, int *z);
+char        ycalc__mock_address     (void *a_thing, int  *b, int  *x, int *y, int *z);
 char        ycalc__mock_special     (void *a_owner, char a_what, double *a_value, char **a_string);
 char        ycalc__mock_printer     (void *a_owner);
 /*---(unit testing)-------------------*/
@@ -518,7 +528,7 @@ char        ycalc__seq_list         (char *a_list);
 /*===[ CALLS ]============================================*/
 char        ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot);
 char        ycalc_call_who_named    (char *a_label,       char a_force, void **a_owner, void **a_deproot);
-char        ycalc_call_who_at       (int x, int y, int z, char a_force, void **a_owner, void **a_deproot);
+char        ycalc_call_who_at       (int b, int x, int y, int z, char a_force, void **a_owner, void **a_deproot);
 char*       ycalc_call_labeler      (tDEP_ROOT *a_deproot);
 
 
@@ -719,15 +729,17 @@ void        ycalc_dist              (void);
 void        ycalc_tabs              (void);
 void        ycalc_cols              (void);
 void        ycalc_rows              (void);
+void        ycalc_levels            (void);
 void        ycalc_sum               (void);
 void        ycalc_every             (void);
 void        ycalc_filled            (void);
 void        ycalc_numbers           (void);
 void        ycalc_strings           (void);
-void        ycalc_blanks            (void);
 void        ycalc_pointers          (void);
 void        ycalc_empty             (void);
 void        ycalc_calcs             (void);
+void        ycalc_errors            (void);
+void        ycalc_blanks            (void);
 void        ycalc_min               (void);
 void        ycalc_max               (void);
 void        ycalc_range             (void);
@@ -740,21 +752,21 @@ void        ycalc_mode              (void);
 void        ycalc_stddev            (void);
 void        ycalc_skew              (void);
 
+void        ycalc_rel_b             (void);
 void        ycalc_rel_x             (void);
 void        ycalc_rel_y             (void);
-void        ycalc_rel_z             (void);
 void        ycalc_rel_xy            (void);
-void        ycalc_rel_xyz           (void);
+void        ycalc_rel_bxy           (void);
+void        ycalc_abs_b             (void);
 void        ycalc_abs_x             (void);
 void        ycalc_abs_y             (void);
-void        ycalc_abs_z             (void);
 void        ycalc_abs_xy            (void);
-void        ycalc_abs_xyz           (void);
+void        ycalc_abs_bxy           (void);
+void        ycalc_off_b             (void);
 void        ycalc_off_x             (void);
 void        ycalc_off_y             (void);
-void        ycalc_off_z             (void);
 void        ycalc_off_xy            (void);
-void        ycalc_off_xyz           (void);
+void        ycalc_off_bxy           (void);
 void        ycalc_address           (void);
 
 void        ycalc_vlookup           (void);

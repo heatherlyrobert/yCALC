@@ -18,7 +18,7 @@
 #define     YCALC_DATA_NLIKE      '9'
 #define     YCALC_DATA_ADDR       '&'
 #define     YCALC_DATA_RANGE      ':'
-#define     YCALC_DATA_INTERN     '­'
+#define     YCALC_DATA_INTERN     '®'
 #define     YCALC_DATA_MERGED     '<'
 #define     YCALC_DATA_ERROR      'E'
 
@@ -88,7 +88,7 @@ char        yCALC_disable           (void **a_owner, void **a_deproot);
 
 char        yCALC_create            (char a_type, char *a_source, char *a_target);
 char        yCALC_delete            (char a_type, char *a_source, char *a_target);
-char        yCALC_range             (void *a_source, int x1, int y1, int z1, int x2, int y2, int z2);
+char        yCALC_range             (void *a_source, int b1, int x1, int y1, int b2, int x2, int y2);
 
 char        yCALC_handle            (char *a_label);
 

@@ -104,7 +104,7 @@ ycalc__mock_new_labeled  (char *a_label, void **a_owner)
       DEBUG_CELL   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   rc = str6gyges  (a_label, 0, x_label);
+   rc = str6gyges  (a_label, 0, x_label, YSTR_LEGAL);
    DEBUG_CELL   yLOG_value   ("str6gyges" , rc);
    --rce;  if (rc < 0) {
       DEBUG_CELL   yLOG_exitr   (__FUNCTION__, rce);
@@ -125,7 +125,7 @@ ycalc__mock_new_labeled  (char *a_label, void **a_owner)
 }
 
 char         /*-> create a new data entry ------------[ ------ [fc.B52.112.94]*/ /*-[40.0000.144.M]-*/ /*-[--.---.---.--]-*/
-ycalc__mock_new_at       (int x, int y, int z, tMOCK **a_owner)
+ycalc__mock_new_at       (int b, int x, int y, int z, tMOCK **a_owner)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -134,7 +134,7 @@ ycalc__mock_new_at       (int x, int y, int z, tMOCK **a_owner)
    tMOCK      *x_owner     = NULL;
    --rce;  if (a_owner  == NULL)  return rce;
    --rce;  if (*a_owner != NULL)  return rce;
-   rc = str4gyges  (x, y, z, 0, x_label);
+   rc = str4gyges  (b, x, y, z, 0, x_label, YSTR_LEGAL);
    --rce;  if (rc < 0) return rce;
    x_owner = (tMOCK *) *a_owner;
    rc = ycalc__mock_new (&x_owner);
@@ -230,6 +230,24 @@ ycalc__mock_free         (tMOCK **a_owner)
 static void      o___DEPROOT_________________o (void) {;}
 
 char
+ycalc__mock_insider     (int b, int x, int y, int z)
+{
+   return 0;
+}
+
+char
+ycalc__mock_ystr_check  (int b, int x, int y, int z, char a_check)
+{
+   if (b  <    0)        return -1;
+   if (b  >   37)        return -1;
+   if (x  <    0)        return -1;
+   if (x  >   20)        return -1;
+   if (y  <    0)        return -1;
+   if (y  >   20)        return -1;
+   return 0;
+}
+
+char
 ycalc__mock_prepare     (void)
 {
    char        rc          =    0;
@@ -237,6 +255,9 @@ ycalc__mock_prepare     (void)
    if (rc == 0)  rc = yCALC_exist_config (ycalc__mock_enabler, ycalc__mock_pointer, ycalc__mock_reaper);
    if (rc == 0)  rc = yCALC_label_config (ycalc__mock_named  , ycalc__mock_whos_at, ycalc__mock_labeler);
    if (rc == 0)  rc = yCALC_value_config (ycalc__mock_valuer , ycalc__mock_address, ycalc__mock_special, ycalc__mock_printer);
+   str0gyges  (ycalc__mock_ystr_check);
+   yRPN_init (YRPN_GYGES);
+   rc = yRPN_addr_config   (str2gyges, str4gyges, str6gyges, str8gyges, ycalc__mock_insider);
    return rc;
 }
 
@@ -285,6 +306,7 @@ ycalc__mock_enabler     (void *a_owner, void *a_deproot)
    }
    DEBUG_DEPS   yLOG_spoint  (a_deproot);
    x_mock->ycalc = a_deproot;
+   DEBUG_DEPS   yLOG_spoint  (x_mock->ycalc);
    DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
@@ -312,19 +334,19 @@ ycalc__mock_named       (char *a_label, char a_force, void **a_owner, void **a_d
    }
    DEBUG_DEPS   yLOG_info    ("a_label"   , a_label);
    /*---(shortcut)-----------------------*/
-   if (strcmp (x_label, a_label) == 0 && a_force == x_sforce) {
-      DEBUG_DEPS   yLOG_note    ("short-cut");
-      if (a_owner   != NULL) {
-         *a_owner   = x_saved;
-         DEBUG_DEPS   yLOG_point   ("*a_owner"  , *a_owner);
-      }
-      if (a_deproot != NULL) {
-         *a_deproot = x_saved->ycalc;
-         DEBUG_DEPS   yLOG_point   ("*a_deproot", *a_deproot);
-      }
-      DEBUG_PROG   yLOG_exit    (__FUNCTION__);
-      return 0;
-   }
+   /*> if (strcmp (x_label, a_label) == 0 && a_force == x_sforce) {                   <* 
+    *>    DEBUG_DEPS   yLOG_note    ("short-cut");                                    <* 
+    *>    if (a_owner   != NULL) {                                                    <* 
+    *>       *a_owner   = x_saved;                                                    <* 
+    *>       DEBUG_DEPS   yLOG_point   ("*a_owner"  , *a_owner);                      <* 
+    *>    }                                                                           <* 
+    *>    if (a_deproot != NULL) {                                                    <* 
+    *>       *a_deproot = x_saved->ycalc;                                             <* 
+    *>       DEBUG_DEPS   yLOG_point   ("*a_deproot", *a_deproot);                    <* 
+    *>    }                                                                           <* 
+    *>    DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                   <* 
+    *>    return 0;                                                                   <* 
+    *> }                                                                              <*/
    /*---(search)-------------------------*/
    x_owner = myCALC.mroot;
    DEBUG_DEPS   yLOG_point   ("mroot"     , myCALC.mroot);
@@ -354,6 +376,11 @@ ycalc__mock_named       (char *a_label, char a_force, void **a_owner, void **a_d
          return rce;
       }
       DEBUG_DEPS   yLOG_point   ("x_owner"    , x_owner);
+      /*---(check for root)--------------*/
+      if (myCALC.mroot == NULL && strcmp (a_label, "ROOT") == 0) {
+         DEBUG_DEPS   yLOG_note    ("saved as root");
+         myCALC.mroot = x_owner;
+      }
    }
    --rce;  if (x_owner == NULL) {
       DEBUG_DEPS   yLOG_note    ("FAILURE");
@@ -381,13 +408,13 @@ ycalc__mock_named       (char *a_label, char a_force, void **a_owner, void **a_d
 }
 
 char
-ycalc__mock_whos_at     (int x, int y, int z, char a_force, void **a_owner, void **a_deproot)
+ycalc__mock_whos_at     (int b, int x, int y, int z, char a_force, void **a_owner, void **a_deproot)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
    char        x_label     [LEN_LABEL];
    /*---(legal)--------------------------*/
-   rc = str4gyges (x, y, z, 0, x_label);
+   rc = str4gyges (b, x, y, z, 0, x_label, YSTR_LEGAL);
    if (rc == 0)  rc = ycalc__mock_named (x_label, a_force, a_owner, a_deproot);
    /*---(complete)-----------------------*/
    return rc;
@@ -449,6 +476,7 @@ ycalc__mock_reaper      (void **a_owner)
       DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   DEBUG_DEPS   yLOG_point   ("*a_owner"  , *a_owner);
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return 0;
 }
@@ -524,15 +552,24 @@ ycalc__mock_valuer      (void *a_owner, char *a_type, double *a_value, char **a_
 }
 
 char
-ycalc__mock_address     (void *a_owner, int *x, int *y, int *z)
+ycalc__mock_address     (void *a_owner, int *b, int *x, int *y, int *z)
 {
    tMOCK      *x_mock      = NULL;
+   DEBUG_DEPS   yLOG_senter  (__FUNCTION__);
+   DEBUG_DEPS   yLOG_spoint  (a_owner);
+   if (b != NULL)  *b   = 0;
    if (x != NULL)  *x   = 0;
    if (y != NULL)  *y   = 0;
    if (z != NULL)  *z   = 0;
-   if (a_owner == NULL)  return -1;
+   if (a_owner == NULL) {
+      DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, -1);
+      return -1;
+   }
    x_mock    = (tMOCK     *) a_owner;
-   str2gyges (x_mock->label, x, y, z, NULL, 0);
+   DEBUG_DEPS   yLOG_spoint  (x_mock);
+   DEBUG_DEPS   yLOG_snote   (x_mock->label);
+   DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
+   str2gyges (x_mock->label, b, x, y, z, NULL, 0, YSTR_LEGAL);
    return 0;
 }
 
@@ -585,7 +622,7 @@ ycalc__mock_width    (void *a_owner, int *a_width, int *a_merge)
    char        rc          =    0;
    tMOCK      *x_owner     = NULL;
    char        x_label     [LEN_LABEL];
-   int         x, y, z;
+   int         b, x, y, z;
    int         i           =    0;
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
@@ -612,21 +649,21 @@ ycalc__mock_width    (void *a_owner, int *a_width, int *a_merge)
    s_owners [*a_merge] = x_owner;
    s_widths [*a_merge] = x_owner->width;
    /*---(look for mergse)----------------*/
-   rc = str2gyges (x_owner->label, &x, &y, &z, 0, 0);
+   rc = str2gyges (x_owner->label, &b, &x, &y, &b, NULL, 0, YSTR_LEGAL);
    DEBUG_DEPS   yLOG_value   ("str2gyges" , rc);
    if (rc < 0)  {
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
       return 0;
    }
-   DEBUG_DEPS   yLOG_complex ("owner"     , "%-10p, %-5s, %3dx, %3dy, %3dz, %3dw", x_owner, x_owner->label, x, y, z, x_owner->width);
+   DEBUG_DEPS   yLOG_complex ("owner"     , "%-10p, %-5s, %3db, %3dx, %3dy, %3dz, %3dw", x_owner, x_owner->label, b, x, y, z, x_owner->width);
    for (i = x + 1; i < x + 20; ++i) {
-      rc = str4gyges (i, y, z, 0, x_label);
+      rc = str4gyges (b, i, y, z, 0, x_label, YSTR_LEGAL);
       if (rc < 0)  break;
-      rc = ycalc__mock_whos_at (i, y, z, YCALC_LOOK, &x_owner, NULL);
+      rc = ycalc__mock_whos_at (b, i, y, z, YCALC_LOOK, &x_owner, NULL);
       if (rc < 0)                              break;
       if (x_owner == NULL)                     break;
       if (x_owner->type != YCALC_DATA_MERGED)  break;
-      DEBUG_DEPS   yLOG_complex ("owner"     , "%-10p, %-5s, %3dx, %3dy, %3dz, %3dw", x_owner, x_label, i, y, z, x_owner->width);
+      DEBUG_DEPS   yLOG_complex ("owner"     , "%-10p, %-5s, %3db, %3dx, %3dy, %3dz, %3dw", x_owner, x_label, b, i, y, z, x_owner->width);
       *a_width += x_owner->width;
       ++(*a_merge);
       s_owners [*a_merge] = x_owner;
@@ -698,17 +735,19 @@ ycalc__mock_printer     (void *a_owner)
    }
    x_owner   = (tMOCK     *) a_owner;
    /*---(contents)-----------------------*/
+   DEBUG_DEPS   yLOG_char    ("type"      , x_owner->type);
    if (strchr ("=n", x_owner->type) != NULL) {
       strl4main (x_owner->value, s, x_owner->decs, x_owner->format, LEN_RECD);
    } else {
       if (x_owner->string != NULL)  strlcpy (s, x_owner->string, LEN_RECD);
-      else                          strlcpy (s, x_owner->source, LEN_RECD);
+      if (x_owner->source != NULL)  strlcpy (s, x_owner->source, LEN_RECD);
+      else                          strlcpy (s, ""             , LEN_RECD);
    }
    /*---(pad/trim)-----------------------*/
    ycalc__mock_width (x_owner, &w, &c);
    DEBUG_DEPS   yLOG_value   ("w"         , w);
    DEBUG_DEPS   yLOG_value   ("c"         , c);
-   strlpad (s, t, ' ', x_owner->align, w - 1);
+   strlpad (s, t, '!', x_owner->align, w - 1);
    sprintf (x_out, "%s ", t);
    /*---(parse)--------------------------*/
    ycalc__mock_parse (x_out, c);
@@ -731,17 +770,18 @@ ycalc__mock_source      (char *a_label, char *a_source)
       DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DEPS   yLOG_point   ("source"    , x_owner->source);
-   DEBUG_DEPS   yLOG_info    ("source"    , x_owner->source);
+   DEBUG_DEPS   yLOG_point   ("existing"  , x_owner->source);
+   DEBUG_DEPS   yLOG_info    ("existing"  , x_owner->source);
    if (x_owner->source != NULL) {
       DEBUG_DEPS   yLOG_note    ("must free");
       free (x_owner->source);
       x_owner->source = NULL;
+      DEBUG_DEPS   yLOG_point   ("freed"     , x_owner->source);
    }
    if (a_source != NULL) {
       x_owner->source = strdup (a_source);
-      DEBUG_DEPS   yLOG_point   ("source"    , x_owner->source);
-      DEBUG_DEPS   yLOG_info    ("source"    , x_owner->source);
+      DEBUG_DEPS   yLOG_point   ("new"       , x_owner->source);
+      DEBUG_DEPS   yLOG_info    ("new"       , x_owner->source);
    }
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -858,6 +898,7 @@ ycalc__unit_mock        (char *a_question, char *a_label)
    else                   strlcpy (x_label, a_label, LEN_LABEL);
    /*---(owner/deproot)------------------*/
    rc = ycalc__mock_named (x_label, YCALC_LOOK, &x_owner, &x_deproot);
+   /*> printf ("mock_unit :: %s, rc %d, owner %p, deproot %p\n", x_label, rc, x_owner, x_deproot);   <*/
    if (rc        <  0   )  strlcpy (x_rnote , "-----"   , LEN_LABEL);
    else                    strlcpy (x_rnote , "good"    , LEN_LABEL);
    if (x_owner   == NULL)  strlcpy (x_onote , "-----"   , LEN_LABEL);
@@ -866,7 +907,7 @@ ycalc__unit_mock        (char *a_question, char *a_label)
    else                    strlcpy (x_dnote , "enabled" , LEN_LABEL);
    /*---(string)-------------------------*/
    if      (x_owner == NULL)                                  strlcpy (x_string, "", LEN_RECD );
-   else if (strchr ("&:­", x_owner->type)  != NULL)           strlcpy (x_string, x_owner->source, LEN_RECD );
+   else if (strchr ("&:®", x_owner->type)  != NULL)           strlcpy (x_string, x_owner->source, LEN_RECD );
    else if (strchr ("s#5E", x_owner->type) == NULL)           strlcpy (x_string, "", LEN_RECD );
    else if (x_owner->string != NULL)                          strlcpy (x_string, x_owner->string, LEN_RECD );
    else if (x_owner->type == 's' && x_owner->source != NULL)  strlcpy (x_string, x_owner->source, LEN_RECD );

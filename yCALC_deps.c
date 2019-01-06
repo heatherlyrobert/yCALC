@@ -735,15 +735,17 @@ ycalc__deps_delete_req  (char a_type, char a_index, tDEP_ROOT **a_source, tDEP_R
    char        rce         = -10;
    char        rc          = 0;
    tDEP_LINK  *x_next      = NULL;          /* iterator -- dependency lists   */
-   tDEP_LINK  *x_req       = NULL;          /* new requires entry             */
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(check for existing requires)----*/
-   DEBUG_DEPS   yLOG_info    ("src label" , ycalc_call_labeler (*a_source));
+   DEBUG_DEPS   yLOG_point   ("a_source"  , *a_source);
+   DEBUG_DEPS   yLOG_info    ("...label"  , ycalc_call_labeler (*a_source));
+   DEBUG_DEPS   yLOG_point   ("a_target"  , *a_target);
+   DEBUG_DEPS   yLOG_info    ("...label"  , ycalc_call_labeler (*a_target));
    DEBUG_DEPS   yLOG_value   ("src nreqs" , (*a_source)->nreq);
    x_next = (*a_source)->reqs;
    --rce; while (x_next != NULL) {
-      DEBUG_DEPS   yLOG_info    ("trg label" , ycalc_call_labeler (x_next->target));
+      DEBUG_DEPS   yLOG_info    ("review"    , ycalc_call_labeler (x_next->target));
       if (x_next->target == *a_target) {
          DEBUG_DEPS   yLOG_note    ("found existing");
          rc = ycalc__deps_free (&x_next);
@@ -773,15 +775,17 @@ ycalc__deps_delete_pro  (char a_type, char a_index, tDEP_ROOT **a_source, tDEP_R
    char        rce         = -10;
    char        rc          = 0;
    tDEP_LINK  *x_next      = NULL;          /* iterator -- dependency lists   */
-   tDEP_LINK  *x_req       = NULL;          /* new requires entry             */
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(check for existing requires)----*/
-   DEBUG_DEPS   yLOG_info    ("src label" , ycalc_call_labeler (*a_source));
+   DEBUG_DEPS   yLOG_point   ("a_source"  , *a_source);
+   DEBUG_DEPS   yLOG_info    ("...label"  , ycalc_call_labeler (*a_source));
+   DEBUG_DEPS   yLOG_point   ("a_target"  , *a_target);
+   DEBUG_DEPS   yLOG_info    ("...label"  , ycalc_call_labeler (*a_target));
    DEBUG_DEPS   yLOG_value   ("nprovide"  , (*a_source)->npro);
    x_next = (*a_source)->pros;
    --rce; while (x_next != NULL) {
-      DEBUG_DEPS   yLOG_info    ("trg label" , ycalc_call_labeler (x_next->target));
+      DEBUG_DEPS   yLOG_info    ("review"    , ycalc_call_labeler (x_next->target));
       if (x_next->target == *a_target) {
          DEBUG_DEPS   yLOG_note    ("found existing");
          rc = ycalc__deps_free (&x_next);
@@ -1720,7 +1724,9 @@ ycalc__unit_deps        (char *a_question, char *a_label)
          snprintf (ycalc__unit_answer, LEN_RECD, "yCALC deps reqs  : %-5s (--) -", x_label);
       } else {
          yCALC_disp_reqs (x_deproot, x_list);
+         DEBUG_SORT    yLOG_info    ("x_list"    , x_list);
          snprintf (ycalc__unit_answer, LEN_RECD, "yCALC deps reqs  : %-5s (%2d) %s", x_label, x_deproot->nreq, x_list);
+         DEBUG_SORT    yLOG_info    ("answer"    , ycalc__unit_answer);
       }
    }
    else if (strcmp (a_question, "provides"    )   == 0) {
