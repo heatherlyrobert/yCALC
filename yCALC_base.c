@@ -553,7 +553,7 @@ yCALC_exist_config      (void *a_enabler, void *a_pointer, void *a_reaper)
    /*---(update enabler)------------------*/
    DEBUG_PROG   yLOG_point   ("enabler"    , a_enabler);
    --rce;  if (a_enabler    == NULL) {
-      DEBUG_PROG   yLOG_error   ("enabler"    , "without this callback, references, ranges, and variables can not function");
+      DEBUG_PROG   yLOG_error   ("enabler without this callback, references, ranges, and variables can not function");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -561,7 +561,7 @@ yCALC_exist_config      (void *a_enabler, void *a_pointer, void *a_reaper)
    /*---(update pointer)------------------*/
    DEBUG_PROG   yLOG_point   ("pointer"    , a_pointer);
    --rce;  if (a_pointer    == NULL) {
-      DEBUG_PROG   yLOG_error   ("pointer"    , "without this callback, references, ranges, and variables can not function");
+      DEBUG_PROG   yLOG_error   ("pointer without this callback, references, ranges, and variables can not function");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -569,7 +569,7 @@ yCALC_exist_config      (void *a_enabler, void *a_pointer, void *a_reaper)
    /*---(update reaper)---------------*/
    DEBUG_PROG   yLOG_point   ("reaper" , a_reaper);
    --rce;  if (a_reaper == NULL) {
-      DEBUG_PROG   yLOG_warn    ("reaper" , "without this callback, a few functions may not be allowed");
+      DEBUG_PROG   yLOG_warn    ("reaper without this callback, a few functions may not be allowed");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -601,7 +601,7 @@ yCALC_label_config      (void *a_who_named, void *a_who_at, void *a_labeler)
    /*---(update who_named)---------------*/
    DEBUG_PROG   yLOG_point   ("who_named" , a_who_named);
    --rce;  if (a_who_named   == NULL) {
-      DEBUG_PROG   yLOG_error   ("who_named" , "without this callback, references cannot be resolved");
+      DEBUG_PROG   yLOG_error   ("who_named without this callback, references cannot be resolved");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -609,7 +609,7 @@ yCALC_label_config      (void *a_who_named, void *a_who_at, void *a_labeler)
    /*---(update whois)------------------*/
    DEBUG_PROG   yLOG_point   ("who_at"   , a_who_at);
    --rce;  if (a_who_at    == NULL) {
-      DEBUG_PROG   yLOG_error   ("whois"    , "without this callback, range dependencies are not possible");
+      DEBUG_PROG   yLOG_error   ("whois without this callback, range dependencies are not possible");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -617,7 +617,7 @@ yCALC_label_config      (void *a_who_named, void *a_who_at, void *a_labeler)
    /*---(update labeler)-----------------*/
    DEBUG_PROG   yLOG_point   ("labeler"    , a_labeler);
    --rce;  if (a_labeler    == NULL) {
-      DEBUG_PROG   yLOG_error   ("labeler"    , "without this callback, human-readable verification is not possible");
+      DEBUG_PROG   yLOG_error   ("labeler without this callback, human-readable verification is not possible");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -632,14 +632,14 @@ yCALC_label_config      (void *a_who_named, void *a_who_at, void *a_labeler)
    DEBUG_PROG   yLOG_point   ("mroot"     , myCALC.mroot);
    --rce;  if (myCALC.mroot == NULL) {
       DEBUG_PROG   yLOG_note    ("must create a owner named ¸ROOT¸ for yCALC to operate");
-      DEBUG_PROG   yLOG_error   ("rroot"     , "without this, all dependencies fail");
+      DEBUG_PROG   yLOG_error   ("rroot without this, all dependencies fail");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    DEBUG_PROG   yLOG_point   ("rroot"     , myCALC.rroot);
    --rce;  if (myCALC.rroot == NULL) {
       DEBUG_PROG   yLOG_note    ("must create a owner named ¸ROOT¸ for yCALC to operate");
-      DEBUG_PROG   yLOG_error   ("rroot"     , "without this, all dependencies fail");
+      DEBUG_PROG   yLOG_error   ("rroot without this, all dependencies fail");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -669,7 +669,7 @@ yCALC_value_config      (void *a_valuer, void *a_addresser, void *a_special, voi
    /*---(update valuer)------------------*/
    DEBUG_PROG   yLOG_point   ("valuer"    , a_valuer);
    --rce;  if (a_valuer    == NULL) {
-      DEBUG_PROG   yLOG_error   ("valuer"    , "without this callback, references, ranges, and variables can not function");
+      DEBUG_PROG   yLOG_error   ("valuer without this callback, references, ranges, and variables can not function");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -677,7 +677,7 @@ yCALC_value_config      (void *a_valuer, void *a_addresser, void *a_special, voi
    /*---(update addresser)---------------*/
    DEBUG_PROG   yLOG_point   ("addresser" , a_addresser);
    --rce;  if (a_addresser == NULL) {
-      DEBUG_PROG   yLOG_warn    ("addresser" , "without this callback, a few functions may not be allowed");
+      DEBUG_PROG   yLOG_warn    ("addresser without this callback, a few functions may not be allowed");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -685,7 +685,7 @@ yCALC_value_config      (void *a_valuer, void *a_addresser, void *a_special, voi
    /*---(update special)---------------*/
    DEBUG_PROG   yLOG_point   ("special" , a_special);
    --rce;  if (a_special == NULL) {
-      DEBUG_PROG   yLOG_warn    ("special" , "without this callback, a few functions may not be allowed");
+      DEBUG_PROG   yLOG_warn    ("special without this callback, a few functions may not be allowed");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -693,7 +693,7 @@ yCALC_value_config      (void *a_valuer, void *a_addresser, void *a_special, voi
    /*---(update printer)-----------------*/
    DEBUG_PROG   yLOG_point   ("printer"   , a_printer);
    --rce;  if (a_printer   == NULL) {
-      DEBUG_PROG   yLOG_error   ("valuer"    , "without this callback, display can not be updated");
+      DEBUG_PROG   yLOG_error   ("valuer without this callback, display can not be updated");
       DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -750,7 +750,7 @@ ycalc__unit_base        (char *a_question, int a_num)
 char       /*----: set up program urgents/debugging --------------------------*/
 ycalc__unit_quiet       (void)
 {
-   myCALC.logger = yLOG_begin ("yCALC" , yLOG_SYSTEM, yLOG_QUIET);
+   myCALC.logger = yLOGS_begin ("yCALC" , YLOG_SYS, YLOG_QUIET);
    myCALC.trouble = G_NO_ERROR;
    yCALC_init ('s');
    return 0;
@@ -772,7 +772,7 @@ char       /*----: stop logging ----------------------------------------------*/
 ycalc__unit_end         (void)
 {
    yCALC_wrap   ();
-   yLOG_end     ();
+   yLOGS_end    ();
    return 0;
 }
 

@@ -383,7 +383,7 @@ ycalc_call_who_named    (char *a_label, char a_force, void **a_owner, void **a_d
    /*---(defense)------------------------*/
    DEBUG_APIS   yLOG_point   ("who_named" , g_who_named);
    --rce;  if (g_who_named == NULL) {
-      DEBUG_APIS   yLOG_error   ("who_named" , "without this callback, references cannot be resolved");
+      DEBUG_APIS   yLOG_error   ("who_named without this callback, references cannot be resolved");
       DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -461,7 +461,7 @@ ycalc_call_who_at       (int b, int x, int y, int z, char a_force, void **a_owne
    /*---(defense)------------------------*/
    DEBUG_APIS   yLOG_point   ("who_at"    , g_who_at);
    --rce;  if (g_who_at == NULL) {
-      DEBUG_APIS   yLOG_error   ("who_named" , "without this callback, references cannot be resolved");
+      DEBUG_APIS   yLOG_error   ("who_named without this callback, references cannot be resolved");
       DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }

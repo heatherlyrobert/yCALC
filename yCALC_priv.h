@@ -42,8 +42,8 @@
 #define     P_CREATED   "2014-10"
 #define     P_DEPENDS   "none"
 
-#define     P_VERNUM    "0.4f"
-#define     P_VERTXT    "updated to handle the changes to yLOG"
+#define     P_VERNUM    "0.4g"
+#define     P_VERTXT    "cleaned for error, warn changes in yLOG"
 
 /* rapidly evolving version number to aid with visual change confirmation     */
 #define YCALC_VER_NUM   "0.4e"
