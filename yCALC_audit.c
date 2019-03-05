@@ -71,7 +71,7 @@ const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR] = {
 /*====================------------------------------------====================*/
 static void  o___PROGRAM_________o () { return; }
 
-char
+char         /*-> tbd --------------------------------[ shoot  [ge.E74.041.90]*/ /*-[04.0000.10#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_audit_init        (void)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -144,7 +144,7 @@ ycalc_audit_init        (void)
 /*====================------------------------------------====================*/
 static void  o___ERRORS__________o () { return; }
 
-char
+char         /*-> tbd --------------------------------[ leaf   [gz.740.541.70]*/ /*-[11.0000.20#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_handle_error      (char a_error, char *a_type, double *a_value, char **a_string, char *a_note)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -182,7 +182,7 @@ ycalc_handle_error      (char a_error, char *a_type, double *a_value, char **a_s
 /*====================------------------------------------====================*/
 static void  o___MERGES__________o () { return; }
 
-char         /*-> check and coordinate an unmerge ----[ ------ [ge.630.133.34]*/ /*-[01.0000.013.4]-*/ /*-[--.---.---.--]-*/
+char         /*-> check and coordinate an unmerge ----[ leaf   [ge.622.132.30]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_merge_count       (tDEP_ROOT *a_deproot)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -1286,7 +1286,7 @@ char       yCALC_disp_pros      (void *a_me, char *a_list) { return ycalc__audit
 char       yCALC_disp_like      (void *a_me, char *a_list) { return ycalc__audit_disp_master ((tDEP_ROOT *) a_me, a_list, 'P', S_DEP_LIKE); }
 
 
-void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_type          (void)
 {
    a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
@@ -1294,7 +1294,7 @@ ycalc_type          (void)
    return;
 }
 
-void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_isblank       (void)
 {
    a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
@@ -1303,7 +1303,7 @@ ycalc_isblank       (void)
    return;
 }
 
-void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_isvalue       (void)
 {
    a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
@@ -1312,7 +1312,7 @@ ycalc_isvalue       (void)
    return;
 }
 
-void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_istext        (void)
 {
    a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
@@ -1330,7 +1330,7 @@ ycalc_iscalc        (void)
    return;
 }
 
-void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_islit         (void)
 {
    a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
@@ -1339,7 +1339,7 @@ ycalc_islit         (void)
    return;
 }
 
-void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+void         /*-> tbd --------------------------------[ ------ [gv.220.000.32]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_ispoint       (void)
 {
    a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
@@ -1349,7 +1349,7 @@ ycalc_ispoint       (void)
    return;
 }
 
-void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_iserror       (void)
 {
    a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
@@ -1358,7 +1358,7 @@ ycalc_iserror       (void)
    return;
 }
 
-void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_bpos          (void)
 {
    m = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_BPOS);
@@ -1474,7 +1474,7 @@ ycalc_level         (void)
    return;
 }
 
-void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+void         /*-> tbd --------------------------------[ ------ [gv.E64.030.82]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_pointer_OLD   (void)
 {
    /*---(locals)-----------+-----+-----+-*/

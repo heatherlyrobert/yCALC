@@ -52,7 +52,7 @@ static int     s_z          =    0;
 /*====================------------------------------------====================*/
 /*===----                        range functions                       ----===*/
 /*====================------------------------------------====================*/
-void  o___RANGES__________o () { return; }
+static void  o___RANGES__________o () { return; }
 
 char
 ycalc_range_wipe        (int n)
@@ -472,7 +472,7 @@ ycalc_range_include     (tDEP_ROOT **a_src, int b, int x, int y, int z)
 /*====================------------------------------------====================*/
 /*===----                        range functions                       ----===*/
 /*====================------------------------------------====================*/
-void  o___RANGE___________o () { return; }
+static void  o___RANGE___________o () { return; }
 
 
 /*
@@ -1003,7 +1003,7 @@ ycalc_stddev       (void)
 /*====================------------------------------------====================*/
 /*===----                        offset functions                      ----===*/
 /*====================------------------------------------====================*/
-void  o___OFFSET__________o () { return; }
+static void  o___OFFSET__________o () { return; }
 
 void
 ycalc__rel_driver    (char *a_type)
@@ -1143,7 +1143,7 @@ void ycalc_off_bxy       (void)  { return ycalc__off_driver ("bxy_"); }
 /*====================------------------------------------====================*/
 /*===----                          spreedsheet                         ----===*/
 /*====================------------------------------------====================*/
-void  o___SPREADSHEET_____o () { return; }
+static void  o___SPREADSHEET_____o () { return; }
 
 static tDEP_ROOT  *s_deproot_last = NULL;
 
