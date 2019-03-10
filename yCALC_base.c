@@ -359,7 +359,7 @@ yCALC_version       (void)
 #else
    strlcpy (t, "[unknown    ]", 15);
 #endif
-   snprintf (yCALC_ver, 100, "%s   %s : %s", t, YCALC_VER_NUM, YCALC_VER_TXT);
+   snprintf (yCALC_ver, 100, "%s   %s : %s", t, P_VERNUM, P_VERTXT);
    return yCALC_ver;
 }
 

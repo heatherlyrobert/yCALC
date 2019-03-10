@@ -240,7 +240,7 @@ ycalc_popval            (char *a_func)
       return  s_stack [s_nstack].num;
       break;
    case S_TYPE_STR :
-      g_error        = YCALC_ERROR_EXEC_VAL;
+      g_error        = YCALC_ERROR_EXEC_STR;
       return  0.0;
       break;
    case S_TYPE_REF :
@@ -256,9 +256,9 @@ ycalc_popval            (char *a_func)
       case YCALC_DATA_RANGE  : g_error = YCALC_ERROR_EXEC_PTR;    break;
       case YCALC_DATA_BLANK  : g_error = YCALC_ERROR_EXEC_NADA;   break;
       case YCALC_DATA_ERROR  : g_error = YCALC_ERROR_EXEC_ERR;    break;
-      case YCALC_DATA_STR    : g_error = YCALC_ERROR_EXEC_VAL;    break;
-      case YCALC_DATA_SFORM  : g_error = YCALC_ERROR_EXEC_VAL;    break;
-      case YCALC_DATA_SLIKE  : g_error = YCALC_ERROR_EXEC_VAL;    break;
+      case YCALC_DATA_STR    : g_error = YCALC_ERROR_EXEC_STR;    break;
+      case YCALC_DATA_SFORM  : g_error = YCALC_ERROR_EXEC_STR;    break;
+      case YCALC_DATA_SLIKE  : g_error = YCALC_ERROR_EXEC_STR;    break;
       case YCALC_DATA_MERGED : g_error = YCALC_ERROR_EXEC_NADA;   break;
       }
       return  s_value;
@@ -298,7 +298,7 @@ ycalc_popstr            (char *a_func)
    /*---(handle stack types)-------------*/
    switch (s_stack[s_nstack].typ) {
    case S_TYPE_NUM :
-      g_error        = YCALC_ERROR_EXEC_STR;
+      g_error        = YCALC_ERROR_EXEC_VAL;
       return  strndup (g_nada, LEN_RECD);
       break;
    case S_TYPE_STR :
@@ -318,8 +318,8 @@ ycalc_popstr            (char *a_func)
       case YCALC_DATA_BLANK  : g_error = YCALC_ERROR_EXEC_NADA;   break;
       case YCALC_DATA_ERROR  : g_error = YCALC_ERROR_EXEC_ERR;    break;
       case YCALC_DATA_NUM    : g_error = YCALC_ERROR_EXEC_VAL;    break;
-      case YCALC_DATA_NFORM  : g_error = YCALC_ERROR_EXEC_STR;    break;
-      case YCALC_DATA_NLIKE  : g_error = YCALC_ERROR_EXEC_STR;    break;
+      case YCALC_DATA_NFORM  : g_error = YCALC_ERROR_EXEC_VAL;    break;
+      case YCALC_DATA_NLIKE  : g_error = YCALC_ERROR_EXEC_VAL;    break;
       case YCALC_DATA_MERGED : g_error = YCALC_ERROR_EXEC_NADA;   break;
       }
       if (s_string == NULL) return  strndup (g_nada  , LEN_RECD);

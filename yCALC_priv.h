@@ -3,24 +3,6 @@
 #define YCALC_priv_hguard loaded
 
 
-/*===[[ HEADER ]]=============================================================*/
-/*
- *   focus         : run-time libraries
- *   niche         : calculation
- *   heritage      : thales of miletus (first of the seven greek sages)
- *   purpose       : provide a fast, powerful, flexible, shared calculation engine
- *
- *   base_system   : gnu/linux   (powerful, ubiquitous, technical, and hackable)
- *   lang_name     : ansi-c      (wicked, limitless, universal, and everlasting)
- *   dependencies  : none
- *   size          : small       (approximately 2,000 slocL)
- * 
- *   author        : rsheatherly
- *   created       : 2014-10
- *   priorities    : direct, simple, brief, vigorous, and lucid (h.w. fowler)
- *   end goal      : loosely coupled, strict interface, maintainable, traceable
- */
-
 /*===[[ BEG_HEADER ]]=========================================================*/
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
 
@@ -28,7 +10,7 @@
 
 #define     P_FOCUS     "RS (run-time support)"
 #define     P_NICHE     "ca (calculation)"
-#define     P_PURPOSE   "efficient, versatle, and standard keyboard mini-language"
+#define     P_PURPOSE   "fast, powerful, flexible, shared calculation engine"
 
 #define     P_NAMESAKE  "kottus-hecatoncheires (hundred-handed)"
 #define     P_HERITAGE  "kottus, the furious, is one of the three hecatoncheires" 
@@ -42,12 +24,8 @@
 #define     P_CREATED   "2014-10"
 #define     P_DEPENDS   "none"
 
-#define     P_VERNUM    "0.4g"
-#define     P_VERTXT    "cleaned for error, warn changes in yLOG"
-
-/* rapidly evolving version number to aid with visual change confirmation     */
-#define YCALC_VER_NUM   "0.4e"
-#define YCALC_VER_TXT   "lots of work fixing range after bxyz update, better unit testing"
+#define     P_VERNUM    "0.4h"
+#define     P_VERTXT    "fixed audit unit test for tighter calculation error rules"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"

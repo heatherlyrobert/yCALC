@@ -43,8 +43,8 @@ const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR] = {
    { YCALC_ERROR_BUILD_PNT , 'b' , "#b/pnt"   , "pointer dest label/ref is not addr/range type"      },
    { YCALC_ERROR_BUILD_TOK , 'b' , "#b/tok"   , "rpn token could not be recognized"                  },
    { YCALC_ERROR_STACK     , 'e' , "#e/stk"   , "execution stack under or over run"                  },
-   { YCALC_ERROR_EXEC_VAL  , 'e' , "#e/val"   , "expected a value, but given a string"               },
-   { YCALC_ERROR_EXEC_STR  , 'e' , "#e/str"   , "expected a string, but given a value"               },
+   { YCALC_ERROR_EXEC_VAL  , 'e' , "#e/val"   , "expected a string, but given a value"               },
+   { YCALC_ERROR_EXEC_STR  , 'e' , "#e/str"   , "expected a value, but given a string"               },
    { YCALC_ERROR_EXEC_REF  , 'e' , "#e/ref"   , "calculated dependence is to illegal location"       },
    { YCALC_ERROR_EXEC_CIR  , 'e' , "#e/cir"   , "calculated dependence creates a cirlular loop"      },
    { YCALC_ERROR_EXEC_FMT  , 'e' , "#e/fmt"   , "input data format could not be interpreted"         },
@@ -1334,8 +1334,9 @@ void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/
 ycalc_islit         (void)
 {
    a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
-   if (strchr (YCALC_GROUP_CALC, a) == NULL) ycalc_pushval (__FUNCTION__, TRUE);
-   else                                      ycalc_pushval (__FUNCTION__, FALSE);
+   if (a == YCALC_DATA_ERROR)                     ycalc_pushval (__FUNCTION__, FALSE);
+   else if (strchr (YCALC_GROUP_CALC, a) == NULL) ycalc_pushval (__FUNCTION__, TRUE);
+   else                                           ycalc_pushval (__FUNCTION__, FALSE);
    return;
 }
 
