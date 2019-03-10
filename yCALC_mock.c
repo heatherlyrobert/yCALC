@@ -344,7 +344,7 @@ ycalc__mock_named       (char *a_label, char a_force, void **a_owner, void **a_d
     *>       *a_deproot = x_saved->ycalc;                                             <* 
     *>       DEBUG_DEPS   yLOG_point   ("*a_deproot", *a_deproot);                    <* 
     *>    }                                                                           <* 
-    *>    DEBUG_PROG   yLOG_exit    (__FUNCTION__);                                   <* 
+    *>    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);                                   <* 
     *>    return 0;                                                                   <* 
     *> }                                                                              <*/
    /*---(search)-------------------------*/
@@ -364,15 +364,15 @@ ycalc__mock_named       (char *a_label, char a_force, void **a_owner, void **a_d
    /*---(handle failure)-----------------*/
    DEBUG_DEPS   yLOG_point   ("x_owner"    , x_owner);
    --rce;  if (x_owner == NULL && a_force == YCALC_LOOK) {
-      DEBUG_PROG   yLOG_note    ("owner does not exist and only in look mode");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_DEPS   yLOG_note    ("owner does not exist and only in look mode");
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    --rce;  if (x_owner == NULL) {
       DEBUG_DEPS   yLOG_note    ("create a new one");
       rc = ycalc__mock_new_labeled (a_label, &x_owner);
       if (rc < 0) {
-         DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+         DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
       DEBUG_DEPS   yLOG_point   ("x_owner"    , x_owner);
@@ -384,7 +384,7 @@ ycalc__mock_named       (char *a_label, char a_force, void **a_owner, void **a_d
    }
    --rce;  if (x_owner == NULL) {
       DEBUG_DEPS   yLOG_note    ("FAILURE");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(save)---------------------------*/
@@ -403,7 +403,7 @@ ycalc__mock_named       (char *a_label, char a_force, void **a_owner, void **a_d
       DEBUG_DEPS   yLOG_point   ("*a_deproot", *a_deproot);
    }
    /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
