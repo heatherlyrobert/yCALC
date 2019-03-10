@@ -24,8 +24,8 @@
 #define     P_CREATED   "2014-10"
 #define     P_DEPENDS   "none"
 
-#define     P_VERNUM    "0.4j"
-#define     P_VERTXT    "fixed exec unit test for address legal limits checking"
+#define     P_VERNUM    "0.4k"
+#define     P_VERTXT    "fixed math unit test for address legal limits and error checking"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
