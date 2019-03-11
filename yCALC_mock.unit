@@ -20,7 +20,6 @@ SCRP          v21  (MOCK  ) check owner creation and destruction              
 
    COND       v21  verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  setup the program                    ycalc__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  prepare mock data                    ycalc__mock_prepare                                                                                                               i_equal     0                                                                                                    
      get      v21  review the owner linked list         ycalc__unit_mock            "linked_list"    , "ROOT"                                                                             s_equal     yCALC mock list  : num=   1, head=ROOT      , tail=ROOT                                              
      get      v21  review the owner counts              ycalc__unit_mock            "count"          , "ROOT"                                                                             s_equal     yCALC mock count : num=   1, fore=   1, back=   1                                                    
      get      v21  review the deproot counts            ycalc__unit_mock            "root_count"     , "ROOT"                                                                             s_equal     yCALC root count : num=   1, fore=   1, back=   1                                                    
@@ -87,7 +86,6 @@ SCRP          v21  (MOCK  ) check owner creation and destruction              
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.008))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  stop testing                         ycalc__unit_end                                                                                                                   i_equal     0                                                                                                    
-     exec     v21  clean out owner data entries         ycalc__mock_cleanup                                                                                                               i_equal     0                                                                                                    
 
 
 
@@ -97,7 +95,6 @@ SCRP          v21  (MOCK  ) test basic mock functions                         
 
    COND       v21  verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((02.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  setup the program                    ycalc__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  prepare mock data                    ycalc__mock_prepare                                                                                                               i_equal     0                                                                                                    
      code     v21  create a thing pointer               - - - - - - - - - - - - -   tDEP_ROOT *x_deproot = NULL;                                                                                                                                                                 
      code     v21  create a thing pointer               - - - - - - - - - - - - -   tDEP_ROOT *x_2ndroot = NULL;                                                                                                                                                                 
      code     v21  create coordinate holders            - - - - - - - - - - - - -   int  b, x, y, z;                                                                                                                                                                                
@@ -242,7 +239,6 @@ SCRP          v21  (MOCK  ) test basic mock functions                         
 
    COND       v21  complete testing                                                   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((02.019))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  stop testing                         ycalc__unit_end                                                                                                                   i_equal     0                                                                                                    
-     exec     v21  clean out owner data entries         ycalc__mock_cleanup                                                                                                               i_equal     0                                                                                                    
 
 
 

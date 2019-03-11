@@ -333,6 +333,11 @@ ycalc__deps_purge       (void)
    myCALC.rhead   = NULL;
    myCALC.rtail   = NULL;
    myCALC.rcount  = 0;
+   DEBUG_PROG   yLOG_note    ("AFTER RESET GLOBALS");
+   DEBUG_PROG   yLOG_point   ("rroot"     , myCALC.rroot);
+   DEBUG_PROG   yLOG_point   ("rhead"     , myCALC.rhead);
+   DEBUG_PROG   yLOG_point   ("rtail"     , myCALC.rtail);
+   DEBUG_PROG   yLOG_value   ("rcount"    , myCALC.rcount);
    /*---(walk through links)-------------*/
    l_curr = myCALC.dtail;
    c      = 0;
@@ -342,6 +347,7 @@ ycalc__deps_purge       (void)
       l_curr = l_next;
       ++c;
    }
+   DEBUG_PROG   yLOG_note    ("AFTER ALL DEPLINK DELETE");
    DEBUG_PROG   yLOG_value   ("purged"    , c);
    DEBUG_PROG   yLOG_point   ("dhead"     , myCALC.dhead);
    DEBUG_PROG   yLOG_point   ("dtail"     , myCALC.dtail);
@@ -350,6 +356,10 @@ ycalc__deps_purge       (void)
    myCALC.dhead   = NULL;
    myCALC.dtail   = NULL;
    myCALC.dcount  = 0;
+   DEBUG_PROG   yLOG_note    ("AFTER RESET GLOBALS");
+   DEBUG_PROG   yLOG_point   ("dhead"     , myCALC.dhead);
+   DEBUG_PROG   yLOG_point   ("dtail"     , myCALC.dtail);
+   DEBUG_PROG   yLOG_value   ("dcount"    , myCALC.dcount);
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;

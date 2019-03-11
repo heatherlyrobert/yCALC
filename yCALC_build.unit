@@ -20,7 +20,6 @@ SCRP          v21  (BUILD ) verify various build error messages               
 
    COND       v21  verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  setup the program                    ycalc__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  prepare mock data                    ycalc__mock_prepare                                                                                                               i_equal     0                                                                                                    
 
    GROUP      v21  start with simple successes                                        - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
@@ -98,7 +97,6 @@ SCRP          v21  (BUILD ) cell merges for gyges                             
 
    COND       v21  verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  setup the program                    ycalc__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  prepare mock data                    ycalc__mock_prepare                                                                                                               i_equal     0                                                                                                    
 
    GROUP      v21  01 of 15: simple, independent string           [A    ]             - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
@@ -793,7 +791,6 @@ SCRP          v21  (BUILD ) verify creation and updating of like formulas     
 
    COND       v21  verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  setup the program                    ycalc__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  prepare mock data                    ycalc__mock_prepare                                                                                                               i_equal     0                                                                                                    
 
    GROUP      v21  place basic numeric data into cells                                - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 

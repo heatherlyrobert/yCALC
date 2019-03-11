@@ -315,7 +315,6 @@ ycalc_popstr            (char *a_func)
       switch (s_type) {
       case YCALC_DATA_ADDR   : g_error = YCALC_ERROR_EXEC_PTR;    break;
       case YCALC_DATA_RANGE  : g_error = YCALC_ERROR_EXEC_PTR;    break;
-      case YCALC_DATA_BLANK  : g_error = YCALC_ERROR_EXEC_NADA;   break;
       case YCALC_DATA_ERROR  : g_error = YCALC_ERROR_EXEC_ERR;    break;
       case YCALC_DATA_NUM    : g_error = YCALC_ERROR_EXEC_VAL;    break;
       case YCALC_DATA_NFORM  : g_error = YCALC_ERROR_EXEC_VAL;    break;
@@ -557,6 +556,9 @@ ycalc__exec_prepare     (tDEP_ROOT *a_deproot, char *a_type, double *a_value, ch
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   DEBUG_CALC   yLOG_char    ("*a_type"   , *a_type);
+   DEBUG_CALC   yLOG_char    ("btype"     , a_deproot->btype);
+   *a_type = a_deproot->btype;   /* reset to build (pre-exec) status */
    DEBUG_CALC   yLOG_char    ("*a_type"   , *a_type);
    --rce;  if (*a_type == YCALC_DATA_ERROR) {
       DEBUG_CALC   yLOG_note    ("build was in error, can not run");
@@ -859,7 +861,7 @@ ycalc_execute_auto      (void *a_owner, tDEP_ROOT *a_deproot, int a_seq, int a_l
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    DEBUG_CALC   yLOG_point   ("a_owner"    , a_owner);
    DEBUG_CALC   yLOG_point   ("a_deproot"  , a_deproot);
-   DEBUG_CALC   yLOG_info    ("label"      , ycalc_call_labeler (a_deproot));
+   DEBUG_CALC   yLOG_info    ("autocalc"   , ycalc_call_labeler (a_deproot));
    /*---(fill pointers)------------------*/
    rc = g_pointer (a_owner, &x_source, &x_type, &x_value, &x_string);
    DEBUG_CALC   yLOG_value   ("pointer"    , rc);
@@ -882,7 +884,7 @@ ycalc_execute_auto      (void *a_owner, tDEP_ROOT *a_deproot, int a_seq, int a_l
       return rce;
    }
    /*---(complete)-----------------------*/
-   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

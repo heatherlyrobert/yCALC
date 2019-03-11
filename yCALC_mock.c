@@ -271,6 +271,11 @@ ycalc__mock_cleanup     (void)
    tMOCK      *x_save      = NULL;
    /*---(search)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   DEBUG_DEPS   yLOG_note    ("BEFORE");
+   DEBUG_DEPS   yLOG_point   ("mroot"     , myCALC.mroot);
+   DEBUG_DEPS   yLOG_point   ("mhead"     , myCALC.mhead);
+   DEBUG_DEPS   yLOG_point   ("mtail"     , myCALC.mtail);
+   DEBUG_DEPS   yLOG_value   ("mcount"    , myCALC.mcount);
    x_owner = myCALC.mroot;
    while (x_owner != NULL) {
       x_save  = x_owner->next;
@@ -281,6 +286,11 @@ ycalc__mock_cleanup     (void)
       x_owner = x_save;
    }
    myCALC.mroot = NULL;
+   DEBUG_DEPS   yLOG_note    ("AFTER");
+   DEBUG_DEPS   yLOG_point   ("mroot"     , myCALC.mroot);
+   DEBUG_DEPS   yLOG_point   ("mhead"     , myCALC.mhead);
+   DEBUG_DEPS   yLOG_point   ("mtail"     , myCALC.mtail);
+   DEBUG_DEPS   yLOG_value   ("mcount"    , myCALC.mcount);
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return 0;
 }
@@ -596,12 +606,18 @@ ycalc__mock_special     (void *a_owner, char a_what, double *a_value, char **a_s
    }
    --rce;  switch (a_what) {
    case G_SPECIAL_SOURCE :
+      DEBUG_DEPS   yLOG_snote   ("source");
+      DEBUG_DEPS   yLOG_snote   (x_owner->source);
       if (a_string != NULL)  *a_string = x_owner->source;
       break;
    case G_SPECIAL_PRINT  :
+      DEBUG_DEPS   yLOG_snote   ("print");
+      DEBUG_DEPS   yLOG_snote   (x_owner->print);
       if (a_string != NULL)  *a_string = x_owner->print;
       break;
    case G_SPECIAL_TYPE   :
+      DEBUG_DEPS   yLOG_snote   ("type");
+      DEBUG_DEPS   yLOG_schar   (x_owner->type);
       if (a_value  != NULL)  *a_value  = x_owner->type;
       break;
    }
@@ -739,9 +755,9 @@ ycalc__mock_printer     (void *a_owner)
    if (strchr ("=n", x_owner->type) != NULL) {
       strl4main (x_owner->value, s, x_owner->decs, x_owner->format, LEN_RECD);
    } else {
-      if (x_owner->string != NULL)  strlcpy (s, x_owner->string, LEN_RECD);
-      if (x_owner->source != NULL)  strlcpy (s, x_owner->source, LEN_RECD);
-      else                          strlcpy (s, ""             , LEN_RECD);
+      if      (x_owner->string != NULL)  strlcpy (s, x_owner->string, LEN_RECD);
+      else if (x_owner->source != NULL)  strlcpy (s, x_owner->source, LEN_RECD);
+      else                               strlcpy (s, ""             , LEN_RECD);
    }
    /*---(pad/trim)-----------------------*/
    ycalc__mock_width (x_owner, &w, &c);
@@ -864,6 +880,29 @@ ycalc__mock_whole       (char *a_label, char *a_source, char a_format, char a_de
    /*---(complete)-----------------------*/
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return 0;
+}
+
+char
+ycalc__mock_wrap      (void)
+{
+   tMOCK      *x_curr      = NULL;
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   DEBUG_DEPS   yLOG_note    ("BEFORE");
+   DEBUG_DEPS   yLOG_point   ("mroot"     , myCALC.mroot);
+   DEBUG_DEPS   yLOG_point   ("mhead"     , myCALC.mhead);
+   DEBUG_DEPS   yLOG_point   ("mtail"     , myCALC.mtail);
+   DEBUG_DEPS   yLOG_value   ("mcount"    , myCALC.mcount);
+   x_curr = myCALC.mtail;
+   while (x_curr != NULL) {
+      ycalc__mock_free (x_curr);
+      x_curr = myCALC.mtail;
+   }
+   DEBUG_DEPS   yLOG_note    ("AFTER");
+   DEBUG_DEPS   yLOG_point   ("mroot"     , myCALC.mroot);
+   DEBUG_DEPS   yLOG_point   ("mhead"     , myCALC.mhead);
+   DEBUG_DEPS   yLOG_point   ("mtail"     , myCALC.mtail);
+   DEBUG_DEPS   yLOG_value   ("mcount"    , myCALC.mcount);
+   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
 }
 
 

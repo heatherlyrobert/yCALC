@@ -12,6 +12,7 @@ static void  o___ARITHMETIC______o () { return; }
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_add         (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, b + a);
@@ -21,6 +22,7 @@ ycalc_add         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_subtract     (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, b - a);
@@ -30,6 +32,7 @@ ycalc_subtract     (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_multiply     (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, b * a);
@@ -39,6 +42,7 @@ ycalc_multiply     (void)
 void    /*-> tbd --------------------------------[ ------ [fv.220.000.22]*/ /*-[00.0000.03#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_divide       (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    if (a != 0)  ycalc_pushval (__FUNCTION__, b / a);
@@ -49,6 +53,7 @@ ycalc_divide       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_modulus      (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    if (a != 0)  ycalc_pushval (__FUNCTION__, ((int) b) % ((int) a));
@@ -59,6 +64,7 @@ ycalc_modulus      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_increment    (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, a + 1);
    return;
@@ -67,6 +73,7 @@ ycalc_increment    (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_decrement    (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, a - 1);
    return;
@@ -75,6 +82,7 @@ ycalc_decrement    (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_unaryminus   (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, 0 - a);
    return;
@@ -91,6 +99,7 @@ static void  o___MATH____________o () { return; }
 void    /*-> tbd --------------------------------[ ------ [fv.320.010.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_power        (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    int   i = 0;
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
@@ -103,6 +112,7 @@ ycalc_power        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.010.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_power_of_2   (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    int   i = 0;
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, a * a);
@@ -112,6 +122,7 @@ ycalc_power_of_2   (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.010.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_power_of_3   (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    int   i = 0;
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, a * a * a);
@@ -121,6 +132,7 @@ ycalc_power_of_3   (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.010.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_power_of_4   (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    int   i = 0;
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, a * a * a * a);
@@ -130,6 +142,7 @@ ycalc_power_of_4   (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_abs           (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, fabs(a));
    return;
@@ -138,6 +151,7 @@ ycalc_abs           (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_trunc         (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, trunc(a));
    return;
@@ -146,6 +160,7 @@ ycalc_trunc         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.330.010.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_rtrunc        (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    int i = 0;
    n = ycalc_popval (__FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
@@ -159,6 +174,7 @@ ycalc_rtrunc        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_round         (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, round(a));
    return;
@@ -167,6 +183,7 @@ ycalc_round         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.330.010.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_rround        (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    int i = 0;
    n = ycalc_popval (__FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
@@ -180,6 +197,7 @@ ycalc_rround        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_ceiling       (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, ceil(a));
    return;
@@ -188,6 +206,7 @@ ycalc_ceiling       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_floor         (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, floor(a));
    return;
@@ -196,6 +215,7 @@ ycalc_floor         (void)
 void    /*-> rand between 0-1 -------------------[ ------ [fv.210.000.01]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_rand          (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc_pushval (__FUNCTION__, (double) rand());
    return;
 }
@@ -203,6 +223,7 @@ ycalc_rand          (void)
 void    /*-> rand between n-m -------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_randr         (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, ((double) rand() / (double) RAND_MAX) * (b - a) + a);
@@ -212,6 +233,7 @@ ycalc_randr         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_sqrt          (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, sqrt(a));
    return;
@@ -220,6 +242,7 @@ ycalc_sqrt          (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_cbrt          (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, cbrt(a));
    return;
@@ -228,6 +251,7 @@ ycalc_cbrt          (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_sqr           (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, a * a);
    return;
@@ -236,6 +260,7 @@ ycalc_sqr           (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_cube          (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, a * a * a);
    return;
@@ -251,6 +276,7 @@ static void  o___RELATIONAL______o () { return; }
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_equal        (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, b == a);
@@ -260,6 +286,7 @@ ycalc_equal        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_notequal      (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, b != a);
@@ -269,6 +296,7 @@ ycalc_notequal      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_greater      (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, b > a);
@@ -278,6 +306,7 @@ ycalc_greater      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_lesser       (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, b < a);
@@ -287,6 +316,7 @@ ycalc_lesser       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_gequal       (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, b >= a);
@@ -296,6 +326,7 @@ ycalc_gequal       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_lequal       (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, b <= a);
@@ -305,6 +336,7 @@ ycalc_lequal       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.220.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_sequal       (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    r = ycalc_popstr (__FUNCTION__);
    s = ycalc_popstr (__FUNCTION__);
    if (strcmp (s, r) == 0) ycalc_pushval (__FUNCTION__, TRUE );
@@ -315,6 +347,7 @@ ycalc_sequal       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.220.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_snotequal    (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    r = ycalc_popstr (__FUNCTION__);
    s = ycalc_popstr (__FUNCTION__);
    if (strcmp (s, r) != 0) ycalc_pushval (__FUNCTION__, TRUE );
@@ -325,6 +358,7 @@ ycalc_snotequal    (void)
 void    /*-> tbd --------------------------------[ ------ [fv.220.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_slesser      (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    r = ycalc_popstr (__FUNCTION__);
    s = ycalc_popstr (__FUNCTION__);
    if (strcmp (s, r) <  0) ycalc_pushval (__FUNCTION__, TRUE );
@@ -335,6 +369,7 @@ ycalc_slesser      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.220.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_sgreater     (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    r = ycalc_popstr (__FUNCTION__);
    s = ycalc_popstr (__FUNCTION__);
    if (strcmp (s, r) >  0) ycalc_pushval (__FUNCTION__, TRUE );
@@ -352,6 +387,7 @@ static void  o___LOGICAL_________o () { return; }
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_not          (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, !a);
    return;
@@ -360,6 +396,7 @@ ycalc_not          (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_and          (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, b && a);
@@ -369,6 +406,7 @@ ycalc_and          (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_or           (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, b || a);
@@ -378,6 +416,7 @@ ycalc_or           (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_nand         (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, !(b && a));
@@ -387,6 +426,7 @@ ycalc_nand         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_nor          (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, !(b || a));
@@ -396,6 +436,7 @@ ycalc_nor          (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_xor          (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, (b && !a) || (!b && a));
@@ -412,6 +453,7 @@ static void  o___LOGIC___________o () { return; }
 void    /*-> tbd --------------------------------[ ------ [fv.320.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_if            (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    c = ycalc_popval (__FUNCTION__);
@@ -423,6 +465,7 @@ ycalc_if            (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.000.23]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_ifs           (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    r = ycalc_popstr (__FUNCTION__);
    s = ycalc_popstr (__FUNCTION__);
    c = ycalc_popval (__FUNCTION__);
@@ -434,6 +477,7 @@ ycalc_ifs           (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_within        (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    c = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
@@ -445,6 +489,7 @@ ycalc_within        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_approx        (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    c = ycalc_popval (__FUNCTION__);
@@ -471,6 +516,7 @@ long   time_zone  = 0;
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.01]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_now           (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc_pushval (__FUNCTION__, time (NULL));
    return;
 }
@@ -478,6 +524,7 @@ ycalc_now           (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_year          (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    char temp[100];
    a = ycalc_popval (__FUNCTION__);
    time_t  xtime = (time_t) a;
@@ -489,6 +536,7 @@ ycalc_year          (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_month         (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    char temp[100];
    a = ycalc_popval (__FUNCTION__);
    time_t  xtime = (time_t) a;
@@ -500,6 +548,7 @@ ycalc_month         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_day           (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    char temp[100];
    a = ycalc_popval (__FUNCTION__);
    time_t  xtime = (time_t) a;
@@ -511,6 +560,7 @@ ycalc_day           (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_hour          (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    char temp[100];
    a = ycalc_popval (__FUNCTION__);
    time_t  xtime = (time_t) a;
@@ -522,6 +572,7 @@ ycalc_hour          (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_minute        (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    char temp[100];
    a = ycalc_popval (__FUNCTION__);
    time_t  xtime = (time_t) a;
@@ -533,6 +584,7 @@ ycalc_minute        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_second        (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    char temp[100];
    a = ycalc_popval (__FUNCTION__);
    time_t  xtime = (time_t) a;
@@ -544,6 +596,7 @@ ycalc_second        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_weekday       (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    char temp[100];
    a = ycalc_popval (__FUNCTION__);
    time_t  xtime = (time_t) a;
@@ -555,6 +608,7 @@ ycalc_weekday       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_weeknum       (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    char temp[100];
    a = ycalc_popval (__FUNCTION__);
    time_t  xtime = (time_t) a;
@@ -566,6 +620,7 @@ ycalc_weeknum       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.020.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_daynum        (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    char temp[100];
    a = ycalc_popval (__FUNCTION__);
    time_t  xtime = (time_t) a;
@@ -577,6 +632,7 @@ ycalc_daynum        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.D80.0A0.A3]*/ /*-[05.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_timevalue     (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----------+-*/
    int         se = 0;
    int         mn = 0;
@@ -646,6 +702,7 @@ ycalc_timevalue     (void)
 void    /*-> tbd --------------------------------[ ------ [fv.750.050.53]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_date          (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----------+-*/
    struct tm  *temp;
    time_t      x_time;
@@ -682,6 +739,7 @@ ycalc_date          (void)
 void    /*-> tbd --------------------------------[ ------ [fv.430.040.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_time          (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----------+-*/
    struct tm  *temp;
    time_t      x_time;
@@ -703,6 +761,7 @@ ycalc_time          (void)
 void    /*-> tbd --------------------------------[ ------ [fv.430.030.02]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_datepart      (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----------+-*/
    struct tm  *temp;
    ullong      x_time;
@@ -724,6 +783,7 @@ ycalc_datepart      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.420.020.03]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_timepart      (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----------+-*/
    struct tm  *temp;
    ullong      x_time;
@@ -740,6 +800,7 @@ ycalc_timepart      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.420.020.03]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_timezonesec   (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc_pushval (__FUNCTION__, time_zone);
    return;
 }

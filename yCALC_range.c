@@ -576,6 +576,7 @@ ycalc__range_gather     (char *a_func)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_sum         (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_total);
    return;
@@ -584,6 +585,7 @@ ycalc_sum         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_every       (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_count_all);
    return;
@@ -592,6 +594,7 @@ ycalc_every       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_filled      (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_count_fil);
    return;
@@ -600,6 +603,7 @@ ycalc_filled      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_numbers     (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_count_num);
    return;
@@ -608,6 +612,7 @@ ycalc_numbers     (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_strings     (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_count_str);
    return;
@@ -616,6 +621,7 @@ ycalc_strings     (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_pointers    (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_count_ptr);
    return;
@@ -624,6 +630,7 @@ ycalc_pointers    (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_empty       (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_count_all - s_count_fil);
    return;
@@ -632,6 +639,7 @@ ycalc_empty       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_calcs       (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_count_calc);
    return;
@@ -640,6 +648,7 @@ ycalc_calcs       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_errors      (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_count_error);
    return;
@@ -648,6 +657,7 @@ ycalc_errors      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_blanks      (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_count_blank);
    return;
@@ -656,6 +666,7 @@ ycalc_blanks      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_dist        (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, sqrt (pow (s_b, 2) + pow (s_x, 2) + pow (s_y, 2) + pow (s_z, 2)));
    return;
@@ -664,6 +675,7 @@ ycalc_dist        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_tabs        (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_b);
    return;
@@ -672,6 +684,7 @@ ycalc_tabs        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_cols        (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_x);
    return;
@@ -680,6 +693,7 @@ ycalc_cols        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_rows        (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_y);
    return;
@@ -688,6 +702,7 @@ ycalc_rows        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_levels      (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_z);
    return;
@@ -696,6 +711,7 @@ ycalc_levels      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_min         (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_min);
    return;
@@ -704,6 +720,7 @@ ycalc_min         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_max         (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_max);
    return;
@@ -712,6 +729,7 @@ ycalc_max         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_range       (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_max - s_min);
    return;
@@ -720,6 +738,7 @@ ycalc_range       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_average     (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    if (s_count_num > 0)  ycalc_pushval (__FUNCTION__, s_total / s_count_num);
    else                  ycalc_pushval (__FUNCTION__, 0);
@@ -871,6 +890,7 @@ ycalc__range_quarters     (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_quarter1    (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_quarters ();
    ycalc_pushval (__FUNCTION__, q1);
    return;
@@ -879,6 +899,7 @@ ycalc_quarter1    (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_median      (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_quarters ();
    ycalc_pushval (__FUNCTION__, q2);
    return;
@@ -887,6 +908,7 @@ ycalc_median      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_quarter3    (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_quarters ();
    ycalc_pushval (__FUNCTION__, q3);
    return;
@@ -895,6 +917,7 @@ ycalc_quarter3    (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_rangeq      (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_quarters ();
    ycalc_pushval (__FUNCTION__, qr);
    return;
@@ -903,6 +926,7 @@ ycalc_rangeq      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_skew        (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_quarters ();
    ycalc_pushval (__FUNCTION__, qs);
    return;
@@ -911,6 +935,7 @@ ycalc_skew        (void)
 void    /*-> find the most common value ---------[ ------ [fv.952.070.43]*/ /*-[02.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_mode         (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----------+-*/
    int         i           =  0;            /* loop iterator -- entry         */
    int         mid         =  0;            /* midpoint of entries            */
@@ -958,6 +983,7 @@ ycalc_mode         (void)
 void    /*-> find the measure of variance -------[ ------ [fv.A52.070.22]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_stddev       (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----------+-*/
    int         i           =  0;            /* loop iterator -- entry         */
    double      x_mean      =  0;
@@ -1008,6 +1034,7 @@ static void  o___OFFSET__________o () { return; }
 void
 ycalc__rel_driver    (char *a_type)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
    tDEP_ROOT  *x_deproot   = NULL;
@@ -1052,6 +1079,7 @@ void ycalc_rel_bxy       (void)  { return ycalc__rel_driver ("bxy_"); }
 void
 ycalc__abs_driver    (char *a_type)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
    tDEP_ROOT  *x_deproot   = NULL;
@@ -1097,6 +1125,7 @@ void ycalc_address       (void)  { return ycalc__abs_driver ("bxy_"); }
 void
 ycalc__off_driver    (char *a_type)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
    tDEP_ROOT  *x_deproot   = NULL;
@@ -1150,6 +1179,7 @@ static tDEP_ROOT  *s_deproot_last = NULL;
 void    /*-> search left column in range --------[ ------ [fv.A71.030.E7]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc__lookup_common  (char a_dir)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----------+-*/
    char        rc          = 0;
    int         x_col       = 0;
@@ -1254,6 +1284,7 @@ void ycalc_hlookup       (void)  { return ycalc__lookup_common ('h'); }
 void
 ycalc_entry             (void)
 {
+   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    char        rc          =    0;
    int         x_buf       =    0;
    int         y_cur       =    0;

@@ -712,6 +712,7 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
    x_len = strllen (*a_source, LEN_RECD);
    --rce;  if (x_len <= 1) {
       ycalc_handle_error (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, "empty");
+      a_deproot->btype = YCALC_DATA_ERROR;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -722,6 +723,7 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
       DEBUG_CALC   yLOG_value   ("like"      , rc);
       if (rc != 0) {
          ycalc_handle_error (rc , a_type, a_value, a_string, "like");
+         a_deproot->btype = YCALC_DATA_ERROR;
          DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
@@ -739,8 +741,10 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
       if (rc != 0) {
          sprintf (t, "pos %d", yRPN_errorpos ());
          ycalc_handle_error (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, t);
+         a_deproot->btype = YCALC_DATA_ERROR;
       } else {
          ycalc_handle_error (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, "failed");
+         a_deproot->btype = YCALC_DATA_ERROR;
       }
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -753,6 +757,7 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
    p = ycalc__build_strtok (x_rpn);
    --rce;  if (p == NULL) {
       ycalc_handle_error (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, "empty");
+      a_deproot->btype = YCALC_DATA_ERROR;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -762,6 +767,7 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
       rc = ycalc__build_step (a_deproot, p);
       if (rc != 1) {
          ycalc_handle_error (rc, a_type, a_value, a_string, p);
+         a_deproot->btype = YCALC_DATA_ERROR;
          DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }

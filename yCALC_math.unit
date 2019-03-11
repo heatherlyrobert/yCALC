@@ -20,7 +20,6 @@ SCRP          v21  (MATH  ) numeric arithmetic +, -, *, /, %, --, ++, -:      
 
    COND       v21  verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((01.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  setup the program                    ycalc__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  prepare mock data                    ycalc__mock_prepare                                                                                                               i_equal     0                                                                                                    
      code     v21  create owner pointer                 - - - - - - - - - - - - -   tMOCK     *x_owner   = NULL;                                                                                                                                                                 
      code     v21  create deproot pointer               - - - - - - - - - - - - -   tDEP_ROOT *x_deproot = NULL;                                                                                                                                                                 
 
@@ -182,7 +181,6 @@ SCRP          v21  (MATH  ) reference arithmetic +, -, *, /, %, --, ++, -:    
 
    COND       v21  verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((02.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  setup the program                    ycalc__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  prepare mock data                    ycalc__mock_prepare                                                                                                               i_equal     0                                                                                                    
      code     v21  create owner pointer                 - - - - - - - - - - - - -   tMOCK     *x_owner   = NULL;                                                                                                                                                                 
      code     v21  create deproot pointer               - - - - - - - - - - - - -   tDEP_ROOT *x_deproot = NULL;                                                                                                                                                                 
 
@@ -374,7 +372,6 @@ SCRP          v21  (MATH  ) math functions                                    
 
    COND       v21  verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((03.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  setup the program                    ycalc__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  prepare mock data                    ycalc__mock_prepare                                                                                                               i_equal     0                                                                                                    
      code     v21  create owner pointer                 - - - - - - - - - - - - -   tMOCK     *x_owner   = NULL;                                                                                                                                                                 
      code     v21  create deproot pointer               - - - - - - - - - - - - -   tDEP_ROOT *x_deproot = NULL;                                                                                                                                                                 
 
@@ -535,7 +532,6 @@ SCRP          v21  (MATH  ) numeric relationals  [6]  ==   !=   <   >   <=   >
 
    COND       v21  verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((04.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  setup the program                    ycalc__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  prepare mock data                    ycalc__mock_prepare                                                                                                               i_equal     0                                                                                                    
 
    COND       v21  set values                                                         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((04.002))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  build a formula                      ycalc__mock_source          "0k11" , "201.56"                                                                                     i_equal     0                                                                                                    
@@ -654,7 +650,6 @@ SCRP          v21  (MATH  ) basic logical    [ 7] &&, ||, !, if, nand, nor, xo
 
    COND       v21  verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((05.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  setup the program                    ycalc__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  prepare mock data                    ycalc__mock_prepare                                                                                                               i_equal     0                                                                                                    
      code     v21  create owner pointer                 - - - - - - - - - - - - -   tMOCK     *x_owner   = NULL;                                                                                                                                                                 
      code     v21  create deproot pointer               - - - - - - - - - - - - -   tDEP_ROOT *x_deproot = NULL;                                                                                                                                                                 
 
@@ -935,7 +930,6 @@ SCRP          v21  (s_calc) string relational [ 5] ==, #<, #>, #=, #!, ifs    
 
    COND       v21  verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((06.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  setup the program                    ycalc__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  prepare mock data                    ycalc__mock_prepare                                                                                                               i_equal     0                                                                                                    
      code     v21  create owner pointer                 - - - - - - - - - - - - -   tMOCK     *x_owner   = NULL;                                                                                                                                                                 
      code     v21  create deproot pointer               - - - - - - - - - - - - -   tDEP_ROOT *x_deproot = NULL;                                                                                                                                                                 
 
@@ -1121,7 +1115,6 @@ SCRP          v21  (s_calc) within and approx logic functions                 
 
    COND       v21  verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((07.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  setup the program                    ycalc__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  prepare mock data                    ycalc__mock_prepare                                                                                                               i_equal     0                                                                                                    
      code     v21  create owner pointer                 - - - - - - - - - - - - -   tMOCK     *x_owner   = NULL;                                                                                                                                                                 
      code     v21  create deproot pointer               - - - - - - - - - - - - -   tDEP_ROOT *x_deproot = NULL;                                                                                                                                                                 
      code     v21  create a pointer to root             - - - - - - - - - - - - -   ycalc_call_who_named  ("0k11", YCALC_FULL, &x_owner, &x_deproot);                                                                                                                                        
@@ -1263,7 +1256,6 @@ SCRP          v21  (MATH  ) math functions                                    
 
    COND       v21  verify program setup                                               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((03.001))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  setup the program                    ycalc__unit_quiet                                                                                                                 i_equal     0                                                                                                    
-     exec     v21  prepare mock data                    ycalc__mock_prepare                                                                                                               i_equal     0                                                                                                    
 
    GROUP      v21  check date value interpretation                                    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   - - - - -   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 
@@ -1408,7 +1400,6 @@ SCRP          v21  (MATH  ) math functions                                    
 
    COND       v21  verify program teardown                                            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   ((07.026))  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
      exec     v21  wrap-up the program                  ycalc__unit_end                                                                                                                   i_equal     0                                                                                                    
-     exec     v21  clean out owner data entries         ycalc__mock_cleanup                                                                                                               i_equal     0                                                                                                    
 
 
 # end-of-file

@@ -24,8 +24,8 @@
 #define     P_CREATED   "2014-10"
 #define     P_DEPENDS   "none"
 
-#define     P_VERNUM    "0.4l"
-#define     P_VERTXT    "fixed range unit test for changes to error checking"
+#define     P_VERNUM    "0.4m"
+#define     P_VERTXT    "solved an outstanding enable/init issue with type"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -177,8 +177,9 @@ extern char        g_nada      [5];
  */
 struct      cDEP_ROOT {
    /*---(tie to owner)------*/
-   void       *owner;
-   int         range;
+   void       *owner;        /* back pointer to owning object                 */
+   int         range;        /* if assigned as a range                        */
+   char        btype;        /* build type, before execution troubles         */
    /*---(calculation)-------*/
    int         nrpn;         /* number of rnp tokens                          */
    char       *rpn;          /* rpn version of formula                        */

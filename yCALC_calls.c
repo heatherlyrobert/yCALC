@@ -33,9 +33,11 @@ yCALC_enable            (void *a_owner)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
+   char        rc          =    0;
    void       *x_new       = NULL;
    tDEP_ROOT  *x_deproot   = NULL;
    int         x_tries     =    0;
+   char       *x_type      = NULL;
    /*---(header)-------------------------*/
    /*> DEBUG_DEPS   yLOG_senter  (__FUNCTION__);                                      <*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
@@ -126,6 +128,16 @@ yCALC_enable            (void *a_owner)
    /*> DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);                                      <*/
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    g_enabler (a_owner, x_deproot);
+   /*---(copy existing type)-------------*/
+   rc = g_pointer (a_owner, NULL, &x_type, NULL, NULL);
+   DEBUG_CALC   yLOG_value   ("pointer"    , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_CALC   yLOG_char    ("*x_type"   , *x_type);
+   x_deproot->btype = *x_type;
+   DEBUG_CALC   yLOG_char    ("btype"     , x_deproot->btype);
    /*---(complete)-----------------------*/
    return 0;
 }
