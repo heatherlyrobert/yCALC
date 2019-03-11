@@ -24,8 +24,8 @@
 #define     P_CREATED   "2014-10"
 #define     P_DEPENDS   "none"
 
-#define     P_VERNUM    "0.4n"
-#define     P_VERTXT    "fixed a range update to type to prepare for calculation"
+#define     P_VERNUM    "0.4o"
+#define     P_VERTXT    "fixed a trig unit test by loosening ystr legal checks a little"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"

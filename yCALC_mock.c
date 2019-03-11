@@ -243,7 +243,7 @@ ycalc__mock_ystr_check  (int b, int x, int y, int z, char a_check)
    if (x  <    0)        return -1;
    if (x  >   20)        return -1;
    if (y  <    0)        return -1;
-   if (y  >   20)        return -1;
+   if (y  >   30)        return -1;
    return 0;
 }
 
