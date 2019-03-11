@@ -351,6 +351,9 @@ ycalc_range_add         (int bb, int eb, int bx, int ex, int by, int ey, int bz,
    x_range->range = n;
    rc = g_pointer (x_owner, &x_source, &x_type, NULL, NULL);
    *x_type = YCALC_DATA_INTERN;
+   DEBUG_CALC   yLOG_char    ("*x_type"   , *x_type);
+   x_range->btype = YCALC_DATA_INTERN;
+   DEBUG_CALC   yLOG_char    ("btype"     , x_range->btype);
    str4gyges (bb, bx, by, bz, NULL, x_beg, YSTR_CHECK);
    str4gyges (eb, ex, ey, ez, NULL, x_end, YSTR_CHECK);
    sprintf (t, "®%s..%s", x_beg, x_end);
