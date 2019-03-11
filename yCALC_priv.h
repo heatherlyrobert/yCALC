@@ -24,8 +24,8 @@
 #define     P_CREATED   "2014-10"
 #define     P_DEPENDS   "none"
 
-#define     P_VERNUM    "0.4o"
-#define     P_VERTXT    "fixed a trig unit test by loosening ystr legal checks a little"
+#define     P_VERNUM    "0.4p"
+#define     P_VERTXT    "all unit tests updated and passed"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"

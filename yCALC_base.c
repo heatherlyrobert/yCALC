@@ -775,6 +775,7 @@ ycalc__unit_end         (void)
 {
    yCALC_wrap   ();
    ycalc__mock_cleanup ();
+   ycalc_range_init ();
    yLOGS_end    ();
    return 0;
 }
