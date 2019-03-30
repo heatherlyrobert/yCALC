@@ -231,6 +231,7 @@ ycalc_calc_wipe         (tDEP_ROOT *a_deproot)
    while (x_curr != NULL) {
       x_next = x_curr->next;
       if (x_curr->s  != NULL)  free (x_curr->s);
+      x_curr->s  == NULL;
       free (x_curr);
       x_curr = x_next;
       DEBUG_CALC   yLOG_spoint  (x_curr);
@@ -377,6 +378,7 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    DEBUG_CALC   yLOG_note    ("mark type");
    a_calc->t = G_TYPE_REF;
    a_calc->r = x_range;
+   a_calc->s = strdup (ycalc_call_labeler (x_range));
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 1;
@@ -452,6 +454,7 @@ ycalc__build_reference  (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    /*---(update type)-----------------*/
    DEBUG_CALC   yLOG_note    ("mark type");
    a_calc->t = G_TYPE_REF;
+   a_calc->s = strndup (a_token, LEN_RECD);
    /*---(ranges)-------------------------*/
    rc = g_addresser (x_ref->owner, &b, &x, &y, &z);
    DEBUG_CALC   yLOG_value   ("addresser" , rc);

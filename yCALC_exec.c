@@ -104,7 +104,7 @@ static int     s_nstack  = 0;
 static void      o___PROGRAM_________________o (void) {;}
 
 char
-ycalc__exec_stack_clear  (void)
+ycalc__exec_stack_clear  (char a_init)
 {
    /*---(locals)-----------+-----+-----+-*/
    int         i           =    0;
@@ -112,6 +112,7 @@ ycalc__exec_stack_clear  (void)
       s_stack [i].typ   = S_TYPE_EMPTY;
       s_stack [i].ref   = NULL;
       s_stack [i].num   = 0.0;
+      if (a_init != 'y' && s_stack [i].str != NULL)   free (s_stack [i].str);
       s_stack [i].str   = NULL;
    }
    s_nstack = 0;
@@ -130,11 +131,12 @@ ycalc_exec_init          (void)
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(globals)------------------------*/
    DEBUG_PROG   yLOG_note    ("clearing stack");
-   ycalc__exec_stack_clear ();
+   ycalc__exec_stack_clear ('y');
    /*---(globals)------------------------*/
    DEBUG_PROG   yLOG_note    ("global variables");
    myCALC.deproot = NULL;
    myCALC.owner   = NULL;
+   myCALC.label   = NULL;
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -180,6 +182,7 @@ ycalc_pushstr           (char *a_func, char *a_string)
    s_stack [s_nstack].typ = S_TYPE_STR;
    s_stack [s_nstack].ref = NULL;
    s_stack [s_nstack].num = 0;
+   if (s_stack[s_nstack].str != NULL) free (s_stack[s_nstack].str);
    s_stack [s_nstack].str = strndup (a_string, LEN_RECD);
    /*---(update stack counter)-----------*/
    ++s_nstack;
@@ -188,7 +191,7 @@ ycalc_pushstr           (char *a_func, char *a_string)
 }
 
 char         /*-> add a reference to the stack -------[ ------ [gc.520.203.21]*/ /*-[01.0000.075.!]-*/ /*-[--.---.---.--]-*/
-ycalc_pushref           (char *a_func, void *a_thing)
+ycalc_pushref           (char *a_func, void *a_thing, char *a_label)
 {
    /*---(defense: stack overflow)--------*/
    if (s_nstack >= S_MAX_STACK) {
@@ -203,7 +206,8 @@ ycalc_pushref           (char *a_func, void *a_thing)
    s_stack[s_nstack].typ = S_TYPE_REF;
    s_stack[s_nstack].ref = a_thing;
    s_stack[s_nstack].num = 0;
-   s_stack[s_nstack].str = NULL;
+   if (s_stack[s_nstack].str != NULL) free (s_stack[s_nstack].str);
+   s_stack[s_nstack].str = strndup (a_label, LEN_LABEL);
    /*---(update stack counter)-----------*/
    ++s_nstack;
    /*---(complete)-----------------------*/
@@ -302,7 +306,7 @@ ycalc_popstr            (char *a_func)
       return  strndup (g_nada, LEN_RECD);
       break;
    case S_TYPE_STR :
-      return  s_stack[s_nstack].str;
+      return  strndup (s_stack[s_nstack].str, LEN_RECD);
       break;
    case S_TYPE_REF :
       s_string = NULL;
@@ -572,9 +576,12 @@ ycalc__exec_prepare     (tDEP_ROOT *a_deproot, char *a_type, double *a_value, ch
       return rce;
    }
    /*---(prepare)------------------------*/
-   ycalc__exec_stack_clear ();
+   ycalc__exec_stack_clear ('-');
    *a_value = 0.0;
-   if (*a_string != NULL)  *a_string = strndup ("", LEN_RECD);
+   if (*a_string != NULL) {
+      free (*a_string);
+      *a_string = NULL;
+   }
    /*---(check calculation)--------------*/
    DEBUG_CALC   yLOG_point   ("chead"     , a_deproot->chead);
    --rce;  if (a_deproot->chead == NULL) {
@@ -685,6 +692,7 @@ ycalc_execute_trusted   (tDEP_ROOT *a_deproot, char *a_type, double *a_value, ch
    /*---(main loop)----------------------*/
    myCALC.deproot = a_deproot;
    myCALC.owner   = a_deproot->owner;
+   myCALC.label   = strdup (ycalc_call_labeler (a_deproot));
    x_calc   = a_deproot->chead;
    DEBUG_CALC   yLOG_value   ("ncalc"     , a_deproot->ncalc);
    DEBUG_CALC   yLOG_value   ("nstack"    , s_nstack);
@@ -695,29 +703,38 @@ ycalc_execute_trusted   (tDEP_ROOT *a_deproot, char *a_type, double *a_value, ch
       switch (x_calc->t) {
       case G_TYPE_VAL  :
          ycalc_pushval (__FUNCTION__, x_calc->v);
+         DEBUG_CALC   yLOG_value   ("pushval"   , s_nstack);
          break;
       case G_TYPE_STR  :
          ycalc_pushstr (__FUNCTION__, x_calc->s);
+         DEBUG_CALC   yLOG_value   ("pushstr"   , s_nstack);
          break;
       case G_TYPE_REF  :
-         ycalc_pushref (__FUNCTION__, x_calc->r);
+         ycalc_pushref (__FUNCTION__, x_calc->r, x_calc->s);
+         DEBUG_CALC   yLOG_value   ("pushref"   , s_nstack);
          break;
       case G_TYPE_FUNC :
          x_calc->f();
+         DEBUG_CALC   yLOG_value   ("func()"    , s_nstack);
          break;
       case G_TYPE_NOOP :
+         DEBUG_CALC   yLOG_value   ("noop"      , s_nstack);
          break;
       default  :
+         DEBUG_CALC   yLOG_value   ("error"     , s_nstack);
          /*> ERROR_add (s_me, PERR_EVAL, s_neval, __FUNCTION__, TERR_OTHER, "bad calculation type requested");   <*/
          g_error = -66;
          break;
       }
-      if (g_error != 0) break;
+      if (g_error != 0) {
+         DEBUG_CALC   yLOG_value   ("ERROR"     , g_error);
+         break;
+      }
       x_calc = x_calc->next;
-      DEBUG_CALC   yLOG_value   ("nstack"    , s_nstack);
    }
    myCALC.deproot = NULL;
    myCALC.owner   = NULL;
+   if (myCALC.label != NULL)  free (myCALC.label);
    /*---(check results)------------------*/
    rc = ycalc__exec_wrap    (a_type, a_value, a_string);
    DEBUG_CALC   yLOG_value   ("wrap"      , rc);

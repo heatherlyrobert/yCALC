@@ -464,6 +464,7 @@ ycalc_call_who_at       (int b, int x, int y, int z, char a_force, void **a_owne
    void       *x_deproot   = NULL;
    /*---(header)-------------------------*/
    DEBUG_APIS   yLOG_enter   (__FUNCTION__);
+   DEBUG_APIS   yLOG_complex ("position"  , "%2db, %3dx, %5dy, %3dz", b, x, y, z);
    DEBUG_APIS   yLOG_char    ("a_force"   , a_force);
    DEBUG_APIS   yLOG_point   ("owner"     , a_owner);
    DEBUG_APIS   yLOG_point   ("deproot"   , a_deproot);

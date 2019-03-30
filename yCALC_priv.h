@@ -13,7 +13,7 @@
 #define     P_PURPOSE   "fast, powerful, flexible, shared calculation engine"
 
 #define     P_NAMESAKE  "kottus-hecatoncheires (hundred-handed)"
-#define     P_HERITAGE  "kottus, the furious, is one of the three hecatoncheires" 
+#define     P_HERITAGE  "kottus, big-limbed, is one of the three hecatoncheires" 
 #define     P_IMAGERY   "ugly, impossibly powerful, one-hundred handed, fifty headed giant"
 
 #define     P_SYSTEM    "gnu/linux   (powerful, ubiquitous, technical, and hackable)"
@@ -24,8 +24,10 @@
 #define     P_CREATED   "2014-10"
 #define     P_DEPENDS   "none"
 
-#define     P_VERNUM    "0.4p"
-#define     P_VERTXT    "all unit tests updated and passed"
+#define     P_VERMAJOR  "0.X = reading for full gyges use"
+#define     P_VERMINOR  "0.4 = stablizing library, finding little bugs"
+#define     P_VERNUM    "0.4q"
+#define     P_VERTXT    "improving error reporting in execution with cell labels"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -319,6 +321,7 @@ struct cLOCAL {
    /*---(done)--------------*/
    void       *owner;
    void       *deproot;
+   char       *label;
    /*---(done)--------------*/
 };
 extern  tLOCAL myCALC;
@@ -502,9 +505,9 @@ char        ycalc_calc_wipe         (tDEP_ROOT *a_deproot);
 /*---(program)------------------------*/
 char        ycalc_exec_init         (void);
 /*---(pushing)------------------------*/
-char        ycalc_pushstr           (char *a_func, char   *a_string);
-char        ycalc_pushval           (char *a_func, double  a_value);
-char        ycalc_pushref           (char *a_func, void   *a_thing);
+char        ycalc_pushstr           (char *a_func, char *a_string);
+char        ycalc_pushval           (char *a_func, double a_value);
+char        ycalc_pushref           (char *a_func, void *a_thing, char *a_label);
 /*---(popping)------------------------*/
 double      ycalc_popval            (char *a_func);
 char*       ycalc_popstr            (char *a_func);

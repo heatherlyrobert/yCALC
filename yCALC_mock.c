@@ -507,6 +507,8 @@ ycalc__mock_pointer     (void *a_owner, char **a_source, char **a_type, double *
       DEBUG_DEPS   yLOG_point   ("*a_source" , *a_source);
       *a_source = &x_mock->source;
       DEBUG_DEPS   yLOG_point   ("*a_source" , *a_source);
+      DEBUG_DEPS   yLOG_point   ("->source"  , x_mock->source);
+      if (x_mock->source != NULL)  DEBUG_DEPS   yLOG_info    ("->source"  , x_mock->source);
    }
    if (a_type  != NULL) {
       DEBUG_DEPS   yLOG_point   ("*a_type"   , *a_type);
@@ -522,6 +524,8 @@ ycalc__mock_pointer     (void *a_owner, char **a_source, char **a_type, double *
       DEBUG_DEPS   yLOG_point   ("*a_string" , *a_string);
       *a_string = &x_mock->string;
       DEBUG_DEPS   yLOG_point   ("*a_string" , *a_string);
+      DEBUG_DEPS   yLOG_point   ("->string"  , x_mock->string);
+      if (x_mock->string != NULL)  DEBUG_DEPS   yLOG_info    ("->string"  , x_mock->string);
    }
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -536,7 +540,7 @@ ycalc__mock_valuer      (void *a_owner, char *a_type, double *a_value, char **a_
    DEBUG_DEPS   yLOG_spoint  (a_owner);
    if (a_type   != NULL)  *a_type   = '-';
    if (a_value  != NULL)  *a_value  = 0.0;
-   if (a_string != NULL)  *a_string = g_nada;
+   if (a_string != NULL)  *a_string = NULL;
    --rce;  if (a_owner  == NULL) {
       DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
@@ -551,10 +555,10 @@ ycalc__mock_valuer      (void *a_owner, char *a_type, double *a_value, char **a_
       DEBUG_DEPS   yLOG_sdouble (*a_value);
    }
    if (a_string != NULL) {
-      if      (x_mock->type == 'E')     *a_string   = g_nada;
+      if      (x_mock->type == 'E')     *a_string = x_mock->string;
       else if (x_mock->type == 's' && x_mock->source != NULL)  *a_string = x_mock->source;
       else if (x_mock->string != NULL)  *a_string = x_mock->string;
-      else                              *a_string = g_nada;
+      DEBUG_DEPS   yLOG_spoint  (*a_string);
       DEBUG_DEPS   yLOG_snote   (*a_string);
    }
    DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
@@ -593,7 +597,7 @@ ycalc__mock_special     (void *a_owner, char a_what, double *a_value, char **a_s
    DEBUG_DEPS   yLOG_spoint  (a_owner);
    DEBUG_DEPS   yLOG_schar   (a_what);
    if (a_value  != NULL)  *a_value  = 0.0;
-   if (a_string != NULL)  *a_string = g_nada;
+   if (a_string != NULL)  *a_string = NULL;
    --rce;  if (a_owner   == NULL) {
       DEBUG_DEPS   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
@@ -621,7 +625,8 @@ ycalc__mock_special     (void *a_owner, char a_what, double *a_value, char **a_s
       if (a_value  != NULL)  *a_value  = x_owner->type;
       break;
    }
-   DEBUG_DEPS   yLOG_snote   (*a_string);
+   DEBUG_DEPS   yLOG_spoint  (*a_string);
+   if (*a_string != NULL)  DEBUG_DEPS   yLOG_snote   (*a_string);
    DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
@@ -753,7 +758,7 @@ ycalc__mock_printer     (void *a_owner)
    /*---(contents)-----------------------*/
    DEBUG_DEPS   yLOG_char    ("type"      , x_owner->type);
    if (strchr ("=n", x_owner->type) != NULL) {
-      strl4main (x_owner->value, s, x_owner->decs, x_owner->format, LEN_RECD);
+      strl4main (x_owner->value, s, x_owner->decs, x_owner->format, '-', LEN_RECD);
    } else {
       if      (x_owner->string != NULL)  strlcpy (s, x_owner->string, LEN_RECD);
       else if (x_owner->source != NULL)  strlcpy (s, x_owner->source, LEN_RECD);

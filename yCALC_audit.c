@@ -155,7 +155,10 @@ ycalc_handle_error      (char a_error, char *a_type, double *a_value, char **a_s
    /*---(assign error status)------------*/
    *a_type   = YCALC_DATA_ERROR;
    *a_value  = 0.0;
-   if (*a_string != NULL)   free (*a_string);
+   if (*a_string != NULL) {
+      free (*a_string);
+      *a_string = NULL;
+   }
    /*---(find entry)---------------------*/
    for (i = 0; i < YCALC_MAX_ERROR; ++i) {
       if (zCALC_errors [i].abbr == 0      )   break;
@@ -171,6 +174,7 @@ ycalc_handle_error      (char a_error, char *a_type, double *a_value, char **a_s
    else                      strlcpy (s, t, LEN_RECD);
    /*---(save)---------------------------*/
    *a_string = strdup (s);
+   DEBUG_CALC   yLOG_info    ("ERROR"     , s);
    /*---(find entry)---------------------*/
    return 0;
 }
@@ -631,6 +635,17 @@ ycalc_classify_clear    (void **a_owner, tDEP_ROOT **a_deproot, char *a_type, do
       (*a_deproot)->btype = *a_type;
       DEBUG_CALC   yLOG_char    ("btype"     , (*a_deproot)->btype);
    }
+   /*---(string)----------------------*/
+   DEBUG_CALC   yLOG_point   ("a_string"  , a_string);
+   if (a_string != NULL) {
+      DEBUG_CALC   yLOG_point   ("*a_string" , *a_string);
+      if (*a_string != NULL) {
+         DEBUG_CALC   yLOG_info    ("*a_string" , *a_string);
+         free (*a_string);
+      }
+      *a_string = NULL;
+      DEBUG_CALC   yLOG_point   ("*a_string" , *a_string);
+   }
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -733,10 +748,6 @@ ycalc_classify_trusted  (void **a_owner, tDEP_ROOT **a_deproot, char **a_source,
       DEBUG_CALC   yLOG_note    ("initialize to blank data item");
       *a_type   = YCALC_DATA_BLANK;
       *a_value  = 0.0;
-      if (*a_string != NULL) {
-         free (*a_string);
-         *a_string = NULL;
-      }
    } else {
       DEBUG_CALC   yLOG_note    ("do not initialize internal summary owners");
    }
@@ -1418,7 +1429,7 @@ void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[
 ycalc_me            (void)
 {
    DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
-   ycalc_pushref (__FUNCTION__, myCALC.deproot);
+   ycalc_pushref (__FUNCTION__, myCALC.deproot, myCALC.label);
    return;
 }
 
@@ -1508,76 +1519,6 @@ ycalc_level         (void)
    return;
 }
 
-void         /*-> tbd --------------------------------[ ------ [gv.E64.030.82]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-ycalc_pointer_OLD   (void)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   tDEP_ROOT  *x_ref       = NULL;
-   tCALC      *x_beg       = NULL;
-   tCALC      *x_end       = NULL;
-   /*---(header)-------------------------*/
-   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
-   /*---(get the reference)--------------*/
-   x_ref = ycalc_popref (__FUNCTION__);
-   DEBUG_CALC   yLOG_point   ("x_ref"     , x_ref);
-   if (x_ref == NULL) {
-      g_error        = YCALC_ERROR_EXEC_PTR;
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
-      return;
-   }
-   /*---(first)--------------------------*/
-   x_beg = x_ref->chead;
-   DEBUG_CALC   yLOG_point   ("x_beg"     , x_beg);
-   if (x_beg == NULL) {
-      g_error        = YCALC_ERROR_EXEC_PTR;
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
-      return;
-   }
-   DEBUG_CALC   yLOG_char    ("x_beg->t"  , x_beg->t);
-   DEBUG_CALC   yLOG_point   ("x_beg->r"  , x_beg->r);
-   if (x_beg->t != G_TYPE_REF || x_beg->r == NULL) {
-      g_error        = YCALC_ERROR_EXEC_PTR;
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
-      return;
-   }
-   ycalc_pushref (__FUNCTION__, x_beg->r);
-   DEBUG_CALC   yLOG_value   ("ncalc"     , x_ref->ncalc);
-   if (x_ref->ncalc == 1) {
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
-      return;
-   }
-   /*---(second)-------------------------*/
-   if (x_ref->ncalc != 3) {
-      g_error        = YCALC_ERROR_EXEC_PTRR;
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
-      return;
-   }
-   x_end = x_beg->next;
-   DEBUG_CALC   yLOG_point   ("x_end"     , x_end);
-   if (x_end == NULL) {
-      g_error        = YCALC_ERROR_EXEC_PTRR;
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
-      return;
-   }
-   DEBUG_CALC   yLOG_char    ("x_end->t"  , x_end->t);
-   DEBUG_CALC   yLOG_point   ("x_end->r"  , x_end->r);
-   if (x_end->t != G_TYPE_REF || x_end->r == NULL) {
-      g_error        = YCALC_ERROR_EXEC_PTRR;
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
-      return;
-   }
-   ycalc_pushref (__FUNCTION__, x_end->r);
-   /*---(last)---------------------------*/
-   x_end = x_beg->next;
-   DEBUG_CALC   yLOG_point   ("x_end"     , x_end);
-   if (x_end == NULL || x_end->t != G_TYPE_NOOP) {
-      g_error        = YCALC_ERROR_EXEC_PTRR;
-      return;
-   }
-   /*---(complete)-----------------------*/
-   return;
-}
-
 void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_pointer       (void)
 {
@@ -1647,7 +1588,7 @@ ycalc_pointer       (void)
       }
    }
    /*---(push reference back)------------*/
-   ycalc_pushref (__FUNCTION__, x_calc->r);
+   ycalc_pushref (__FUNCTION__, x_calc->r, x_calc->s);
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return;
