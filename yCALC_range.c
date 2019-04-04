@@ -1106,7 +1106,7 @@ ycalc__abs_driver    (char *a_type)
    /*---(create calc reference)----------*/
    DEBUG_CALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));
    if (myCALC.deproot == x_deproot) {
-      ycalc_error_set (YCALC_ERROR_EXEC_PTR , NULL);
+      ycalc_error_set (YCALC_ERROR_EXEC_CIR , NULL);
       return;
    }
    ycalc_pushref     (__FUNCTION__, x_deproot, ycalc_call_labeler (x_deproot));

@@ -752,7 +752,7 @@ ycalc__unit_quiet       (void)
 {
    myCALC.logger = yLOGS_begin ("yCALC" , YLOG_SYS, YLOG_QUIET);
    myCALC.trouble = YCALC_ERROR_NONE;
-   yCALC_init ('s');
+   yCALC_init ('g');
    ycalc__mock_prepare ();
    return 0;
 }
@@ -767,7 +767,7 @@ ycalc__unit_loud        (void)
    yURG_name   ("cell", YURG_ON);
    DEBUG_CALC   yLOG_info     ("yCALC"    , yCALC_version   ());
    myCALC.trouble = YCALC_ERROR_NONE;
-   yCALC_init ('s');
+   yCALC_init ('g');
    ycalc__mock_prepare ();
    return 0;
 }

@@ -26,8 +26,8 @@
 
 #define     P_VERMAJOR  "0.X = reading for full gyges use"
 #define     P_VERMINOR  "0.4 = stablizing library, finding little bugs"
-#define     P_VERNUM    "0.4r"
-#define     P_VERTXT    "solved enhanced error reporting issues in pointers (sweet)"
+#define     P_VERNUM    "0.4s"
+#define     P_VERTXT    "solved enhanced error reporting issues in ranges (sweet)"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"

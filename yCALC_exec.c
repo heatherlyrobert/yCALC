@@ -136,7 +136,7 @@ ycalc_exec_init          (void)
    DEBUG_PROG   yLOG_note    ("global variables");
    myCALC.deproot = NULL;
    myCALC.owner   = NULL;
-   myCALC.me      = NULL;
+   myCALC.me      = strdup ("???");
    myCALC.label   = NULL;
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
@@ -717,7 +717,7 @@ ycalc_execute_trusted   (tDEP_ROOT *a_deproot, char *a_type, double *a_value, ch
    }
    if (myCALC.me    != NULL) {
       free (myCALC.me);
-      myCALC.me    = NULL;
+      myCALC.me      = strdup ("???");
    }
    /*> ycalc__mock_list ();                                                           <*/
    /*---(complete)-----------------------*/
