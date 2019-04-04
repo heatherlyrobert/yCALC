@@ -1035,13 +1035,13 @@ yCALC_handle            (char *a_label)
          return rce;
       }
    }
-   ycalc__mock_list ();
+   /*> ycalc__mock_list ();                                                           <*/
    /*---(call reaper)--------------------*/
    DEBUG_CALC   yLOG_note    ("then, cleanup as necessary");
    rc = ycalc_call_reaper (&x_owner, &x_deproot);
    DEBUG_CALC   yLOG_value   ("reaper"    , rc);
    DEBUG_CALC   yLOG_point   ("x_owner"   , x_owner);
-   ycalc__mock_list ();
+   /*> ycalc__mock_list ();                                                           <*/
    /*---(call printer)-------------------*/
    if (x_owner != NULL) {
       if (*x_type == YCALC_DATA_MERGED) {
@@ -1057,7 +1057,7 @@ yCALC_handle            (char *a_label)
          return rce;
       }
    }
-   ycalc__mock_list ();
+   /*> ycalc__mock_list ();                                                           <*/
    DEBUG_CALC   yLOG_point   ("s_origin"  , s_origin);
    if (s_origin != NULL) {
       rc = g_printer (s_origin);
@@ -1070,7 +1070,7 @@ yCALC_handle            (char *a_label)
          return rce;
       }
    }
-   ycalc__mock_list ();
+   /*> ycalc__mock_list ();                                                           <*/
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;

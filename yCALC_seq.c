@@ -42,7 +42,7 @@ ycalc__seq_clear        (void)
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    /*---(walk through list)--------------*/
    DEBUG_CALC   yLOG_note    ("resetting cell calc exec fields");
-   ycalc__mock_list ();
+   /*> ycalc__mock_list ();                                                           <*/
    x_next = myCALC.rroot;
    while (x_next != NULL) {
       DEBUG_CALC   yLOG_point   ("x_next"    , x_next);
@@ -275,7 +275,7 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, l
    DEBUG_CALC   yLOG_char    ("a_dir_act" , a_dir_act);
    DEBUG_CALC   yLOG_value   ("a_stamp"   , a_stamp);
    DEBUG_CALC   yLOG_point   ("a_consumer", a_consumer);
-   ycalc__mock_list ();
+   /*> ycalc__mock_list ();                                                           <*/
    /*---(defense : cell)-----------------*/
    DEBUG_CALC   yLOG_point   ("a_deproot" , a_deproot);
    --rce;  if (a_deproot == NULL) {

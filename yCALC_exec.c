@@ -867,10 +867,6 @@ ycalc_execute_auto      (void *a_owner, tDEP_ROOT *a_deproot, int a_seq, int a_l
    /*---(execute)------------------------*/
    rc = ycalc_execute_detail      (a_deproot, x_source, x_type, x_value, x_string);
    DEBUG_CALC   yLOG_value   ("detail"    , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
    /*---(printable)----------------------*/
    rc = g_printer (a_owner);
    DEBUG_CALC   yLOG_value   ("printer"   , rc);
