@@ -737,11 +737,14 @@ static void      o___UNITTEST________________o (void) {;}
 char*            /* [------] unit test accessor ------------------------------*/
 ycalc__unit_base        (char *a_question, int a_num)
 {
+   char        x_error     = '-';
    /*---(initialize)---------------------*/
    strlcpy (ycalc__unit_answer, "yCALC_unit, unknown request", 100);
    /*---(string testing)-----------------*/
    if      (strncmp(a_question, "error"     , 20)  == 0) {
-      snprintf (ycalc__unit_answer, LEN_STR, "BASE error       : %c", myCALC.trouble);
+      x_error = myCALC.trouble;
+      if (x_error == 0)  x_error = '-';
+      snprintf (ycalc__unit_answer, LEN_STR, "BASE error       : %c", x_error);
    }
    /*---(complete)-----------------------*/
    return ycalc__unit_answer;
