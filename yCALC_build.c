@@ -186,25 +186,25 @@ ycalc__build_coords     (tCALC *a_calc, int *b, int *x, int *y, int *z)
    DEBUG_CALC   yLOG_char    ("type"      , x_calc->t);
    if (x_calc->t != G_TYPE_REF) {
       DEBUG_CALC   yLOG_note    ("prev calc not a reference");
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, G_ERROR_RANGE);
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, YCALC_ERROR_BUILD_RNG);
       return rce;
-      return G_ERROR_RANGE;
+      return YCALC_ERROR_BUILD_RNG;
    }
    /*---(check thing)--------------------*/
    x_deproot = x_calc->r;
    DEBUG_CALC   yLOG_point   ("x_deproot"   , x_deproot);
    if (x_deproot   == NULL) {     
       DEBUG_CALC   yLOG_note    ("beginning reference can not be null");
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, G_ERROR_RANGE);
-      return G_ERROR_RANGE;
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, YCALC_ERROR_BUILD_RNG);
+      return YCALC_ERROR_BUILD_RNG;
    }
    /*---(get address)--------------------*/
    rc = g_addresser (x_deproot->owner, b, x, y, z);
    DEBUG_CALC   yLOG_value   ("addresser" , rc);
    if (rc  < 0) {     
       DEBUG_CALC   yLOG_note    ("not a valid address");
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, G_ERROR_RANGE);
-      return G_ERROR_RANGE;
+      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, YCALC_ERROR_BUILD_RNG);
+      return YCALC_ERROR_BUILD_RNG;
    }
    /*---(report out)---------------------*/
    DEBUG_CALC   yLOG_complex ("address"   , "%4db, %4dx, %4dy, %4dz", *b, *x, *y, *z);
@@ -379,6 +379,7 @@ ycalc__build_range      (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    a_calc->t = G_TYPE_REF;
    a_calc->r = x_range;
    a_calc->s = strdup (ycalc_call_labeler (x_range));
+   DEBUG_CALC   yLOG_info    ("label"    , a_calc->s);
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 1;
@@ -430,6 +431,7 @@ ycalc__build_reference  (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    tDEP_ROOT  *x_ref       = NULL;
    int         b, x, y, z;
    /*---(check for reference)------------*/
+   DEBUG_CALC   yLOG_info    ("a_token"  , a_token);
    DEBUG_CALC   yLOG_note    ("look for reference");
    rc = ycalc_call_who_named (a_token, YCALC_FULL, NULL, &x_ref);
    if (rc < 0)  return 0;
@@ -455,6 +457,7 @@ ycalc__build_reference  (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    DEBUG_CALC   yLOG_note    ("mark type");
    a_calc->t = G_TYPE_REF;
    a_calc->s = strndup (a_token, LEN_RECD);
+   DEBUG_CALC   yLOG_info    ("label"    , a_calc->s);
    /*---(ranges)-------------------------*/
    rc = g_addresser (x_ref->owner, &b, &x, &y, &z);
    DEBUG_CALC   yLOG_value   ("addresser" , rc);
@@ -714,7 +717,7 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
    /*---(length)-------------------------*/
    x_len = strllen (*a_source, LEN_RECD);
    --rce;  if (x_len <= 1) {
-      ycalc_handle_error (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, "empty");
+      ycalc_error_finalize (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, "empty");
       a_deproot->btype = YCALC_DATA_ERROR;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -725,7 +728,7 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
       rc = ycalc__build_like (a_deproot, a_source, a_type, x_work);
       DEBUG_CALC   yLOG_value   ("like"      , rc);
       if (rc != 0) {
-         ycalc_handle_error (rc , a_type, a_value, a_string, "like");
+         ycalc_error_finalize (rc , a_type, a_value, a_string, "like");
          a_deproot->btype = YCALC_DATA_ERROR;
          DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
@@ -743,10 +746,10 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
    --rce;  if (x_nrpn <= 0 || x_rpn == NULL) {
       if (rc != 0) {
          sprintf (t, "pos %d", yRPN_errorpos ());
-         ycalc_handle_error (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, t);
+         ycalc_error_finalize (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, t);
          a_deproot->btype = YCALC_DATA_ERROR;
       } else {
-         ycalc_handle_error (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, "failed");
+         ycalc_error_finalize (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, "failed");
          a_deproot->btype = YCALC_DATA_ERROR;
       }
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
@@ -759,7 +762,7 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
    /*---(initialize)-------------------------*/
    p = ycalc__build_strtok (x_rpn);
    --rce;  if (p == NULL) {
-      ycalc_handle_error (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, "empty");
+      ycalc_error_finalize (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, "empty");
       a_deproot->btype = YCALC_DATA_ERROR;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -769,7 +772,7 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
       DEBUG_CALC   yLOG_info    ("token"     , p);
       rc = ycalc__build_step (a_deproot, p);
       if (rc != 1) {
-         ycalc_handle_error (rc, a_type, a_value, a_string, p);
+         ycalc_error_finalize (rc, a_type, a_value, a_string, p);
          a_deproot->btype = YCALC_DATA_ERROR;
          DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
          return rce;

@@ -110,6 +110,8 @@ ycalc__mock_new_labeled  (char *a_label, void **a_owner)
       DEBUG_CELL   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   DEBUG_CELL   yLOG_info    ("a_label"   , a_label);
+   DEBUG_CELL   yLOG_info    ("x_label"   , x_label);
    rc = ycalc__mock_new (&x_owner);
    DEBUG_CELL   yLOG_value   ("new"       , rc);
    --rce;  if (rc < 0) {
@@ -322,15 +324,45 @@ ycalc__mock_enabler     (void *a_owner, void *a_deproot)
 }
 
 char
+ycalc__mock_list        (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   tMOCK      *x_owner     = NULL;
+   int         c           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   /*---(walk)---------------------------*/
+   x_owner = myCALC.mroot;
+   DEBUG_DEPS   yLOG_point   ("mroot"     , myCALC.mroot);
+   DEBUG_DEPS   yLOG_value   ("mcount"    , myCALC.mcount);
+   while (x_owner != NULL) {
+      DEBUG_DEPS   yLOG_point   ("next"      , x_owner);
+      if (x_owner->label != NULL) {
+         DEBUG_DEPS   yLOG_info    ("checking"  , x_owner->label);
+      } else {
+         DEBUG_DEPS   yLOG_info    ("checking"  , "label null");
+      }
+      x_owner = x_owner->next;
+      ++c;
+   }
+   DEBUG_DEPS   yLOG_value   ("c"         , c);
+   /*---(complete)-----------------------*/
+   DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
 ycalc__mock_named       (char *a_label, char a_force, void **a_owner, void **a_deproot)
 {
+   /*---(notes)--------------------------*/
+   /*
+    *  can not use short-cutting as reaper may kill owners between calls!!!
+    *
+    */
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
    tMOCK      *x_owner     = NULL;
-   static char    x_sforce =  '?';
-   static char   *x_label  [LEN_LABEL];
-   static tMOCK  *x_saved  = NULL;
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
@@ -343,20 +375,7 @@ ycalc__mock_named       (char *a_label, char a_force, void **a_owner, void **a_d
       return rce;
    }
    DEBUG_DEPS   yLOG_info    ("a_label"   , a_label);
-   /*---(shortcut)-----------------------*/
-   /*> if (strcmp (x_label, a_label) == 0 && a_force == x_sforce) {                   <* 
-    *>    DEBUG_DEPS   yLOG_note    ("short-cut");                                    <* 
-    *>    if (a_owner   != NULL) {                                                    <* 
-    *>       *a_owner   = x_saved;                                                    <* 
-    *>       DEBUG_DEPS   yLOG_point   ("*a_owner"  , *a_owner);                      <* 
-    *>    }                                                                           <* 
-    *>    if (a_deproot != NULL) {                                                    <* 
-    *>       *a_deproot = x_saved->ycalc;                                             <* 
-    *>       DEBUG_DEPS   yLOG_point   ("*a_deproot", *a_deproot);                    <* 
-    *>    }                                                                           <* 
-    *>    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);                                   <* 
-    *>    return 0;                                                                   <* 
-    *> }                                                                              <*/
+   DEBUG_DEPS   yLOG_char    ("a_force"   , a_force);
    /*---(search)-------------------------*/
    x_owner = myCALC.mroot;
    DEBUG_DEPS   yLOG_point   ("mroot"     , myCALC.mroot);
@@ -397,11 +416,6 @@ ycalc__mock_named       (char *a_label, char a_force, void **a_owner, void **a_d
       DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(save)---------------------------*/
-   x_sforce = a_force;
-   x_saved  = x_owner;
-   strlcpy (x_label, a_label, LEN_LABEL);
-   DEBUG_DEPS   yLOG_point   ("x_saved"   , x_saved);
    /*---(handle normal)------------------*/
    DEBUG_DEPS   yLOG_note    ("success");
    if (a_owner   != NULL) {
@@ -995,7 +1009,7 @@ ycalc__unit_mock        (char *a_question, char *a_label)
       snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock rpn   : %2d:%s:", strlen (x_rpn), x_rpn);
    }
    else if (strcmp (a_question, "value"    )      == 0) {
-      snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock value : %-5s %c %8.2lf :%-.45s:", x_label, x_type, x_value, x_string);
+      snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock value : %-5s %c %8.2lf :%s:", x_label, x_type, x_value, x_string);
    }
    else if (strcmp (a_question, "double"   )      == 0) {
       snprintf (ycalc__unit_answer, LEN_RECD, "yCALC mock double: %-5s %c %22.6lf", x_label, x_type, x_value);

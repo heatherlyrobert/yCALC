@@ -722,7 +722,7 @@ ycalc_noop        (void)
 char
 ycalc_trouble_clear     (void)
 {
-   myCALC.trouble = G_NO_ERROR;
+   myCALC.trouble = YCALC_ERROR_NONE;
    return 0;
 }
 
@@ -751,7 +751,7 @@ char       /*----: set up program urgents/debugging --------------------------*/
 ycalc__unit_quiet       (void)
 {
    myCALC.logger = yLOGS_begin ("yCALC" , YLOG_SYS, YLOG_QUIET);
-   myCALC.trouble = G_NO_ERROR;
+   myCALC.trouble = YCALC_ERROR_NONE;
    yCALC_init ('s');
    ycalc__mock_prepare ();
    return 0;
@@ -760,11 +760,13 @@ ycalc__unit_quiet       (void)
 char       /*----: set up program urgents/debugging --------------------------*/
 ycalc__unit_loud        (void)
 {
+   char        x_argc      = 7;
    char       *x_args [7]  = { "yCALC_debug","@@kitchen","@@calc", "@@SORT", "@@YRPN", "@@YSTR", "@@deps" };
-   yURG_logger (7, x_args);
-   yURG_urgs   (7, x_args);
+   yURG_logger (x_argc, x_args);
+   yURG_urgs   (x_argc, x_args);
+   yURG_name   ("cell", YURG_ON);
    DEBUG_CALC   yLOG_info     ("yCALC"    , yCALC_version   ());
-   myCALC.trouble = G_NO_ERROR;
+   myCALC.trouble = YCALC_ERROR_NONE;
    yCALC_init ('s');
    ycalc__mock_prepare ();
    return 0;

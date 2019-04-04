@@ -667,7 +667,7 @@ ycalc_timevalue     (void)
                if (rc < 2) {
                   rc  = sscanf (r, "%d:%d", &hr, &mn);
                   if (rc < 2) {
-                     g_error = YCALC_ERROR_EXEC_FMT;
+                     ycalc_error_set (YCALC_ERROR_EXEC_FMT, NULL);
                      return;
                   }
                }
@@ -684,11 +684,11 @@ ycalc_timevalue     (void)
    if      (yr <  70  ) temp->tm_year = 100 + yr;
    else if (yr <  100 ) temp->tm_year = yr;
    else if (yr <  1970) {
-      g_error = YCALC_ERROR_EXEC_DATE;
+      ycalc_error_set (YCALC_ERROR_EXEC_DATE, NULL);
       return;
    }
    else if (yr >  2037) {
-      g_error = YCALC_ERROR_EXEC_DATE;
+      ycalc_error_set (YCALC_ERROR_EXEC_DATE, NULL);
       return;
    }
    else if (yr >= 1900) temp->tm_year = yr - 1900;
@@ -721,11 +721,11 @@ ycalc_date          (void)
    if      (yr <  70  ) temp->tm_year = 100 + yr;
    else if (yr <  100 ) temp->tm_year = yr;
    else if (yr <  1970) {
-      g_error = YCALC_ERROR_EXEC_DATE;
+      ycalc_error_set (YCALC_ERROR_EXEC_DATE, NULL);
       return;
    }
    else if (yr >  2037) {
-      g_error = YCALC_ERROR_EXEC_DATE;
+      ycalc_error_set (YCALC_ERROR_EXEC_DATE, NULL);
       return;
    }
    else if (yr >= 1900) temp->tm_year = yr - 1900;

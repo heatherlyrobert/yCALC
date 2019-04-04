@@ -26,8 +26,8 @@
 
 #define     P_VERMAJOR  "0.X = reading for full gyges use"
 #define     P_VERMINOR  "0.4 = stablizing library, finding little bugs"
-#define     P_VERNUM    "0.4q"
-#define     P_VERTXT    "improving error reporting in execution with cell labels"
+#define     P_VERNUM    "0.4r"
+#define     P_VERTXT    "solved enhanced error reporting issues in pointers (sweet)"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -321,6 +321,7 @@ struct cLOCAL {
    /*---(done)--------------*/
    void       *owner;
    void       *deproot;
+   char       *me;
    char       *label;
    /*---(done)--------------*/
 };
@@ -339,8 +340,9 @@ struct cyCALC_ERROR {
 extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 
 
-#define     G_NO_ERROR         '-'
-#define     G_ERROR_RANGE      'R'
+#define     YCALC_ERROR_NONE       NULL
+#define     YCALC_ERROR_LITERAL    0x1
+#define     YCALC_ERROR_UNKNOWN    0x2
 
 #define     YCALC_ERROR_CONF       'C'
 #define     YCALC_ERROR_STACK      's'
@@ -354,6 +356,7 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 #define     YCALC_ERROR_BUILD_RNG  ':'
 #define     YCALC_ERROR_BUILD_TOK  '?'
 
+#define     YCALC_ERROR_EXEC_STEP  '-'
 #define     YCALC_ERROR_EXEC_STR   'S'
 #define     YCALC_ERROR_EXEC_VAL   'V'
 #define     YCALC_ERROR_EXEC_REF   'I'
@@ -431,7 +434,11 @@ extern const   tyCALC_TYPES  g_ycalc_types [YCALC_MAX_TYPE];
 
 
 char        ycalc_not_ready         (void);
-char        ycalc_handle_error      (char a_error, char *a_type, double *a_value, char **a_string, char *a_note);
+
+char        ycalc_error_init        (void);
+char        ycalc_error_set         (int a_error, tDEP_ROOT *a_deproot);
+char        ycalc_error_finalize    (char a_error, char *a_type, double *a_value, char **a_string, char *a_note);
+char        ycalc_error_true        (void);
 
 
 /*---(malloc)-------------------------*/
@@ -530,6 +537,7 @@ char        ycalc__mock_enabler     (void *a_owner, void *a_deproot);
 char        ycalc__mock_pointer     (void *a_owner, char **a_source, char **a_type, double **a_value, char **a_string);
 char        ycalc__mock_reaper      (void **a_owner);
 /*---(label)--------------------------*/
+char        ycalc__mock_list        (void);
 char        ycalc__mock_named       (char *a_label      , char a_force, void **a_owner, void **a_deproot);
 char        ycalc__mock_whos_at     (int b, int x, int y, int z, char a_force, void **a_owner, void **a_deproot);
 char*       ycalc__mock_labeler     (void *a_owner);

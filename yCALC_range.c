@@ -508,7 +508,7 @@ ycalc__range_gather     (char *a_func)
    x_deproot = (tDEP_ROOT *) ycalc_popref (__FUNCTION__);
    DEBUG_CALC   yLOG_char    ("range#"    , x_deproot->range);
    if (x_deproot->range < 0) {
-      g_error        = YCALC_ERROR_EXEC_PTR;
+      ycalc_error_set (YCALC_ERROR_EXEC_PTR , NULL);
       return;
    }
    /*---(initialize)---------------------*/
@@ -1045,29 +1045,29 @@ ycalc__rel_driver    (char *a_type)
    /*---(parse the current locaction)----*/
    ycalc_pushref     (__FUNCTION__, myCALC.deproot, myCALC.label);
    ycalc_popval_plus (__FUNCTION__, G_SPECIAL_ALLPOS);
-   if (g_error != 0)  return;
+   if (ycalc_error_true ())  return;
    /*---(pop appropriate offsets)--------*/
    if (a_type [3] == 'z')   o     += ycalc_popval      (__FUNCTION__);
    if (a_type [2] == 'y')   n     += ycalc_popval      (__FUNCTION__);
    if (a_type [1] == 'x')   m     += ycalc_popval      (__FUNCTION__);
    if (a_type [0] == 'b')   s_buf += ycalc_popval      (__FUNCTION__);
-   if (g_error != 0)  return;
+   if (ycalc_error_true ())  return;
    /*---(look at destination)------------*/
    rc = ycalc_call_who_at (s_buf, m, n, o, YCALC_FULL, NULL, &x_deproot);
    if (rc < 0)  {
-      g_error = YCALC_ERROR_EXEC_REF;
+      ycalc_error_set (YCALC_ERROR_EXEC_REF , NULL);
       return;
    }
    /*---(create calc reference)----------*/
    DEBUG_CALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));
    if (myCALC.deproot == x_deproot) {
-      g_error = YCALC_ERROR_EXEC_CIR;
+      ycalc_error_set (YCALC_ERROR_EXEC_CIR , NULL);
       return;
    }
    ycalc_pushref     (__FUNCTION__, x_deproot, ycalc_call_labeler (x_deproot));
    rc = ycalc_deps_create (G_DEP_CALCREF, &(myCALC.deproot), &x_deproot);
    if (rc < 0) {
-      g_error = YCALC_ERROR_EXEC_CIR;
+      ycalc_error_set (YCALC_ERROR_EXEC_CIR , NULL);
       return;
    }
    /*---(complete)-----------------------*/
@@ -1090,29 +1090,29 @@ ycalc__abs_driver    (char *a_type)
    /*---(parse the current locaction)----*/
    ycalc_pushref     (__FUNCTION__, myCALC.deproot, myCALC.label);
    ycalc_popval_plus (__FUNCTION__, G_SPECIAL_ALLPOS);
-   if (g_error != 0)  return;
+   if (ycalc_error_true ()) return ;
    /*---(pop appropriate replacements)---*/
    if (a_type [3] == 'z')   o      = ycalc_popval      (__FUNCTION__);
    if (a_type [2] == 'y')   n      = ycalc_popval      (__FUNCTION__);
    if (a_type [1] == 'x')   m      = ycalc_popval      (__FUNCTION__);
    if (a_type [0] == 'b')   s_buf  = ycalc_popval      (__FUNCTION__);
-   if (g_error != 0)  return;
+   if (ycalc_error_true ()) return ;
    /*---(look at destination)------------*/
    rc = ycalc_call_who_at (s_buf, m, n, o, YCALC_FULL, NULL, &x_deproot);
    if (rc < 0)  {
-      g_error = YCALC_ERROR_EXEC_REF;
+      ycalc_error_set (YCALC_ERROR_EXEC_REF , NULL);
       return;
    }
    /*---(create calc reference)----------*/
    DEBUG_CALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));
    if (myCALC.deproot == x_deproot) {
-      g_error = YCALC_ERROR_EXEC_CIR;
+      ycalc_error_set (YCALC_ERROR_EXEC_PTR , NULL);
       return;
    }
    ycalc_pushref     (__FUNCTION__, x_deproot, ycalc_call_labeler (x_deproot));
    rc = ycalc_deps_create (G_DEP_CALCREF, &(myCALC.deproot), &x_deproot);
    if (rc < 0) {
-      g_error = YCALC_ERROR_EXEC_CIR;
+      ycalc_error_set (YCALC_ERROR_EXEC_PTR , NULL);
       return;
    }
    /*---(complete)-----------------------*/
@@ -1139,26 +1139,26 @@ ycalc__off_driver    (char *a_type)
    if (a_type [2] == 'y')   c      = ycalc_popval      (__FUNCTION__);
    if (a_type [1] == 'x')   b      = ycalc_popval      (__FUNCTION__);
    if (a_type [0] == 'b')   a      = ycalc_popval      (__FUNCTION__);
-   if (g_error != 0)  return;
+   if (ycalc_error_true ()) return ;
    /*---(parse the base location)--------*/
    ycalc_popval_plus (__FUNCTION__, G_SPECIAL_ALLPOS);
-   if (g_error != 0)  return;
+   if (ycalc_error_true ()) return ;
    /*---(look at destination)------------*/
    rc = ycalc_call_who_at (s_buf + a, m + b, n + c, o + d, YCALC_FULL, NULL, &x_deproot);
    if (rc < 0)  {
-      g_error = YCALC_ERROR_EXEC_REF;
+      ycalc_error_set (YCALC_ERROR_EXEC_REF , NULL);
       return;
    }
    /*---(create calc reference)----------*/
    DEBUG_CALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));
    if (myCALC.deproot == x_deproot) {
-      g_error = YCALC_ERROR_EXEC_CIR;
+      ycalc_error_set (YCALC_ERROR_EXEC_CIR , NULL);
       return;
    }
    ycalc_pushref     (__FUNCTION__, x_deproot, ycalc_call_labeler (x_deproot));
    rc = ycalc_deps_create (G_DEP_CALCREF, &(myCALC.deproot), &x_deproot);
    if (rc < 0) {
-      g_error = YCALC_ERROR_EXEC_CIR;
+      ycalc_error_set (YCALC_ERROR_EXEC_CIR , NULL);
       return;
    }
    /*---(complete)-----------------------*/
@@ -1275,8 +1275,7 @@ ycalc__lookup_common  (char a_dir)
       if (rc < 0) break;
    }
    /*---(nothing found)------------------*/
-   g_error = YCALC_ERROR_EXEC_MISS;
-   myCALC.trouble = YCALC_ERROR_EXEC_MISS;
+   ycalc_error_set (YCALC_ERROR_EXEC_MISS, NULL);
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return;
@@ -1338,8 +1337,7 @@ ycalc_entry             (void)
       return;
    }
    /*---(nothing found)------------------*/
-   g_error = YCALC_ERROR_EXEC_MISS;
-   myCALC.trouble = YCALC_ERROR_EXEC_MISS;
+   ycalc_error_set (YCALC_ERROR_EXEC_MISS, NULL);
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return;

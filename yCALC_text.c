@@ -15,8 +15,8 @@ ycalc_concat       (void)
 {
    DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(get arguments)------------------*/
-   r = ycalc_popstr(__FUNCTION__);
-   s = ycalc_popstr(__FUNCTION__);
+   r = ycalc_popstr (__FUNCTION__);
+   s = ycalc_popstr (__FUNCTION__);
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    if (s == NULL)  s = strndup (g_nada, LEN_RECD);
@@ -37,8 +37,8 @@ ycalc_concatplus   (void)
 {
    DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(get arguments)------------------*/
-   r = ycalc_popstr(__FUNCTION__);
-   s = ycalc_popstr(__FUNCTION__);
+   r = ycalc_popstr (__FUNCTION__);
+   s = ycalc_popstr (__FUNCTION__);
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    if (s == NULL)  s = strndup (g_nada, LEN_RECD);
@@ -62,7 +62,7 @@ ycalc_lower        (void)
 {
    DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(get arguments)------------------*/
-   r = ycalc_popstr(__FUNCTION__);
+   r = ycalc_popstr (__FUNCTION__);
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
@@ -83,7 +83,7 @@ ycalc_upper        (void)
 {
    DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(get arguments)------------------*/
-   r = ycalc_popstr(__FUNCTION__);
+   r = ycalc_popstr (__FUNCTION__);
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
