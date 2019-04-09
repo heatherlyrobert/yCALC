@@ -561,6 +561,7 @@ ycalc__deps_create_req  (char a_type, char a_index, tDEP_ROOT **a_source, tDEP_R
    }
    ++(*a_source)->nreq;
    /*---(complete)-----------------------*/
+   DEBUG_DEPS   yLOG_point   ("x_req"     , x_req);
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return x_req;
 }
@@ -620,6 +621,7 @@ ycalc__deps_create_pro  (char a_type, char a_index, tDEP_ROOT **a_source, tDEP_R
    }
    ++(*a_source)->npro;
    /*---(complete)-----------------------*/
+   DEBUG_DEPS   yLOG_point   ("x_pro"     , x_pro);
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
    return x_pro;
 }
@@ -708,6 +710,8 @@ yCALC_create       (char a_type, char *a_source, char *a_target)
    char        rc          = 0;
    tDEP_ROOT  *x_source    = NULL;
    tDEP_ROOT  *x_target    = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(get ends)-----------------------*/
    rc = ycalc_call_who_named (a_source, YCALC_FULL, NULL, &x_source);
    --rce;  if (rc <  0) {
@@ -948,6 +952,8 @@ yCALC_delete       (char a_type, char *a_source, char *a_target)
    tDEP_ROOT  *x_source    = NULL;
    tDEP_ROOT  *x_target    = NULL;
    void       *x_finish    = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    /*---(get ends)-----------------------*/
    rc = ycalc_call_who_named (a_source, YCALC_OWNR, NULL, &x_source);
    --rce;  if (rc <  0) {
@@ -1219,6 +1225,8 @@ ycalc_deps_wipe_reqs    (void **a_owner, tDEP_ROOT **a_deproot)
    /*---(locals)-----------+-----------+-*/
    tDEP_LINK  *x_next      = NULL;
    tDEP_LINK  *x_save      = NULL;
+   tDEP_ROOT  *x_target    = NULL;
+   void       *x_owner     = NULL;
    char        rce         =  -10;
    char        rc          = 0;
    /*---(filter)-------------------------*/
@@ -1236,13 +1244,15 @@ ycalc_deps_wipe_reqs    (void **a_owner, tDEP_ROOT **a_deproot)
    x_next = (*a_deproot)->reqs;
    while (x_next != NULL) {
       DEBUG_DEPS    yLOG_point   ("x_next"      , x_next);
-      x_save = x_next->next;
-      DEBUG_DEPS   yLOG_complex ("target"    , "type=%c, ptr=%9p, label=%s", x_next->type, x_next->target, ycalc_call_labeler (x_next->target));
+      x_save   = x_next->next;
+      x_target = x_next->target;
+      x_owner  = x_next->target->owner;
+      DEBUG_DEPS   yLOG_complex ("target"    , "type=%c, ptr=%9p, label=%s", x_next->type, x_target, ycalc_call_labeler (x_target));
       if (x_next->type == G_DEP_POINTER) {
-         rc = ycalc_range_delete (*a_deproot, x_next->target);
-         if (rc < 0)  rc = ycalc_deps_delete  (x_next->type, a_deproot, &(x_next->target), &(x_next->target->owner));
+         rc = ycalc_range_delete (*a_deproot, x_target);
+         if (rc < 0)  rc = ycalc_deps_delete  (x_next->type, a_deproot, &(x_target), &(x_owner));
       } else {
-         rc = ycalc_deps_delete  (x_next->type, a_deproot, &(x_next->target), &(x_next->target->owner));
+         rc = ycalc_deps_delete  (x_next->type, a_deproot, &(x_target), &(x_owner));
       }
       DEBUG_DEPS   yLOG_value   ("nreq"      , (*a_deproot)->nreq);
       x_next = x_save;

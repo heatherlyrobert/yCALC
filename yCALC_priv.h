@@ -26,8 +26,8 @@
 
 #define     P_VERMAJOR  "0.X = reading for full gyges use"
 #define     P_VERMINOR  "0.5 = find pernicious memory and malloc troubles"
-#define     P_VERNUM    "0.5a"
-#define     P_VERTXT    "valgrind through yCALC_exec unit test (couple little ones)"
+#define     P_VERNUM    "0.5b"
+#define     P_VERTXT    "valgrind through yCALC_deps unit test (crazy one, great lesson)"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
