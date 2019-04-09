@@ -25,9 +25,9 @@
 #define     P_DEPENDS   "none"
 
 #define     P_VERMAJOR  "0.X = reading for full gyges use"
-#define     P_VERMINOR  "0.4 = stablizing library, finding little bugs"
-#define     P_VERNUM    "0.4u"
-#define     P_VERTXT    "updated to auto-print error cells during sequencing (helps corrections)"
+#define     P_VERMINOR  "0.5 = find pernicious memory and malloc troubles"
+#define     P_VERNUM    "0.5a"
+#define     P_VERTXT    "valgrind through yCALC_exec unit test (couple little ones)"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -79,7 +79,6 @@ extern char    (*g_consumer )   (void *a_owner, void *a_deproot, int a_seq, int 
 
 
 typedef     struct      cCALC       tCALC;         /* cell calculation entry    */
-typedef     struct      cTERMS      tTERMS;
 typedef     struct      cFUNCS      tFUNCS;
 typedef     struct      cFCAT       tFCAT;
 typedef     struct      cDEP_LINK   tDEP_LINK;
@@ -113,14 +112,6 @@ struct cCALC {
    tCALC      *prev;            /* pointer to next calc                       */
    /*---(done)--------------*/
 };
-
-#define     MAX_TERM     20
-struct cTERMS {
-   char        type;
-   char       *abbr;
-   char       *desc;
-};
-extern tTERMS      s_terms [MAX_TERM];
 
 
 
@@ -435,7 +426,7 @@ extern const   tyCALC_TYPES  g_ycalc_types [YCALC_MAX_TYPE];
 
 char        ycalc_not_ready         (void);
 
-char        ycalc_error_init        (void);
+char        ycalc_error_clear       (void);
 char        ycalc_error_set         (int a_error, tDEP_ROOT *a_deproot);
 char        ycalc_error_finalize    (char a_error, char *a_type, double *a_value, char **a_string, char *a_note);
 char        ycalc_error_true        (void);
@@ -482,7 +473,8 @@ char        ycalc__unit_loud        (void);
 char        ycalc__unit_end         (void);
 
 
-int         ycalc_range_init        (void);
+char        ycalc_range_init        (void);
+char        ycalc_range_wrap        (void);
 char*       ycalc_range_label       (int n);
 int         ycalc_range_nonrange    (tDEP_ROOT *a_deproot);
 char        ycalc_range_delete      (tDEP_ROOT *a_deproot, tDEP_ROOT *a_range);
@@ -511,6 +503,7 @@ char        ycalc_calc_wipe         (tDEP_ROOT *a_deproot);
 /*===[ EXEC ]=============================================*/
 /*---(program)------------------------*/
 char        ycalc_exec_init         (void);
+char        ycalc_exec_wrap         (void);
 /*---(pushing)------------------------*/
 char        ycalc_pushstr           (char *a_func, char *a_string);
 char        ycalc_pushval           (char *a_func, double a_value);
@@ -537,6 +530,7 @@ char        ycalc__mock_enabler     (void *a_owner, void *a_deproot);
 char        ycalc__mock_pointer     (void *a_owner, char **a_source, char **a_type, double **a_value, char **a_string);
 char        ycalc__mock_reaper      (void **a_owner);
 /*---(label)--------------------------*/
+char        ycalc__mock_lister      (void);
 char        ycalc__mock_list        (void);
 char        ycalc__mock_named       (char *a_label      , char a_force, void **a_owner, void **a_deproot);
 char        ycalc__mock_whos_at     (int b, int x, int y, int z, char a_force, void **a_owner, void **a_deproot);

@@ -54,7 +54,9 @@ yCALC_enable            (void *a_owner)
    /*> DEBUG_DEPS   yLOG_snote   ("malloc");                                          <*/
    DEBUG_DEPS   yLOG_note    ("running malloc");
    while (x_new == NULL && x_tries < 10) {
+      /*> printf ("malloc () yCALC_enable\n");                                        <*/
       x_new = malloc (sizeof (tDEP_ROOT));
+      /*> printf ("......... yCALC_enable done\n");                                   <*/
       ++x_tries;
    }
    /*> DEBUG_DEPS   yLOG_svalue  ("tries", x_tries);                                  <*/
@@ -157,12 +159,12 @@ yCALC_disable           (void **a_owner, void **a_deproot)
       DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, -rce);
       return -rce;
    }
-   DEBUG_DEPS   yLOG_point   ("*a_deproot", *a_deproot);
-   --rce;  if (*a_deproot == NULL) {
+   x_deproot = *a_deproot;
+   DEBUG_DEPS   yLOG_point   ("x_deproot" , x_deproot);
+   --rce;  if (x_deproot == NULL) {
       DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, -rce);
       return -rce;
    }
-   x_deproot = (tDEP_ROOT *) *a_deproot;
    DEBUG_DEPS   yLOG_info    ("label"     , ycalc_call_labeler (x_deproot));
    x_owner   = x_deproot->owner;
    DEBUG_DEPS   yLOG_point   ("x_owner"   , x_owner);

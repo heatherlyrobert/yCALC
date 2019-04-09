@@ -505,6 +505,7 @@ yCALC_init              (char a_style)
    ycalc_exec_init   ();
    ycalc_deps_init   ();
    ycalc_trig_init   ();
+   ycalc__seq_clear  ();
    /*---(update status)------------------*/
    ycalc_status_update ('i');
    /*---(complete)-----------------------*/
@@ -518,7 +519,9 @@ yCALC_wrap              (void)
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(shutdown)-----------------------*/
+   ycalc_exec_wrap   ();
    ycalc_deps_wrap   ();
+   ycalc__seq_clear  ();
    /*---(update status)------------------*/
    ycalc_status_update (0);
    DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
@@ -767,7 +770,8 @@ ycalc__unit_loud        (void)
    char       *x_args [7]  = { "yCALC_debug","@@kitchen","@@calc", "@@SORT", "@@YRPN", "@@YSTR", "@@deps" };
    yURG_logger (x_argc, x_args);
    yURG_urgs   (x_argc, x_args);
-   yURG_name   ("cell", YURG_ON);
+   yURG_name   ("cell"   , YURG_ON);
+   yURG_name   ("deps"   , YURG_ON);
    DEBUG_CALC   yLOG_info     ("yCALC"    , yCALC_version   ());
    myCALC.trouble = YCALC_ERROR_NONE;
    yCALC_init ('g');
@@ -780,7 +784,7 @@ ycalc__unit_end         (void)
 {
    yCALC_wrap   ();
    ycalc__mock_cleanup ();
-   ycalc_range_init ();
+   ycalc_range_wrap ();
    yLOGS_end    ();
    return 0;
 }

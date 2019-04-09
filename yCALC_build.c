@@ -8,16 +8,6 @@
 
 
 
-tTERMS      s_terms [MAX_TERM] = {
-   { 'n' , "num"    , "numeric or cell address"        },
-   { 's' , "str"    , "string or cell address"         },
-   { 't' , "t/f"    , "boolean (true or false)"        },
-   { '?' , "v/s"    , "string or numeric (runtime)"    },
-   { 'a' , "addr"   , "cell address or pointer"        },
-   { 'r' , "range"  , "range of cells or pointer"      },
-   { '-' , "---"    , "-----"                          },
-};
-
 
 /*====================------------------------------------====================*/
 /*===----                        program level                         ----===*/
@@ -27,11 +17,6 @@ static void  o___PROGRAM_________o () { return; }
 char
 ycalc_build_init        (void)
 {
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   int         i           =    0;
-   char        t           [LEN_LABEL];
-   int         c           =    0;
    /*---(header)-------------------------*/
    DEBUG_PROG   yLOG_enter   (__FUNCTION__);
    /*---(complete)-----------------------*/
@@ -57,6 +42,7 @@ ycalc__build_new        (tDEP_ROOT *a_deproot)
    /*---(allocate)-----------------------*/
    while (x_new == NULL && x_tries < 10)  {
       ++x_tries;
+      /*> printf ("malloc () ycalc__build_new\n");                                    <*/
       x_new = (tCALC *) malloc (sizeof (tCALC));
    }
    DEBUG_CALC   yLOG_spoint  (x_new);
@@ -697,13 +683,13 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   char        x_source    [LEN_RECD];
-   char        x_work      [LEN_RECD];
-   char        x_rpn       [LEN_RECD];
+   char        x_source    [LEN_RECD]  = "";;
+   char        x_work      [LEN_RECD]  = "";;
+   char        x_rpn       [LEN_RECD]  = "";;
    int         x_nrpn      =    0;
    char       *p           = NULL;           /* strtok current pointer         */
    int         x_len       =    0;
-   char        t           [LEN_LABEL];
+   char        t           [LEN_LABEL] = "";;
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    DEBUG_CALC   yLOG_point   ("a_deproot" , a_deproot);

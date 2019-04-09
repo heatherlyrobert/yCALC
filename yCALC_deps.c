@@ -54,7 +54,6 @@ ycalc__deps_new         (tDEP_LINK **a_dep)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
-   void       *x_new       = NULL;
    tDEP_LINK  *x_dep       = NULL;
    int         x_tries     =    0;
    /*---(header)-------------------------*/
@@ -78,21 +77,22 @@ ycalc__deps_new         (tDEP_LINK **a_dep)
    /*---(create)-------------------------*/
    DEBUG_DEPS   yLOG_note    ("malloc");
    /*> DEBUG_DEPS   yLOG_snote   ("malloc");                                          <*/
-   DEBUG_DEPS   yLOG_point   ("x_new"     , x_new);
-   while (x_new == NULL && x_tries < 10) {
-      /*> DEBUG_DEPS   yLOG_point   ("x_new"     , x_new);                            <*/
-      x_new = malloc (sizeof (tDEP_LINK));
-      DEBUG_DEPS   yLOG_point   ("x_new"     , x_new);
+   DEBUG_DEPS   yLOG_point   ("x_dep"     , x_dep);
+   while (x_dep == NULL && x_tries < 10) {
+      /*> DEBUG_DEPS   yLOG_point   ("x_dep"     , x_dep);                            <*/
+      /*> printf ("malloc () ycalc__deps_new\n");                                     <*/
+      x_dep = (tDEP_LINK *) malloc (sizeof (tDEP_LINK));
+      DEBUG_DEPS   yLOG_value   ("sizeof"    , sizeof (tDEP_LINK));
+      DEBUG_DEPS   yLOG_point   ("x_dep"     , x_dep);
       ++x_tries;
    }
    DEBUG_DEPS   yLOG_value   ("tries"     , x_tries);
    /*> DEBUG_DEPS   yLOG_sint    (x_tries);                                  <*/
-   --rce;  if (x_new == NULL) {
+   --rce;  if (x_dep == NULL) {
       DEBUG_DEPS   yLOG_note   ("FAILED");
       DEBUG_DEPS   yLOG_exitr  (__FUNCTION__, rce);
       return rce;
    }
-   x_dep = (tDEP_LINK *) x_new;
    /*---(dep fields)---------------------*/
    DEBUG_DEPS   yLOG_note    ("dep pointers");
    /*> DEBUG_DEPS   yLOG_snote   ("dep pointers");                                    <*/
@@ -129,6 +129,8 @@ ycalc__deps_new         (tDEP_LINK **a_dep)
    DEBUG_DEPS   yLOG_note    ("save");
    /*> DEBUG_DEPS   yLOG_snote   ("save");                                            <*/
    *a_dep = x_dep;
+   DEBUG_DEPS   yLOG_point   ("a_dep"     , a_dep);
+   DEBUG_DEPS   yLOG_point   ("*a_dep"    , *a_dep);
    /*---(complete)-----------------------*/
    /*> DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);                                      <*/
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
@@ -185,8 +187,8 @@ ycalc__deps_free        (tDEP_LINK **a_dep)
       --(x_dep->source->npro);
    }
    /*---(free)---------------------------*/
-   DEBUG_DEPS   yLOG_snote   ("free");
-   free (x_dep);
+   DEBUG_DEPS   yLOG_spoint  (*a_dep);
+   free (*a_dep);
    *a_dep = NULL;
    /*---(complete)-----------------------*/
    DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);

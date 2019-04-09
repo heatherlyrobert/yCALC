@@ -69,7 +69,7 @@ ycalc_range_wipe        (int n)
    return 0;
 }
 
-int
+char
 ycalc_range_init        (void)
 {
    int         i           =    0;
@@ -77,6 +77,34 @@ ycalc_range_init        (void)
       ycalc_range_wipe (i);
    }
    s_nrange = 0;
+   return 0;
+}
+
+char
+ycalc_range_wrap        (void)
+{
+   char        rc          =    0;
+   int         i           =    0;
+   int         c           =    0;
+   char        t           [LEN_LABEL];
+   void       *x_owner     = NULL;
+   tDEP_ROOT  *x_range     = NULL;
+   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   for (i = 0; i < MAX_RANGE; ++i) {
+      sprintf (t, "®a%d", i + 1);
+      rc = ycalc_call_who_named (t, YCALC_LOOK, &x_owner, &x_range);
+      if (rc >= 0 && x_owner != NULL) {
+         ++c;
+         DEBUG_DEPS   yLOG_info    ("found"     , t);
+         yCALC_disable (&x_owner, &x_range);
+      }
+      ycalc_range_wipe (i);
+   }
+   s_nrange = 0;
+   DEBUG_DEPS   yLOG_value   ("wiped"     , c);
+   /*> printf ("had to wipe %d ranges\n", c);                                         <*/
+   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   return 0;
 }
 
 int

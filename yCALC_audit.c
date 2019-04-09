@@ -145,7 +145,7 @@ ycalc_audit_init        (void)
 static void  o___ERRORS__________o () { return; }
 
 char
-ycalc_error_init        (void)
+ycalc_error_clear       (void)
 {
    g_error        = YCALC_ERROR_NONE;
    myCALC.trouble = YCALC_ERROR_NONE;
@@ -1475,7 +1475,7 @@ ycalc_label         (void)
 {
    DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_LABEL);
-   ycalc_pushstr (__FUNCTION__, strndup (r, LEN_RECD));
+   ycalc_pushstr (__FUNCTION__, r);
    free (r);
    return;
 }
@@ -1485,7 +1485,7 @@ ycalc_formula       (void)
 {
    DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_SOURCE);
-   ycalc_pushstr (__FUNCTION__, strndup (r, LEN_RECD));
+   ycalc_pushstr (__FUNCTION__, r);
    free (r);
    return;
 }
@@ -1495,7 +1495,7 @@ ycalc_rpn           (void)
 {
    DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_RPN);
-   ycalc_pushstr (__FUNCTION__, strndup (r, LEN_RECD));
+   ycalc_pushstr (__FUNCTION__, r);
    free (r);
    return;
 }
@@ -1505,7 +1505,7 @@ ycalc_reqs          (void)
 {
    DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_REQS);
-   ycalc_pushstr (__FUNCTION__, strndup (r, LEN_RECD));
+   ycalc_pushstr (__FUNCTION__, r);
    free (r);
    return;
 }
@@ -1515,7 +1515,7 @@ ycalc_pros          (void)
 {
    DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_PROS);
-   ycalc_pushstr (__FUNCTION__, strndup (r, LEN_RECD));
+   ycalc_pushstr (__FUNCTION__, r);
    free (r);
    return;
 }

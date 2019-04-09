@@ -36,6 +36,7 @@ ycalc__mock_new          (tMOCK **a_owner)
    /*---(create)-------------------------*/
    DEBUG_DEPS   yLOG_snote   ("malloc");
    while (x_new == NULL && x_tries < 10) {
+      /*> printf ("malloc () ycalc__mock_new\n");                                     <*/
       x_new = malloc (sizeof (tMOCK));
       ++x_tries;
    }
@@ -175,6 +176,9 @@ ycalc__mock_wipe     (tMOCK *a_owner)
    DEBUG_CELL   yLOG_snote   ("print");
    if (a_owner->print     != NULL)  free (a_owner->print);
    a_owner->print          = NULL;
+   DEBUG_CELL   yLOG_snote   ("label");
+   if (a_owner->label     != NULL)  free (a_owner->label);
+   a_owner->label          = NULL;
    /*---(complete)-----------------------*/
    DEBUG_CELL   yLOG_sexit   (__FUNCTION__);
    return 0;
@@ -320,6 +324,31 @@ ycalc__mock_enabler     (void *a_owner, void *a_deproot)
    x_mock->ycalc = a_deproot;
    DEBUG_DEPS   yLOG_spoint  (x_mock->ycalc);
    DEBUG_DEPS   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
+ycalc__mock_lister      (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   tMOCK      *x_owner     = NULL;
+   int         c           =    0;
+   /*---(walk)---------------------------*/
+   x_owner = myCALC.mroot;
+   printf ("mroot   = %p\n", myCALC.mroot);
+   printf ("mcount  = %d\n", myCALC.mcount);
+   while (x_owner != NULL) {
+      printf ("next    = %p\n", x_owner);
+      if (x_owner->label != NULL) {
+         printf ("  label = %s\n", x_owner->label);
+      } else {
+         printf ("  label = %s\n", "NULL");
+      }
+      x_owner = x_owner->next;
+      ++c;
+   }
+   printf ("c       = %d\n", c);
+   /*---(complete)-----------------------*/
    return 0;
 }
 
@@ -732,6 +761,7 @@ ycalc__mock_parse    (char *a_full, int a_merge)
       if (x_owner == NULL)  break;
       w       = s_widths [i];
       DEBUG_DEPS  yLOG_sint    (w);
+      /*> printf ("malloc () ycalc__mock_parse\n");                                   <*/
       while (p == NULL)  p = (char*) malloc (w + 1);
       sprintf (p, "%-*.*s", w, w, a_full + wa);
       DEBUG_DEPS  yLOG_snote   (p);
