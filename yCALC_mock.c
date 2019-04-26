@@ -335,19 +335,19 @@ ycalc__mock_lister      (void)
    int         c           =    0;
    /*---(walk)---------------------------*/
    x_owner = myCALC.mroot;
-   printf ("mroot   = %p\n", myCALC.mroot);
-   printf ("mcount  = %d\n", myCALC.mcount);
+   /*> printf ("mroot   = %p\n", myCALC.mroot);                                       <*/
+   /*> printf ("mcount  = %d\n", myCALC.mcount);                                      <*/
    while (x_owner != NULL) {
-      printf ("next    = %p\n", x_owner);
-      if (x_owner->label != NULL) {
-         printf ("  label = %s\n", x_owner->label);
-      } else {
-         printf ("  label = %s\n", "NULL");
-      }
+      /*> printf ("next    = %p\n", x_owner);                                         <*/
+      /*> if (x_owner->label != NULL) {                                               <* 
+       *>    printf ("  label = %s\n", x_owner->label);                               <* 
+       *> } else {                                                                    <* 
+       *>    printf ("  label = %s\n", "NULL");                                       <* 
+       *> }                                                                           <*/
       x_owner = x_owner->next;
       ++c;
    }
-   printf ("c       = %d\n", c);
+   /*> printf ("c       = %d\n", c);                                                  <*/
    /*---(complete)-----------------------*/
    return 0;
 }
