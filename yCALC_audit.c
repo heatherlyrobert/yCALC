@@ -319,12 +319,13 @@ ycalc__unmerge_right    (tDEP_ROOT **a_deproot, int a_start)
 }
 
 char         /*-> find the merge source --------------[ leaf   [gp.420.113.30]*/ /*-[01.0000.306.#]-*/ /*-[--.---.---.--]-*/
-ycalc__merge_right      (tDEP_ROOT *a_source, tDEP_ROOT *a_deproot)
+ycalc__merge_right      (tDEP_ROOT *a_source, tDEP_ROOT *a_current)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
    int         b, x, y, z, x_off;
+   int         u, v, w;
    int         i           =    0;
    void       *x_owner     = NULL;
    tDEP_ROOT  *x_next      = NULL;
@@ -338,8 +339,8 @@ ycalc__merge_right      (tDEP_ROOT *a_source, tDEP_ROOT *a_deproot)
       DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DEPS   yLOG_point   ("a_deproot" , a_deproot);
-   --rce;  if (a_deproot == NULL)  {
+   DEBUG_DEPS   yLOG_point   ("a_current" , a_current);
+   --rce;  if (a_current == NULL)  {
       DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
@@ -352,13 +353,15 @@ ycalc__merge_right      (tDEP_ROOT *a_source, tDEP_ROOT *a_deproot)
    }
    DEBUG_DEPS   yLOG_complex ("source"    , "%-10p, %3db, %3dx, %3dy, %3dz", a_source, b, x, y, z);
    /*---(locate current)-----------------*/
-   rc = g_addresser (a_deproot->owner, NULL, &x_off, NULL, NULL);
+   DEBUG_DEPS   yLOG_point   ("->owner"   , a_current->owner);
+   rc = g_addresser (a_current->owner, NULL, &x_off, NULL, NULL);
+   /*> rc = g_addresser (a_current->owner, &u, &x_off, &v, &w);                       <*/
    DEBUG_DEPS   yLOG_value   ("addresser" , rc);
    if (rc < 0)  {
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
       return 0;
    }
-   DEBUG_DEPS   yLOG_complex ("current"   , "%-10p, %3db, %3dx, %3dy, %3dz", a_deproot, b, x_off, y, z);
+   DEBUG_DEPS   yLOG_complex ("current"   , "%-10p, %3db, %3dx, %3dy, %3dz", a_current, b, x_off, y, z);
    /*---(look for merges)----------------*/
    for (i = x_off + 1; i < x + 20; ++i) {
       DEBUG_DEPS   yLOG_value   ("i"         , i);
@@ -518,6 +521,7 @@ ycalc_merge          (tDEP_ROOT **a_deproot)
       return rce;
    }
    /*---(get owner to left)--------------*/
+   DEBUG_DEPS   yLOG_note    ("LOOK LEFT FOR MERGE OWNER");
    rc = ycalc_call_who_at (b, x - 1, y, z, YCALC_LOOK, &x_owner, &x_left);
    DEBUG_DEPS   yLOG_value   ("who_at"    , rc);
    --rce;  if (rc < 0) {
@@ -576,6 +580,7 @@ ycalc_merge          (tDEP_ROOT **a_deproot)
       }
    }
    /*---(look to the right)--------------*/
+   DEBUG_DEPS   yLOG_point   ("x_left"    , x_left);
    rc = ycalc__merge_right (x_left, *a_deproot);
    --rce;  if (rc < 0) {
       DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
