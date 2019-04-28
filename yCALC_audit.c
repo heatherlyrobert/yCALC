@@ -17,7 +17,7 @@ const tyCALC_TYPES  g_ycalc_types [YCALC_MAX_TYPE] = {
    {  YCALC_DATA_RANGE  , "range"      , '&', 'y', '-', 'y', '-', "range pointer to use in other formulas"             },
    {  YCALC_DATA_INTERN , "internal"   , '®', '-', '-', '-', '-', "an actual internal range to use in other formulas"  },
    {  YCALC_DATA_MERGED , "merged"     , '<', '-', '-', 'y', '-', "empty cell used to present merged information"      },
-   {  YCALC_DATA_ERROR  , "error"      , ' ', '-', '-', 'y', 'e', "error status"                                       },
+   {  YCALC_DATA_ERROR  , "error"      , ' ', 'y', 'y', 'y', 'e', "error status"                                       },
    /*---type------------ -terse-------- -pre -rpn calc -dep -res ---description--------------------------------------- */
    {  0                 , ""           ,  0 ,  0 ,  0 ,  0 ,  0 , ""                                                   },
 };
