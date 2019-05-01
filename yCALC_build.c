@@ -435,7 +435,7 @@ ycalc__build_reference  (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    rc = ycalc_deps_create (G_DEP_REQUIRE, &a_deproot, &x_ref);
    DEBUG_CALC   yLOG_value   ("rc"        , rc);
    if (rc < 0) {
-      rc = YCALC_ERROR_BUILD_DEP;
+      rc = YCALC_ERROR_BUILD_CIR;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
