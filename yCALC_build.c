@@ -614,8 +614,18 @@ ycalc__build_like       (tDEP_ROOT *a_deproot, char **a_source, char *a_type, ch
    strlcpy (a_rpn, x_rpn, LEN_RECD);
    /*---(update type)--------------------*/
    DEBUG_CALC   yLOG_char    ("*x_type"   , *x_type);
-   if      (*x_type == YCALC_DATA_NFORM)   *a_type = YCALC_DATA_NLIKE;
-   else if (*x_type == YCALC_DATA_SFORM)   *a_type = YCALC_DATA_SLIKE;
+   if      (*x_type == YCALC_DATA_NFORM) {
+      DEBUG_CALC   yLOG_note    ("source is numeric, classify as num-like");
+      *a_type = YCALC_DATA_NLIKE;
+      a_deproot->btype = *a_type;
+      DEBUG_CALC   yLOG_char    ("btype"     , a_deproot->btype);
+   }
+   else if (*x_type == YCALC_DATA_SFORM) {
+      DEBUG_CALC   yLOG_note    ("source is string, classify as str-like");
+      *a_type = YCALC_DATA_SLIKE;
+      a_deproot->btype = *a_type;
+      DEBUG_CALC   yLOG_char    ("btype"     , a_deproot->btype);
+   }
    else {
       rc = YCALC_ERROR_BUILD_LIK;
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rc);
@@ -713,6 +723,7 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
    --rce;  if (*a_type == YCALC_DATA_SLIKE || *a_type == YCALC_DATA_NLIKE) {
       rc = ycalc__build_like (a_deproot, a_source, a_type, x_work);
       DEBUG_CALC   yLOG_value   ("like"      , rc);
+      DEBUG_CALC   yLOG_char    ("*a_type"   , *a_type);
       if (rc != 0) {
          ycalc_error_finalize (rc , a_type, a_value, a_string, "like");
          a_deproot->btype = YCALC_DATA_ERROR;
@@ -797,6 +808,7 @@ ycalc_build_detail      (void *a_owner, tDEP_ROOT *a_deproot, char **a_source, c
    /*---(prepare)------------------------*/
    rc = ycalc_build_trusted (a_deproot, a_source, a_type, a_value, a_string);
    DEBUG_CALC   yLOG_value   ("trusted"   , rc);
+   DEBUG_CALC   yLOG_char    ("*a_type"   , *a_type);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -846,6 +858,7 @@ ycalc_build_owner       (void *a_owner, tDEP_ROOT *a_deproot)
    /*---(prepare)------------------------*/
    rc = ycalc_build_detail (a_owner, a_deproot, x_source, x_type, x_value, x_string);
    DEBUG_CALC   yLOG_value   ("detail"    , rc);
+   DEBUG_CALC   yLOG_char    ("*x_type"   , *x_type);
    --rce;  if (rc < 0) {
       DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;

@@ -23,6 +23,7 @@
 #define     YCALC_DATA_INTERN     '®'
 #define     YCALC_DATA_MERGED     '<'
 #define     YCALC_DATA_ERROR      'E'
+#define     YCALC_DATA_GARBAGE    'g'
 
 extern char    YCALC_GROUP_ALL    [20];
 extern char    YCALC_GROUP_RPN    [20];
@@ -79,9 +80,10 @@ extern char    YCALC_GROUP_FPRE   [20];
 char*       yCALC_version           (void);
 
 char        yCALC_init              (char  a_style);
+char        yCALC_cleanse           (void);
 char        yCALC_wrap              (void);
 
-char        yCALC_exist_config      (void *a_enabler  , void *a_pionter  , void *a_reaper );
+char        yCALC_exist_config      (void *a_enabler  , void *a_pointer  , void *a_reaper );
 char        yCALC_label_config      (void *a_who_named, void *a_who_at   , void *a_labeler);
 char        yCALC_value_config      (void *a_valuer   , void *a_addresser, void *a_special, void *a_printer);
 
@@ -93,6 +95,7 @@ char        yCALC_delete            (char a_type, char *a_source, char *a_target
 char        yCALC_range             (void *a_source, int b1, int x1, int y1, int b2, int x2, int y2);
 
 char        yCALC_handle            (char *a_label);
+char        yCALC_exec              (char *a_label);
 
 long        yCALC_getstamp          (void *a_deproot);
 char        yCALC_seq_up            (void *a_deproot, void *a_consumer);
@@ -100,6 +103,7 @@ char        yCALC_seq_down          (void *a_deproot, void *a_consumer);
 char        yCALC_seq_full          (void *a_consumer);
 char        yCALC_seq_downdown      (long a_stamp   , void *a_consumer);
 char        yCALC_seq_downup        (long a_stamp   , void *a_consumer);
+char        yCALC_garbage_collect   (void);
 
 char        yCALC_calculate         (void);
 char        yCALC_calc_from         (void *a_deproot);

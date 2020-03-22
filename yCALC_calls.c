@@ -295,9 +295,12 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
       return rce;
    }
    --rce;  if (strchr (YCALC_GROUP_DEPS, x_type) != NULL) {
-      DEBUG_APIS   yLOG_note    ("owner type requires dependencies");
-      DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+      /*> if (x_type != YCALC_DATA_MERGED) {                                          <*/
+         DEBUG_APIS   yLOG_note    ("owner type requires dependencies");
+         DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      /*> }                                                                           <*/
+      /*> DEBUG_APIS   yLOG_note    ("now useless merge indicator, remove");          <*/
    }
    --rce;  if ((*a_deproot)->npro > 0 && x_type != YCALC_DATA_BLANK) {
       DEBUG_APIS   yLOG_note    ("not blank, keep in range dependencies");
@@ -338,7 +341,7 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
    }
    rc = g_valuer (x_owner, &x_type, NULL, NULL);
    DEBUG_APIS   yLOG_char    ("type"      , x_type);
-   if (x_type == YCALC_DATA_BLANK) {
+   if (x_type == YCALC_DATA_BLANK || x_type == YCALC_DATA_GARBAGE) {
       rc = g_reaper (&x_owner);
       DEBUG_APIS   yLOG_value   ("reaper"    , rc);
       --rce;  if (rc < 0 ) {

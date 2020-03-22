@@ -924,7 +924,7 @@ ycalc__mock_whole       (char *a_label, char *a_source, char a_format, char a_de
     *>    if (x_owner->string != NULL)  strlcpy (t, x_owner->string, LEN_RECD);       <* 
     *>    else                          strlcpy (t, x_owner->source, LEN_RECD);       <* 
     *> }                                                                              <* 
-    *> strlpad (t, x_out, ' ', a_align, a_width - 1);                                 <* 
+    *> strlpad (t, x_out, '?', a_align, a_width - 1);                                 <* 
     *> x_owner->print = strdup (x_out);                                               <*/
    /*---(complete)-----------------------*/
    DEBUG_DEPS   yLOG_exit    (__FUNCTION__);

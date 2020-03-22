@@ -680,6 +680,7 @@ ycalc__exec_wrap        (char *a_type, double *a_value, char **a_string)
    /*---(results)------------------------*/
    switch (*a_type) {
    case YCALC_DATA_NFORM : case YCALC_DATA_NLIKE :
+      DEBUG_CALC   yLOG_note    ("handling as numeric");
       *a_value = ycalc_popval (__FUNCTION__);
       --rce;  if (ycalc_error_true ()) {
          *a_type = YCALC_DATA_ERROR;
@@ -690,6 +691,7 @@ ycalc__exec_wrap        (char *a_type, double *a_value, char **a_string)
       DEBUG_CALC   yLOG_value   ("value"     , *a_value);
       break;
    case YCALC_DATA_SFORM : case YCALC_DATA_SLIKE :
+      DEBUG_CALC   yLOG_note    ("handling as string");
       *a_string = ycalc_popstr (__FUNCTION__);
       --rce;  if (ycalc_error_true ()) {
          *a_type = YCALC_DATA_ERROR;
@@ -927,6 +929,8 @@ ycalc_execute_label     (char *a_label)
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
+
+char yCALC_exec              (char *a_label) { return ycalc_execute_label (a_label); }
 
 char
 ycalc_execute_auto      (void *a_owner, tDEP_ROOT *a_deproot, int a_seq, int a_lvl)

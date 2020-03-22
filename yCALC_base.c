@@ -514,6 +514,20 @@ yCALC_init              (char a_style)
 }
 
 char
+yCALC_cleanse           (void)
+{
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   /*---(shutdown)-----------------------*/
+   ycalc_exec_wrap   ();
+   ycalc_deps_wrap   ();
+   ycalc__seq_clear  ();
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
 yCALC_wrap              (void)
 {
    /*---(header)-------------------------*/

@@ -45,8 +45,8 @@ ycalc_concatplus   (void)
    /*---(process)------------------------*/
    strncpy (t, s,   LEN_RECD);
    if (r [0] != '\0') {
-      strncat (t, " ", LEN_RECD);
-      strncat (t, r,   LEN_RECD);
+      strncat (t, ", ", LEN_RECD);
+      strncat (t, r,    LEN_RECD);
    }
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, t);
@@ -393,7 +393,7 @@ ycalc_lpad         (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    if (n     <  0  )  n = 0;
    /*---(process)------------------------*/
-   strlpad (r, t, ' ', '>', n);
+   strlpad (r, t, '?', '>', n);
    ycalc_pushstr (__FUNCTION__, t);
    /*---(clean up)-----------------------*/
    free (r);
@@ -412,7 +412,7 @@ ycalc_rpad         (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    if (n     <  0  )  n = 0;
    /*---(process)------------------------*/
-   strlpad (r, t, ' ', '<', n);
+   strlpad (r, t, '?', '<', n);
    ycalc_pushstr (__FUNCTION__, t);
    /*---(clean up)-----------------------*/
    free (r);
@@ -432,7 +432,7 @@ ycalc_lppad        (void)
    if (n     <  0  )  n = 0;
    /*---(process)------------------------*/
    strltrim (r, ySTR_BOTH, LEN_RECD);
-   strlpad (r, t, ' ', '>', n);
+   strlpad (r, t, '?', '>', n);
    ycalc_pushstr (__FUNCTION__, t);
    /*---(clean up)-----------------------*/
    free (r);
@@ -452,7 +452,7 @@ ycalc_rppad        (void)
    if (n     <  0  )  n = 0;
    /*---(process)------------------------*/
    strltrim (r, ySTR_BOTH, LEN_RECD);
-   strlpad (r, t, ' ', '<', n);
+   strlpad (r, t, '?', '<', n);
    ycalc_pushstr (__FUNCTION__, t);
    /*---(clean up)-----------------------*/
    free (r);

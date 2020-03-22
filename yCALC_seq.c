@@ -260,7 +260,7 @@ yCALC_getstamp          (void *a_deproot)
 char         /*-> dependency-based calc marking ------[ ------ [fe.I85.584.97]*/ /*-[03.0000.063.!]-*/ /*-[--.---.---.--]-*/
 ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, long a_stamp, void *a_consumer)
 {
-   /*---(locals)-------------------------*/
+   /*---(locals)-----------+-----+-----+-*/
    char        rce         = -10;
    tDEP_LINK  *x_dep       = NULL;
    tDEP_ROOT  *x_deproot   = NULL;
@@ -269,6 +269,7 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, l
    int         x_sub       = 0;
    int         x_seq       = 0;
    int         x_lvl       = 0;
+   char        x_list      [LEN_RECD] = "";
    /*---(header)-------------------------*/
    DEBUG_CALC   yLOG_enter   (__FUNCTION__);
    DEBUG_CALC   yLOG_char    ("a_dir_rec" , a_dir_rec);
@@ -330,6 +331,59 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, l
    }
    DEBUG_CALC   yLOG_value   ("expected"  , s_total);
    DEBUG_CALC   yLOG_value   ("subtotal"  , x_seq);
+   ycalc__seq_list (x_list);
+   DEBUG_CALC   yLOG_info    ("seq_order" , x_list);
+   /*---(complete)-----------------------*/
+   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+yCALC_garbage_collect   (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tDEP_LINK  *x_dep       = NULL;
+   int         x_sub       =    0;
+   int         c           =    0;
+   tDEP_ROOT  *x_deproot   = NULL;
+   void       *x_owner     = NULL;
+   char      **x_source    = NULL;
+   char       *x_type      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   /*---(defense : cell)-----------------*/
+   DEBUG_CALC   yLOG_point   ("rroot"     , myCALC.rroot);
+   --rce;  if (myCALC.rroot == NULL) {
+      DEBUG_CALC   yLOG_note    ("NULL deproot");
+      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      return rce;
+   }
+   DEBUG_CALC   yLOG_info    ("label"     , ycalc_call_labeler (myCALC.rroot));
+   DEBUG_CALC   yLOG_value   ("nreq"      , myCALC.rroot->nreq);
+   /*---(recurse)------------------------*/
+   x_dep = myCALC.rroot->reqs;
+   x_sub = myCALC.rroot->nreq;
+   while (x_dep != NULL) {
+      ++c;
+      DEBUG_CALC   yLOG_complex ("recurse"   , "%d of %d, %s, %c, %2d", c, x_sub, ycalc_call_labeler (x_dep->target), x_dep->target->btype, x_dep->target->npro);
+      if (x_dep->target->btype == YCALC_DATA_MERGED && x_dep->target->npro == 1) {
+         /*---(prepare)------------------------*/
+         DEBUG_CALC   yLOG_note    ("then, cleanup as necessary");
+         x_owner   = x_dep->target->owner;
+         x_deproot = x_dep->target;
+         /*---(set garbage)--------------------*/
+         rc = g_pointer (x_owner, NULL, &x_type, NULL, NULL);
+         *x_type = YCALC_DATA_GARBAGE;
+         /*---(reap)---------------------------*/
+         rc = ycalc_call_reaper (&x_owner, &x_deproot);
+         DEBUG_CALC   yLOG_value   ("reaper"    , rc);
+         /*---(done)---------------------------*/
+      }
+      x_dep = x_dep->next;
+   }
+   DEBUG_CALC   yLOG_note    ("done recursing");
    /*---(complete)-----------------------*/
    DEBUG_CALC   yLOG_exit    (__FUNCTION__);
    return 0;
