@@ -80,6 +80,7 @@ extern char    YCALC_GROUP_FPRE   [20];
 char*       yCALC_version           (void);
 
 char        yCALC_init              (char  a_style);
+char        yCALC_set_state         (char a_state);
 char        yCALC_cleanse           (void);
 char        yCALC_wrap              (void);
 

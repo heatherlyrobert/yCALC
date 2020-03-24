@@ -296,9 +296,9 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
    }
    --rce;  if (strchr (YCALC_GROUP_DEPS, x_type) != NULL) {
       /*> if (x_type != YCALC_DATA_MERGED) {                                          <*/
-         DEBUG_APIS   yLOG_note    ("owner type requires dependencies");
-         DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);
-         return rce;
+      DEBUG_APIS   yLOG_note    ("owner type requires dependencies");
+      DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
       /*> }                                                                           <*/
       /*> DEBUG_APIS   yLOG_note    ("now useless merge indicator, remove");          <*/
    }
@@ -326,6 +326,7 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
       return rce;
    }
    *a_deproot = NULL;
+   DEBUG_APIS   yLOG_point   ("*a_deproot" , *a_deproot);
    /*---(call reaper on owner)-----------*/
    rc = g_who_named  (x_label, YCALC_LOOK, &x_owner, NULL);
    DEBUG_CALC   yLOG_value   ("who_named"  , rc);
@@ -349,7 +350,7 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
          DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
-      *a_owner = x_owner;
+      *a_owner   = x_owner;
       DEBUG_APIS   yLOG_point   ("*a_owner"   , *a_owner);
    } else {
       DEBUG_APIS   yLOG_note    ("cell is now independent");

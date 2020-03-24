@@ -497,6 +497,7 @@ yCALC_init              (char a_style)
    g_addresser = NULL;
    g_special   = NULL;
    g_printer   = NULL;
+   myCALC.state = '-';
    /*---(initialize)---------------------*/
    DEBUG_PROG   yLOG_note    ("running sub-initializations");
    ycalc_audit_init  ();
@@ -510,6 +511,17 @@ yCALC_init              (char a_style)
    ycalc_status_update ('i');
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+yCALC_set_state         (char a_state)
+{
+   DEBUG_PROG   yLOG_senter  (__FUNCTION__);
+   DEBUG_PROG   yLOG_schar   (a_state);
+   myCALC.state = a_state;
+   DEBUG_PROG   yLOG_schar   (myCALC.state);
+   DEBUG_PROG   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
