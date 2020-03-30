@@ -19,6 +19,7 @@ const tyCALC_TYPES  g_ycalc_types [YCALC_MAX_TYPE] = {
    {  YCALC_DATA_MERGED , "merged"     , '<', '-', '-', 'y', '-', "empty cell used to present merged information"      },
    {  YCALC_DATA_ERROR  , "error"      , ' ', 'y', 'y', 'y', 'e', "error status"                                       },
    {  YCALC_DATA_GARBAGE, "garbage"    , ' ', '-', '-', '-', '-', "marked for garbage collection"                      },
+   {  YCALC_DATA_PMERGE , "potential"  , ' ', '-', '-', '-', '#', "potentially used as a merge"                        },
    /*---type------------ -terse-------- -pre -rpn calc -dep -res ---description--------------------------------------- */
    {  0                 , ""           ,  0 ,  0 ,  0 ,  0 ,  0 , ""                                                   },
 };
@@ -308,6 +309,9 @@ ycalc__unmerge_right    (tDEP_ROOT **a_deproot, int a_start)
    char       *x_type      = NULL;
    tDEP_LINK  *x_save      = NULL;
    char        x_interior  =    0;
+   char        x_label     [LEN_LABEL];
+   tDEP_ROOT  *x_src       = NULL;
+   tDEP_ROOT  *x_dst       = NULL;
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
    DEBUG_DEPS   yLOG_value   ("a_start"   , a_start);
@@ -328,12 +332,13 @@ ycalc__unmerge_right    (tDEP_ROOT **a_deproot, int a_start)
       DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_DEPS   yLOG_info    ("label"     , ycalc_call_labeler (*a_deproot));
+   strlcpy (x_label, ycalc_call_labeler (*a_deproot), LEN_LABEL);
+   DEBUG_DEPS   yLOG_info    ("label"     , x_label);
    /*---(remove all)---------------------*/
    x_next = (*a_deproot)->reqs;
    DEBUG_DEPS   yLOG_point   ("x_next"    , x_next);
    while (x_next != NULL) {
-      DEBUG_DEPS   yLOG_char    ("type"      , x_next->type);
+      DEBUG_DEPS   yLOG_complex ("x_next"    , "%-10.10p, %c", x_next, x_next->type);
       x_save = x_next;
       if (x_next->type == G_DEP_MERGED) {
          x_owner   = x_next->target->owner;
@@ -345,14 +350,19 @@ ycalc__unmerge_right    (tDEP_ROOT **a_deproot, int a_start)
             DEBUG_DEPS   yLOG_complex ("pointers"  , "%-10.10p, %-10.10p, %c", *x_source, x_type, *x_type);
             if (*x_source != NULL && strcmp (*x_source, "<") == NULL) {
                if (x == a_start)  x_interior = 1;
-               *x_type = YCALC_DATA_GARBAGE;
-               if (*x_source != NULL)  {
-                  free (*x_source);
-                  *x_source = NULL;
-               }
+               *x_type = YCALC_DATA_PMERGE;
+               DEBUG_DEPS   yLOG_char    ("new type"  , *x_type);
             }
-            rc = ycalc_deps_delete  (x_next->type, a_deproot, &(x_next->target), &(x_next->target->owner));
+            x_src = x_next->source;
+            x_dst = x_next->target;
+            DEBUG_DEPS   yLOG_point   ("deproot"   , x_next->target);
+            DEBUG_DEPS   yLOG_point   ("owner"     , x_next->target->owner);
+            /*> rc = ycalc_deps_delete (G_DEP_REQUIRE, &(x_next->source), &(x_next->target), &(x_next->target->owner));   <*/
+            rc = ycalc_deps_delete (G_DEP_REQUIRE, &x_src, &x_dst, &x_owner);
             DEBUG_DEPS   yLOG_value   ("delete"    , rc);
+            DEBUG_DEPS   yLOG_point   ("x_owner"   , x_owner);
+            DEBUG_DEPS   yLOG_point   ("x_deproot" , x_deproot);
+            if (x_owner != NULL)  rc = g_printer (x_owner);
          }
       }
       x_next = x_save->next;
@@ -503,7 +513,6 @@ ycalc_unmerge           (tDEP_ROOT **a_deproot, char *a_type)
       }
       /*---(update)---------------*/
       s_origin   = x_origin->owner;
-      if (rc > 0)  *a_deproot = NULL;
       /*---(done)-----------------*/
    }
    /*---(complete)-----------------------*/
@@ -546,12 +555,7 @@ ycalc_merge_check    (tDEP_ROOT *a_source)
       DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
       return 0;
    }
-   rc = g_pointer (a_source->owner, NULL, &x_type, NULL, NULL);
    DEBUG_DEPS   yLOG_complex ("source"    , "%-10p, %c, %3db, %3dx, %3dy, %3dz", a_source, *x_type, b, x, y, z);
-   if (*x_type == YCALC_DATA_BLANK || *x_type == YCALC_DATA_GARBAGE) {
-      DEBUG_DEPS   yLOG_exit    (__FUNCTION__);
-      return 0;
-   }
    /*---(look for merges)----------------*/
    for (i = x + 1; i < x + 20; ++i) {
       DEBUG_DEPS   yLOG_value   ("i"         , i);
@@ -598,6 +602,17 @@ ycalc_merge          (tDEP_ROOT **a_deproot)
    tDEP_ROOT  *x_origin    = NULL;
    /*---(header)-------------------------*/
    DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_DEPS   yLOG_point   ("a_deproot" , a_deproot);
+   --rce;  if (a_deproot  == NULL) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DEPS   yLOG_point   ("*a_deproot", *a_deproot);
+   --rce;  if (*a_deproot == NULL) {
+      DEBUG_DEPS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(look left)----------------------*/
    rc = g_addresser ((*a_deproot)->owner, &b, &x, &y, &z);
    DEBUG_DEPS   yLOG_value   ("addresser" , rc);
@@ -769,17 +784,19 @@ ycalc_classify_clear    (void **a_owner, tDEP_ROOT **a_deproot, char *a_type, do
       return rce;
    }
    DEBUG_CALC   yLOG_point   ("*a_deproot", *a_deproot);
-   --rce;  if (*a_deproot == NULL) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
+   /*> --rce;  if (*a_deproot == NULL) {                                              <* 
+    *>    DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+    *>    return rce;                                                                 <* 
+    *> }                                                                              <*/
    /*---(clear dependencies)----------*/
    DEBUG_CALC   yLOG_note    ("wipe removable dependencies");
-   if (a_deproot != NULL)  rc = ycalc_deps_wipe_reqs (a_owner, a_deproot);
-   DEBUG_CALC   yLOG_value   ("cleanser"  , rc);
-   --rce;  if (rc < 0) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
+   if (a_deproot != NULL) {
+      rc = ycalc_deps_wipe_reqs (a_owner, a_deproot);
+      DEBUG_CALC   yLOG_value   ("cleanser"  , rc);
+      --rce;  if (rc < 0) {
+         DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
    }
    /*---(clear type)------------------*/
    *a_type = YCALC_DATA_BLANK;
@@ -1102,10 +1119,10 @@ yCALC_handle            (char *a_label)
       return rce;
    }
    /*---(merges)-------------------------*/
-   if (*x_type == YCALC_DATA_MERGED) {
+   if (*x_type == YCALC_DATA_MERGED || *x_type == YCALC_DATA_PMERGE) {
       rc = ycalc_merge (&x_deproot);
       if (rc < 0) {
-         *x_type = YCALC_DATA_STR;
+         *x_type = YCALC_DATA_PMERGE;
       }
    } else {
       rc = ycalc_merge_check    (x_deproot);
@@ -1152,10 +1169,11 @@ yCALC_handle            (char *a_label)
    /*> ycalc__mock_list ();                                                           <*/
    /*---(call reaper)--------------------*/
    DEBUG_CALC   yLOG_note    ("then, cleanup as necessary");
-   rc = ycalc_call_reaper (&x_owner, &x_deproot);
-   DEBUG_CALC   yLOG_value   ("reaper"    , rc);
-   DEBUG_CALC   yLOG_point   ("x_owner"   , x_owner);
-   /*> ycalc__mock_list ();                                                           <*/
+   if (*x_source == NULL || strcmp (*x_source, "<") != 0) {
+      rc = ycalc_call_reaper (&x_owner, &x_deproot);
+      DEBUG_CALC   yLOG_value   ("reaper"    , rc);
+      DEBUG_CALC   yLOG_point   ("x_owner"   , x_owner);
+   }
    /*---(call printer)-------------------*/
    if (x_owner != NULL) {
       if (*x_type == YCALC_DATA_MERGED) {

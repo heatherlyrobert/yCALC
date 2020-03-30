@@ -149,6 +149,7 @@ yCALC_disable           (void **a_owner, void **a_deproot)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
+   char        rc          =    0;
    tDEP_ROOT  *x_deproot   = NULL;
    void       *x_owner     = NULL;
    /*---(header)-------------------------*/
@@ -291,6 +292,11 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
    DEBUG_APIS   yLOG_info    ("valid"     , YCALC_GROUP_DEPS);
    --rce;  if (rc < 0) {
       DEBUG_APIS   yLOG_note    ("valuer blew, dont touch");
+      DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   --rce;  if (x_type == YCALC_DATA_MERGED || x_type == YCALC_DATA_PMERGE) {
+      DEBUG_APIS   yLOG_note    ("real or potential merged cell");
       DEBUG_APIS   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }

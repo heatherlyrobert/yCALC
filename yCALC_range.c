@@ -1247,13 +1247,13 @@ ycalc__lookup_common  (char a_dir)
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return;
    }
-   x_buf = s_ranges [x_deproot->range].b;
+   x_buf = s_ranges [x_deproot->range].bb;
    x_beg = s_ranges [x_deproot->range].bx;
    y_beg = s_ranges [x_deproot->range].by;
    z_beg = s_ranges [x_deproot->range].bz;
    x_end = s_ranges [x_deproot->range].ex;
    y_end = s_ranges [x_deproot->range].ey;
-   DEBUG_DEPS   yLOG_complex ("coords"    , "bx=%4d, ex=%4d, by=%4d, ey=%4d, bz=%4d, ez=%4d", x_beg, x_end, y_beg, y_end, z_beg, z_beg);
+   DEBUG_DEPS   yLOG_complex ("coords"    , "b=%4d, bx=%4d, ex=%4d, by=%4d, ey=%4d, bz=%4d, ez=%4d", x_buf, x_beg, x_end, y_beg, y_end, z_beg, z_beg);
    if (a_dir == 'v')  { b_1st = x_beg; e_1st = x_end; b_2nd = y_beg; e_2nd = y_end; }
    else               { b_1st = y_beg; e_1st = y_end; b_2nd = x_beg; e_2nd = x_end; }
    DEBUG_DEPS   yLOG_complex ("loops"     , "b1=%4d, e1=%4d, b2=%4d, e2=%4d"                , b_1st, e_1st, b_2nd, e_2nd);

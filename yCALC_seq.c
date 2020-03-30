@@ -450,6 +450,32 @@ ycalc__seq_list    (char *a_list)
    return 0;
 }
 
+char         /*-> tbd --------------------------------[ leaf   [gc.630.122.30]*/ /*-[02.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+yCALC_seq_dump          (void *a_file)
+{
+   /*---(locals)-----------+-----------+-*/
+   int         i           = 0;
+   int         c           = 0;
+   FILE       *x_file      = NULL;
+   tDEP_ROOT  *x_curr      = NULL;
+   char        x_label     [LEN_LABEL];
+   x_file = (FILE *) a_file;
+   yCALC_seq_full (NULL);
+   /*---(walk the list)---------------*/
+   for (i = 0; i <= s_max; ++i) {
+      fprintf (a_file, "\nlevel %2d --------------------------------------\n", i);
+      x_curr = s_heads [i];
+      while (x_curr != NULL) {
+         ++c;
+         strncpy (x_label, ycalc_call_labeler (x_curr), LEN_LABEL);
+         fprintf (a_file, "   %4d  %-8.8s\n", c, x_label);
+         x_curr = x_curr->snext;
+      }
+   }
+   /*---(complete)--------------------*/
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/

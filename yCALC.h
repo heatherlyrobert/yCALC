@@ -23,6 +23,7 @@
 #define     YCALC_DATA_INTERN     '®'
 #define     YCALC_DATA_MERGED     '<'
 #define     YCALC_DATA_ERROR      'E'
+#define     YCALC_DATA_PMERGE     'p'
 #define     YCALC_DATA_GARBAGE    'g'
 
 extern char    YCALC_GROUP_ALL    [20];
@@ -104,6 +105,7 @@ char        yCALC_seq_down          (void *a_deproot, void *a_consumer);
 char        yCALC_seq_full          (void *a_consumer);
 char        yCALC_seq_downdown      (long a_stamp   , void *a_consumer);
 char        yCALC_seq_downup        (long a_stamp   , void *a_consumer);
+char        yCALC_seq_dump          (void *a_file);
 char        yCALC_garbage_collect   (void);
 
 char        yCALC_calculate         (void);
