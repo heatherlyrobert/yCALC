@@ -403,12 +403,12 @@ ycalc_popref            (char *a_func)
    /*---(handle stack types)-------------*/
    switch (s_typ) {
    case S_TYPE_NUM :
-      ycalc_error_set (YCALC_ERROR_EXEC_PTR , YCALC_ERROR_LITERAL);
+      ycalc_error_set (YCALC_ERROR_EXEC_IND , YCALC_ERROR_LITERAL);
       DEBUG_CALC   yLOG_info    ("1yCALC.me" , myCALC.me);
       return  NULL;
       break;
    case S_TYPE_STR :
-      ycalc_error_set (YCALC_ERROR_EXEC_PTR , YCALC_ERROR_LITERAL);
+      ycalc_error_set (YCALC_ERROR_EXEC_IND , YCALC_ERROR_LITERAL);
       DEBUG_CALC   yLOG_info    ("2yCALC.me" , myCALC.me);
       return  NULL;
       break;

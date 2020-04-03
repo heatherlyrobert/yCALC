@@ -3,6 +3,17 @@
 #include    "yCALC_priv.h"
 
 
+/*
+ *
+ * metis  ww2··  review and rationalize pointer error types/messages
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+
 
 const tyCALC_TYPES  g_ycalc_types [YCALC_MAX_TYPE] = {
    /*---type------------ -terse-------- -pre -rpn calc -dep -res ---description--------------------------------------- */
@@ -42,7 +53,7 @@ const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR] = {
    { YCALC_ERROR_BUILD_DEP , 'b' , "#b/dep"   , "dependence failed on legal label/ref"               },
    { YCALC_ERROR_BUILD_LIK , 'b' , "#b/lik"   , "build of a like formula failed"                     },
    { YCALC_ERROR_BUILD_CIR , 'b' , "#b/cir"   , "dependence would create a circular loop"            },
-   { YCALC_ERROR_BUILD_PNT , 'b' , "#b/pnt"   , "pointer dest label/ref is not addr/range type"      },
+   { YCALC_ERROR_BUILD_PNT , 'b' , "#b/ind"   , "pointer dest label/ref is not addr/range type"      },
    { YCALC_ERROR_BUILD_RNG , 'b' , "#b/rng"   , "can not create range with given coords"             },
    { YCALC_ERROR_BUILD_TOK , 'b' , "#b/tok"   , "rpn token could not be recognized"                  },
    { YCALC_ERROR_STACK     , 'e' , "#e/stk"   , "execution stack under or over run"                  },
@@ -55,7 +66,10 @@ const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR] = {
    { YCALC_ERROR_EXEC_BRNG , 'e' , "#e/beg"   , "beginning of range not legal"                       },
    { YCALC_ERROR_EXEC_ERNG , 'e' , "#e/end"   , "end of range not legal"                             },
    { YCALC_ERROR_EXEC_MISS , 'e' , "#e/mis"   , "lookup or index function can not find result"       },
-   { YCALC_ERROR_EXEC_PTR  , 'e' , "#e/ptr"   , "pointer dereferencing not valid"                    },
+   { YCALC_ERROR_EXEC_PTR  , 'e' , "#e/ptr"   , "expected val/str, but given non-deref pointer"      },
+   { YCALC_ERROR_EXEC_IND  , 'e' , "#e/ind"   , "attempt to dereference a non-pointer value"         },
+   { YCALC_ERROR_EXEC_MAL  , 'e' , "#e/ind"   , "attempt to dereference malformed pointer ref"       },
+   { YCALC_ERROR_EXEC_NULL , 'e' , "#e/nul"   , "attempt to dereference a null pointer"              },
    { YCALC_ERROR_EXEC_PTRR , 'e' , "#e/ptR"   , "pointer dereferencing not valid on endoint"         },
    { YCALC_ERROR_EXEC_NADA , 'e' , "#e/bnk"   , "reference points to blank cell, no value"           },
    { YCALC_ERROR_EXEC_ERR  , 'e' , "#e/err"   , "reference points to error cell, no value"           },
@@ -1741,7 +1755,7 @@ ycalc_pointer       (void)
    x_ref = ycalc_popref (__FUNCTION__);
    DEBUG_CALC   yLOG_point   ("x_ref"     , x_ref);
    if (x_ref == NULL) {
-      ycalc_error_set (YCALC_ERROR_EXEC_PTR, NULL);
+      ycalc_error_set (YCALC_ERROR_EXEC_MAL, NULL);
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return;
    }
@@ -1749,7 +1763,7 @@ ycalc_pointer       (void)
    DEBUG_CALC   yLOG_info    ("myCALC.me"  , myCALC.me);
    DEBUG_CALC   yLOG_value   ("ncalc"     , x_ref->ncalc);
    if (x_ref->ncalc != 1 && x_ref->ncalc != 3) {
-      ycalc_error_set (YCALC_ERROR_EXEC_PTR, x_ref);
+      ycalc_error_set (YCALC_ERROR_EXEC_MAL, x_ref);
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return;
    }
@@ -1757,7 +1771,7 @@ ycalc_pointer       (void)
    x_calc = x_ref->chead;
    DEBUG_CALC   yLOG_point   ("x_calc"    , x_calc);
    if (x_calc == NULL) {
-      ycalc_error_set (YCALC_ERROR_EXEC_PTR, x_ref);
+      ycalc_error_set (YCALC_ERROR_EXEC_MAL, x_ref);
       DEBUG_CALC   yLOG_exit    (__FUNCTION__);
       return;
    }
@@ -1765,13 +1779,13 @@ ycalc_pointer       (void)
    /*---(check for address)--------------*/
    if (x_ref->ncalc == 1) {
       if (x_calc->t != G_TYPE_REF) {
-         ycalc_error_set (YCALC_ERROR_EXEC_PTR, x_ref);
+         ycalc_error_set (YCALC_ERROR_EXEC_IND, x_ref);
          DEBUG_CALC   yLOG_exit    (__FUNCTION__);
          return;
       }
       DEBUG_CALC   yLOG_point   ("x_calc->r"  , x_calc->r);
       if (x_calc->r == NULL) {
-         ycalc_error_set (YCALC_ERROR_EXEC_PTR, x_ref);
+         ycalc_error_set (YCALC_ERROR_EXEC_NULL, x_ref);
          DEBUG_CALC   yLOG_exit    (__FUNCTION__);
          return;
       }
@@ -1781,19 +1795,19 @@ ycalc_pointer       (void)
       x_calc = x_calc->next->next;
       DEBUG_CALC   yLOG_point   ("x_calc"    , x_calc);
       if (x_calc == NULL) {
-         ycalc_error_set (YCALC_ERROR_EXEC_PTR, x_ref);
+         ycalc_error_set (YCALC_ERROR_EXEC_MAL, x_ref);
          DEBUG_CALC   yLOG_exit    (__FUNCTION__);
          return;
       }
       DEBUG_CALC   yLOG_char    ("x_calc->t" , x_calc->t);
       if (x_calc->t != G_TYPE_REF) {
-         ycalc_error_set (YCALC_ERROR_EXEC_PTR, x_ref);
+         ycalc_error_set (YCALC_ERROR_EXEC_IND, x_ref);
          DEBUG_CALC   yLOG_exit    (__FUNCTION__);
          return;
       }
       DEBUG_CALC   yLOG_point   ("x_calc->r"  , x_calc->r);
       if (x_calc->r == NULL) {
-         ycalc_error_set (YCALC_ERROR_EXEC_PTR, x_ref);
+         ycalc_error_set (YCALC_ERROR_EXEC_NULL, x_ref);
          DEBUG_CALC   yLOG_exit    (__FUNCTION__);
          return;
       }
