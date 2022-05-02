@@ -39,17 +39,17 @@ ycalc__seq_clear        (void)
    int         c           =    0;
    int         x_len       =    0;
    /*---(header)-------------------------*/
-   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(walk through list)--------------*/
-   DEBUG_CALC   yLOG_note    ("resetting cell calc exec fields");
+   DEBUG_YCALC   yLOG_note    ("resetting cell calc exec fields");
    /*> ycalc__mock_list ();                                                           <*/
    x_next = myCALC.rroot;
    while (x_next != NULL) {
-      DEBUG_CALC   yLOG_point   ("x_next"    , x_next);
-      DEBUG_CALC   yLOG_info    ("label"     , ycalc_call_labeler (x_next));
+      DEBUG_YCALC   yLOG_point   ("x_next"    , x_next);
+      DEBUG_YCALC   yLOG_info    ("label"     , ycalc_call_labeler (x_next));
       x_len = strllen (ycalc_call_labeler (x_next), LEN_LABEL);
-      DEBUG_CALC   yLOG_value   ("x_len"     , x_len);
-      DEBUG_CALC   yLOG_point   ("rnext"     , x_next->rnext);
+      DEBUG_YCALC   yLOG_value   ("x_len"     , x_len);
+      DEBUG_YCALC   yLOG_point   ("rnext"     , x_next->rnext);
       x_next->slevel = -1;
       x_next->snext  = NULL;
       x_next->sprev  = NULL;
@@ -57,9 +57,9 @@ ycalc__seq_clear        (void)
       x_next = x_next->rnext;
       ++c;
    }
-   DEBUG_CALC   yLOG_value   ("target"    , myCALC.rcount);
-   DEBUG_CALC   yLOG_value   ("cleared"   , c);
-   DEBUG_CALC   yLOG_note    ("resetting calc exec heads and tails");
+   DEBUG_YCALC   yLOG_value   ("target"    , myCALC.rcount);
+   DEBUG_YCALC   yLOG_value   ("cleared"   , c);
+   DEBUG_YCALC   yLOG_note    ("resetting calc exec heads and tails");
    for (i = 0; i < MAX_EXEC; ++i) {
       s_count [i] = 0;
       s_heads [i] = NULL;
@@ -68,7 +68,7 @@ ycalc__seq_clear        (void)
    s_total =  0;
    s_max   = -1;
    /*---(complete)-----------------------*/
-   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -78,38 +78,38 @@ ycalc__seq_add          (char a_level, tDEP_ROOT *a_deproot)
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;
    /*---(header)-------------------------*/
-   DEBUG_CALC   yLOG_senter  (__FUNCTION__);
+   DEBUG_YCALC   yLOG_senter  (__FUNCTION__);
    /*---(defense : level)----------------*/
-   DEBUG_CALC   yLOG_svalue  ("a_level"   , a_level);
+   DEBUG_YCALC   yLOG_svalue  ("a_level"   , a_level);
    --rce;  if (a_level >= MAX_EXEC) {
-      DEBUG_CALC   yLOG_snote   ("level greater than max");
-      DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
+      DEBUG_YCALC   yLOG_snote   ("level greater than max");
+      DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
       return rce;
    }
    /*---(defense : cell)-----------------*/
-   DEBUG_CALC   yLOG_spoint  (a_deproot);
+   DEBUG_YCALC   yLOG_spoint  (a_deproot);
    --rce;  if (a_deproot == NULL) {
-      DEBUG_CALC   yLOG_snote   ("NULL cell");
-      DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
+      DEBUG_YCALC   yLOG_snote   ("NULL cell");
+      DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
       return rce;
    }
-   DEBUG_CALC   yLOG_sinfo   ("label"     , ycalc_call_labeler (a_deproot));
-   DEBUG_CALC   yLOG_spoint  (myCALC.rroot);
+   DEBUG_YCALC   yLOG_sinfo   ("label"     , ycalc_call_labeler (a_deproot));
+   DEBUG_YCALC   yLOG_spoint  (myCALC.rroot);
    --rce;  if (a_deproot == myCALC.rroot) {
-      DEBUG_CALC   yLOG_snote   ("cell is root");
-      DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
+      DEBUG_YCALC   yLOG_snote   ("cell is root");
+      DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
       return -(rce);
    }
    /*---(defense : already assigned)-----*/
-   DEBUG_CALC   yLOG_svalue  ("slevel"    , a_deproot->slevel);
+   DEBUG_YCALC   yLOG_svalue  ("slevel"    , a_deproot->slevel);
    --rce;  if (a_deproot->slevel >= 0) {
-      DEBUG_CALC   yLOG_snote   ("already assigned");
-      DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
+      DEBUG_YCALC   yLOG_snote   ("already assigned");
+      DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
       return -(rce);
    }
    /*---(first item)---------------------*/
    if (s_heads [a_level] == NULL) {
-      DEBUG_CALC   yLOG_snote   ("add as first");
+      DEBUG_YCALC   yLOG_snote   ("add as first");
       s_heads [a_level] = a_deproot;
       a_deproot->slevel   = a_level;
       a_deproot->sprev    = NULL;
@@ -118,7 +118,7 @@ ycalc__seq_add          (char a_level, tDEP_ROOT *a_deproot)
    }
    /*---(add to tail)--------------------*/
    else {
-      DEBUG_CALC   yLOG_snote   ("add to tail");
+      DEBUG_YCALC   yLOG_snote   ("add to tail");
       s_tails [a_level]->snext = a_deproot;
       a_deproot->slevel   = a_level;
       a_deproot->sprev    = s_tails [a_level];
@@ -126,12 +126,12 @@ ycalc__seq_add          (char a_level, tDEP_ROOT *a_deproot)
       s_tails [a_level] = a_deproot;
    }
    /*---(update totals)------------------*/
-   DEBUG_CALC   yLOG_snote   ("counts)");
+   DEBUG_YCALC   yLOG_snote   ("counts)");
    ++(s_count [a_level]);
    ++s_total;
    if (a_level > s_max)  s_max = a_level;
    /*---(complete)-----------------------*/
-   DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -142,42 +142,42 @@ ycalc__seq_del          (tDEP_ROOT *a_deproot)
    char        x_level     = 0;
    char        rce         = -10;
    /*---(header)-------------------------*/
-   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(defense : cell)-----------------*/
-   DEBUG_CALC   yLOG_point   ("a_deproot" , a_deproot);
+   DEBUG_YCALC   yLOG_point   ("a_deproot" , a_deproot);
    --rce;  if (a_deproot == NULL) {
-      DEBUG_CALC   yLOG_note    ("NULL cell");
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_note    ("NULL cell");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_CALC   yLOG_info    ("label"     , ycalc_call_labeler (a_deproot));
+   DEBUG_YCALC   yLOG_info    ("label"     , ycalc_call_labeler (a_deproot));
    /*---(defense : unassigned)-----------*/
    x_level = a_deproot->slevel;
-   DEBUG_CALC   yLOG_value   ("x_level"   , x_level);
+   DEBUG_YCALC   yLOG_value   ("x_level"   , x_level);
    --rce;  if (x_level < 0) {
-      DEBUG_CALC   yLOG_note    ("unassigned already");
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_note    ("unassigned already");
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return -(rce);
    }
    /*---(next)---------------------------*/
-   DEBUG_CALC   yLOG_note    ("forward");
+   DEBUG_YCALC   yLOG_note    ("forward");
    if (a_deproot->snext == NULL)  s_tails [x_level]     = a_deproot->sprev;
    else                           a_deproot->snext->sprev = a_deproot->sprev;
    /*---(prev)---------------------------*/
-   DEBUG_CALC   yLOG_note    ("backward");
+   DEBUG_YCALC   yLOG_note    ("backward");
    if (a_deproot->sprev == NULL)  s_heads [x_level]     = a_deproot->snext;
    else                        a_deproot->sprev->snext = a_deproot->snext;
    /*---(update cell)--------------------*/
-   DEBUG_CALC   yLOG_note    ("clear");
+   DEBUG_YCALC   yLOG_note    ("clear");
    a_deproot->slevel   = -1;
    a_deproot->sprev    = NULL;
    a_deproot->snext    = NULL;
    /*---(update totals)------------------*/
-   DEBUG_CALC   yLOG_note    ("counts");
+   DEBUG_YCALC   yLOG_note    ("counts");
    --(s_count [x_level]);
    --s_total;
    /*---(complete)-----------------------*/
-   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -189,62 +189,62 @@ ycalc__seq_recursion    (int a_level, tDEP_LINK *a_dep, char a_dir, long a_stamp
    tDEP_ROOT  *x_curr      = NULL;
    char        rc          = 0;
    /*---(header)-------------------------*/
-   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
-   DEBUG_CALC   yLOG_value   ("a_level"   , a_level);
-   DEBUG_CALC   yLOG_value   ("a_stamp"   , a_stamp);
-   DEBUG_CALC   yLOG_char    ("a_dir"     , a_dir);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_value   ("a_level"   , a_level);
+   DEBUG_YCALC   yLOG_value   ("a_stamp"   , a_stamp);
+   DEBUG_YCALC   yLOG_char    ("a_dir"     , a_dir);
    /*---(defenses)-----------------------*/
-   DEBUG_CALC   yLOG_point   ("*x_dep"    , a_dep);
+   DEBUG_YCALC   yLOG_point   ("*x_dep"    , a_dep);
    if (a_dep        == NULL) {
-      DEBUG_CALC   yLOG_note    ("a_dep is NULL");
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_note    ("a_dep is NULL");
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return 0;
    }
-   DEBUG_CALC   yLOG_char    ("dep type"  , a_dep->type);
+   DEBUG_YCALC   yLOG_char    ("dep type"  , a_dep->type);
    x_curr     = a_dep->target;
-   DEBUG_CALC   yLOG_point   ("*x_curr"   , x_curr);
+   DEBUG_YCALC   yLOG_point   ("*x_curr"   , x_curr);
    if (x_curr       == NULL) {
-      DEBUG_CALC   yLOG_note    ("cell is NULL");
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_note    ("cell is NULL");
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return 0;
    }
-   DEBUG_CALC   yLOG_info    ("curr label", ycalc_call_labeler (x_curr));
+   DEBUG_YCALC   yLOG_info    ("curr label", ycalc_call_labeler (x_curr));
    /*---(calculate)----------------------*/
    if (x_curr->u != a_stamp) {
-      DEBUG_CALC   yLOG_note    ("stamp does not match");
+      DEBUG_YCALC   yLOG_note    ("stamp does not match");
       rc = ycalc__seq_add  (a_level, x_curr);
    } else if (a_dir == 'u' && x_curr->slevel < a_level) {
-      DEBUG_CALC   yLOG_note    ("up and must move lower");
+      DEBUG_YCALC   yLOG_note    ("up and must move lower");
       rc = ycalc__seq_del  (x_curr);
       if (rc == 0)  rc = ycalc__seq_add  (a_level, x_curr);
    } else if (a_dir == 'd' && x_curr->slevel < a_level) {
-      DEBUG_CALC   yLOG_note    ("down and must move higher");
+      DEBUG_YCALC   yLOG_note    ("down and must move higher");
       rc = ycalc__seq_del  (x_curr);
       if (rc == 0)  rc = ycalc__seq_add  (a_level, x_curr);
    } else {
-      DEBUG_CALC   yLOG_note    ("everything is fine");
+      DEBUG_YCALC   yLOG_note    ("everything is fine");
    }
    if (rc != 0) {
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return rc;
    }
    /*---(update cell and dep)------------*/
    x_curr->u = a_stamp;
    /*---(recurse)------------------------*/
-   DEBUG_CALC   yLOG_value   ("npro"  , x_curr->npro);
-   DEBUG_CALC   yLOG_value   ("nreq"  , x_curr->nreq);
+   DEBUG_YCALC   yLOG_value   ("npro"  , x_curr->npro);
+   DEBUG_YCALC   yLOG_value   ("nreq"  , x_curr->nreq);
    if (a_dir == 'u')  x_dep = x_curr->pros;
    else               x_dep = x_curr->reqs;
    while (x_dep != NULL) {
       rc = ycalc__seq_recursion (a_level + 1, x_dep, a_dir, a_stamp);
       if (rc < 0) {
-         DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+         DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
          return rc;
       }
       x_dep = x_dep->next;
    }
    /*---(complete)-----------------------*/
-   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -271,23 +271,23 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, l
    int         x_lvl       = 0;
    char        x_list      [LEN_RECD] = "";
    /*---(header)-------------------------*/
-   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
-   DEBUG_CALC   yLOG_char    ("a_dir_rec" , a_dir_rec);
-   DEBUG_CALC   yLOG_char    ("a_dir_act" , a_dir_act);
-   DEBUG_CALC   yLOG_value   ("a_stamp"   , a_stamp);
-   DEBUG_CALC   yLOG_point   ("a_consumer", a_consumer);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_char    ("a_dir_rec" , a_dir_rec);
+   DEBUG_YCALC   yLOG_char    ("a_dir_act" , a_dir_act);
+   DEBUG_YCALC   yLOG_value   ("a_stamp"   , a_stamp);
+   DEBUG_YCALC   yLOG_point   ("a_consumer", a_consumer);
    /*> ycalc__mock_list ();                                                           <*/
    /*---(defense : cell)-----------------*/
-   DEBUG_CALC   yLOG_point   ("a_deproot" , a_deproot);
+   DEBUG_YCALC   yLOG_point   ("a_deproot" , a_deproot);
    --rce;  if (a_deproot == NULL) {
-      DEBUG_CALC   yLOG_note    ("NULL deproot");
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_note    ("NULL deproot");
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   DEBUG_CALC   yLOG_info    ("label"     , ycalc_call_labeler (a_deproot));
-   DEBUG_CALC   yLOG_value   ("npro"      , a_deproot->npro);
-   DEBUG_CALC   yLOG_value   ("nreq"      , a_deproot->nreq);
-   g_consumer = a_consumer;
+   DEBUG_YCALC   yLOG_info    ("label"     , ycalc_call_labeler (a_deproot));
+   DEBUG_YCALC   yLOG_value   ("npro"      , a_deproot->npro);
+   DEBUG_YCALC   yLOG_value   ("nreq"      , a_deproot->nreq);
+   myCALC.e_consumer = a_consumer;
    /*---(prepare)------------------------*/
    ycalc__seq_clear ();
    /*---(recurse)------------------------*/
@@ -300,41 +300,41 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, l
    }
    while (x_dep != NULL) {
       ++i;
-      DEBUG_CALC   yLOG_complex ("recurse"   , "%d of %d, %s", i, x_sub, ycalc_call_labeler (x_dep->target));
+      DEBUG_YCALC   yLOG_complex ("recurse"   , "%d of %d, %s", i, x_sub, ycalc_call_labeler (x_dep->target));
       ycalc__seq_recursion (0, x_dep, a_dir_rec, a_stamp);
       x_dep = x_dep->next;
    }
-   DEBUG_CALC   yLOG_note    ("done recursing");
+   DEBUG_YCALC   yLOG_note    ("done recursing");
    /*---(execution : defense)------------*/
    if (s_total <= 0) {
-      DEBUG_CALC   yLOG_note    ("no calculations required");
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_note    ("no calculations required");
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return 0;
    }
    /*---(act on sequenced list)----------*/
    for (i = 0; i <= s_max; ++i) {
       x_lvl = i;
       if (a_dir_act == 'u') x_lvl = s_max - i;
-      DEBUG_CALC   yLOG_value   ("LEVEL"     , x_lvl);
+      DEBUG_YCALC   yLOG_value   ("LEVEL"     , x_lvl);
       x_deproot = s_heads [x_lvl];
-      DEBUG_CALC   yLOG_point   ("x_deproot"    , x_deproot);
+      DEBUG_YCALC   yLOG_point   ("x_deproot"    , x_deproot);
       x_sub = 0;
       while (x_deproot != NULL) {
          x_next = x_deproot->snext;
-         if (g_consumer != NULL)   g_consumer (x_deproot->owner, x_deproot, x_seq, x_lvl);
+         if (myCALC.e_consumer != NULL)   myCALC.e_consumer (x_deproot->owner, x_deproot, x_seq, x_lvl);
          ++x_sub;
          ++x_seq;
          x_deproot = x_next;
       }
-      DEBUG_CALC   yLOG_value   ("expected"  , s_count [x_lvl]);
-      DEBUG_CALC   yLOG_value   ("subtotal"  , x_sub);
+      DEBUG_YCALC   yLOG_value   ("expected"  , s_count [x_lvl]);
+      DEBUG_YCALC   yLOG_value   ("subtotal"  , x_sub);
    }
-   DEBUG_CALC   yLOG_value   ("expected"  , s_total);
-   DEBUG_CALC   yLOG_value   ("subtotal"  , x_seq);
+   DEBUG_YCALC   yLOG_value   ("expected"  , s_total);
+   DEBUG_YCALC   yLOG_value   ("subtotal"  , x_seq);
    ycalc__seq_list (x_list);
-   DEBUG_CALC   yLOG_info    ("seq_order" , x_list);
+   DEBUG_YCALC   yLOG_info    ("seq_order" , x_list);
    /*---(complete)-----------------------*/
-   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -352,40 +352,40 @@ yCALC_garbage_collect   (void)
    char      **x_source    = NULL;
    char       *x_type      = NULL;
    /*---(header)-------------------------*/
-   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(defense : cell)-----------------*/
-   DEBUG_CALC   yLOG_point   ("rroot"     , myCALC.rroot);
+   DEBUG_YCALC   yLOG_point   ("rroot"     , myCALC.rroot);
    --rce;  if (myCALC.rroot == NULL) {
-      DEBUG_CALC   yLOG_note    ("NULL deproot");
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_note    ("NULL deproot");
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   DEBUG_CALC   yLOG_info    ("label"     , ycalc_call_labeler (myCALC.rroot));
-   DEBUG_CALC   yLOG_value   ("nreq"      , myCALC.rroot->nreq);
+   DEBUG_YCALC   yLOG_info    ("label"     , ycalc_call_labeler (myCALC.rroot));
+   DEBUG_YCALC   yLOG_value   ("nreq"      , myCALC.rroot->nreq);
    /*---(recurse)------------------------*/
    x_dep = myCALC.rroot->reqs;
    x_sub = myCALC.rroot->nreq;
    while (x_dep != NULL) {
       ++c;
-      DEBUG_CALC   yLOG_complex ("recurse"   , "%d of %d, %s, %c, %2d", c, x_sub, ycalc_call_labeler (x_dep->target), x_dep->target->btype, x_dep->target->npro);
+      DEBUG_YCALC   yLOG_complex ("recurse"   , "%d of %d, %s, %c, %2d", c, x_sub, ycalc_call_labeler (x_dep->target), x_dep->target->btype, x_dep->target->npro);
       if (x_dep->target->btype == YCALC_DATA_MERGED && x_dep->target->npro == 1) {
          /*---(prepare)------------------------*/
-         DEBUG_CALC   yLOG_note    ("then, cleanup as necessary");
+         DEBUG_YCALC   yLOG_note    ("then, cleanup as necessary");
          x_owner   = x_dep->target->owner;
          x_deproot = x_dep->target;
          /*---(set garbage)--------------------*/
-         rc = g_pointer (x_owner, NULL, &x_type, NULL, NULL);
+         rc = myCALC.e_pointer (x_owner, NULL, &x_type, NULL, NULL);
          *x_type = YCALC_DATA_GARBAGE;
          /*---(reap)---------------------------*/
          rc = ycalc_call_reaper (&x_owner, &x_deproot);
-         DEBUG_CALC   yLOG_value   ("reaper"    , rc);
+         DEBUG_YCALC   yLOG_value   ("reaper"    , rc);
          /*---(done)---------------------------*/
       }
       x_dep = x_dep->next;
    }
-   DEBUG_CALC   yLOG_note    ("done recursing");
+   DEBUG_YCALC   yLOG_note    ("done recursing");
    /*---(complete)-----------------------*/
-   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

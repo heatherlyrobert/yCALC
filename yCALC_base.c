@@ -50,6 +50,7 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "Ç"          ,  1, ycalc_power_of_3        , 'f', "n:n"    , 'm', "x raised to the power of 3"                        },
    { "È"          ,  1, ycalc_power_of_4        , 'f', "n:n"    , 'm', "x raised to the power of 4"                        },
    { "abs"        ,  3, ycalc_abs               , 'f', "n:n"    , 'm', "ansi-c fabs() removes negative sign"               },
+   { "sign"       ,  4, ycalc_sign              , 'f', "n:n"    , 'm', "neg = -1, pos = +1, zero = 0"                      },
    { "trunc"      ,  5, ycalc_trunc             , 'f', "n:n"    , 'm', "truncate to the nearest integer value"             },
    { "truncn"     ,  6, ycalc_rtrunc            , 'f', "n:nn"   , 'm', "truncate to y decimal places"                      },
    { "round"      ,  5, ycalc_round             , 'f', "n:n"    , 'm', "round, up or down, to the nearest integer"         },
@@ -77,23 +78,29 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    /*---(locgical operators)--------------*/
    { "!"          ,  1, ycalc_not               , 'o', "t:n"    , 'l', "T if x F, else F"                                  },
    { "&&"         ,  2, ycalc_and               , 'o', "t:nn"   , 'l', "T if both x and y are T, else F"                   },
-   { "Ð"          ,  1, ycalc_and               , 'o', "t:nn"   , 'l', "T if both x and y are T, else F"                   },
    { "||"         ,  2, ycalc_or                , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
-   { "Ñ"          ,  1, ycalc_or                , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
-   { "&Ô"         ,  2, ycalc_nand              , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
-   { "¶"          ,  1, ycalc_nand              , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
-   { "|Ô"         ,  2, ycalc_nor               , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
-   { "¯"          ,  1, ycalc_nor               , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
-   { "|Ó"         ,  2, ycalc_xor               , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
-   { "Ò"          ,  1, ycalc_xor               , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "!&"         ,  2, ycalc_nand              , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "!|"         ,  2, ycalc_nor               , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "&|"         ,  2, ycalc_xor               , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "|&"         ,  2, ycalc_nxor              , 'o', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
    /*---(logical functions)---------------*/
    { "if"         ,  2, ycalc_if                , 'f', "n:tnn"  , 'l', "if x is T, y, else z"                              },
    { "ifs"        ,  3, ycalc_ifs               , 'f', "s:tss"  , 'l', "if x is T, n, else m"                              },
    { "within"     ,  6, ycalc_within            , 'f', "t:nnn"  , 'l', "if y is within the range of x to z, then T"        },
    { "approx"     ,  6, ycalc_approx            , 'f', "t:nnn"  , 'l', "if x is within the range of y +/- z, then T"       },
+   { "and"        ,  3, ycalc_and               , 'f', "t:nn"   , 'l', "T if both x and y are T, else F"                   },
+   { "or"         ,  2, ycalc_or                , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
    { "nand"       ,  4, ycalc_nand              , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
    { "nor"        ,  3, ycalc_nor               , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
    { "xor"        ,  3, ycalc_xor               , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "nxor"       ,  4, ycalc_nxor              , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   /*---(bitwise functions)---------------*/
+   { "~"          ,  1, ycalc_bit_not           , 'f', "t:n"    , 'l', "T if either x or y is T, else F"                   },
+   { "<<"         ,  2, ycalc_bit_left          , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { ">>"         ,  2, ycalc_bit_right         , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "&"          ,  1, ycalc_bit_and           , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "|"          ,  1, ycalc_bit_or            , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
+   { "^"          ,  1, ycalc_bit_xor           , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
    /*---(string operators)----------------*/
    { "#"          ,  1, ycalc_concat            , 'o', "s:ss"   , 's', "m concatinated to the end of n"                    },
    { "##"         ,  2, ycalc_concatplus        , 'o', "s:ss"   , 's', "m concatinated to the end of n (with a space)"     },
@@ -102,6 +109,8 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "left"       ,  4, ycalc_left              , 'f', "s:sn"   , 's', "left x characters of n"                            },
    { "right"      ,  5, ycalc_right             , 'f', "s:sn"   , 's', "right x characters of n"                           },
    { "mid"        ,  3, ycalc_mid               , 'f', "s:snn"  , 's', "y characters of n, starting at x"                  },
+   { "beg"        ,  3, ycalc_beg               , 'f', "s:sn"   , 's', "all characters of n, starting at x"                },
+   { "char"       ,  4, ycalc_at                , 'f', "s:sn"   , 's', "the character of n, exactly at x"                  },
    { "trim"       ,  4, ycalc_trim              , 'f', "s:s"    , 's', "trim leading and trailing whitespace from n"       },
    { "ltrim"      ,  5, ycalc_ltrim             , 'f', "s:s"    , 's', "trim just leading whitespace from n"               },
    { "rtrim"      ,  5, ycalc_rtrim             , 'f', "s:s"    , 's', "trim just trailing whitespace from n"              },
@@ -121,7 +130,7 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    /*---(conversion functions)------------*/
    { "lower"      ,  5, ycalc_lower             , 'f', "s:s"    , 'c', "change all chars in n to lower case"               },
    { "upper"      ,  5, ycalc_upper             , 'f', "s:s"    , 'c', "change all chars in n to upper case"               },
-   { "char"       ,  4, ycalc_char              , 'f', "s:n"    , 'c', "change x into an ascii character with that code"   },
+   { "ascii"      ,  4, ycalc_char              , 'f', "s:n"    , 'c', "change x into an ascii character with that code"   },
    { "code"       ,  4, ycalc_code              , 'f', "n:s"    , 'c', "return ascii value of first char in n"             },
    { "val"        ,  3, ycalc_value             , 'f', "n:s"    , 'c', "ansi-c atof() to convert text number into value"   },
    { "value"      ,  5, ycalc_value             , 'f', "n:s"    , 'c', "ansi-c atof() to convert text number into value"   },
@@ -147,15 +156,14 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "istext"     ,  6, ycalc_istext            , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
    { "iscalc"     ,  6, ycalc_iscalc            , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
    { "islit"      ,  5, ycalc_islit             , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
+   { "upos"       ,  4, ycalc_upos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
+   { "tab"        ,  3, ycalc_upos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
    { "xpos"       ,  4, ycalc_xpos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
-   { "x"          ,  1, ycalc_xpos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
    { "col"        ,  3, ycalc_xpos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
    { "ypos"       ,  4, ycalc_ypos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
-   { "y"          ,  1, ycalc_ypos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
    { "row"        ,  3, ycalc_ypos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
    { "zpos"       ,  4, ycalc_zpos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
-   { "z"          ,  1, ycalc_zpos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
-   { "tab"        ,  3, ycalc_zpos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
+   { "dep"        ,  3, ycalc_zpos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
    { "ispoint"    ,  7, ycalc_ispoint           , 'f', "t:a"    , 'i', "T if cell a is cell or range pointer"              },
    { "iserror"    ,  7, ycalc_iserror           , 'f', "t:a"    , 'i', "T if cell a is in error status"                    },
    { "me"         ,  2, ycalc_me                , 'f', "a:"     , 'i', "identifies the current cell for use"               },
@@ -165,6 +173,7 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "rpn"        ,  3, ycalc_rpn               , 'f', "s:a"    , 'i', "rpn version of cell a formula"                     },
    { "r"          ,  1, ycalc_rpn               , 'f', "s:a"    , 'i', "rpn version of cell a formula"                     },
    { "ncalc"      ,  5, ycalc_ncalc             , 'f', "n:a"    , 'i', "count of formula tokens in cell a "                },
+   { "nrpn"       ,  4, ycalc_ncalc             , 'f', "n:a"    , 'i', "count of formula tokens in cell a "                },
    { "reqs"       ,  4, ycalc_reqs              , 'f', "s:a"    , 'i', "list of cells required by cell a"                  },
    { "nreq"       ,  4, ycalc_nreq              , 'f', "n:a"    , 'i', "count of cells required by cell a"                 },
    { "pros"       ,  4, ycalc_pros              , 'f', "s:a"    , 'i', "list of cells provided to by cell a"               },
@@ -178,11 +187,14 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "hypot"      ,  5, ycalc_hypot             , 'f', "n:nn"   , 't', "hypotenuse length given sides x and y"             },
    { "side"       ,  4, ycalc_side              , 'f', "n:nn"   , 't', "side length given hypotenuse and other side"       },
    /*-------*/
+   { "ù"          ,  1, ycalc_sin               , 'f', "n:n"    , 't', "sine (degrees)"                                    },
    { "sin"        ,  3, ycalc_sin               , 'f', "n:n"    , 't', "sine (degrees)"                                    },
    { "sinr"       ,  4, ycalc_sinr              , 'f', "n:n"    , 't', "sine (radians)"                                    },
+   { "ý"          ,  1, ycalc_cos               , 'f', "n:n"    , 't', "cosine (degrees)"                                  },
    { "cos"        ,  3, ycalc_cos               , 'f', "n:n"    , 't', "cosine (degrees)"                                  },
    { "cosr"       ,  4, ycalc_cosr              , 'f', "n:n"    , 't', "cosine (radians)"                                  },
    /*-------*/
+   { "ú"          ,  1, ycalc_tan               , 'f', "n:n"    , 't', "tangent (degrees)"                                 },
    { "tan"        ,  3, ycalc_tan               , 'f', "n:n"    , 't', "tangent (degrees)"                                 },
    { "tanr"       ,  4, ycalc_tanr              , 'f', "n:n"    , 't', "tangent (radians)"                                 },
    { "cot"        ,  3, ycalc_cot               , 'f', "n:n"    , 't', "cotangent (degrees)"                               },
@@ -216,6 +228,7 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "hccos"      ,  5, ycalc_hccos             , 'f', "n:n"    , 't', "half-coversed cosine (degrees)"                    },
    { "hccosr"     ,  6, ycalc_hccosr            , 'f', "n:n"    , 't', "half-coversed cosine (radians)"                    },
    /*-------*/
+   { "ê"          ,  1, ycalc_crd               , 'f', "n:n"    , 't', "chord (degrees)"                                   },
    { "crd"        ,  3, ycalc_crd               , 'f', "n:n"    , 't', "chord (degrees)"                                   },
    { "crdr"       ,  4, ycalc_crdr              , 'f', "n:n"    , 't', "chord (radians)"                                   },
    { "sag"        ,  3, ycalc_sag               , 'f', "n:n"    , 't', "sagitta (degrees)"                                 },
@@ -240,6 +253,7 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "atan"       ,  4, ycalc_atan              , 'f', "n:n"    , 't', "arctangent in degrees"                             },
    { "atanr"      ,  5, ycalc_atanr             , 'f', "n:n"    , 't', "arctangent in radians"                             },
    { "atan2"      ,  5, ycalc_atan2             , 'f', "n:nn"   , 't', "arctangent in degrees given sides x and y"         },
+   { "è"          ,  1, ycalc_atanr2            , 'f', "n:nn"   , 't', "arctangent in radians given sides x and y"         },
    { "atanr2"     ,  6, ycalc_atanr2            , 'f', "n:nn"   , 't', "arctangent in radians given sides x and y"         },
    /*---(range info functions)------------*/
    { "dist"       ,  4, ycalc_dist              , 'f', "v:r"    , 'r', "geometric distance between beg and end locations"  },
@@ -253,16 +267,35 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "z_size"     ,  6, ycalc_levels            , 'f', "v:r"    , 'r', "number of rows in range"                           },
    { "sum"        ,  3, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     },
    { "s"          ,  1, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     },
-   { "count"      ,  5, ycalc_numbers           , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" },
-   { "numbers"    ,  7, ycalc_numbers           , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" },
-   { "strings"    ,  7, ycalc_strings           , 'f', "v:r"    , 'r', "count of string cells in range"                    },
-   { "filled"     ,  6, ycalc_filled            , 'f', "v:r"    , 'r', "count of filled cells in range"                    , "" },
+
    { "every"      ,  5, ycalc_every             , 'f', "v:r"    , 'r', "count of every cell in range"                      },
-   { "pointers"   ,  6, ycalc_pointers          , 'f', "v:r"    , 'r', "count of every cell in range"                      },
-   { "empty"      ,  5, ycalc_empty             , 'f', "v:r"    , 'r', "count of every cell in range"                      },
-   { "calcs"      ,  5, ycalc_calcs             , 'f', "v:r"    , 'r', "count of every cell in range"                      },
-   { "errors"     ,  6, ycalc_errors            , 'f', "v:r"    , 'r', "count of every cell in range"                      },
+   { "used"       ,  4, ycalc_used              , 'f', "v:r"    , 'r', "count of filled cells in range"                    , "" },
+   { "count"      ,  5, ycalc_used              , 'f', "v:r"    , 'r', "count of filled cells in range"                    , "" },
+   { "empties"    ,  7, ycalc_empties           , 'f', "v:r"    , 'r', "count of every cell in range"                      },
+
+   { "numbers"    ,  7, ycalc_numbers           , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" },
+   { "countn"     ,  6, ycalc_numbers           , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" },
+   { "nlits"      ,  5, ycalc_nlit              , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" },
+   { "nforms"     ,  6, ycalc_nform             , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" },
+   { "nlikes"     ,  6, ycalc_nlike             , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" },
+
+   { "strings"    ,  7, ycalc_strings           , 'f', "v:r"    , 'r', "count of string cells in range"                    },
+   { "counta"     ,  6, ycalc_strings           , 'f', "v:r"    , 'r', "count of numeric cells in range"                   , "" },
+   { "slits"      ,  5, ycalc_slit              , 'f', "v:r"    , 'r', "count of string cells in range"                    },
+   { "sforms"     ,  6, ycalc_sform             , 'f', "v:r"    , 'r', "count of string cells in range"                    },
+   { "slikes"     ,  6, ycalc_slike             , 'f', "v:r"    , 'r', "count of string cells in range"                    },
+
+   { "points"     ,  6, ycalc_pointers          , 'f', "v:r"    , 'r', "count of every cell in range"                      },
+   { "merges"     ,  6, ycalc_merges            , 'f', "v:r"    , 'r', "count of every cell in range"                      },
    { "blanks"     ,  6, ycalc_blanks            , 'f', "v:r"    , 'r', "count of every cell in range"                      },
+   { "errors"     ,  6, ycalc_errors            , 'f', "v:r"    , 'r', "count of every cell in range"                      },
+   { "others"     ,  6, ycalc_unknowns          , 'f', "v:r"    , 'r', "count of every cell in range"                      },
+
+   { "lits"       ,  4, ycalc_literals          , 'f', "v:r"    , 'r', "count of every cell in range"                      },
+   { "forms"      ,  5, ycalc_forms             , 'f', "v:r"    , 'r', "count of every cell in range"                      },
+   { "likes"      ,  5, ycalc_likes             , 'f', "v:r"    , 'r', "count of every cell in range"                      },
+   { "calcs"      ,  5, ycalc_calcs             , 'f', "v:r"    , 'r', "count of every cell in range"                      },
+
    { "avg"        ,  3, ycalc_average           , 'f', "v:r"    , 'r', "average of numeric cells in range"                 },
    { "mean"       ,  4, ycalc_average           , 'f', "v:r"    , 'r', "average of numeric cells in range"                 },
    { "min"        ,  3, ycalc_min               , 'f', "v:r"    , 'r', "minimum value in range"                            },
@@ -279,35 +312,70 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "stddev"     ,  6, ycalc_stddev            , 'f', "v:r"    , 'r', "standard deviation in range"                       },
    { "skew"       ,  4, ycalc_skew              , 'f', "v:r"    , 'r', "quartile-based skewness measure"                   },
    /*---(address functions)---------------*/
-   { "relb"       ,  4, ycalc_rel_b             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
+   /*---(rel to ref)----*/
+   { "ru"         ,  2, ycalc_ru                , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
+   { "rx"         ,  2, ycalc_rx                , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
+   { "ry"         ,  2, ycalc_ry                , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
+   { "rxy"        ,  3, ycalc_rxy               , 'f', "r:rvv"  , 'a', "create a reference relative to current"            },
+   { "ruxy"       ,  4, ycalc_ruxy              , 'f', "r:rvvv" , 'a', "create a reference relative to current"            },
+   /*---(abs to ref)----*/
+   { "au"         ,  2, ycalc_au                , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
+   { "ax"         ,  2, ycalc_ax                , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
+   { "ay"         ,  2, ycalc_ay                , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
+   { "axy"        ,  3, ycalc_axy               , 'f', "r:rvv"  , 'a', "create a reference relative to current"            },
+   { "auxy"       ,  4, ycalc_auxy              , 'f', "r:rvvv" , 'a', "create a reference relative to current"            },
+   /*---(rel to self)---*/
+   { "relu"       ,  4, ycalc_rel_b             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
    { "relx"       ,  4, ycalc_rel_x             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
    { "rely"       ,  4, ycalc_rel_y             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
    { "relxy"      ,  5, ycalc_rel_xy            , 'f', "r:vv"   , 'a', "create a reference relative to current"            },
-   { "relbxy"     ,  6, ycalc_rel_bxy           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
-   { "rela"       ,  4, ycalc_rel_bxy           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
-   { "relative"   ,  8, ycalc_rel_bxy           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
-   { "absb"       ,  4, ycalc_abs_b             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
+   { "reluxy"     ,  6, ycalc_rel_bxy           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   /*---(abs to self)---*/
+   { "absu"       ,  4, ycalc_abs_b             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
    { "absx"       ,  4, ycalc_abs_x             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
    { "absy"       ,  4, ycalc_abs_y             , 'f', "r:v"    , 'a', "create a reference relative to current"            },
    { "absxy"      ,  5, ycalc_abs_xy            , 'f', "r:vv"   , 'a', "create a reference relative to current"            },
-   { "absa"       ,  4, ycalc_abs_bxy           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
-   { "absbxy"     ,  6, ycalc_abs_bxy           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
-   { "absolute"   ,  8, ycalc_abs_bxy           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
-   { "offb"       ,  4, ycalc_off_b             , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
-   { "offx"       ,  4, ycalc_off_x             , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
-   { "offy"       ,  4, ycalc_off_y             , 'f', "r:rv"   , 'a', "create a reference relative to current"            },
-   { "offxy"      ,  5, ycalc_off_xy            , 'f', "r:rvv"  , 'a', "create a reference relative to current"            },
-   { "index"      ,  5, ycalc_off_xy            , 'f', "r:rvv"  , 'a', "create a reference relative to current"            },
-   { "offa"       ,  4, ycalc_off_bxy           , 'f', "r:rvvv" , 'a', "create a reference relative to current"            },
-   { "offbxy"     ,  6, ycalc_off_bxy           , 'f', "r:rvvv" , 'a', "create a reference relative to current"            },
-   { "offset"     ,  6, ycalc_off_bxy           , 'f', "r:rvvv" , 'a', "create a reference relative to current"            },
+   { "absuxy"     ,  6, ycalc_abs_bxy           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
+   /*---(specific)------*/
    { "addr"       ,  4, ycalc_address           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
    { "address"    ,  7, ycalc_address           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
    /*---(lookup functions)----------------*/
-   { "vlookup"    ,  7, ycalc_vlookup           , 'f', "r:rsv"  , 'f', "contents of cell x to right of one matching n"     },
    { "v"          ,  1, ycalc_vlookup           , 'f', "r:rsv"  , 'f', "contents of cell x to right of one matching n"     },
-   { "hlookup"    ,  7, ycalc_hlookup           , 'f', "r:rsv"  , 'f', "contents of cell x below one matching n"     },
+   { "vlook"      ,  5, ycalc_vlookup           , 'f', "r:rsv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "vpre"       ,  4, ycalc_vprefix           , 'f', "r:rsv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "vmatch"     ,  6, ycalc_vmatch            , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "vrange"     ,  6, ycalc_vrange            , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "vabout"     ,  6, ycalc_vabout            , 'f', "r:rvvv" , 'f', "contents of cell x to right of one matching n"     },
+   { "vclose"     ,  6, ycalc_vclose            , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "vover"      ,  5, ycalc_vover             , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "vunder"     ,  6, ycalc_vunder            , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
    { "h"          ,  1, ycalc_hlookup           , 'f', "r:rsv"  , 'f', "contents of cell x below one matching n"     },
+   { "hlook"      ,  5, ycalc_hlookup           , 'f', "r:rsv"  , 'f', "contents of cell x below one matching n"     },
+   { "hpre"       ,  4, ycalc_vprefix           , 'f', "r:rsv"  , 'f', "contents of cell x below one matching n"     },
+   { "hmatch"     ,  6, ycalc_hmatch            , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "hrange"     ,  6, ycalc_hrange            , 'f', "r:rvvv" , 'f', "contents of cell x to right of one matching n"     },
+   { "habout"     ,  6, ycalc_habout            , 'f', "r:rvvv" , 'f', "contents of cell x to right of one matching n"     },
+   { "hclose"     ,  6, ycalc_hclose            , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "hover"      ,  5, ycalc_hover             , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "hunder"     ,  6, ycalc_hunder            , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "rlook"      ,  5, ycalc_rlookup           , 'f', "r:rs"   , 'f', "contents of cell x below one matching n"     },
+   { "rpre"       ,  4, ycalc_rprefix           , 'f', "r:rs"   , 'f', "contents of cell x below one matching n"     },
+   { "rmatch"     ,  6, ycalc_rmatch            , 'f', "r:rv"   , 'f', "contents of cell x to right of one matching n"     },
+   { "rrange"     ,  6, ycalc_rrange            , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "rabout"     ,  6, ycalc_rabout            , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "rclose"     ,  6, ycalc_rclose            , 'f', "r:rv"   , 'f', "contents of cell x to right of one matching n"     },
+   { "rover"      ,  5, ycalc_rover             , 'f', "r:rv"   , 'f', "contents of cell x to right of one matching n"     },
+   { "runder"     ,  6, ycalc_runder            , 'f', "r:rv"   , 'f', "contents of cell x to right of one matching n"     },
+   { "ilook"      ,  5, ycalc_ilookup           , 'f', "r:rsv"  , 'f', "contents of cell x below one matching n"     },
+   { "ipre"       ,  4, ycalc_iprefix           , 'f', "r:rsv"  , 'f', "contents of cell x below one matching n"     },
+   { "imatch"     ,  6, ycalc_imatch            , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "irange"     ,  6, ycalc_irange            , 'f', "r:rvvv" , 'f', "contents of cell x to right of one matching n"     },
+   { "iabout"     ,  6, ycalc_iabout            , 'f', "r:rvvv" , 'f', "contents of cell x to right of one matching n"     },
+   { "clook"      ,  5, ycalc_clookup           , 'f', "v:rs"   , 'f', "contents of cell x below one matching n"     },
+   { "cpre"       ,  4, ycalc_cprefix           , 'f', "v:rs"   , 'f', "contents of cell x below one matching n"     },
+   { "cmatch"     ,  6, ycalc_cmatch            , 'f', "v:rv"   , 'f', "contents of cell x to right of one matching n"     },
+   { "crange"     ,  6, ycalc_crange            , 'f', "v:rvv"  , 'f', "contents of cell x to right of one matching n"     },
+   { "cabout"     ,  6, ycalc_cabout            , 'f', "v:rvv"  , 'f', "contents of cell x to right of one matching n"     },
    { "entry"      ,  5, ycalc_entry             , 'f', "r:v"    , 'f', "first entry next to or above current in range"     },
    /*---(date functions)------------------*/
    { "today"      ,  5, ycalc_now               , 'f', "v:"     , 'd', "current unix epoch (time number) in seconds"       },
@@ -319,7 +387,7 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "hour"       ,  4, ycalc_hour              , 'f', "v:v"    , 'd', "hour number (0-23) of time number"                 },
    { "hrs"        ,  3, ycalc_hour              , 'f', "v:v"    , 'd', "hour number (0-23) of time number"                 },
    { "minute"     ,  6, ycalc_minute            , 'f', "v:v"    , 'd', "minute number (0-59) of time number"               },
-   { "min"        ,  3, ycalc_minute            , 'f', "v:v"    , 'd', "minute number (0-59) of time number"               },
+   { "mns"        ,  3, ycalc_minute            , 'f', "v:v"    , 'd', "minute number (0-59) of time number"               },
    { "second"     ,  6, ycalc_second            , 'f', "v:v"    , 'd', "second number (0-59) of time number"               },
    { "sec"        ,  3, ycalc_second            , 'f', "v:v"    , 'd', "second number (0-59) of time number"               },
    { "weekday"    ,  7, ycalc_weekday           , 'f', "v:v"    , 'd', "weekday number (0-6) of time number"               },
@@ -367,12 +435,12 @@ char
 ycalc_not_ready         (void)
 {
    if (myCALC.status != 'O') {
-      DEBUG_CALC   yLOG_note    ("system not operational, must init and config");
-      DEBUG_CALC   yLOG_char    ("status"    , myCALC.status);
-      DEBUG_CALC   yLOG_info    ("detail"    , myCALC.status_detail);
+      DEBUG_YCALC   yLOG_note    ("system not operational, must init and config");
+      DEBUG_YCALC   yLOG_char    ("status"    , myCALC.status);
+      DEBUG_YCALC   yLOG_info    ("detail"    , myCALC.status_detail);
       return 1;
    }
-   DEBUG_CALC   yLOG_note    ("system operational, ready");
+   DEBUG_YCALC   yLOG_note    ("system operational, ready");
    return 0;
 }
 
@@ -384,41 +452,41 @@ ycalc_status_allow      (char a_step)
    int         x_pos       =    0;
    char       *x_valid     = "ielv";
    /*---(allowed)------------------------*/
-   DEBUG_PROG   yLOG_value   ("a_step"    , a_step);
+   DEBUG_YCALC   yLOG_value   ("a_step"    , a_step);
    --rce;  if (a_step == 0)  {
-      DEBUG_PROG   yLOG_note    ("must provide a step abbreviation");
+      DEBUG_YCALC   yLOG_note    ("must provide a step abbreviation");
       return rce;
    }
-   DEBUG_PROG   yLOG_char    ("a_step"    , a_step);
-   DEBUG_PROG   yLOG_info    ("valid"     , x_valid);
+   DEBUG_YCALC   yLOG_char    ("a_step"    , a_step);
+   DEBUG_YCALC   yLOG_info    ("valid"     , x_valid);
    --rce;  if (strchr (x_valid, a_step) == NULL) {
-      DEBUG_PROG   yLOG_note    ("not a valid step");
+      DEBUG_YCALC   yLOG_note    ("not a valid step");
       return rce;
    }
    /*---(sequence)-----------------------*/
    --rce;  if (a_step == 'i' && myCALC.status_detail [2] == 'i') {
-      DEBUG_PROG   yLOG_note    ("already called init, can not re-initialize");
+      DEBUG_YCALC   yLOG_note    ("already called init, can not re-initialize");
       return rce;
    }
    --rce;  if (strchr ("elv", a_step) != NULL && myCALC.status_detail [2] != 'i') {
-      DEBUG_PROG   yLOG_note    ("can not call any config before initialization");
+      DEBUG_YCALC   yLOG_note    ("can not call any config before initialization");
       return rce;
    }
    --rce;  if (a_step == 'l' && myCALC.status_detail [4] != 'e') {
-      DEBUG_PROG   yLOG_note    ("can not label config before exist config");
+      DEBUG_YCALC   yLOG_note    ("can not label config before exist config");
       return rce;
    }
    --rce;  if (a_step == 'v' && myCALC.status_detail [4] != 'e') {
-      DEBUG_PROG   yLOG_note    ("can not value config before exist config");
+      DEBUG_YCALC   yLOG_note    ("can not value config before exist config");
       return rce;
    }
    --rce;  if (a_step == 'v' && myCALC.status_detail [5] != 'l') {
-      DEBUG_PROG   yLOG_note    ("can not value config before label config");
+      DEBUG_YCALC   yLOG_note    ("can not value config before label config");
       return rce;
    }
    /*---(display)------------------------*/
-   DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
-   DEBUG_PROG   yLOG_info    ("detail"    , myCALC.status_detail);
+   DEBUG_YCALC   yLOG_char    ("status"    , myCALC.status);
+   DEBUG_YCALC   yLOG_info    ("detail"    , myCALC.status_detail);
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -456,8 +524,8 @@ ycalc_status_update     (char a_step)
    temp      = gmtime (&x_now);
    time_zone = mktime (temp);
    /*---(display)------------------------*/
-   DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
-   DEBUG_PROG   yLOG_info    ("detail"    , myCALC.status_detail);
+   DEBUG_YCALC   yLOG_char    ("status"    , myCALC.status);
+   DEBUG_YCALC   yLOG_info    ("detail"    , myCALC.status_detail);
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -470,36 +538,36 @@ yCALC_init              (char a_style)
    char        rc          =    0;
    int         i           =    0;
    /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    rc = ycalc_status_allow  ('i');
-   DEBUG_PROG   yLOG_value   ("allow"    , rc);
+   DEBUG_YCALC   yLOG_value   ("allow"    , rc);
    --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    ycalc_status_update (0);
-   DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
-   DEBUG_PROG   yLOG_info    ("detail"    , myCALC.status_detail);
+   DEBUG_YCALC   yLOG_char    ("status"    , myCALC.status);
+   DEBUG_YCALC   yLOG_info    ("detail"    , myCALC.status_detail);
    /*---(functions)----------------------*/
-   DEBUG_PROG   yLOG_note    ("clearing function calls");
+   DEBUG_YCALC   yLOG_note    ("clearing function calls");
    if (a_style == 'g')  yRPN_init (YRPN_GYGES);
    else                 yRPN_init (YRPN_CBANG);
    /*---(functions)----------------------*/
-   DEBUG_PROG   yLOG_note    ("clearing function calls");
-   g_who_named = NULL;
-   g_who_at    = NULL;
-   g_labeler   = NULL;
-   g_enabler   = NULL;
-   g_pointer   = NULL;
-   g_reaper    = NULL;
-   g_valuer    = NULL;
-   g_addresser = NULL;
-   g_special   = NULL;
-   g_printer   = NULL;
+   DEBUG_YCALC   yLOG_note    ("clearing function calls");
+   myCALC.e_who_named = NULL;
+   myCALC.e_who_at    = NULL;
+   myCALC.e_labeler   = NULL;
+   myCALC.e_enabler   = NULL;
+   myCALC.e_pointer   = NULL;
+   myCALC.e_reaper    = NULL;
+   myCALC.e_valuer    = NULL;
+   myCALC.e_addresser = NULL;
+   myCALC.e_special   = NULL;
+   myCALC.e_printer   = NULL;
    myCALC.state = '-';
    /*---(initialize)---------------------*/
-   DEBUG_PROG   yLOG_note    ("running sub-initializations");
+   DEBUG_YCALC   yLOG_note    ("running sub-initializations");
    ycalc_audit_init  ();
    ycalc_range_init  ();
    ycalc_build_init  ();
@@ -510,18 +578,18 @@ yCALC_init              (char a_style)
    /*---(update status)------------------*/
    ycalc_status_update ('i');
    /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
 char
 yCALC_set_state         (char a_state)
 {
-   DEBUG_PROG   yLOG_senter  (__FUNCTION__);
-   DEBUG_PROG   yLOG_schar   (a_state);
+   DEBUG_YCALC   yLOG_senter  (__FUNCTION__);
+   DEBUG_YCALC   yLOG_schar   (a_state);
    myCALC.state = a_state;
-   DEBUG_PROG   yLOG_schar   (myCALC.state);
-   DEBUG_PROG   yLOG_sexit   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_schar   (myCALC.state);
+   DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -529,13 +597,13 @@ char
 yCALC_cleanse           (void)
 {
    /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(shutdown)-----------------------*/
    ycalc_exec_wrap   ();
    ycalc_deps_wrap   ();
    ycalc__seq_clear  ();
    /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -543,17 +611,17 @@ char
 yCALC_wrap              (void)
 {
    /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(shutdown)-----------------------*/
    ycalc_exec_wrap   ();
    ycalc_deps_wrap   ();
    ycalc__seq_clear  ();
    /*---(update status)------------------*/
    ycalc_status_update (0);
-   DEBUG_PROG   yLOG_char    ("status"    , myCALC.status);
-   DEBUG_PROG   yLOG_info    ("detail"    , myCALC.status_detail);
+   DEBUG_YCALC   yLOG_char    ("status"    , myCALC.status);
+   DEBUG_YCALC   yLOG_info    ("detail"    , myCALC.status_detail);
    /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -571,43 +639,43 @@ yCALC_exist_config      (void *a_enabler, void *a_pointer, void *a_reaper)
    char        rce         =  -10;
    char        rc          =    0;
    /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    rc = ycalc_status_allow  ('e');
-   DEBUG_PROG   yLOG_value   ("allow"    , rc);
+   DEBUG_YCALC   yLOG_value   ("allow"    , rc);
    --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rc);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
    /*---(update enabler)------------------*/
-   DEBUG_PROG   yLOG_point   ("enabler"    , a_enabler);
+   DEBUG_YCALC   yLOG_point   ("enabler"    , a_enabler);
    --rce;  if (a_enabler    == NULL) {
-      DEBUG_PROG   yLOG_error   ("enabler without this callback, references, ranges, and variables can not function");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_error   ("enabler without this callback, references, ranges, and variables can not function");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   g_enabler    = a_enabler;
+   myCALC.e_enabler    = a_enabler;
    /*---(update pointer)------------------*/
-   DEBUG_PROG   yLOG_point   ("pointer"    , a_pointer);
+   DEBUG_YCALC   yLOG_point   ("pointer"    , a_pointer);
    --rce;  if (a_pointer    == NULL) {
-      DEBUG_PROG   yLOG_error   ("pointer without this callback, references, ranges, and variables can not function");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_error   ("pointer without this callback, references, ranges, and variables can not function");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   g_pointer    = a_pointer;
+   myCALC.e_pointer    = a_pointer;
    /*---(update reaper)---------------*/
-   DEBUG_PROG   yLOG_point   ("reaper" , a_reaper);
+   DEBUG_YCALC   yLOG_point   ("reaper" , a_reaper);
    --rce;  if (a_reaper == NULL) {
-      DEBUG_PROG   yLOG_warn    ("reaper without this callback, a few functions may not be allowed");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_warn    ("reaper without this callback, a few functions may not be allowed");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   g_reaper = a_reaper;
+   myCALC.e_reaper = a_reaper;
    /*---(update)-------------------------*/
-   DEBUG_PROG   yLOG_note    ("updating status");
+   DEBUG_YCALC   yLOG_note    ("updating status");
    ycalc_status_update ('e');
    /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -619,64 +687,64 @@ yCALC_label_config      (void *a_who_named, void *a_who_at, void *a_labeler)
    char        rc          =    0;
    void       *x_owner     = NULL;
    /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    rc = ycalc_status_allow  ('l');
-   DEBUG_PROG   yLOG_value   ("allow"    , rc);
+   DEBUG_YCALC   yLOG_value   ("allow"    , rc);
    --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rc);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
    /*---(update who_named)---------------*/
-   DEBUG_PROG   yLOG_point   ("who_named" , a_who_named);
+   DEBUG_YCALC   yLOG_point   ("who_named" , a_who_named);
    --rce;  if (a_who_named   == NULL) {
-      DEBUG_PROG   yLOG_error   ("who_named without this callback, references cannot be resolved");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_error   ("who_named without this callback, references cannot be resolved");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   g_who_named  = a_who_named;
+   myCALC.e_who_named  = a_who_named;
    /*---(update whois)------------------*/
-   DEBUG_PROG   yLOG_point   ("who_at"   , a_who_at);
+   DEBUG_YCALC   yLOG_point   ("who_at"   , a_who_at);
    --rce;  if (a_who_at    == NULL) {
-      DEBUG_PROG   yLOG_error   ("whois without this callback, range dependencies are not possible");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_error   ("whois without this callback, range dependencies are not possible");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   g_who_at    = a_who_at;
+   myCALC.e_who_at    = a_who_at;
    /*---(update labeler)-----------------*/
-   DEBUG_PROG   yLOG_point   ("labeler"    , a_labeler);
+   DEBUG_YCALC   yLOG_point   ("labeler"    , a_labeler);
    --rce;  if (a_labeler    == NULL) {
-      DEBUG_PROG   yLOG_error   ("labeler without this callback, human-readable verification is not possible");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_error   ("labeler without this callback, human-readable verification is not possible");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   g_labeler    = a_labeler;
+   myCALC.e_labeler    = a_labeler;
    /*---(set the dep root)---------------*/
    rc = ycalc_call_who_named ("ROOT", YCALC_FULL, &myCALC.mroot, &myCALC.rroot);
-   DEBUG_PROG   yLOG_value   ("make root" , rc);
+   DEBUG_YCALC   yLOG_value   ("make root" , rc);
    --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_PROG   yLOG_point   ("mroot"     , myCALC.mroot);
+   DEBUG_YCALC   yLOG_point   ("mroot"     , myCALC.mroot);
    --rce;  if (myCALC.mroot == NULL) {
-      DEBUG_PROG   yLOG_note    ("must create a owner named ¸ROOT¸ for yCALC to operate");
-      DEBUG_PROG   yLOG_error   ("rroot without this, all dependencies fail");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_note    ("must create a owner named ¸ROOT¸ for yCALC to operate");
+      DEBUG_YCALC   yLOG_error   ("rroot without this, all dependencies fail");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_PROG   yLOG_point   ("rroot"     , myCALC.rroot);
+   DEBUG_YCALC   yLOG_point   ("rroot"     , myCALC.rroot);
    --rce;  if (myCALC.rroot == NULL) {
-      DEBUG_PROG   yLOG_note    ("must create a owner named ¸ROOT¸ for yCALC to operate");
-      DEBUG_PROG   yLOG_error   ("rroot without this, all dependencies fail");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_note    ("must create a owner named ¸ROOT¸ for yCALC to operate");
+      DEBUG_YCALC   yLOG_error   ("rroot without this, all dependencies fail");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(update)-------------------------*/
-   DEBUG_PROG   yLOG_note    ("updating status");
+   DEBUG_YCALC   yLOG_note    ("updating status");
    ycalc_status_update ('l');
    /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -687,51 +755,51 @@ yCALC_value_config      (void *a_valuer, void *a_addresser, void *a_special, voi
    char        rce         =  -10;
    char        rc          =    0;
    /*---(header)-------------------------*/
-   DEBUG_PROG   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
    rc = ycalc_status_allow  ('v');
-   DEBUG_PROG   yLOG_value   ("allow"    , rc);
+   DEBUG_YCALC   yLOG_value   ("allow"    , rc);
    --rce;  if (rc < 0) {
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rc);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
    /*---(update valuer)------------------*/
-   DEBUG_PROG   yLOG_point   ("valuer"    , a_valuer);
+   DEBUG_YCALC   yLOG_point   ("valuer"    , a_valuer);
    --rce;  if (a_valuer    == NULL) {
-      DEBUG_PROG   yLOG_error   ("valuer without this callback, references, ranges, and variables can not function");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_error   ("valuer without this callback, references, ranges, and variables can not function");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   g_valuer    = a_valuer;
+   myCALC.e_valuer    = a_valuer;
    /*---(update addresser)---------------*/
-   DEBUG_PROG   yLOG_point   ("addresser" , a_addresser);
+   DEBUG_YCALC   yLOG_point   ("addresser" , a_addresser);
    --rce;  if (a_addresser == NULL) {
-      DEBUG_PROG   yLOG_warn    ("addresser without this callback, a few functions may not be allowed");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_warn    ("addresser without this callback, a few functions may not be allowed");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   g_addresser = a_addresser;
+   myCALC.e_addresser = a_addresser;
    /*---(update special)---------------*/
-   DEBUG_PROG   yLOG_point   ("special" , a_special);
+   DEBUG_YCALC   yLOG_point   ("special" , a_special);
    --rce;  if (a_special == NULL) {
-      DEBUG_PROG   yLOG_warn    ("special without this callback, a few functions may not be allowed");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_warn    ("special without this callback, a few functions may not be allowed");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   g_special = a_special;
+   myCALC.e_special = a_special;
    /*---(update printer)-----------------*/
-   DEBUG_PROG   yLOG_point   ("printer"   , a_printer);
+   DEBUG_YCALC   yLOG_point   ("printer"   , a_printer);
    --rce;  if (a_printer   == NULL) {
-      DEBUG_PROG   yLOG_error   ("valuer without this callback, display can not be updated");
-      DEBUG_PROG   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_error   ("valuer without this callback, display can not be updated");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   g_printer   = a_printer;
+   myCALC.e_printer   = a_printer;
    /*---(update)-------------------------*/
-   DEBUG_PROG   yLOG_note    ("updating status");
+   DEBUG_YCALC   yLOG_note    ("updating status");
    ycalc_status_update ('v');
    /*---(complete)-----------------------*/
-   DEBUG_PROG   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -773,7 +841,7 @@ ycalc__unit_base        (char *a_question, int a_num)
    if      (strncmp(a_question, "error"     , 20)  == 0) {
       x_error = myCALC.trouble;
       if (x_error == 0)  x_error = '-';
-      snprintf (ycalc__unit_answer, LEN_STR, "BASE error       : %c", x_error);
+      snprintf (ycalc__unit_answer, LEN_FULL, "BASE error       : %c", x_error);
    }
    /*---(complete)-----------------------*/
    return ycalc__unit_answer;
@@ -792,13 +860,16 @@ ycalc__unit_quiet       (void)
 char       /*----: set up program urgents/debugging --------------------------*/
 ycalc__unit_loud        (void)
 {
-   char        x_argc      = 7;
-   char       *x_args [7]  = { "yCALC_debug","@@kitchen","@@calc", "@@SORT", "@@YRPN", "@@YSTR", "@@deps" };
+   char        x_argc      = 1;
+   char       *x_args [1]  = { "yCALC_debug" };
    yURG_logger (x_argc, x_args);
    yURG_urgs   (x_argc, x_args);
-   yURG_name   ("cell"   , YURG_ON);
-   yURG_name   ("deps"   , YURG_ON);
-   DEBUG_CALC   yLOG_info     ("yCALC"    , yCALC_version   ());
+   yURG_name   ("kitchen", YURG_ON);
+   yURG_name   ("apis"   , YURG_ON);
+   yURG_name   ("ystr"   , YURG_ON);
+   yURG_name   ("yrpn"   , YURG_ON);
+   yURG_name   ("ycalc"  , YURG_ON);
+   DEBUG_YCALC   yLOG_info     ("yCALC"    , yCALC_version   ());
    myCALC.trouble = YCALC_ERROR_NONE;
    yCALC_init ('g');
    ycalc__mock_prepare ();

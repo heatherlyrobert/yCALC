@@ -10,31 +10,39 @@
 
 #define     P_FOCUS     "RS (run-time support)"
 #define     P_NICHE     "ca (calculation)"
+#define     P_SUBJECT   "calculation engine"
 #define     P_PURPOSE   "fast, powerful, flexible, shared calculation engine"
 
 #define     P_NAMESAKE  "kottus-hecatoncheires (hundred-handed)"
 #define     P_HERITAGE  "kottus, big-limbed, is one of the three hecatoncheires" 
 #define     P_IMAGERY   "ugly, impossibly powerful, one-hundred handed, fifty headed giant"
+#define     P_REASON    ""
+
+#define     P_ONELINE   P_NAMESAKE " " P_SUBJECT
+
+#define     P_BASENAME  "ylibCALC.so"
+#define     P_FULLPATH  ""
+#define     P_SUFFIX    ""
+#define     P_CONTENT   ""
 
 #define     P_SYSTEM    "gnu/linux   (powerful, ubiquitous, technical, and hackable)"
 #define     P_LANGUAGE  "ansi-c      (wicked, limitless, universal, and everlasting)"
 #define     P_CODESIZE  "large       (appoximately 10,000 slocl)"
+#define     P_DEPENDS   "none"
 
 #define     P_AUTHOR    "heatherlyrobert"
 #define     P_CREATED   "2014-10"
-#define     P_DEPENDS   "none"
 
 #define     P_VERMAJOR  "0.X = reading for full gyges use"
 #define     P_VERMINOR  "0.5 = find pernicious memory and malloc troubles"
-#define     P_VERNUM    "0.5j"
-#define     P_VERTXT    "stable for gyges scripts and smooth, full unit test"
+#define     P_VERNUM    "0.5l"
+#define     P_VERTXT    "variables up and running in gyges"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
 #define     P_REMINDER  "there are many better options, but i *own* every byte of this one"
 
 /*===[[ END_HEADER ]]=========================================================*/
-
 
 
 #include    <stdio.h>
@@ -51,35 +59,16 @@
 
 
 
-/*---(string lengths)-----------------*/
-#define     LEN_LABEL   20
-#define     LEN_STR     200
-#define     LEN_RECD    2000
 
 #define     TRUE        1
 #define     FALSE       0
 
 
-/*---(label config)-------------------*/
-extern char    (*g_who_named)   (char *a_label, char a_force, void **a_owner, void **a_deproot);        /* pass label of thing, get back deproot of thing  */
-extern char    (*g_who_at   )   (int b, int x, int y, int z, char a_force, void **a_owner, void **a_deproot);  /* pass coordinates, get back deproot of thing     */
-extern char*   (*g_labeler  )   (void *a_owner);        /* pass deproot->owner, get back label of thing    */
-/*---(struct config)-----------------*/
-extern char    (*g_enabler  )   (void *a_owner, void *a_deproot);
-extern char    (*g_pointer  )   (void *a_owner, char **a_source, char **a_type, double **a_value , char **a_string);
-extern char    (*g_reaper   )   (void **a_owner);        /* pass deproot->owner, tries to kill thing        */
-/*---(value config)-------------------*/
-extern char    (*g_valuer   )   (void *a_owner, char *a_type, double *a_value , char **a_string);
-extern char    (*g_addresser)   (void *a_owner, int *b, int *x, int *y, int *z);
-extern char    (*g_special  )   (void *a_owner, char  a_what, double *a_value , char   **a_string);
-extern char    (*g_printer  )   (void *a_owner);
-/*---(sequencing)---------------------*/
-extern char    (*g_consumer )   (void *a_owner, void *a_deproot, int a_seq, int a_lvl);
-
 
 
 typedef     struct      cCALC       tCALC;         /* cell calculation entry    */
 typedef     struct      cFUNCS      tFUNCS;
+typedef     struct      cVARS       tVARS;
 typedef     struct      cFCAT       tFCAT;
 typedef     struct      cDEP_LINK   tDEP_LINK;
 typedef     struct      cDEP_ROOT   tDEP_ROOT;
@@ -138,6 +127,17 @@ struct cFCAT {
 extern const tFCAT s_fcats  [MAX_FCAT];
 
 
+static struct cVARS {
+   /*---(master)------------*/
+   char        kind;
+   char        name        [LEN_LABEL];
+   char        title       [LEN_LABEL];
+   char        content     [LEN_LABEL];
+   /*---(linked-list)-------*/
+   tVARS      *next;            /* pointer to next calc                       */
+   tVARS      *prev;            /* pointer to next calc                       */
+   /*---(done)--------------*/
+};
 
 
 
@@ -315,6 +315,21 @@ struct cLOCAL {
    void       *deproot;
    char       *me;
    char       *label;
+   /*---(label config)-------------------*/
+   char      (*e_who_named)   (char *a_label, char a_force, void **a_owner, void **a_deproot);        /* pass label of thing, get back deproot of thing  */
+   char      (*e_who_at   )   (int b, int x, int y, int z, char a_force, void **a_owner, void **a_deproot);  /* pass coordinates, get back deproot of thing     */
+   char*     (*e_labeler  )   (void *a_owner);        /* pass deproot->owner, get back label of thing    */
+   /*---(struct config)-----------------*/
+   char      (*e_enabler  )   (void *a_owner, void *a_deproot);
+   char      (*e_pointer  )   (void *a_owner, char **a_source, char **a_type, double **a_value , char **a_string);
+   char      (*e_reaper   )   (void **a_owner);        /* pass deproot->owner, tries to kill thing        */
+   /*---(value config)-------------------*/
+   char      (*e_valuer   )   (void *a_owner, char *a_type, double *a_value , char **a_string);
+   char      (*e_addresser)   (void *a_owner, int *b, int *x, int *y, int *z);
+   char      (*e_special  )   (void *a_owner, char  a_what, double *a_value , char   **a_string);
+   char      (*e_printer  )   (void *a_owner);
+   /*---(sequencing)---------------------*/
+   char      (*e_consumer )   (void *a_owner, void *a_deproot, int a_seq, int a_lvl);
    /*---(done)--------------*/
 };
 extern  tLOCAL myCALC;
@@ -335,6 +350,11 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 #define     YCALC_ERROR_NONE       NULL
 #define     YCALC_ERROR_LITERAL    0x1
 #define     YCALC_ERROR_UNKNOWN    0x2
+#define     YCALC_ERROR_ARG1       0x3
+#define     YCALC_ERROR_ARG2       0x4
+#define     YCALC_ERROR_ARG3       0x5
+#define     YCALC_ERROR_ARG4       0x6
+#define     YCALC_ERROR_INTERN     0x7
 
 #define     YCALC_ERROR_CONF       'C'
 #define     YCALC_ERROR_STACK      's'
@@ -347,6 +367,8 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 #define     YCALC_ERROR_BUILD_PNT  '&'
 #define     YCALC_ERROR_BUILD_RNG  ':'
 #define     YCALC_ERROR_BUILD_TOK  '?'
+#define     YCALC_ERROR_BUILD_DUP  '"'
+#define     YCALC_ERROR_BUILD_FNC  'x'
 
 #define     YCALC_ERROR_EXEC_STEP  '-'
 #define     YCALC_ERROR_EXEC_STR   'S'
@@ -358,6 +380,7 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 #define     YCALC_ERROR_EXEC_NULL  'n'
 #define     YCALC_ERROR_EXEC_PTRR  'R'
 #define     YCALC_ERROR_EXEC_CIR   'O'
+#define     YCALC_ERROR_EXEC_ARG   'A'
 #define     YCALC_ERROR_EXEC_FMT   'F'
 #define     YCALC_ERROR_EXEC_DATE  'D'
 #define     YCALC_ERROR_EXEC_BRNG  '<'
@@ -393,7 +416,7 @@ extern int       g_error;
 #define       G_SPECIAL_NREQ     '2'
 #define       G_SPECIAL_LIKE     'l'
 #define       G_SPECIAL_LEVEL    's'
-#define       G_SPECIAL_BPOS     'B'
+#define       G_SPECIAL_UPOS     'B'
 #define       G_SPECIAL_XPOS     'X'
 #define       G_SPECIAL_YPOS     'Y'
 #define       G_SPECIAL_ZPOS     'Z'
@@ -408,7 +431,7 @@ extern long   time_zone;
 
 
 /*===[[ OBJECT TYPES ]]=======================================================*/
-#define   YCALC_MAX_TYPE    15
+#define   YCALC_MAX_TYPE    25
 typedef struct cyCALC_TYPES  tyCALC_TYPES;
 struct cyCALC_TYPES {
    char        type;                        /* cell type                      */
@@ -448,6 +471,7 @@ char*       ycalc__unit_deps        (char *a_question, char *a_label);
 char        ycalc_deps_create       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target);
 char        ycalc_deps_delete       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target, void **a_owner);
 char        ycalc_deps_delcalcref   (tDEP_ROOT *a_deproot);
+char        ycalc_deps_deltitle     (tDEP_ROOT **a_deproot);
 char        ycalc_deps_wipe_reqs    (void **a_owner, tDEP_ROOT **a_deproot);
 
 char        ycalc__deps_rooting     (tDEP_ROOT *a_curr, char a_type);
@@ -496,7 +520,9 @@ char        ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char
 char        ycalc_build_detail      (void *a_owner, tDEP_ROOT *a_deproot, char **a_source, char *a_type, double *a_value, char **a_string);
 char        ycalc_build_owner       (void *a_owner, tDEP_ROOT *a_deproot);
 char        ycalc_build_label       (char *a_label);
-char        ycalc_build_ripple      (tDEP_ROOT *a_deproot);
+char        ycalc_build_ripple      (tDEP_ROOT *a_deproot, char a_kind);
+char        ycalc_bulid_variable    (tDEP_ROOT *a_deproot, char *a_label, short b, short x, short y, short z, char **a_source, char *a_type, double *a_value, char **a_string);
+char        ycalc_build_findfunc    (char *a_token);
 
 
 
@@ -556,13 +582,16 @@ char*       ycalc__unit_mock        (char *a_question, char *a_label);
 char        ycalc__seq_clear        (void);
 char        ycalc__seq_add          (char a_level, tDEP_ROOT *a_deproot);
 char        ycalc__seq_del          (tDEP_ROOT *a_deproot);
-char        ycalc__seq_recursion    (int a_level, tDEP_LINK *a_dep, char a_dir, long a_stamp);;
-char        ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, long a_stamp, void *g_consumer);
+char        ycalc__seq_recursion    (int a_level, tDEP_LINK *a_dep, char a_dir, long a_stamp);
+char        ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, long a_stamp, void *a_consumer);
 char        ycalc__seq_list         (char *a_list);
 
 
 
 /*===[ CALLS ]============================================*/
+char        ycalc_call_newvar       (char a_kind, char *a_name, char *a_label, tDEP_ROOT *a_deproot, char *a_type, double *a_value, char **a_string);
+char        ycalc_call_findvar      (char *a_name, char *a_real);
+char        ycalc_call_delvar       (char *a_loc, tDEP_ROOT **a_deproot);
 char        ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot);
 char        ycalc_call_who_named    (char *a_label,       char a_force, void **a_owner, void **a_deproot);
 char        ycalc_call_who_at       (int b, int x, int y, int z, char a_force, void **a_owner, void **a_deproot);
@@ -590,6 +619,7 @@ void        ycalc_power_of_2        (void);
 void        ycalc_power_of_3        (void);
 void        ycalc_power_of_4        (void);
 void        ycalc_abs               (void);
+void        ycalc_sign              (void);
 void        ycalc_trunc             (void);
 void        ycalc_rtrunc            (void);
 void        ycalc_round             (void);
@@ -621,6 +651,7 @@ void        ycalc_or                (void);
 void        ycalc_nand              (void);
 void        ycalc_nor               (void);
 void        ycalc_xor               (void);
+void        ycalc_nxor              (void);
 void        ycalc_if                (void);
 void        ycalc_ifs               (void);
 void        ycalc_within            (void);
@@ -632,6 +663,8 @@ void        ycalc_len               (void);
 void        ycalc_left              (void);
 void        ycalc_right             (void);
 void        ycalc_mid               (void);
+void        ycalc_beg               (void);
+void        ycalc_at                (void);
 void        ycalc_trim              (void);
 void        ycalc_ltrim             (void);
 void        ycalc_rtrim             (void);
@@ -679,6 +712,7 @@ void        ycalc_iscalc            (void);
 void        ycalc_islit             (void);
 void        ycalc_ispoint           (void);
 void        ycalc_iserror           (void);
+void        ycalc_upos              (void);
 void        ycalc_xpos              (void);
 void        ycalc_ypos              (void);
 void        ycalc_zpos              (void);
@@ -768,15 +802,32 @@ void        ycalc_cols              (void);
 void        ycalc_rows              (void);
 void        ycalc_levels            (void);
 void        ycalc_sum               (void);
+
 void        ycalc_every             (void);
-void        ycalc_filled            (void);
+void        ycalc_used              (void);
+void        ycalc_empties           (void);
+
 void        ycalc_numbers           (void);
+void        ycalc_nlit              (void);
+void        ycalc_nform             (void);
+void        ycalc_nlike             (void);
+
 void        ycalc_strings           (void);
+void        ycalc_slit              (void);
+void        ycalc_sform             (void);
+void        ycalc_slike             (void);
+
 void        ycalc_pointers          (void);
-void        ycalc_empty             (void);
-void        ycalc_calcs             (void);
-void        ycalc_errors            (void);
+void        ycalc_merges            (void);
 void        ycalc_blanks            (void);
+void        ycalc_errors            (void);
+void        ycalc_unknowns          (void);
+
+void        ycalc_literals          (void);
+void        ycalc_forms             (void);
+void        ycalc_likes             (void);
+void        ycalc_calcs             (void);
+
 void        ycalc_min               (void);
 void        ycalc_max               (void);
 void        ycalc_range             (void);
@@ -789,16 +840,30 @@ void        ycalc_mode              (void);
 void        ycalc_stddev            (void);
 void        ycalc_skew              (void);
 
+void        ycalc_ru                (void);
+void        ycalc_rx                (void);
+void        ycalc_ry                (void);
+void        ycalc_rxy               (void);
+void        ycalc_ruxy              (void);
+
+void        ycalc_au                (void);
+void        ycalc_ax                (void);
+void        ycalc_ay                (void);
+void        ycalc_axy               (void);
+void        ycalc_auxy              (void);
+
 void        ycalc_rel_b             (void);
 void        ycalc_rel_x             (void);
 void        ycalc_rel_y             (void);
 void        ycalc_rel_xy            (void);
 void        ycalc_rel_bxy           (void);
+
 void        ycalc_abs_b             (void);
 void        ycalc_abs_x             (void);
 void        ycalc_abs_y             (void);
 void        ycalc_abs_xy            (void);
 void        ycalc_abs_bxy           (void);
+
 void        ycalc_off_b             (void);
 void        ycalc_off_x             (void);
 void        ycalc_off_y             (void);
@@ -807,7 +872,44 @@ void        ycalc_off_bxy           (void);
 void        ycalc_address           (void);
 
 void        ycalc_vlookup           (void);
+void        ycalc_vprefix           (void);
+void        ycalc_vmatch            (void);
+void        ycalc_vrange            (void);
+void        ycalc_vclose            (void);
+void        ycalc_vabout            (void);
+void        ycalc_vover             (void);
+void        ycalc_vunder            (void);
+
 void        ycalc_hlookup           (void);
+void        ycalc_hprefix           (void);
+void        ycalc_hmatch            (void);
+void        ycalc_hrange            (void);
+void        ycalc_hclose            (void);
+void        ycalc_habout            (void);
+void        ycalc_hover             (void);
+void        ycalc_hunder            (void);
+
+void        ycalc_rlookup           (void);
+void        ycalc_rprefix           (void);
+void        ycalc_rmatch            (void);
+void        ycalc_rrange            (void);
+void        ycalc_rclose            (void);
+void        ycalc_rabout            (void);
+void        ycalc_rover             (void);
+void        ycalc_runder            (void);
+
+void        ycalc_ilookup           (void);
+void        ycalc_iprefix           (void);
+void        ycalc_imatch            (void);
+void        ycalc_irange            (void);
+void        ycalc_iabout            (void);
+
+void        ycalc_clookup           (void);
+void        ycalc_cprefix           (void);
+void        ycalc_cmatch            (void);
+void        ycalc_crange            (void);
+void        ycalc_cabout            (void);
+
 void        ycalc_entry             (void);
 void        ycalc_index             (void);
 
@@ -829,5 +931,12 @@ void        ycalc_time              (void);
 void        ycalc_datepart          (void);
 void        ycalc_timepart          (void);
 void        ycalc_timezonesec       (void);
+/*---(bitwise)------------------------*/
+void        ycalc_bit_not           (void);
+void        ycalc_bit_left          (void);
+void        ycalc_bit_right         (void);
+void        ycalc_bit_and           (void);
+void        ycalc_bit_or            (void);
+void        ycalc_bit_xor           (void);
 
 #endif

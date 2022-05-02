@@ -27,16 +27,28 @@ static int     s_endy     = 0;
 static int     s_endz     = 0;
 
 
+/*---(overall)--------------*/
+static int     s_every    = 0;
+static int     s_used     = 0;
+/*---(numeric)--------------*/
+static int     s_numbers  = 0;
+static int     s_nlit     = 0;
+static int     s_nform    = 0;
+static int     s_nlike    = 0;
+/*---(alpha)----------------*/
+static int     s_strings  = 0;
+static int     s_slit     = 0;
+static int     s_sform    = 0;
+static int     s_slike    = 0;
+/*---(other)----------------*/
+static int     s_pointers = 0;
+static int     s_merges   = 0;
+static int     s_blanks   = 0;
+static int     s_errors   = 0;
+static int     s_unknown  = 0;
+/*---(done)-----------------*/
 
-static int     s_count_all  =    0;
-static int     s_count_fil  =    0;
-static int     s_count_num  =    0;
-static int     s_count_str  =    0;
-static int     s_count_oth  =    0;
-static int     s_count_calc =    0;
-static int     s_count_error  =    0;
-static int     s_count_blank  =    0;
-static int     s_count_ptr  =    0;
+
 static double  s_total      =  0.0;
 static double  s_min        =  0.0;
 static double  s_max        =  0.0;
@@ -57,15 +69,15 @@ static void  o___RANGES__________o () { return; }
 char
 ycalc_range_wipe        (int n)
 {
-   DEBUG_CALC   yLOG_senter  (__FUNCTION__);
-   DEBUG_CALC   yLOG_sint    (n);
+   DEBUG_YCALC   yLOG_senter  (__FUNCTION__);
+   DEBUG_YCALC   yLOG_sint    (n);
    strlcpy (s_ranges [n].name, "", LEN_LABEL);
    s_ranges [n].ycalc                = NULL;
    s_ranges [n].bb = s_ranges [n].eb =  -10;
    s_ranges [n].bx = s_ranges [n].ex =  -10;
    s_ranges [n].by = s_ranges [n].ey =  -10;
    s_ranges [n].bz = s_ranges [n].ez =  -10;
-   DEBUG_CALC   yLOG_sexit   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
@@ -89,21 +101,21 @@ ycalc_range_wrap        (void)
    char        t           [LEN_LABEL];
    void       *x_owner     = NULL;
    tDEP_ROOT  *x_range     = NULL;
-   DEBUG_DEPS   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    for (i = 0; i < MAX_RANGE; ++i) {
       sprintf (t, "®a%d", i + 1);
       rc = ycalc_call_who_named (t, YCALC_LOOK, &x_owner, &x_range);
       if (rc >= 0 && x_owner != NULL) {
          ++c;
-         DEBUG_DEPS   yLOG_info    ("found"     , t);
+         DEBUG_YCALC   yLOG_info    ("found"     , t);
          yCALC_disable (&x_owner, &x_range);
       }
       ycalc_range_wipe (i);
    }
    s_nrange = 0;
-   DEBUG_DEPS   yLOG_value   ("wiped"     , c);
+   DEBUG_YCALC   yLOG_value   ("wiped"     , c);
    /*> printf ("had to wipe %d ranges\n", c);                                         <*/
-   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -204,31 +216,31 @@ ycalc_range_delete      (tDEP_ROOT *a_deproot, tDEP_ROOT *a_range)
    tDEP_ROOT  *x_src       = NULL;
    tDEP_ROOT  *x_trg       = NULL;
    /*---(prepare)------------------------*/
-   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
-   DEBUG_CALC   yLOG_point   ("a_deproot"  , a_deproot);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_point   ("a_deproot"  , a_deproot);
    --rce;  if (a_deproot == NULL) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_CALC   yLOG_point   ("a_deproot"  , ycalc_call_labeler (a_deproot));
-   DEBUG_CALC   yLOG_point   ("a_range"    , a_range);
+   DEBUG_YCALC   yLOG_point   ("a_deproot"  , ycalc_call_labeler (a_deproot));
+   DEBUG_YCALC   yLOG_point   ("a_range"    , a_range);
    --rce;  if (a_range == NULL) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return rce;
    }
-   DEBUG_CALC   yLOG_point   ("a_range"    , ycalc_call_labeler (a_range));
+   DEBUG_YCALC   yLOG_point   ("a_range"    , ycalc_call_labeler (a_range));
    n = a_range->range;
-   DEBUG_CALC   yLOG_value   ("range_no"   , n);
+   DEBUG_YCALC   yLOG_value   ("range_no"   , n);
    /*---(check owners)-------------------*/
-   DEBUG_CALC   yLOG_value   ("npro"      , a_range->npro);
+   DEBUG_YCALC   yLOG_value   ("npro"      , a_range->npro);
    --rce;  if (a_range->npro > 1) {
-      DEBUG_CALC   yLOG_note    ("range required by other deproots");
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_note    ("range required by other deproots");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(clear label)--------------------*/
-   rc = g_pointer (a_range->owner, &x_source, &x_type, NULL, NULL);
+   rc = myCALC.e_pointer (a_range->owner, &x_source, &x_type, NULL, NULL);
    *x_type = YCALC_DATA_BLANK;
    if (*x_source != NULL)  free (*x_source);
    *x_source = NULL;
@@ -238,26 +250,26 @@ ycalc_range_delete      (tDEP_ROOT *a_deproot, tDEP_ROOT *a_range)
       x_save    = x_next->next;
       x_deproot = x_next->target;
       x_owner   = x_next->target->owner;
-      DEBUG_CALC   yLOG_value   ("nreq"      , a_range->nreq);
-      DEBUG_CALC   yLOG_char    ("link type" , x_next->type);
+      DEBUG_YCALC   yLOG_value   ("nreq"      , a_range->nreq);
+      DEBUG_YCALC   yLOG_char    ("link type" , x_next->type);
       x_src        = x_next->source;
       x_trg        = x_next->target;
-      DEBUG_DEPS   yLOG_complex ("range targ"    , ycalc_call_labeler (x_trg));
+      DEBUG_YCALC   yLOG_complex ("range targ"    , ycalc_call_labeler (x_trg));
       rc = ycalc_deps_delete (x_next->type, &(x_src), &(x_trg), &(x_trg->owner));
-      DEBUG_CALC   yLOG_value   ("delete"    , rc);
+      DEBUG_YCALC   yLOG_value   ("delete"    , rc);
       x_next = x_save;
    }
-   DEBUG_CALC   yLOG_point   ("a_range"   , a_range);
-   DEBUG_CALC   yLOG_value   ("nreq"      , a_range->nreq);
-   DEBUG_CALC   yLOG_point   ("owner"     , a_range->owner);
+   DEBUG_YCALC   yLOG_point   ("a_range"   , a_range);
+   DEBUG_YCALC   yLOG_value   ("nreq"      , a_range->nreq);
+   DEBUG_YCALC   yLOG_point   ("owner"     , a_range->owner);
    /*---(delete link)--------------------*/
    x_owner = a_range->owner;
    rc = ycalc_deps_delete (G_DEP_POINTER, &a_deproot, &a_range, &x_owner);
-   DEBUG_CALC   yLOG_point   ("a_range"   , a_range);
-   DEBUG_CALC   yLOG_point   ("x_owner"   , x_owner);
+   DEBUG_YCALC   yLOG_point   ("a_range"   , a_range);
+   DEBUG_YCALC   yLOG_point   ("x_owner"   , x_owner);
    rc = ycalc_range_wipe  (n);
    /*---(complete)-----------------------*/
-   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -270,38 +282,38 @@ ycalc_range_unhook      (void **a_owner, tDEP_ROOT **a_deproot)
    tDEP_LINK  *x_next      = NULL;
    tDEP_LINK  *x_save      = NULL;
    /*---(prepare)------------------------*/
-   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
-   DEBUG_CALC   yLOG_point   ("a_owner"    , a_owner);
-   if (a_owner != NULL)  DEBUG_CALC   yLOG_point   ("*a_owner"   , *a_owner);
-   DEBUG_CALC   yLOG_point   ("a_deproot"  , a_deproot);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_point   ("a_owner"    , a_owner);
+   if (a_owner != NULL)  DEBUG_YCALC   yLOG_point   ("*a_owner"   , *a_owner);
+   DEBUG_YCALC   yLOG_point   ("a_deproot"  , a_deproot);
    --rce;  if (a_deproot == NULL) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_CALC   yLOG_point   ("*a_deproot" , *a_deproot);
+   DEBUG_YCALC   yLOG_point   ("*a_deproot" , *a_deproot);
    --rce;  if (*a_deproot == NULL) {
-      DEBUG_CALC   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_CALC   yLOG_info    ("label"      , ycalc_call_labeler (*a_deproot));
+   DEBUG_YCALC   yLOG_info    ("label"      , ycalc_call_labeler (*a_deproot));
    /*---(check all links)----------------*/
-   DEBUG_CALC   yLOG_value   ("npro"      , (*a_deproot)->npro);
+   DEBUG_YCALC   yLOG_value   ("npro"      , (*a_deproot)->npro);
    x_next = (*a_deproot)->pros;
    while (x_next != NULL) {
       x_save = x_next->next;
       /*---(filter)----------------------*/
-      DEBUG_CALC   yLOG_char    ("link type" , x_next->type);
+      DEBUG_YCALC   yLOG_char    ("link type" , x_next->type);
       /*---(check for range)-------------*/
       if (x_next->type == G_DEP_ENTRY) {
-         DEBUG_DEPS   yLOG_complex ("target"    , ycalc_call_labeler (x_next->target));
+         DEBUG_YCALC   yLOG_complex ("target"    , ycalc_call_labeler (x_next->target));
          rc = ycalc_deps_delete  (G_DEP_RANGE, &(x_next->target), a_deproot, a_owner);
-         DEBUG_CALC   yLOG_value   ("delete"    , rc);
+         DEBUG_YCALC   yLOG_value   ("delete"    , rc);
       }
       /*---(go to next)------------------*/
       x_next = x_save;
       /*---(done)------------------------*/
    }
-   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -310,12 +322,12 @@ ycalc_range_by_coords   (int bb, int eb, int bx, int ex, int by, int ey, int bz,
 {
    int         i           =    0;
    int         n           =  -1;
-   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
-   DEBUG_DEPS   yLOG_complex ("coords"    , "bb=%4d, eb=%4d, bx=%4d, ex=%4d, by=%4d, ey=%4d, bz=%4d, ez=%4d", bb, eb, bx, ex, by, ey, bz, ez);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_complex ("coords"    , "bb=%4d, eb=%4d, bx=%4d, ex=%4d, by=%4d, ey=%4d, bz=%4d, ez=%4d", bb, eb, bx, ex, by, ey, bz, ez);
    for (i = 0; i < s_nrange; ++i) {
-      DEBUG_DEPS   yLOG_value   ("entry"     , i);
+      DEBUG_YCALC   yLOG_value   ("entry"     , i);
       if (s_ranges [i].ycalc == NULL)     continue;
-      DEBUG_DEPS   yLOG_complex ("check"     , "bb=%4d, eb=%4d, bx=%4d, ex=%4d, by=%4d, ey=%4d, bz=%4d, ez=%4d, ycalc=%p", s_ranges [i].bb, s_ranges [i].eb, s_ranges [i].bx, s_ranges [i].ex, s_ranges [i].by, s_ranges [i].ey, s_ranges [i].bz, s_ranges [i].ez, s_ranges [i].ycalc);
+      DEBUG_YCALC   yLOG_complex ("check"     , "bb=%4d, eb=%4d, bx=%4d, ex=%4d, by=%4d, ey=%4d, bz=%4d, ez=%4d, ycalc=%p", s_ranges [i].bb, s_ranges [i].eb, s_ranges [i].bx, s_ranges [i].ex, s_ranges [i].by, s_ranges [i].ey, s_ranges [i].bz, s_ranges [i].ez, s_ranges [i].ycalc);
       if (s_ranges [i].bb   != bb)        continue;
       if (s_ranges [i].eb   != eb)        continue;
       if (s_ranges [i].bz   != bz)        continue;
@@ -327,7 +339,7 @@ ycalc_range_by_coords   (int bb, int eb, int bx, int ex, int by, int ey, int bz,
       n = i;
       break;
    }
-   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return n;
 }
 
@@ -351,20 +363,20 @@ ycalc_range_add         (int bb, int eb, int bx, int ex, int by, int ey, int bz,
    char        x_beg       [LEN_LABEL];
    char        x_end       [LEN_LABEL];
    /*---(begin)--------------------------*/
-   DEBUG_DEPS    yLOG_enter   (__FUNCTION__);
-   DEBUG_DEPS    yLOG_complex ("range"     , "bb=%4d, eb=%4d, bx=%4d, ex=%4d, by=%4d, ey=%4d, bz=%4d, ez=%4d", bb, eb, bx, ex, by, ey, bz, ez);
+   DEBUG_YCALC    yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC    yLOG_complex ("range"     , "bb=%4d, eb=%4d, bx=%4d, ex=%4d, by=%4d, ey=%4d, bz=%4d, ez=%4d", bb, eb, bx, ex, by, ey, bz, ez);
    /*---(create name)--------------------*/
    n = ycalc_range_next ();
-   DEBUG_DEPS    yLOG_value   ("n"         , n);
+   DEBUG_YCALC    yLOG_value   ("n"         , n);
    if (n < 0) {
-      DEBUG_DEPS    yLOG_exitr   (__FUNCTION__, n);
+      DEBUG_YCALC    yLOG_exitr   (__FUNCTION__, n);
       return n;
    }
    sprintf (t, "®a%d", n + 1);
    strlcpy (s_ranges [n].name, t, LEN_LABEL);
-   DEBUG_DEPS    yLOG_info    ("range"     , t);
+   DEBUG_YCALC    yLOG_info    ("range"     , t);
    /*---(assign boundaries---------------*/
-   DEBUG_DEPS    yLOG_note    ("assign boundaries");
+   DEBUG_YCALC    yLOG_note    ("assign boundaries");
    s_ranges [n].bb  = bb;
    s_ranges [n].eb  = eb;
    s_ranges [n].bx  = bx;
@@ -377,36 +389,36 @@ ycalc_range_add         (int bb, int eb, int bx, int ex, int by, int ey, int bz,
    rc = ycalc_call_who_named (t, YCALC_FULL, &x_owner, &x_range);
    s_ranges [n].ycalc = x_range;
    x_range->range = n;
-   rc = g_pointer (x_owner, &x_source, &x_type, NULL, NULL);
+   rc = myCALC.e_pointer (x_owner, &x_source, &x_type, NULL, NULL);
    *x_type = YCALC_DATA_INTERN;
-   DEBUG_CALC   yLOG_char    ("*x_type"   , *x_type);
+   DEBUG_YCALC   yLOG_char    ("*x_type"   , *x_type);
    x_range->btype = YCALC_DATA_INTERN;
-   DEBUG_CALC   yLOG_char    ("btype"     , x_range->btype);
+   DEBUG_YCALC   yLOG_char    ("btype"     , x_range->btype);
    str4gyges (bb, bx, by, bz, NULL, x_beg, YSTR_CHECK);
    str4gyges (eb, ex, ey, ez, NULL, x_end, YSTR_CHECK);
    sprintf (t, "®%s..%s", x_beg, x_end);
    if (*x_source != NULL)  free (*x_source);
    *x_source = strdup (t);
-   rc = g_printer (x_owner);
-   DEBUG_DEPS   yLOG_value   ("printer"   , rc);
+   rc = myCALC.e_printer (x_owner);
+   DEBUG_YCALC   yLOG_value   ("printer"   , rc);
    /*---(tie all cells)------------------*/
-   DEBUG_DEPS    yLOG_note    ("assign entries");
+   DEBUG_YCALC    yLOG_note    ("assign entries");
    for (z_pos = bz; z_pos <= ez; ++z_pos) {
       for (y_pos = by; y_pos <= ey; ++y_pos) {
          for (x_pos = bx; x_pos <= ex; ++x_pos) {
             for (b_pos = bb; b_pos <= eb; ++b_pos) {
                /*---(get existing)-------------*/
                rc = ycalc_call_who_at (b_pos, x_pos, y_pos, z_pos, YCALC_LOOK, &x_owner, &x_dst);
-               DEBUG_DEPS    yLOG_complex ("target"    , "b =%4d, x =%4d, y =%4d, z =%4d, owner=%9p, deproot=%9p", b_pos, x_pos, y_pos, z_pos, x_owner, x_dst);
+               DEBUG_YCALC    yLOG_complex ("target"    , "b =%4d, x =%4d, y =%4d, z =%4d, owner=%9p, deproot=%9p", b_pos, x_pos, y_pos, z_pos, x_owner, x_dst);
                /*---(filter)-------------------*/
                if (x_owner == NULL)                    continue;
-               rc = g_valuer  (x_owner, &x_type, NULL, NULL);
+               rc = myCALC.e_valuer  (x_owner, &x_type, NULL, NULL);
                if (rc  <  0)                           continue;
-               DEBUG_DEPS   yLOG_char    ("*type"     , *x_type);
+               DEBUG_YCALC   yLOG_char    ("*type"     , *x_type);
                if (*x_type  == YCALC_DATA_BLANK)        continue;
                /*---(create dependency)--------*/
                rc = ycalc_call_who_at (b_pos, x_pos, y_pos, z_pos, YCALC_FULL, &x_owner, &x_dst);
-               DEBUG_DEPS   yLOG_info    ("assign"    , ycalc_call_labeler (x_dst));
+               DEBUG_YCALC   yLOG_info    ("assign"    , ycalc_call_labeler (x_dst));
                rc  = ycalc_deps_create (G_DEP_RANGE, &x_range, &x_dst);
                if (rc  <  0)                           break;
                /*---(done)---------------------*/
@@ -417,7 +429,7 @@ ycalc_range_add         (int bb, int eb, int bx, int ex, int by, int ey, int bz,
    /*---(update)-------------------------*/
    if (n == s_nrange) ++s_nrange;
    /*---(complete)-----------------------*/
-   DEBUG_DEPS    yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC    yLOG_exit    (__FUNCTION__);
    return n;
 }
 
@@ -430,31 +442,31 @@ ycalc_range_use         (tDEP_ROOT *a_src, int bb, int eb, int bx, int ex, int b
    int         n           =    0;
    tDEP_ROOT  *x_range     = NULL;
    /*---(begin)--------------------------*/
-   DEBUG_DEPS    yLOG_enter   (__FUNCTION__);
-   DEBUG_DEPS    yLOG_complex ("range"     , "bb=%4d, eb=%4d, bx=%4d, ex=%4d, by=%4d, ey=%4d, bz=%4d, ez=%4d", bb, eb, bx, ex, by, ey, bz, ez);
+   DEBUG_YCALC    yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC    yLOG_complex ("range"     , "bb=%4d, eb=%4d, bx=%4d, ex=%4d, by=%4d, ey=%4d, bz=%4d, ez=%4d", bb, eb, bx, ex, by, ey, bz, ez);
    /*---(find/create)--------------------*/
    n = ycalc_range_by_coords (bb, eb, bx, ex, by, ey, bz, ez);
-   DEBUG_DEPS    yLOG_value   ("n"         , n);
+   DEBUG_YCALC    yLOG_value   ("n"         , n);
    if (n < 0) {
       n = ycalc_range_add  (bb, eb, bx, ex, by, ey, bz, ez);
-      DEBUG_DEPS    yLOG_value   ("n"         , n);
+      DEBUG_YCALC    yLOG_value   ("n"         , n);
    }
    --rce;  if (n < 0) {
-      DEBUG_DEPS    yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC    yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(link to source)-----------------*/
    x_range = s_ranges [n].ycalc;
    rc  = ycalc_deps_create (G_DEP_POINTER, &a_src, &x_range);
-   DEBUG_DEPS    yLOG_value   ("create"    , rc);
+   DEBUG_YCALC    yLOG_value   ("create"    , rc);
    --rce;  if (rc  <  0) {
-      DEBUG_DEPS    yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YCALC    yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(save)---------------------------*/
    if (a_range != NULL)  *a_range = x_range;
    /*---(complete)-----------------------*/
-   DEBUG_DEPS    yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC    yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -467,11 +479,11 @@ ycalc_range_include     (tDEP_ROOT **a_src, int b, int x, int y, int z)
    int         i           =    0;
    tDEP_ROOT  *x_range     = NULL;
    /*---(begin)--------------------------*/
-   DEBUG_DEPS    yLOG_enter   (__FUNCTION__);
-   DEBUG_DEPS    yLOG_complex ("source"    , "b =%4d, x =%4d, y =%4d, z =%4d, ptr=%9p", b, x, y, z, *a_src);
+   DEBUG_YCALC    yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC    yLOG_complex ("source"    , "b =%4d, x =%4d, y =%4d, z =%4d, ptr=%9p", b, x, y, z, *a_src);
    for (i = 0; i < s_nrange; ++i) {
       if (s_ranges [i].ycalc == NULL)     continue;
-      DEBUG_DEPS    yLOG_complex ("range"     , "%s, bb=%4d, eb=%4d, bx=%4d, ex=%4d, by=%4d, ey=%4d, bz=%4d, ez=%4d", s_ranges [i].name, s_ranges [i].bb, s_ranges [i].eb, s_ranges [i].bx, s_ranges [i].ex, s_ranges [i].by, s_ranges [i].ey, s_ranges [i].bz, s_ranges [i].ez);
+      DEBUG_YCALC    yLOG_complex ("range"     , "%s, bb=%4d, eb=%4d, bx=%4d, ex=%4d, by=%4d, ey=%4d, bz=%4d, ez=%4d", s_ranges [i].name, s_ranges [i].bb, s_ranges [i].eb, s_ranges [i].bx, s_ranges [i].ex, s_ranges [i].by, s_ranges [i].ey, s_ranges [i].bz, s_ranges [i].ez);
       if (s_ranges [i].bb   >  b)   continue;
       if (s_ranges [i].eb   <  b)   continue;
       if (s_ranges [i].bz   >  z)   continue;
@@ -484,17 +496,17 @@ ycalc_range_include     (tDEP_ROOT **a_src, int b, int x, int y, int z)
       if (*a_src == NULL) {
          rc = ycalc_call_who_at  (b, x, y, z, YCALC_FULL, NULL, a_src);
          if (rc  <  0) {
-            DEBUG_DEPS    yLOG_exitr   (__FUNCTION__, rc);
+            DEBUG_YCALC    yLOG_exitr   (__FUNCTION__, rc);
             return rc;
          }
       }
       rc  = ycalc_deps_create (G_DEP_RANGE, &x_range, a_src);
       if (rc  <  0) {
-         DEBUG_DEPS    yLOG_exitr   (__FUNCTION__, rc);
+         DEBUG_YCALC    yLOG_exitr   (__FUNCTION__, rc);
          return rc;
       }
    }
-   DEBUG_DEPS    yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC    yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -534,66 +546,75 @@ ycalc__range_gather     (char *a_func)
    static tDEP_ROOT *x_saved  = NULL;
    /*---(prepare)------------------------*/
    x_deproot = (tDEP_ROOT *) ycalc_popref (__FUNCTION__);
-   DEBUG_CALC   yLOG_char    ("range#"    , x_deproot->range);
+   DEBUG_YCALC   yLOG_char    ("range#"    , x_deproot->range);
    if (x_deproot->range < 0) {
       ycalc_error_set (YCALC_ERROR_EXEC_PTR , NULL);
       return;
    }
    /*---(initialize)---------------------*/
-   s_count_all  = ycalc_range_size (x_deproot->range);
-   s_count_fil  = 0;
-   s_count_num  = s_count_str  = 0;
-   s_count_calc = 0;
-   s_count_error  = 0;
-   s_count_blank  = 0;
-   s_total      = 0.0;
-   s_min        =   S_MAX;
-   s_max        = -(S_MAX);
+   s_every    = ycalc_range_size (x_deproot->range);
+   s_used     = 0;
+   s_numbers  = s_nlit     = s_nform    = s_nlike    =  0;
+   s_strings  = s_slit     = s_sform    = s_slike    =  0;
+   s_pointers = s_merges   = s_blanks   = 0;
+   s_errors   = s_unknown  = 0;
+   s_total    = 0.0;
+   s_min      =   S_MAX;
+   s_max      = -(S_MAX);
    /*---(loop)---------------------------*/
    x_next = x_deproot->reqs;
    while (x_next != NULL) {
       /*---(filter)----------------------*/
-      DEBUG_CALC   yLOG_char    ("link type" , x_next->type);
+      DEBUG_YCALC   yLOG_char    ("link type" , x_next->type);
       if (x_next->type != G_DEP_RANGE) {
          x_next = x_next->next;
          continue;
       }
-      rc = g_valuer  (x_next->target->owner, &x_type, &x_value, NULL);
-      DEBUG_CALC   yLOG_value   ("valuer"    , rc);
-      DEBUG_CALC   yLOG_char    ("owner type", x_type);
+      rc = myCALC.e_valuer  (x_next->target->owner, &x_type, &x_value, NULL);
+      DEBUG_YCALC   yLOG_value   ("valuer"    , rc);
+      DEBUG_YCALC   yLOG_char    ("owner type", x_type);
       /*---(pure types)------------------*/
       if (strchr (YCALC_GROUP_NUM, x_type) != NULL) {
-         ++s_count_fil;
-         ++s_count_num;
+         ++s_used;
+         ++s_numbers;
+         switch (x_type) {
+         case YCALC_DATA_NUM   :   ++s_nlit;   break;
+         case YCALC_DATA_NFORM :   ++s_nform;  break;
+         case YCALC_DATA_NLIKE :   ++s_nlike;  break;
+         }
          s_total += x_value;
          if (x_value < s_min)  s_min = x_value;
          if (x_value > s_max)  s_max = x_value;
-         s_entries [s_count_num - 1] = x_value;
-         DEBUG_CALC   yLOG_value   ("numeric"   , s_count_num);
-         DEBUG_CALC   yLOG_value   ("entry"     , s_entries [s_count_num - 1]);
+         s_entries [s_numbers - 1] = x_value;
+         DEBUG_YCALC   yLOG_value   ("numeric"   , s_numbers);
+         DEBUG_YCALC   yLOG_value   ("entry"     , s_entries [s_numbers - 1]);
       } else if (strchr (YCALC_GROUP_STR, x_type) != NULL) {
-         ++s_count_str;
-         ++s_count_fil;
-         DEBUG_CALC   yLOG_value   ("string"    , s_count_str);
+         ++s_used;
+         ++s_strings;
+         switch (x_type) {
+         case YCALC_DATA_STR   :   ++s_slit;   break;
+         case YCALC_DATA_SFORM :   ++s_sform;  break;
+         case YCALC_DATA_SLIKE :   ++s_slike;  break;
+         }
+         DEBUG_YCALC   yLOG_value   ("string"    , s_strings);
       } else if (strchr (YCALC_GROUP_POINT, x_type) != NULL) {
-         ++s_count_fil;
-         ++s_count_ptr;
-         DEBUG_CALC   yLOG_value   ("pointer"   , s_count_ptr);
+         ++s_used;
+         ++s_pointers;
+         DEBUG_YCALC   yLOG_value   ("pointer"   , s_pointers);
       } else if (x_type == YCALC_DATA_ERROR) {
-         ++s_count_fil;
-         ++s_count_calc;
-         ++s_count_error;
-         DEBUG_CALC   yLOG_value   ("error"     , s_count_error);
+         ++s_used;
+         ++s_errors;
+         DEBUG_YCALC   yLOG_value   ("error"     , s_errors);
+      } else if (x_type == YCALC_DATA_MERGED) {
+         ++s_used;
+         ++s_merges;
       } else if (x_type == YCALC_DATA_BLANK) {
-         ++s_count_fil;
-         ++s_count_blank;
-         DEBUG_CALC   yLOG_value   ("blank"     , s_count_blank);
-      }
-      /*---(cross categories)------------*/
-      if (strchr (YCALC_GROUP_CALC, x_type) != NULL) {
-         ++s_count_fil;
-         ++s_count_calc;
-         DEBUG_CALC   yLOG_value   ("calc"      , s_count_calc);
+         ++s_used;
+         ++s_blanks;
+         DEBUG_YCALC   yLOG_value   ("blank"     , s_blanks);
+      } else {
+         ++s_used;
+         ++s_unknown;
       }
       /*---(next)------------------------*/
       x_next = x_next->next;
@@ -607,8 +628,14 @@ ycalc__range_gather     (char *a_func)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_sum         (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
+   if (s_errors + s_blanks > 0) {
+      DEBUG_YCALC   yLOG_note    ("errors in data range stop calculation");
+      ycalc_error_set (YCALC_ERROR_EXEC_ERR , NULL);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
    ycalc_pushval (__FUNCTION__, s_total);
    return;
 }
@@ -616,88 +643,187 @@ ycalc_sum         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_every       (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, s_count_all);
+   ycalc_pushval (__FUNCTION__, s_every);
    return;
 }
 
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-ycalc_filled      (void)
+ycalc_used        (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, s_count_fil);
+   ycalc_pushval (__FUNCTION__, s_used);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_empties     (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_every - s_used);
    return;
 }
 
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_numbers     (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, s_count_num);
+   ycalc_pushval (__FUNCTION__, s_numbers);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_nlit        (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_nlit);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_nform       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_nform);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_nlike       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_nlike);
    return;
 }
 
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_strings     (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, s_count_str);
+   ycalc_pushval (__FUNCTION__, s_strings);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_slit        (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_slit);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_sform       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_sform);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_slike       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_slike);
    return;
 }
 
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_pointers    (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, s_count_ptr);
+   ycalc_pushval (__FUNCTION__, s_pointers);
    return;
 }
 
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-ycalc_empty       (void)
+ycalc_merges      (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, s_count_all - s_count_fil);
-   return;
-}
-
-void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-ycalc_calcs       (void)
-{
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
-   ycalc__range_gather (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, s_count_calc);
-   return;
-}
-
-void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-ycalc_errors      (void)
-{
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
-   ycalc__range_gather (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, s_count_error);
+   ycalc_pushval (__FUNCTION__, s_merges);
    return;
 }
 
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_blanks      (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, s_count_blank);
+   ycalc_pushval (__FUNCTION__, s_blanks);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_errors      (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_errors);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_unknowns    (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_unknown);
+   return;
+}
+
+void
+ycalc_literals    (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_nlit + s_slit);
+   return;
+}
+
+void
+ycalc_forms       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_nform + s_sform);
+   return;
+}
+
+void
+ycalc_likes       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_nlike + s_slike);
+   return;
+}
+
+void
+ycalc_calcs       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_nform + s_nlike + s_sform + s_slike);
    return;
 }
 
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_dist        (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, sqrt (pow (s_b, 2) + pow (s_x, 2) + pow (s_y, 2) + pow (s_z, 2)));
    return;
@@ -706,7 +832,7 @@ ycalc_dist        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_tabs        (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_b);
    return;
@@ -715,7 +841,7 @@ ycalc_tabs        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_cols        (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_x);
    return;
@@ -724,7 +850,7 @@ ycalc_cols        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_rows        (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_y);
    return;
@@ -733,7 +859,7 @@ ycalc_rows        (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_levels      (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_z);
    return;
@@ -742,8 +868,14 @@ ycalc_levels      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_min         (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
+   if (s_errors + s_blanks > 0) {
+      DEBUG_YCALC   yLOG_note    ("errors in data range stop calculation");
+      ycalc_error_set (YCALC_ERROR_EXEC_ERR , NULL);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
    ycalc_pushval (__FUNCTION__, s_min);
    return;
 }
@@ -751,8 +883,14 @@ ycalc_min         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_max         (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
+   if (s_errors + s_blanks > 0) {
+      DEBUG_YCALC   yLOG_note    ("errors in data range stop calculation");
+      ycalc_error_set (YCALC_ERROR_EXEC_ERR , NULL);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
    ycalc_pushval (__FUNCTION__, s_max);
    return;
 }
@@ -760,8 +898,14 @@ ycalc_max         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_range       (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
+   if (s_errors + s_blanks > 0) {
+      DEBUG_YCALC   yLOG_note    ("errors in data range stop calculation");
+      ycalc_error_set (YCALC_ERROR_EXEC_ERR , NULL);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
    ycalc_pushval (__FUNCTION__, s_max - s_min);
    return;
 }
@@ -769,9 +913,15 @@ ycalc_range       (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_average     (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
-   if (s_count_num > 0)  ycalc_pushval (__FUNCTION__, s_total / s_count_num);
+   if (s_errors + s_blanks > 0) {
+      DEBUG_YCALC   yLOG_note    ("errors in data range stop calculation");
+      ycalc_error_set (YCALC_ERROR_EXEC_ERR , NULL);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
+   if (s_numbers > 0)  ycalc_pushval (__FUNCTION__, s_total / s_numbers);
    else                  ycalc_pushval (__FUNCTION__, 0);
    return;
 }
@@ -787,18 +937,18 @@ ycalc__range_sort    (void)
    int         mid         =  0;            /* midpoint of entries            */
    int         runs        =  0;
    /*---(prepare)------------------------*/
-   DEBUG_CALC   yLOG_note    ("before sorting");
-   for (i = 0; i < s_count_num; ++i)  DEBUG_CALC   yLOG_complex ("entry"     , "%3d = %10.2lf", i, s_entries [i]);
+   DEBUG_YCALC   yLOG_note    ("before sorting");
+   for (i = 0; i < s_numbers; ++i)  DEBUG_YCALC   yLOG_complex ("entry"     , "%3d = %10.2lf", i, s_entries [i]);
    i = 1;
    /*---(sort)---------------------------*/
-   DEBUG_CALC   yLOG_note    ("sorting");
-   while (i < s_count_num) {
+   DEBUG_YCALC   yLOG_note    ("sorting");
+   while (i < s_numbers) {
       ++runs;
       if (runs > 500)  break;
       /*---(load vars)-------------------*/
       a = s_entries [i - 1];
       b = s_entries [i];
-      DEBUG_CALC   yLOG_complex ("current"   , "compare i,%3d (t,%3d) =  a,%10.2lf to b,%10.2lf", i, tele, a, b);
+      DEBUG_YCALC   yLOG_complex ("current"   , "compare i,%3d (t,%3d) =  a,%10.2lf to b,%10.2lf", i, tele, a, b);
       /*---(compare)---------------------*/
       if (i == 0 || a <= b) {
          if (tele >= 0) {
@@ -814,14 +964,14 @@ ycalc__range_sort    (void)
       s_entries [i]     = a;
       a = s_entries [i - 1];
       b = s_entries [i];
-      DEBUG_CALC   yLOG_complex ("swapped"   , "now     i,%3d (t,%3d) =  a,%10.2lf to b,%10.2lf", i, tele, a, b);
+      DEBUG_YCALC   yLOG_complex ("swapped"   , "now     i,%3d (t,%3d) =  a,%10.2lf to b,%10.2lf", i, tele, a, b);
       /*---(update)----------------------*/
       if (tele < 0) tele = i;
       if (i > 1) --i;
    }
    /*---(wrapup)-------------------------*/
-   DEBUG_CALC   yLOG_note    ("after sorting");
-   for (i = 0; i < s_count_num; ++i)  DEBUG_CALC   yLOG_complex ("entry"     , "%3d = %10.2lf", i, s_entries [i]);
+   DEBUG_YCALC   yLOG_note    ("after sorting");
+   for (i = 0; i < s_numbers; ++i)  DEBUG_YCALC   yLOG_complex ("entry"     , "%3d = %10.2lf", i, s_entries [i]);
    /*---(complete)-----------------------*/
    return;
 }
@@ -841,31 +991,31 @@ ycalc__range_quarters     (void)
    double      x_3rdw      =  0;            /* third quartile point           */
    /*---(start)--------------------------*/
    ycalc__range_gather (__FUNCTION__);
-   DEBUG_CALC   yLOG_value   ("count"     , s_count_num);
-   if      (s_count_num == 0)  {
-      DEBUG_CALC   yLOG_value   ("pushing"   , 0);
+   DEBUG_YCALC   yLOG_value   ("count"     , s_numbers);
+   if      (s_numbers == 0)  {
+      DEBUG_YCALC   yLOG_value   ("pushing"   , 0);
       ycalc_pushval (__FUNCTION__,  0);
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return;
    }
    ycalc__range_sort ();
    /*---(figure out median)--------------*/
-   switch (s_count_num % 2) {
+   switch (s_numbers % 2) {
    case 0 :  /* even means average needed   */
-      x_mid1 = (s_count_num / 2.0) - 1;
+      x_mid1 = (s_numbers / 2.0) - 1;
       x_mid2 = x_mid1 + 1;
       break;
    case 1 :  /* odd means an exact middle   */
-      x_mid1 = (s_count_num / 2);
+      x_mid1 = (s_numbers / 2);
       x_mid2 = x_mid1;
       break;
    }
    q2 = (s_entries [x_mid1] + s_entries [x_mid2]) / 2.0;
    /*---(figure out quarters)------------*/
-   x_qtr = s_count_num / 4;
-   switch (s_count_num % 4) {
+   x_qtr = s_numbers / 4;
+   switch (s_numbers % 4) {
    case 0 :
-      DEBUG_CALC   yLOG_note    ("zero");
+      DEBUG_YCALC   yLOG_note    ("zero");
       x_1st1 = x_qtr        - 1;
       x_1st2 = x_1st1 + 1;
       x_1stw = 2.0;
@@ -874,7 +1024,7 @@ ycalc__range_quarters     (void)
       x_3rdw = 2.0;
       break;
    case 1 :
-      DEBUG_CALC   yLOG_note    ("one");
+      DEBUG_YCALC   yLOG_note    ("one");
       x_1st1 = x_qtr        - 1;
       x_1st2 = x_1st1 + 1;
       x_1stw = 1.0;
@@ -883,7 +1033,7 @@ ycalc__range_quarters     (void)
       x_3rdw = 3.0;
       break;
    case 2 :  /* even in each half, so quartile is exact element  */ 
-      DEBUG_CALC   yLOG_note    ("two");
+      DEBUG_YCALC   yLOG_note    ("two");
       x_1st1 = x_qtr;
       x_1st2 = x_1st1;
       x_1stw = 2.0;
@@ -892,7 +1042,7 @@ ycalc__range_quarters     (void)
       x_3rdw = 2.0;
       break;
    case 3 :
-      DEBUG_CALC   yLOG_note    ("three");
+      DEBUG_YCALC   yLOG_note    ("three");
       x_1st1 = x_qtr;
       x_1st2 = x_1st1 + 1;
       x_1stw = 3.0;
@@ -901,16 +1051,16 @@ ycalc__range_quarters     (void)
       x_3rdw = 1.0;
       break;
    }
-   DEBUG_CALC   yLOG_complex ("x_1st1"    , "i=%3d, v=%10.5lf, w=%4.2lf, f=%10.5lf", x_1st1, s_entries [x_1st1], x_1stw      , s_entries [x_1st1] * x_1stw);
-   DEBUG_CALC   yLOG_complex ("x_1st2"    , "i=%3d, v=%10.5lf, w=%4.2lf, f=%10.5lf", x_1st2, s_entries [x_1st2], 4.0 - x_1stw, s_entries [x_1st2] * (4.0 - x_1stw));
+   DEBUG_YCALC   yLOG_complex ("x_1st1"    , "i=%3d, v=%10.5lf, w=%4.2lf, f=%10.5lf", x_1st1, s_entries [x_1st1], x_1stw      , s_entries [x_1st1] * x_1stw);
+   DEBUG_YCALC   yLOG_complex ("x_1st2"    , "i=%3d, v=%10.5lf, w=%4.2lf, f=%10.5lf", x_1st2, s_entries [x_1st2], 4.0 - x_1stw, s_entries [x_1st2] * (4.0 - x_1stw));
    q1 = ((s_entries [x_1st1] * x_1stw) + (s_entries [x_1st2] * (4.0 - x_1stw))) / 4.0;
    /*> printf ("q1 = %lf\n", q1);                                                     <*/
-   DEBUG_CALC   yLOG_complex ("x_1st"     , "%10.5lf", q1);
-   DEBUG_CALC   yLOG_complex ("x_3rd1"    , "i=%3d, v=%10.5lf, w=%4.2lf, f=%10.5lf", x_3rd1, s_entries [x_3rd1], x_3rdw      , s_entries [x_3rd1] * x_3rdw);
-   DEBUG_CALC   yLOG_complex ("x_3rd2"    , "i=%3d, v=%10.5lf, w=%4.2lf, f=%10.5lf", x_3rd2, s_entries [x_3rd2], 4.0 - x_3rdw, s_entries [x_3rd2] * (4.0 - x_3rdw));
+   DEBUG_YCALC   yLOG_complex ("x_1st"     , "%10.5lf", q1);
+   DEBUG_YCALC   yLOG_complex ("x_3rd1"    , "i=%3d, v=%10.5lf, w=%4.2lf, f=%10.5lf", x_3rd1, s_entries [x_3rd1], x_3rdw      , s_entries [x_3rd1] * x_3rdw);
+   DEBUG_YCALC   yLOG_complex ("x_3rd2"    , "i=%3d, v=%10.5lf, w=%4.2lf, f=%10.5lf", x_3rd2, s_entries [x_3rd2], 4.0 - x_3rdw, s_entries [x_3rd2] * (4.0 - x_3rdw));
    q3 = ((s_entries [x_3rd1] * x_3rdw) + (s_entries [x_3rd2] * (4.0 - x_3rdw))) / 4.0;
    /*> printf ("q3 = %lf\n", q3);                                                     <*/
-   DEBUG_CALC   yLOG_complex ("x_3rd"     , "%10.5lf", q3);
+   DEBUG_YCALC   yLOG_complex ("x_3rd"     , "%10.5lf", q3);
    qr = q3 - q1;
    qs = (q3 + q1 - (2.0 * q2)) / (q3 - q1);
    /*> printf ("qr = %lf\n", qr);                                                     <*/
@@ -921,8 +1071,14 @@ ycalc__range_quarters     (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_quarter1    (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_quarters ();
+   if (s_errors + s_blanks > 0) {
+      DEBUG_YCALC   yLOG_note    ("errors in data range stop calculation");
+      ycalc_error_set (YCALC_ERROR_EXEC_ERR , NULL);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
    ycalc_pushval (__FUNCTION__, q1);
    return;
 }
@@ -930,8 +1086,14 @@ ycalc_quarter1    (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_median      (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_quarters ();
+   if (s_errors + s_blanks > 0) {
+      DEBUG_YCALC   yLOG_note    ("errors in data range stop calculation");
+      ycalc_error_set (YCALC_ERROR_EXEC_ERR , NULL);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
    ycalc_pushval (__FUNCTION__, q2);
    return;
 }
@@ -939,8 +1101,14 @@ ycalc_median      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_quarter3    (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_quarters ();
+   if (s_errors + s_blanks > 0) {
+      DEBUG_YCALC   yLOG_note    ("errors in data range stop calculation");
+      ycalc_error_set (YCALC_ERROR_EXEC_ERR , NULL);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
    ycalc_pushval (__FUNCTION__, q3);
    return;
 }
@@ -948,8 +1116,14 @@ ycalc_quarter3    (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_rangeq      (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_quarters ();
+   if (s_errors + s_blanks > 0) {
+      DEBUG_YCALC   yLOG_note    ("errors in data range stop calculation");
+      ycalc_error_set (YCALC_ERROR_EXEC_ERR , NULL);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
    ycalc_pushval (__FUNCTION__, qr);
    return;
 }
@@ -957,8 +1131,14 @@ ycalc_rangeq      (void)
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_skew        (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_quarters ();
+   if (s_errors + s_blanks > 0) {
+      DEBUG_YCALC   yLOG_note    ("errors in data range stop calculation");
+      ycalc_error_set (YCALC_ERROR_EXEC_ERR , NULL);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
    ycalc_pushval (__FUNCTION__, qs);
    return;
 }
@@ -966,7 +1146,7 @@ ycalc_skew        (void)
 void    /*-> find the most common value ---------[ ------ [fv.952.070.43]*/ /*-[02.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_mode         (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----------+-*/
    int         i           =  0;            /* loop iterator -- entry         */
    int         mid         =  0;            /* midpoint of entries            */
@@ -977,44 +1157,44 @@ ycalc_mode         (void)
    int         x_curr      =  0;
    int         x_save      =  0;
    /*---(start)--------------------------*/
-   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    ycalc__range_quarters ();
-   DEBUG_CALC   yLOG_value   ("count_num" , s_count_num);
-   if      (s_count_num == 0)  {
-      DEBUG_CALC   yLOG_value   ("pushing"   , 0);
+   DEBUG_YCALC   yLOG_value   ("count_num" , s_numbers);
+   if      (s_numbers == 0)  {
+      DEBUG_YCALC   yLOG_value   ("pushing"   , 0);
       ycalc_pushval (__FUNCTION__,  0);
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return;
    }
    x_save = x_curr;
-   for (i = 0; i < s_count_num; ++i) {
+   for (i = 0; i < s_numbers; ++i) {
       x_curr = (int) s_entries [i];
-      DEBUG_CALC   yLOG_complex ("entry"     , "i=%3d, x_curr=%3d, x_save=%3d", i, x_curr, x_save);
+      DEBUG_YCALC   yLOG_complex ("entry"     , "i=%3d, x_curr=%3d, x_save=%3d", i, x_curr, x_save);
       if (x_curr != x_save)  x_count = 0;
       ++x_count;
-      DEBUG_CALC   yLOG_value   ("count"     , x_count);
+      DEBUG_YCALC   yLOG_value   ("count"     , x_count);
       if (x_count == x_highest) {
          ++x_multi;
-         DEBUG_CALC   yLOG_complex ("multi"     , "i=%3d, mode=%3d, highest=%3d", i, x_mode, x_highest);
+         DEBUG_YCALC   yLOG_complex ("multi"     , "i=%3d, mode=%3d, highest=%3d", i, x_mode, x_highest);
       }
       if (x_count > x_highest) {
          x_mode    = x_curr;
          x_highest = x_count;
          x_multi   = 0;
-         DEBUG_CALC   yLOG_complex ("new_mode"  , "i=%3d, mode=%3d, highest=%3d", i, x_mode, x_highest);
+         DEBUG_YCALC   yLOG_complex ("new_mode"  , "i=%3d, mode=%3d, highest=%3d", i, x_mode, x_highest);
       }
       x_save = x_curr;
    }
    if (x_multi >= 1)  ycalc_pushval (__FUNCTION__, (double) q2);
    else               ycalc_pushval (__FUNCTION__, (double) x_mode);
-   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return;
 }
 
 void    /*-> find the measure of variance -------[ ------ [fv.A52.070.22]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_stddev       (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----------+-*/
    int         i           =  0;            /* loop iterator -- entry         */
    double      x_mean      =  0;
@@ -1024,34 +1204,40 @@ ycalc_stddev       (void)
    double      x_total     =  0;
    double      x_stddev    =  0;
    /*---(start)--------------------------*/
-   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
-   DEBUG_CALC   yLOG_value   ("count_num" , s_count_num);
+   if (s_errors + s_blanks > 0) {
+      DEBUG_YCALC   yLOG_note    ("errors in data range stop calculation");
+      ycalc_error_set (YCALC_ERROR_EXEC_ERR , NULL);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
+   DEBUG_YCALC   yLOG_value   ("count_num" , s_numbers);
    /*---(defense: too few values)--------*/
-   if      (s_count_num <= 1)  {
-      DEBUG_CALC   yLOG_value   ("pushing"   , 0);
+   if      (s_numbers <= 1)  {
+      DEBUG_YCALC   yLOG_value   ("pushing"   , 0);
       ycalc_pushval (__FUNCTION__,  0);
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return;
    }
    /*---(calc mean)----------------------*/
-   x_mean = s_total / ((double) s_count_num);
+   x_mean = s_total / ((double) s_numbers);
    /*---(gather variances)---------------*/
-   for (i = 0; i < s_count_num; ++i) {
+   for (i = 0; i < s_numbers; ++i) {
       x_curr   = s_entries [i];
       x_diff   = x_curr - x_mean;
       x_var    = x_diff * x_diff;
       x_total += x_var;
-      DEBUG_CALC   yLOG_complex ("entry"     , "i=%3d, x_curr=%5.2lf, x_diff=%5.2lf, x_var=%10.2lf, x_total=%10.2lf", i, x_curr, x_diff, x_var, x_total);
+      DEBUG_YCALC   yLOG_complex ("entry"     , "i=%3d, x_curr=%5.2lf, x_diff=%5.2lf, x_var=%10.2lf, x_total=%10.2lf", i, x_curr, x_diff, x_var, x_total);
    }
    /*---(final calc)---------------------*/
-   DEBUG_CALC   yLOG_llong   ("variance"  , x_total / ((double) s_count_num));
-   x_stddev   = sqrt(x_total / ((double) s_count_num));
-   DEBUG_CALC   yLOG_llong   ("stddev"    , x_stddev);
+   DEBUG_YCALC   yLOG_llong   ("variance"  , x_total / ((double) s_numbers));
+   x_stddev   = sqrt(x_total / ((double) s_numbers));
+   DEBUG_YCALC   yLOG_llong   ("stddev"    , x_stddev);
    ycalc_pushval (__FUNCTION__, x_stddev);
    /*---(complete)-----------------------*/
-   x_mean = s_total / ((double) s_count_num);
-   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   x_mean = s_total / ((double) s_numbers);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return;
 }
 
@@ -1065,21 +1251,42 @@ static void  o___OFFSET__________o () { return; }
 void
 ycalc__rel_driver    (char *a_type)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
    tDEP_ROOT  *x_deproot   = NULL;
    char        t           [LEN_LABEL];
-   /*---(parse the current locaction)----*/
-   ycalc_pushref     (__FUNCTION__, myCALC.deproot, myCALC.label);
+   int         uo, xo, yo, zo;
+   /*---(prepare)------------------------*/
+   DEBUG_YCALC   yLOG_info    ("a_type"    , a_type);
+   uo = xo = yo = zo = 0;
+   /*---(pop appropriate offsets)--------*/
+   if (a_type [6] == 'z')   zo     = ycalc_popval      (__FUNCTION__);
+   if (a_type [5] == 'y')   yo     = ycalc_popval      (__FUNCTION__);
+   if (a_type [4] == 'x')   xo     = ycalc_popval      (__FUNCTION__);
+   if (a_type [3] == 'b')   uo     = ycalc_popval      (__FUNCTION__);
+   if (ycalc_error_true ())  return;
+   DEBUG_YCALC   yLOG_complex ("offsets"   , "%2du, %3dx, %3dy, %3dz", uo, xo, yo, zo);
+   /*---(pop origination)----------------*/
+   if (a_type [1] == 'm')   ycalc_pushref (__FUNCTION__, myCALC.deproot, myCALC.label);
    ycalc_popval_plus (__FUNCTION__, G_SPECIAL_ALLPOS);
    if (ycalc_error_true ())  return;
    /*---(pop appropriate offsets)--------*/
-   if (a_type [3] == 'z')   o     += ycalc_popval      (__FUNCTION__);
-   if (a_type [2] == 'y')   n     += ycalc_popval      (__FUNCTION__);
-   if (a_type [1] == 'x')   m     += ycalc_popval      (__FUNCTION__);
-   if (a_type [0] == 'b')   s_buf += ycalc_popval      (__FUNCTION__);
-   if (ycalc_error_true ())  return;
+   if (a_type [0] == 'r') {
+      DEBUG_YCALC   yLOG_note    ("relative type");
+      o     += zo;
+      n     += yo;
+      m     += xo;
+      s_buf += uo;
+   }
+   if (a_type [0] == 'a') {
+      DEBUG_YCALC   yLOG_note    ("absolute type");
+      if (a_type [6] == 'z')   o      = zo;
+      if (a_type [5] == 'y')   n      = yo;
+      if (a_type [4] == 'x')   m      = xo;
+      if (a_type [3] == 'b')   s_buf  = uo;
+   }
+   DEBUG_YCALC   yLOG_complex ("address"   , "%2du, %3dx, %3dy, %3dz", s_buf, m, n, o);
    /*---(look at destination)------------*/
    rc = ycalc_call_who_at (s_buf, m, n, o, YCALC_FULL, NULL, &x_deproot);
    if (rc < 0)  {
@@ -1087,7 +1294,7 @@ ycalc__rel_driver    (char *a_type)
       return;
    }
    /*---(create calc reference)----------*/
-   DEBUG_CALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));
+   DEBUG_YCALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));
    if (myCALC.deproot == x_deproot) {
       ycalc_error_set (YCALC_ERROR_EXEC_CIR , NULL);
       return;
@@ -1102,102 +1309,121 @@ ycalc__rel_driver    (char *a_type)
    return;
 }
 
-void ycalc_rel_b         (void)  { return ycalc__rel_driver ("b___"); }
-void ycalc_rel_x         (void)  { return ycalc__rel_driver ("_x__"); }
-void ycalc_rel_y         (void)  { return ycalc__rel_driver ("__y_"); }
-void ycalc_rel_xy        (void)  { return ycalc__rel_driver ("_xy_"); }
-void ycalc_rel_bxy       (void)  { return ycalc__rel_driver ("bxy_"); }
+void ycalc_rel_b         (void)  { return ycalc__rel_driver ("rm/b___"); }
+void ycalc_rel_x         (void)  { return ycalc__rel_driver ("rm/_x__"); }
+void ycalc_rel_y         (void)  { return ycalc__rel_driver ("rm/__y_"); }
+void ycalc_rel_xy        (void)  { return ycalc__rel_driver ("rm/_xy_"); }
+void ycalc_rel_bxy       (void)  { return ycalc__rel_driver ("rm/bxy_"); }
 
-void
-ycalc__abs_driver    (char *a_type)
-{
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
-   /*---(locals)-----------+-----+-----+-*/
-   char        rc          =    0;
-   tDEP_ROOT  *x_deproot   = NULL;
-   /*---(parse the current locaction)----*/
-   ycalc_pushref     (__FUNCTION__, myCALC.deproot, myCALC.label);
-   ycalc_popval_plus (__FUNCTION__, G_SPECIAL_ALLPOS);
-   if (ycalc_error_true ()) return ;
-   /*---(pop appropriate replacements)---*/
-   if (a_type [3] == 'z')   o      = ycalc_popval      (__FUNCTION__);
-   if (a_type [2] == 'y')   n      = ycalc_popval      (__FUNCTION__);
-   if (a_type [1] == 'x')   m      = ycalc_popval      (__FUNCTION__);
-   if (a_type [0] == 'b')   s_buf  = ycalc_popval      (__FUNCTION__);
-   if (ycalc_error_true ()) return ;
-   /*---(look at destination)------------*/
-   rc = ycalc_call_who_at (s_buf, m, n, o, YCALC_FULL, NULL, &x_deproot);
-   if (rc < 0)  {
-      ycalc_error_set (YCALC_ERROR_EXEC_REF , NULL);
-      return;
-   }
-   /*---(create calc reference)----------*/
-   DEBUG_CALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));
-   if (myCALC.deproot == x_deproot) {
-      ycalc_error_set (YCALC_ERROR_EXEC_CIR , NULL);
-      return;
-   }
-   ycalc_pushref     (__FUNCTION__, x_deproot, ycalc_call_labeler (x_deproot));
-   rc = ycalc_deps_create (G_DEP_CALCREF, &(myCALC.deproot), &x_deproot);
-   if (rc < 0) {
-      ycalc_error_set (YCALC_ERROR_EXEC_PTR , NULL);
-      return;
-   }
-   /*---(complete)-----------------------*/
-   return;
-}
+void ycalc_abs_b         (void)  { return ycalc__rel_driver ("am/b___"); }
+void ycalc_abs_x         (void)  { return ycalc__rel_driver ("am/_x__"); }
+void ycalc_abs_y         (void)  { return ycalc__rel_driver ("am/__y_"); }
+void ycalc_abs_xy        (void)  { return ycalc__rel_driver ("am/_xy_"); }
+void ycalc_abs_bxy       (void)  { return ycalc__rel_driver ("am/bxy_"); }
 
-void ycalc_abs_b         (void)  { return ycalc__abs_driver ("b___"); }
-void ycalc_abs_x         (void)  { return ycalc__abs_driver ("_x__"); }
-void ycalc_abs_y         (void)  { return ycalc__abs_driver ("__y_"); }
-void ycalc_abs_xy        (void)  { return ycalc__abs_driver ("_xy_"); }
-void ycalc_abs_bxy       (void)  { return ycalc__abs_driver ("bxy_"); }
-void ycalc_address       (void)  { return ycalc__abs_driver ("bxy_"); }
+void ycalc_ru            (void)  { return ycalc__rel_driver ("r_/b___"); }
+void ycalc_rx            (void)  { return ycalc__rel_driver ("r_/_x__"); }
+void ycalc_ry            (void)  { return ycalc__rel_driver ("r_/__y_"); }
+void ycalc_rxy           (void)  { return ycalc__rel_driver ("r_/_xy_"); }
+void ycalc_ruxy          (void)  { return ycalc__rel_driver ("r_/bxy_"); }
 
-void
-ycalc__off_driver    (char *a_type)
-{
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
-   /*---(locals)-----------+-----+-----+-*/
-   char        rc          =    0;
-   tDEP_ROOT  *x_deproot   = NULL;
-   /*---(pop appropriate offsets)--------*/
-   a = b = c = d = 0;
-   if (a_type [3] == 'z')   d      = ycalc_popval      (__FUNCTION__);
-   if (a_type [2] == 'y')   c      = ycalc_popval      (__FUNCTION__);
-   if (a_type [1] == 'x')   b      = ycalc_popval      (__FUNCTION__);
-   if (a_type [0] == 'b')   a      = ycalc_popval      (__FUNCTION__);
-   if (ycalc_error_true ()) return ;
-   /*---(parse the base location)--------*/
-   ycalc_popval_plus (__FUNCTION__, G_SPECIAL_ALLPOS);
-   if (ycalc_error_true ()) return ;
-   /*---(look at destination)------------*/
-   rc = ycalc_call_who_at (s_buf + a, m + b, n + c, o + d, YCALC_FULL, NULL, &x_deproot);
-   if (rc < 0)  {
-      ycalc_error_set (YCALC_ERROR_EXEC_REF , NULL);
-      return;
-   }
-   /*---(create calc reference)----------*/
-   DEBUG_CALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));
-   if (myCALC.deproot == x_deproot) {
-      ycalc_error_set (YCALC_ERROR_EXEC_CIR , NULL);
-      return;
-   }
-   ycalc_pushref     (__FUNCTION__, x_deproot, ycalc_call_labeler (x_deproot));
-   rc = ycalc_deps_create (G_DEP_CALCREF, &(myCALC.deproot), &x_deproot);
-   if (rc < 0) {
-      ycalc_error_set (YCALC_ERROR_EXEC_CIR , NULL);
-      return;
-   }
-   /*---(complete)-----------------------*/
-   return;
-}
+void ycalc_au            (void)  { return ycalc__rel_driver ("a_/b___"); }
+void ycalc_ax            (void)  { return ycalc__rel_driver ("a_/_x__"); }
+void ycalc_ay            (void)  { return ycalc__rel_driver ("a_/__y_"); }
+void ycalc_axy           (void)  { return ycalc__rel_driver ("a_/_xy_"); }
+void ycalc_auxy          (void)  { return ycalc__rel_driver ("a_/bxy_"); }
+void ycalc_address       (void)  { return ycalc__rel_driver ("a_/bxy_"); }
 
-void ycalc_off_b         (void)  { return ycalc__off_driver ("b___"); }
-void ycalc_off_x         (void)  { return ycalc__off_driver ("_x__"); }
-void ycalc_off_y         (void)  { return ycalc__off_driver ("__y_"); }
-void ycalc_off_xy        (void)  { return ycalc__off_driver ("_xy_"); }
-void ycalc_off_bxy       (void)  { return ycalc__off_driver ("bxy_"); }
+/*> void                                                                              <* 
+ *> ycalc__abs_driver    (char *a_type)                                               <* 
+ *> {                                                                                 <* 
+ *>    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);                       <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                       <* 
+ *>    char        rc          =    0;                                                <* 
+ *>    tDEP_ROOT  *x_deproot   = NULL;                                                <* 
+ *>    /+---(parse the current locaction)----+/                                       <* 
+ *>    ycalc_pushref     (__FUNCTION__, myCALC.deproot, myCALC.label);                <* 
+ *>    ycalc_popval_plus (__FUNCTION__, G_SPECIAL_ALLPOS);                            <* 
+ *>    if (ycalc_error_true ()) return ;                                              <* 
+ *>    /+---(pop appropriate replacements)---+/                                       <* 
+ *>    if (a_type [3] == 'z')   o      = ycalc_popval      (__FUNCTION__);            <* 
+ *>    if (a_type [2] == 'y')   n      = ycalc_popval      (__FUNCTION__);            <* 
+ *>    if (a_type [1] == 'x')   m      = ycalc_popval      (__FUNCTION__);            <* 
+ *>    if (a_type [0] == 'b')   s_buf  = ycalc_popval      (__FUNCTION__);            <* 
+ *>    if (ycalc_error_true ()) return ;                                              <* 
+ *>    /+---(look at destination)------------+/                                       <* 
+ *>    rc = ycalc_call_who_at (s_buf, m, n, o, YCALC_FULL, NULL, &x_deproot);         <* 
+ *>    if (rc < 0)  {                                                                 <* 
+ *>       ycalc_error_set (YCALC_ERROR_EXEC_REF , NULL);                              <* 
+ *>       return;                                                                     <* 
+ *>    }                                                                              <* 
+ *>    /+---(create calc reference)----------+/                                       <* 
+ *>    DEBUG_YCALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));    <* 
+ *>    if (myCALC.deproot == x_deproot) {                                             <* 
+ *>       ycalc_error_set (YCALC_ERROR_EXEC_CIR , NULL);                              <* 
+ *>       return;                                                                     <* 
+ *>    }                                                                              <* 
+ *>    ycalc_pushref     (__FUNCTION__, x_deproot, ycalc_call_labeler (x_deproot));   <* 
+ *>    rc = ycalc_deps_create (G_DEP_CALCREF, &(myCALC.deproot), &x_deproot);         <* 
+ *>    if (rc < 0) {                                                                  <* 
+ *>       ycalc_error_set (YCALC_ERROR_EXEC_PTR , NULL);                              <* 
+ *>       return;                                                                     <* 
+ *>    }                                                                              <* 
+ *>    /+---(complete)-----------------------+/                                       <* 
+ *>    return;                                                                        <* 
+ *> }                                                                                 <*/
+
+/*> void ycalc_abs_b         (void)  { return ycalc__abs_driver ("Am b___"); }        <* 
+ *> void ycalc_abs_x         (void)  { return ycalc__abs_driver ("Am _x__"); }        <* 
+ *> void ycalc_abs_y         (void)  { return ycalc__abs_driver ("Am __y_"); }        <* 
+ *> void ycalc_abs_xy        (void)  { return ycalc__abs_driver ("Am _xy_"); }        <* 
+ *> void ycalc_abs_bxy       (void)  { return ycalc__abs_driver ("Am bxy_"); }        <* 
+ *> void ycalc_address       (void)  { return ycalc__abs_driver ("Am bxy_"); }        <*/
+
+/*> void                                                                                        <* 
+ *> ycalc__off_driver    (char *a_type)                                                         <* 
+ *> {                                                                                           <* 
+ *>    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);                                 <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                                 <* 
+ *>    char        rc          =    0;                                                          <* 
+ *>    tDEP_ROOT  *x_deproot   = NULL;                                                          <* 
+ *>    /+---(pop appropriate offsets)--------+/                                                 <* 
+ *>    a = b = c = d = 0;                                                                       <* 
+ *>    if (a_type [3] == 'z')   d      = ycalc_popval      (__FUNCTION__);                      <* 
+ *>    if (a_type [2] == 'y')   c      = ycalc_popval      (__FUNCTION__);                      <* 
+ *>    if (a_type [1] == 'x')   b      = ycalc_popval      (__FUNCTION__);                      <* 
+ *>    if (a_type [0] == 'b')   a      = ycalc_popval      (__FUNCTION__);                      <* 
+ *>    if (ycalc_error_true ()) return ;                                                        <* 
+ *>    /+---(parse the base location)--------+/                                                 <* 
+ *>    ycalc_popval_plus (__FUNCTION__, G_SPECIAL_ALLPOS);                                      <* 
+ *>    if (ycalc_error_true ()) return ;                                                        <* 
+ *>    /+---(look at destination)------------+/                                                 <* 
+ *>    rc = ycalc_call_who_at (s_buf + a, m + b, n + c, o + d, YCALC_FULL, NULL, &x_deproot);   <* 
+ *>    if (rc < 0)  {                                                                           <* 
+ *>       ycalc_error_set (YCALC_ERROR_EXEC_REF , NULL);                                        <* 
+ *>       return;                                                                               <* 
+ *>    }                                                                                        <* 
+ *>    /+---(create calc reference)----------+/                                                 <* 
+ *>    DEBUG_YCALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));              <* 
+ *>    if (myCALC.deproot == x_deproot) {                                                       <* 
+ *>       ycalc_error_set (YCALC_ERROR_EXEC_CIR , NULL);                                        <* 
+ *>       return;                                                                               <* 
+ *>    }                                                                                        <* 
+ *>    ycalc_pushref     (__FUNCTION__, x_deproot, ycalc_call_labeler (x_deproot));             <* 
+ *>    rc = ycalc_deps_create (G_DEP_CALCREF, &(myCALC.deproot), &x_deproot);                   <* 
+ *>    if (rc < 0) {                                                                            <* 
+ *>       ycalc_error_set (YCALC_ERROR_EXEC_CIR , NULL);                                        <* 
+ *>       return;                                                                               <* 
+ *>    }                                                                                        <* 
+ *>    /+---(complete)-----------------------+/                                                 <* 
+ *>    return;                                                                                  <* 
+ *> }                                                                                           <*/
+
+/*> void ycalc_off_b         (void)  { return ycalc__off_driver ("b___"); }           <* 
+ *> void ycalc_off_x         (void)  { return ycalc__off_driver ("_x__"); }           <* 
+ *> void ycalc_off_y         (void)  { return ycalc__off_driver ("__y_"); }           <* 
+ *> void ycalc_off_xy        (void)  { return ycalc__off_driver ("_xy_"); }           <* 
+ *> void ycalc_off_bxy       (void)  { return ycalc__off_driver ("bxy_"); }           <*/
 
 
 
@@ -1208,114 +1434,294 @@ static void  o___SPREADSHEET_____o () { return; }
 
 static tDEP_ROOT  *s_deproot_last = NULL;
 
-void    /*-> search left column in range --------[ ------ [fv.A71.030.E7]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-ycalc__lookup_common  (char a_dir)
+void
+ycalc__lookup_makedep   (char u, short x, short y, short z)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----------+-*/
    char        rc          = 0;
-   int         x_col       = 0;
-   int         x_row       = 0;
+   tDEP_ROOT  *x_deproot   = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
+   /*---(get cell)-----------------------*/
+   rc = ycalc_call_who_at  (u, x, y, z, YCALC_FULL, NULL, &x_deproot);
+   DEBUG_YCALC   yLOG_value   ("who_at"     , rc);
+   DEBUG_YCALC   yLOG_point   ("x_deproot"  , x_deproot);
+   DEBUG_YCALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));
+   /*---(make dependency)----------------*/
+   ycalc_pushref     (__FUNCTION__, x_deproot, ycalc_call_labeler (x_deproot));
+   ycalc_deps_create (G_DEP_CALCREF, &(myCALC.deproot), &x_deproot);
+   /*---(save)---------------------------*/
+   s_deproot_last = x_deproot;
+   /*---(header)-------------------------*/
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+   return;
+}
+
+void    /*-> search left column in range --------[ ------ [fv.A71.030.E7]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc__lookup_common  (char a_dir, char a_type, char a_match)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   /*---(locals)-----------+-----------+-*/
+   char        rc          = 0;
+   int         u_cur, x_cur, y_cur, z_cur;
+   int         x_beg, y_beg;
+   int         x_end, y_end;
    void       *x_owner     = NULL;
    tDEP_ROOT  *x_deproot   = NULL;
    char        x_type      =  '-';
    char       *x_string    = NULL;
-   int         x_buf       =    0;
+   double      x_value     =  0.0;
    int         x_off       =    0;
    int         y_off       =    0;
-   int         x_1st, x_2nd;
-   int         b_1st, b_2nd, b_3rd;
-   int         e_1st, e_2nd;
-   int         x_beg, y_beg, z_beg;
-   int         x_end, y_end;
    char        t           [LEN_LABEL];
-   DEBUG_CALC   yLOG_enter   (__FUNCTION__);
-   DEBUG_CALC   yLOG_char    ("a_dir"      , a_dir);
+   int         x, y;
+   char        x_found     = '-';
+   double      x_best      = 9999999;
+   int         x_len       =   0;
+   int         x_ind       =   0;
+   int         x_cnt       =   0;
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_char    ("a_dir"      , a_dir);
    s_deproot_last = NULL;
    /*---(get values)---------------------*/
-   if (a_dir == 'v')  x_off = ycalc_popval (__FUNCTION__);
-   else               y_off = ycalc_popval (__FUNCTION__);
-   DEBUG_CALC   yLOG_value   ("x_off"      , x_off);
-   DEBUG_CALC   yLOG_value   ("y_off"      , y_off);
-   r = ycalc_popstr (__FUNCTION__);
-   if (r == NULL)  r = strndup ("", LEN_RECD);
-   DEBUG_CALC   yLOG_info    ("r"          , r);
-   /*---(prepare)------------------------*/
-   x_deproot = (tDEP_ROOT *) ycalc_popref (__FUNCTION__);
-   DEBUG_CALC   yLOG_point   ("x_deproot"  , x_deproot);
-   if (x_deproot == NULL) {
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   switch (a_dir) {
+   case 'v' :  x_off = ycalc_popval (__FUNCTION__);  break;
+   case 'h' :  y_off = ycalc_popval (__FUNCTION__);  break;
+   case 'r' : break;
+   case 'i' :  x_ind = ycalc_popval (__FUNCTION__);  break;
+   case 'c' :  x_ind = 9999999;                      break;
+   default  :
+               ycalc_error_set (YCALC_ERROR_EXEC_ARG , YCALC_ERROR_INTERN);
+               DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+               return;
+   }
+   if (x_ind < 0) {
+      DEBUG_YCALC   yLOG_note    ("requested negative position");
+      ycalc_error_set (YCALC_ERROR_EXEC_ARG , YCALC_ERROR_ARG4);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return;
    }
-   x_buf = s_ranges [x_deproot->range].bb;
+   DEBUG_YCALC   yLOG_value   ("x_off"      , x_off);
+   DEBUG_YCALC   yLOG_value   ("y_off"      , y_off);
+   DEBUG_YCALC   yLOG_value   ("x_ind"      , x_ind);
+   /*---(get target)---------------------*/
+   switch (a_type) {
+   case 's' :
+      r = ycalc_popstr (__FUNCTION__);
+      if (r == NULL)  r = strndup ("", LEN_RECD);
+      DEBUG_YCALC   yLOG_info    ("r"          , r);
+      break;
+   case '9' :
+      if (strchr (":+", a_match) != NULL) {
+         b = ycalc_popval (__FUNCTION__);
+         DEBUG_YCALC   yLOG_value   ("b"          , b);
+      }
+      a = ycalc_popval (__FUNCTION__);
+      DEBUG_YCALC   yLOG_value   ("a"          , a);
+      break;
+   default  :
+      DEBUG_YCALC   yLOG_note    ("a_type tot legal");
+      ycalc_error_set (YCALC_ERROR_EXEC_ARG , YCALC_ERROR_INTERN);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
+   if (a_match == 0 || strchr ("=>:+~[]", a_match) == NULL) {
+      DEBUG_YCALC   yLOG_note    ("a_match tot legal");
+      ycalc_error_set (YCALC_ERROR_EXEC_ARG , YCALC_ERROR_INTERN);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
+   /*---(prepare)------------------------*/
+   x_deproot = (tDEP_ROOT *) ycalc_popref (__FUNCTION__);
+   DEBUG_YCALC   yLOG_point   ("x_deproot"  , x_deproot);
+   if (x_deproot == NULL) {
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
+   u_cur = s_ranges [x_deproot->range].bb;
    x_beg = s_ranges [x_deproot->range].bx;
    y_beg = s_ranges [x_deproot->range].by;
-   z_beg = s_ranges [x_deproot->range].bz;
+   z_cur = s_ranges [x_deproot->range].bz;
    x_end = s_ranges [x_deproot->range].ex;
    y_end = s_ranges [x_deproot->range].ey;
-   DEBUG_DEPS   yLOG_complex ("coords"    , "b=%4d, bx=%4d, ex=%4d, by=%4d, ey=%4d, bz=%4d, ez=%4d", x_buf, x_beg, x_end, y_beg, y_end, z_beg, z_beg);
-   if (a_dir == 'v')  { b_1st = x_beg; e_1st = x_end; b_2nd = y_beg; e_2nd = y_end; }
-   else               { b_1st = y_beg; e_1st = y_end; b_2nd = x_beg; e_2nd = x_end; }
-   DEBUG_DEPS   yLOG_complex ("loops"     , "b1=%4d, e1=%4d, b2=%4d, e2=%4d"                , b_1st, e_1st, b_2nd, e_2nd);
+   DEBUG_YCALC   yLOG_complex ("coords"    , "b=%4d, bx=%4d, ex=%4d, by=%4d, ey=%4d, bz=%4d, ez=%4d", u_cur, x_beg, x_end, y_beg, y_end, z_cur, z_cur);
+   switch (a_dir) {
+   case 'v'  :  x_end = x_beg;  break;
+   case 'h'  :  y_end = y_beg;  break;
+   default   :  break;
+   }
+   DEBUG_YCALC   yLOG_complex ("loops"     , "b1=%4d, e1=%4d, b2=%4d, e2=%4d"                , x_beg, x_end, y_beg, y_end);
    /*---(process)------------------------*/
-   for (x_1st = b_1st; x_1st <= e_1st; ++x_1st) {
-      for (x_2nd = b_2nd; x_2nd <= e_2nd; ++x_2nd) {
-         if (a_dir == 'v') { x_row = x_2nd; x_col = x_1st; }
-         else              { x_row = x_1st; x_col = x_2nd; }
-         DEBUG_DEPS   yLOG_note    ("checking_____________");
-         DEBUG_DEPS   yLOG_complex ("point"     , " x=%4d,  y=%4d,  z=%4d", x_col, x_row, z_beg);
+   for (x_cur = x_beg; x_cur <= x_end; ++x_cur) {
+      for (y_cur = y_beg; y_cur <= y_end; ++y_cur) {
+         DEBUG_YCALC   yLOG_note    ("checking_____________");
+         DEBUG_YCALC   yLOG_complex ("point"     , " x=%4d,  y=%4d,  z=%4d", x_cur, y_cur, z_cur);
          /*---(see what's there)---------*/
-         rc = ycalc_call_who_at  (x_buf, x_col, x_row, z_beg, YCALC_LOOK, &x_owner, &x_deproot);
-         DEBUG_CALC   yLOG_value   ("who_at"     , rc);
-         DEBUG_CALC   yLOG_point   ("x_owner"    , x_owner);
+         rc = ycalc_call_who_at  (u_cur, x_cur, y_cur, z_cur, YCALC_LOOK, &x_owner, &x_deproot);
+         DEBUG_YCALC   yLOG_value   ("who_at"     , rc);
+         DEBUG_YCALC   yLOG_point   ("x_owner"    , x_owner);
          if (rc  <  0)                                          continue;
          if (x_owner  ==  NULL)                                 continue;
          /*---(look at the value)--------*/
-         rc = g_valuer (x_owner, &x_type, NULL, &x_string);
-         DEBUG_CALC   yLOG_value   ("valuer"     , rc);
+         rc = myCALC.e_valuer (x_owner, &x_type, &x_value, &x_string);
+         DEBUG_YCALC   yLOG_value   ("valuer"     , rc);
          if (rc  <  0)                                          continue;
-         /*---(filter)-------------------*/
-         DEBUG_CALC   yLOG_char    ("x_type"    , x_type);
-         if (strchr (YCALC_GROUP_STR, x_type) == NULL)         continue;
-         DEBUG_CALC   yLOG_point   ("x_string"   , x_string);
-         if (x_string == NULL)                                 continue;
-         DEBUG_CALC   yLOG_info    ("x_string"   , x_string);
-         /*---(compare)------------------*/
-         if (x_string [0] != r [0])                            continue;
-         if (strcmp (x_string, r) != 0)                        continue;
-         /*---(return)-------------------*/
-         DEBUG_DEPS   yLOG_note    ("offset_______________");
-         rc = ycalc_call_who_at  (x_buf, x_col + x_off, x_row + y_off, z_beg, YCALC_FULL, &x_owner, &x_deproot);
-         DEBUG_CALC   yLOG_value   ("who_at"     , rc);
-         DEBUG_CALC   yLOG_point   ("x_owner"    , x_owner);
-         DEBUG_CALC   yLOG_point   ("x_deproot"  , x_deproot);
-         if (rc  <  0 || x_owner == NULL || x_deproot == NULL) {
-            rc = -1;
-            break;
+         /*---(string types)-------------*/
+         if (a_type == 's') {
+            /*---(filter)-------------------*/
+            DEBUG_YCALC   yLOG_char    ("x_type"    , x_type);
+            if (strchr (YCALC_GROUP_STR, x_type) == NULL)         continue;
+            DEBUG_YCALC   yLOG_point   ("x_string"   , x_string);
+            if (x_string == NULL)                                 continue;
+            DEBUG_YCALC   yLOG_info    ("x_string"   , x_string);
+            /*---(compare)------------------*/
+            if (x_string [0] != r [0])                            continue;
+            switch (a_match) {
+            case '=' :
+               if (strcmp  (x_string, r) != 0)                    continue;
+               if (x_cnt++ < x_ind)                                 continue;
+               x_found = 'y';
+               break;
+            case '>' :
+               x_len = strlen (r);
+               if (x_len < 1)                                     continue;
+               if (strncmp (x_string, r, x_len) != 0)             continue;
+               if (x_cnt++ < x_ind)                                 continue;
+               x_found = 'y';
+               break;
+            default :
+               DEBUG_YCALC   yLOG_note    ("MATCH TYPE NOT ENABLED");
+               break;
+            }
+            /*---(done)---------------------*/
          }
-         DEBUG_CALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));
-         ycalc_pushref     (__FUNCTION__, x_deproot, ycalc_call_labeler (x_deproot));
-         ycalc_deps_create (G_DEP_CALCREF, &(myCALC.deproot), &x_deproot);
-         s_deproot_last = x_deproot;
-         DEBUG_CALC   yLOG_exit    (__FUNCTION__);
-         return;
+         /*---(string types)-------------*/
+         else if (a_type == '9') {
+            /*---(filter)-------------------*/
+            DEBUG_YCALC   yLOG_char    ("x_type"    , x_type);
+            if (strchr (YCALC_GROUP_NUM, x_type) == NULL)         continue;
+            DEBUG_YCALC   yLOG_value   ("x_value"    , x_value);
+            /*---(compare)------------------*/
+            switch (a_match) {
+            case '=' :  /* first match */
+               if (x_value != a)                                  continue;
+               if (x_cnt++ < x_ind)                                 continue;
+               x_found = 'y';
+               break;
+            case ':' :  /* first in range */
+               if (x_value <  a)                                  continue;
+               if (x_value >  b)                                  continue;
+               if (x_cnt++ < x_ind)                                 continue;
+               x_found = 'y';
+               x = x_cur + x_off;
+               y = y_cur + y_off;
+               break;
+            case '+' :  /* first in tolerance */
+               if (x_value <  a - b)                              continue;
+               if (x_value >  a + b)                              continue;
+               if (x_cnt++ < x_ind)                                 continue;
+               x_found = 'y';
+               x = x_cur + x_off;
+               y = y_cur + y_off;
+               break;
+            case '~' :  /* closest to target */
+               if (x_found != 'y') {
+                  x_best  = x_value;
+                  x_found = 'y';
+                  x = x_cur + x_off;
+                  y = y_cur + y_off;
+                  continue;
+               } else if (fabs (a - x_value) >= fabs (a - x_best))  {
+                  continue;
+               } else {
+                  x_best  = x_value;
+                  x_found = 'y';
+                  x = x_cur + x_off;
+                  y = y_cur + y_off;
+                  continue;
+               }
+               break;
+            case '[' :  /* first over value */
+               if (x_value <  a)  continue;
+               break;
+            case ']' :  /* last under value */
+               if (x_value > a)  continue;
+               x_found = 'y';
+               x = x_cur + x_off;
+               y = y_cur + y_off;
+               continue;
+               break;
+            }
+            /*---(done)---------------------*/
+         }
+         /*---(return)-------------------*/
+         ycalc__lookup_makedep   (u_cur, x_cur + x_off, y_cur + y_off, z_cur);
+         DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+         return 0;
       }
       if (rc < 0) break;
+   }
+   /*---(check for numerics)-------------*/
+   if (a_type == '9' && strchr ("=[", a_match) == NULL && x_found == 'y') {
+      ycalc__lookup_makedep   (u_cur, x, y, z_cur);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   if (a_dir  == 'c') {
+      ycalc_pushval (__FUNCTION__, x_cnt);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return 0;
    }
    /*---(nothing found)------------------*/
    ycalc_error_set (YCALC_ERROR_EXEC_MISS, NULL);
    /*---(complete)-----------------------*/
-   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return;
 }
 
-void ycalc_vlookup       (void)  { return ycalc__lookup_common ('v'); }
-void ycalc_hlookup       (void)  { return ycalc__lookup_common ('h'); }
+void ycalc_vlookup       (void)  { return ycalc__lookup_common ('v', 's', '='); }
+void ycalc_vprefix       (void)  { return ycalc__lookup_common ('v', 's', '>'); }
+void ycalc_vmatch        (void)  { return ycalc__lookup_common ('v', '9', '='); }
+void ycalc_vrange        (void)  { return ycalc__lookup_common ('v', '9', ':'); }
+void ycalc_vabout        (void)  { return ycalc__lookup_common ('v', '9', '+'); }
+void ycalc_vclose        (void)  { return ycalc__lookup_common ('v', '9', '~'); }
+void ycalc_vover         (void)  { return ycalc__lookup_common ('v', '9', '['); }
+void ycalc_vunder        (void)  { return ycalc__lookup_common ('v', '9', ']'); }
+
+void ycalc_hlookup       (void)  { return ycalc__lookup_common ('h', 's', '='); }
+void ycalc_hprefix       (void)  { return ycalc__lookup_common ('h', 's', '>'); }
+void ycalc_hmatch        (void)  { return ycalc__lookup_common ('h', '9', '='); }
+void ycalc_hrange        (void)  { return ycalc__lookup_common ('h', '9', ':'); }
+void ycalc_habout        (void)  { return ycalc__lookup_common ('h', '9', '+'); }
+void ycalc_hclose        (void)  { return ycalc__lookup_common ('h', '9', '~'); }
+void ycalc_hover         (void)  { return ycalc__lookup_common ('h', '9', '['); }
+void ycalc_hunder        (void)  { return ycalc__lookup_common ('h', '9', ']'); }
+
+void ycalc_rlookup       (void)  { return ycalc__lookup_common ('r', 's', '='); }
+void ycalc_rprefix       (void)  { return ycalc__lookup_common ('r', 's', '>'); }
+void ycalc_rmatch        (void)  { return ycalc__lookup_common ('r', '9', '='); }
+void ycalc_rrange        (void)  { return ycalc__lookup_common ('r', '9', ':'); }
+void ycalc_rabout        (void)  { return ycalc__lookup_common ('r', '9', '+'); }
+void ycalc_rclose        (void)  { return ycalc__lookup_common ('r', '9', '~'); }
+void ycalc_rover         (void)  { return ycalc__lookup_common ('r', '9', '['); }
+void ycalc_runder        (void)  { return ycalc__lookup_common ('r', '9', ']'); }
+
+void ycalc_ilookup       (void)  { return ycalc__lookup_common ('i', 's', '='); }
+void ycalc_iprefix       (void)  { return ycalc__lookup_common ('i', 's', '>'); }
+void ycalc_imatch        (void)  { return ycalc__lookup_common ('i', '9', '='); }
+void ycalc_irange        (void)  { return ycalc__lookup_common ('i', '9', ':'); }
+void ycalc_iabout        (void)  { return ycalc__lookup_common ('i', '9', '+'); }
+
+void ycalc_clookup       (void)  { return ycalc__lookup_common ('c', 's', '='); }
+void ycalc_cprefix       (void)  { return ycalc__lookup_common ('c', 's', '>'); }
+void ycalc_cmatch        (void)  { return ycalc__lookup_common ('c', '9', '='); }
+void ycalc_crange        (void)  { return ycalc__lookup_common ('c', '9', ':'); }
+void ycalc_cabout        (void)  { return ycalc__lookup_common ('c', '9', '+'); }
 
 void
 ycalc_entry             (void)
 {
-   DEBUG_CALC   yLOG_info    ("running"   , __FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    char        rc          =    0;
    int         x_buf       =    0;
    int         y_cur       =    0;
@@ -1338,36 +1744,36 @@ ycalc_entry             (void)
    for (y_cur = y_max; y_cur >= y_min; --y_cur) {
       /*---(see what's there)---------*/
       rc = ycalc_call_who_at  (x_buf, x_cur - x_off, y_cur, z_cur, YCALC_LOOK, &x_owner, &x_deproot);
-      DEBUG_CALC   yLOG_value   ("who_at"     , rc);
-      DEBUG_CALC   yLOG_point   ("x_owner"    , x_owner);
+      DEBUG_YCALC   yLOG_value   ("who_at"     , rc);
+      DEBUG_YCALC   yLOG_point   ("x_owner"    , x_owner);
       if (rc  <  0)                                          continue;
       if (x_owner  ==  NULL)                                 continue;
       /*---(look at the value)--------*/
-      rc = g_valuer (x_owner, &x_type, NULL, NULL);
-      DEBUG_CALC   yLOG_value   ("valuer"     , rc);
+      rc = myCALC.e_valuer (x_owner, &x_type, NULL, NULL);
+      DEBUG_YCALC   yLOG_value   ("valuer"     , rc);
       if (rc  <  0)                                          continue;
       /*---(filter)-------------------*/
-      DEBUG_CALC   yLOG_char    ("x_type"    , x_type);
+      DEBUG_YCALC   yLOG_char    ("x_type"    , x_type);
       if (x_type == YCALC_DATA_BLANK)                       continue;
       /*---(save)---------------------*/
       rc = ycalc_call_who_at  (x_buf, x_cur - x_off, y_cur, z_cur, YCALC_FULL, &x_owner, &x_deproot);
-      DEBUG_CALC   yLOG_value   ("who_at"     , rc);
-      DEBUG_CALC   yLOG_point   ("x_owner"    , x_owner);
-      DEBUG_CALC   yLOG_point   ("x_deproot"  , x_deproot);
+      DEBUG_YCALC   yLOG_value   ("who_at"     , rc);
+      DEBUG_YCALC   yLOG_point   ("x_owner"    , x_owner);
+      DEBUG_YCALC   yLOG_point   ("x_deproot"  , x_deproot);
       if (rc  <  0 || x_owner == NULL || x_deproot == NULL) {
          rc = -1;
          break;
       }
-      DEBUG_CALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));
+      DEBUG_YCALC   yLOG_point   ("CALCREF"    , ycalc_call_labeler (x_deproot));
       ycalc_pushref     (__FUNCTION__, x_deproot, ycalc_call_labeler (x_deproot));
       ycalc_deps_create (G_DEP_CALCREF, &(myCALC.deproot), &x_deproot);
-      DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return;
    }
    /*---(nothing found)------------------*/
    ycalc_error_set (YCALC_ERROR_EXEC_MISS, NULL);
    /*---(complete)-----------------------*/
-   DEBUG_CALC   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return;
 }
 

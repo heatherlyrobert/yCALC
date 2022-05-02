@@ -19,22 +19,24 @@
 #define     YCALC_DATA_NFORM      '='
 #define     YCALC_DATA_NLIKE      '9'
 #define     YCALC_DATA_ADDR       '&'
+#define     YCALC_DATA_CADDR      '!'
 #define     YCALC_DATA_RANGE      ':'
+#define     YCALC_DATA_VAR        'Ö'
 #define     YCALC_DATA_INTERN     '®'
 #define     YCALC_DATA_MERGED     '<'
 #define     YCALC_DATA_ERROR      'E'
 #define     YCALC_DATA_PMERGE     'p'
 #define     YCALC_DATA_GARBAGE    'g'
 
-extern char    YCALC_GROUP_ALL    [20];
-extern char    YCALC_GROUP_RPN    [20];
-extern char    YCALC_GROUP_CALC   [20];
-extern char    YCALC_GROUP_DEPS   [20];
-extern char    YCALC_GROUP_NUM    [20];
-extern char    YCALC_GROUP_STR    [20];
-extern char    YCALC_GROUP_POINT  [20];
-extern char    YCALC_GROUP_ERR    [20];
-extern char    YCALC_GROUP_FPRE   [20];
+extern char YCALC_GROUP_ALL    [20];
+extern char YCALC_GROUP_RPN    [20];
+extern char YCALC_GROUP_CALC   [20];
+extern char YCALC_GROUP_DEPS   [20];
+extern char YCALC_GROUP_NUM    [20];
+extern char YCALC_GROUP_STR    [20];
+extern char YCALC_GROUP_POINT  [20];
+extern char YCALC_GROUP_ERR    [20];
+extern char YCALC_GROUP_FPRE   [20];
 
 
 
@@ -73,6 +75,9 @@ extern char    YCALC_GROUP_FPRE   [20];
 
 #define     G_DEP_CALCREF         'A'
 #define     G_DEP_ADDRESS         'a'
+
+#define     G_DEP_TITLE           'T'
+#define     G_DEP_CONTENT         'c'
 
 #define     G_DEP_WATCHER         'W'
 #define     G_DEP_STALKED         's'
@@ -115,6 +120,7 @@ char        yCALC_calc_from         (void *a_deproot);
 int         yCALC_type              (void *a_deproot);
 int         yCALC_nreq              (void *a_deproot);
 int         yCALC_npro              (void *a_deproot);
+int         yCALC_ncalc             (void *a_deproot);
 char        yCALC_stamp_cmp         (void *a_deproot, long a_stamp);
 char        yCALC_stamp_set         (void *a_deproot, long a_stamp);
 
@@ -122,6 +128,7 @@ char        yCALC_stamp_set         (void *a_deproot, long a_stamp);
 char        yCALC_disp_reqs         (void *a_me, char *a_list);
 char        yCALC_disp_pros         (void *a_me, char *a_list);
 char        yCALC_disp_like         (void *a_me, char *a_list);
+char        yCALC_disp_copy         (void *a_me, char *a_list);
 
 /*--type--- ---accessors----------- ---params---------------------------------*/
 char        yCALC_show_rpn          (void *a_deproot, int *a_nrpn, char *a_rpn);
