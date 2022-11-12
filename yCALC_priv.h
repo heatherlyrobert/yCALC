@@ -35,8 +35,8 @@
 
 #define     P_VERMAJOR  "0.X = reading for full gyges use"
 #define     P_VERMINOR  "0.5 = find pernicious memory and malloc troubles"
-#define     P_VERNUM    "0.5l"
-#define     P_VERTXT    "variables up and running in gyges"
+#define     P_VERNUM    "0.5m"
+#define     P_VERTXT    "small catch-up on string symbols from # to ›"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -374,11 +374,12 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 #define     YCALC_ERROR_EXEC_STR   'S'
 #define     YCALC_ERROR_EXEC_VAL   'V'
 #define     YCALC_ERROR_EXEC_REF   'I'
+#define     YCALC_ERROR_EXEC_VAR   'v'
 #define     YCALC_ERROR_EXEC_PTR   '*'
 #define     YCALC_ERROR_EXEC_IND   '&'
 #define     YCALC_ERROR_EXEC_MAL   'M'
+#define     YCALC_ERROR_EXEC_PERR  'P'
 #define     YCALC_ERROR_EXEC_NULL  'n'
-#define     YCALC_ERROR_EXEC_PTRR  'R'
 #define     YCALC_ERROR_EXEC_CIR   'O'
 #define     YCALC_ERROR_EXEC_ARG   'A'
 #define     YCALC_ERROR_EXEC_FMT   'F'
@@ -590,7 +591,7 @@ char        ycalc__seq_list         (char *a_list);
 
 /*===[ CALLS ]============================================*/
 char        ycalc_call_newvar       (char a_kind, char *a_name, char *a_label, tDEP_ROOT *a_deproot, char *a_type, double *a_value, char **a_string);
-char        ycalc_call_findvar      (char *a_name, char *a_real);
+char        yCALC_variable          (char *a_name, char *a_real);
 char        ycalc_call_delvar       (char *a_loc, tDEP_ROOT **a_deproot);
 char        ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot);
 char        ycalc_call_who_named    (char *a_label,       char a_force, void **a_owner, void **a_deproot);
@@ -618,6 +619,8 @@ void        ycalc_power             (void);
 void        ycalc_power_of_2        (void);
 void        ycalc_power_of_3        (void);
 void        ycalc_power_of_4        (void);
+void        ycalc_power_of_x        (void);
+void        ycalc_power_of_y        (void);
 void        ycalc_abs               (void);
 void        ycalc_sign              (void);
 void        ycalc_trunc             (void);
@@ -679,12 +682,15 @@ void        ycalc_lppad             (void);
 void        ycalc_rppad             (void);
 void        ycalc_find              (void);
 void        ycalc_replace           (void);
+void        ycalc_ditto             (void);
 /*---(conversion functions)------------*/
 void        ycalc_lower             (void);
 void        ycalc_upper             (void);
 void        ycalc_char              (void);
 void        ycalc_code              (void);
 void        ycalc_value             (void);
+void        ycalc_unhex             (void);
+void        ycalc_hex               (void);
 void        ycalc_salpha            (void);
 void        ycalc_salphac           (void);
 void        ycalc_salnum            (void);
@@ -775,6 +781,7 @@ void        ycalc_crd               (void);
 void        ycalc_crdr              (void);
 void        ycalc_sag               (void);
 void        ycalc_sagr              (void);
+void        ycalc_fsag              (void);
 void        ycalc_apo               (void);
 void        ycalc_apor              (void);
 void        ycalc_csg               (void);
@@ -787,6 +794,12 @@ void        ycalc_vcrd              (void);
 void        ycalc_vcrdr             (void);
 void        ycalc_hvcrd             (void);
 void        ycalc_hvcrdr            (void);
+void        ycalc_arc               (void);
+void        ycalc_arcr              (void);
+void        ycalc_los               (void);
+void        ycalc_los2              (void);
+void        ycalc_xsag              (void);
+void        ycalc_xsag2             (void);
 void        ycalc_asin              (void);
 void        ycalc_asinr             (void);
 void        ycalc_acos              (void);
@@ -795,6 +808,7 @@ void        ycalc_atan              (void);
 void        ycalc_atanr             (void);
 void        ycalc_atan2             (void);
 void        ycalc_atanr2            (void);
+void        ycalc_acrd2             (void);
 
 void        ycalc_dist              (void);
 void        ycalc_tabs              (void);

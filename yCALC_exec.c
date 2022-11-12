@@ -257,7 +257,7 @@ ycalc_pushstr           (char *a_func, char *a_string)
    s_stack [s_nstack].typ = S_TYPE_STR;
    s_stack [s_nstack].ref = NULL;
    s_stack [s_nstack].num = 0;
-   if (s_stack[s_nstack].str != NULL) free (s_stack[s_nstack].str);
+   /*> if (s_stack[s_nstack].str != NULL) free (s_stack[s_nstack].str);               <*/
    p = strndup (a_string, LEN_RECD);
    DEBUG_YCALC   yLOG_point   ("p"         , p);
    s_stack [s_nstack].str = p;
@@ -272,23 +272,72 @@ ycalc_pushstr           (char *a_func, char *a_string)
 char         /*-> add a reference to the stack -------[ ------ [gc.520.203.21]*/ /*-[01.0000.075.!]-*/ /*-[--.---.---.--]-*/
 ycalc_pushref           (char *a_func, void *a_thing, char *a_label)
 {
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char       *p           = NULL;
+   char       *x_type      = NULL;
+   char      **x_string    = NULL;
+   tDEP_ROOT  *x_deproot   = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(defense: stack overflow)--------*/
-   if (s_nstack >= S_MAX_STACK) {
+   DEBUG_YCALC   yLOG_value   ("s_nstack"  , s_nstack);
+   DEBUG_YCALC   yLOG_value   ("MAX"       , S_MAX_STACK);
+   --rce;  if (s_nstack >= S_MAX_STACK) {
       ycalc_error_set (YCALC_ERROR_STACK, NULL);
-      return 0;
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
    }
-   if (a_thing      == NULL     ) {
-      return 0;
+   DEBUG_YCALC   yLOG_point   ("a_thing"   , a_thing);
+   --rce;  if (a_thing  == NULL) {
+      ycalc_error_set (YCALC_ERROR_EXEC_NULL, NULL);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   x_deproot = (tDEP_ROOT *) a_thing;
+   DEBUG_YCALC   yLOG_info    ("label"     , ycalc_call_labeler (x_deproot));
+   DEBUG_YCALC   yLOG_point   ("a_label"   , a_label);
+   --rce;  if (a_label  == NULL) {
+      ycalc_error_set (YCALC_ERROR_STACK, NULL);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YCALC   yLOG_info    ("a_label"   , a_label);
+   DEBUG_YCALC   yLOG_point   ("owner"     , x_deproot->owner);
+   --rce;  if (x_deproot->owner == NULL) {
+      ycalc_error_set (YCALC_ERROR_EXEC_NULL, x_deproot);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   rc = myCALC.e_pointer (x_deproot->owner, NULL, &x_type, NULL, &x_string);
+   DEBUG_YCALC   yLOG_char    ("type"      , x_type);
+   DEBUG_YCALC   yLOG_char    ("btype"     , x_deproot->btype);
+   DEBUG_YCALC   yLOG_info    ("string"    , *x_string);
+   --rce;  if (x_deproot->btype == YCALC_DATA_ERROR || x_type == YCALC_DATA_ERROR) {
+      ycalc_error_set (YCALC_ERROR_EXEC_PERR, x_deproot);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   --rce;  if (x_string != NULL && *x_string != NULL) {
+      if (strncmp ("#b/", *x_string, 3) == 0 || strncmp ("#e/", *x_string, 3) == 0) {
+         ycalc_error_set (YCALC_ERROR_EXEC_PERR, x_deproot);
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
    }
    /*---(update stack item)--------------*/
    s_stack[s_nstack].typ = S_TYPE_REF;
    s_stack[s_nstack].ref = a_thing;
    s_stack[s_nstack].num = 0;
-   if (s_stack[s_nstack].str != NULL) free (s_stack[s_nstack].str);
-   s_stack[s_nstack].str = strndup (a_label, LEN_LABEL);
+   p = strndup (a_label, LEN_LABEL);
+   DEBUG_YCALC   yLOG_point   ("p"         , p);
+   s_stack[s_nstack].str = p;
    /*---(update stack counter)-----------*/
    ++s_nstack;
+   DEBUG_YCALC   yLOG_value   ("s_nstack"  , s_nstack);
    /*---(complete)-----------------------*/
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -316,7 +365,7 @@ ycalc_popval            (char *a_func)
    --s_nstack;
    DEBUG_YCALC   yLOG_value   ("s_nstack"  , s_nstack);
    ycalc__exec_stack_grab (s_nstack);
-   if (s_str != NULL)   free (s_str);
+   if (s_str != NULL)   { free (s_str); s_str = NULL; }
    /*---(handle stack types)-------------*/
    DEBUG_YCALC   yLOG_char    ("s_typ"     , s_typ);
    --rce;  switch (s_typ) {
@@ -398,7 +447,7 @@ ycalc_popstr            (char *a_func)
    --rce;  switch (s_typ) {
    case S_TYPE_NUM :
       DEBUG_YCALC   yLOG_note    ("from number, so nada");
-      if (s_str != NULL)   free (s_str);
+      if (s_str != NULL)   { free (s_str); s_str = NULL; }
       ycalc_error_set (YCALC_ERROR_EXEC_VAL, YCALC_ERROR_LITERAL);
       x_str = strndup (g_nada, LEN_RECD);
       DEBUG_YCALC   yLOG_point   ("s_str"     , s_str);
@@ -413,21 +462,25 @@ ycalc_popstr            (char *a_func)
       return s_str;
       break;
    case S_TYPE_REF :
-      DEBUG_YCALC   yLOG_note    ("from ref");
+      DEBUG_YCALC   yLOG_note    ("reference type, look it up");
       s_string = NULL;
-      if (s_str != NULL)   free (s_str);
+      if (s_str != NULL)   { free (s_str); s_str = NULL; }
       if (myCALC.e_valuer == NULL) {
          ycalc_error_set (YCALC_ERROR_CONF, NULL);
          x_str = strndup (g_nada, LEN_RECD);
-         DEBUG_YCALC   yLOG_point   ("s_str"     , s_str);
          DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return x_str;
       }
+      DEBUG_YCALC   yLOG_point   ("s_ref"     , s_ref);
+      DEBUG_YCALC   yLOG_point   ("owner"     , s_ref->owner);
       myCALC.e_valuer (s_ref->owner, &s_type, NULL, &s_string);
+      DEBUG_YCALC   yLOG_char    ("s_type"    , s_type);
+      DEBUG_YCALC   yLOG_value   ("s_value"   , s_value);
       switch (s_type) {
       case YCALC_DATA_ADDR   : ycalc_error_set (YCALC_ERROR_EXEC_PTR , s_ref);    break;
       case YCALC_DATA_CADDR  : ycalc_error_set (YCALC_ERROR_EXEC_PTR , s_ref);    break;
       case YCALC_DATA_RANGE  : ycalc_error_set (YCALC_ERROR_EXEC_PTR , s_ref);    break;
+      case YCALC_DATA_BLANK  : ycalc_error_set (YCALC_ERROR_EXEC_NADA, s_ref);    break;
       case YCALC_DATA_ERROR  : ycalc_error_set (YCALC_ERROR_EXEC_ERR , s_ref);    break;
       case YCALC_DATA_NUM    : ycalc_error_set (YCALC_ERROR_EXEC_VAL , s_ref);    break;
       case YCALC_DATA_NFORM  : ycalc_error_set (YCALC_ERROR_EXEC_VAL , s_ref);    break;
@@ -442,7 +495,7 @@ ycalc_popstr            (char *a_func)
       break;
    default  :
       DEBUG_YCALC   yLOG_note    ("from other");
-      if (s_str != NULL)   free (s_str);
+      if (s_str != NULL)   { free (s_str); s_str = NULL; }
       ycalc_error_set (YCALC_ERROR_EXEC_HUH, NULL);
       x_str = strndup (g_nada, LEN_RECD);
       DEBUG_YCALC   yLOG_point   ("s_str"     , s_str);
@@ -465,23 +518,33 @@ ycalc_popstr            (char *a_func)
 tDEP_ROOT*   /*-> get an string off the stack --------[ ------ [fs.A40.20#.31]*/ /*-[02.0000.0#5.!]-*/ /*-[--.---.---.--]-*/
 ycalc_popref            (char *a_func)
 {
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char       *x_type      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
+   DEBUG_YCALC   yLOG_value   ("s_nstack"  , s_nstack);
    if (s_nstack <= 0) {
       ycalc_error_set (YCALC_ERROR_STACK, NULL);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return NULL;
    }
    /*---(prepare)------------------------*/
    --s_nstack;
    ycalc__exec_stack_grab (s_nstack);
-   if (s_str != NULL)   free (s_str);
+   if (s_str != NULL)   { free (s_str); s_str = NULL; }
    /*---(handle stack types)-------------*/
-   switch (s_typ) {
+   --rce;  switch (s_typ) {
    case S_TYPE_NUM :
+      DEBUG_YCALC   yLOG_note    ("found number, not pointer");
       ycalc_error_set (YCALC_ERROR_EXEC_IND , YCALC_ERROR_LITERAL);
       DEBUG_YCALC   yLOG_info    ("1yCALC.me" , myCALC.me);
       return  NULL;
       break;
    case S_TYPE_STR :
+      DEBUG_YCALC   yLOG_note    ("found string, not pointer");
       ycalc_error_set (YCALC_ERROR_EXEC_IND , YCALC_ERROR_LITERAL);
       DEBUG_YCALC   yLOG_info    ("2yCALC.me" , myCALC.me);
       return  NULL;
@@ -489,9 +552,32 @@ ycalc_popref            (char *a_func)
    case S_TYPE_REF :
       ycalc_error_set (YCALC_ERROR_NONE , s_ref);
       DEBUG_YCALC   yLOG_info    ("3yCALC.me" , myCALC.me);
+      DEBUG_YCALC   yLOG_point   ("s_ref"     , s_ref);
+      if (s_ref == NULL) {
+         ycalc_error_set (YCALC_ERROR_EXEC_NULL, s_ref);
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+         return NULL;
+      }
+      DEBUG_YCALC   yLOG_info    ("label"     , ycalc_call_labeler (s_ref));
+      DEBUG_YCALC   yLOG_point   ("owner"     , s_ref->owner);
+      if (s_ref->owner == NULL) {
+         ycalc_error_set (YCALC_ERROR_EXEC_NULL, s_ref);
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+         return NULL;
+      }
+      rc = myCALC.e_pointer (s_ref->owner, NULL, &x_type, NULL, NULL);
+      DEBUG_YCALC   yLOG_char    ("type"      , x_type);
+      DEBUG_YCALC   yLOG_char    ("btype"     , s_ref->btype);
+      if (s_ref->btype == YCALC_DATA_ERROR || x_type == YCALC_DATA_ERROR) {
+         ycalc_error_set (YCALC_ERROR_EXEC_PERR, s_ref);
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+         return NULL;
+      }
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return s_ref;
       break;
    default  :
+      DEBUG_YCALC   yLOG_note    ("found unknown, not pointer");
       ycalc_error_set (YCALC_ERROR_EXEC_HUH, YCALC_ERROR_UNKNOWN);
       DEBUG_YCALC   yLOG_info    ("4yCALC.me" , myCALC.me);
       return  NULL;
@@ -499,6 +585,7 @@ ycalc_popref            (char *a_func)
    }
    /*---(complete)-----------------------*/
    ycalc_error_set (YCALC_ERROR_STACK, NULL);
+   DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
    return NULL;
 }
 
@@ -515,7 +602,7 @@ ycalc_popval_plus       (char *a_func, char a_what)
    /*---(prepare)------------------------*/
    --s_nstack;
    ycalc__exec_stack_grab (s_nstack);
-   if (s_str != NULL)   free (s_str);
+   if (s_str != NULL)   { free (s_str); s_str = NULL; }
    /*---(handle stack types)-------------*/
    switch (s_typ) {
    case S_TYPE_NUM :
@@ -595,7 +682,7 @@ ycalc_popstr_plus       (char *a_func, char a_what)
    /*---(prepare)------------------------*/
    --s_nstack;
    ycalc__exec_stack_grab (s_nstack);
-   if (s_str != NULL)   free (s_str);
+   if (s_str != NULL)   { free (s_str); s_str = NULL; }
    /*---(handle stack types)-------------*/
    switch (s_typ) {
    case S_TYPE_NUM :
@@ -782,7 +869,8 @@ ycalc__exec_wrap        (char *a_type, double *a_value, char **a_string)
       x_ref = ycalc_popref (__FUNCTION__);
       DEBUG_YCALC   yLOG_point   ("x_ref"     , x_ref);
       if (x_ref == NULL) {
-         ycalc_error_set (YCALC_ERROR_EXEC_MAL, NULL);
+         *a_type = YCALC_DATA_ERROR;
+         ycalc_error_finalize (g_error, a_type, a_value, a_string, myCALC.me);
          DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
          return 0;
       }
@@ -860,19 +948,19 @@ ycalc_execute_trusted   (tDEP_ROOT *a_deproot, char *a_type, double *a_value, ch
    /*---(main loop)----------------------*/
    while (x_calc != NULL) {
       ++s_neval;
-      DEBUG_YCALC   yLOG_complex ("element"   , "typ=%c, val=%F, str=%-9p, ref=%-9p, fnc=%-9p", x_calc->t, x_calc->v, x_calc->s, x_calc->r, x_calc->f);
+      DEBUG_YCALC   yLOG_complex ("exec_step" , "typ=%c, val=%F, str=%-9p, ref=%-9p, fnc=%-9p", x_calc->t, x_calc->v, x_calc->s, x_calc->r, x_calc->f);
       s_narg = 0;
       switch (x_calc->t) {
       case G_TYPE_VAL  :
-         ycalc_pushval (__FUNCTION__, x_calc->v);
+         rc = ycalc_pushval (__FUNCTION__, x_calc->v);
          DEBUG_YCALC   yLOG_value   ("pushval"   , s_nstack);
          break;
       case G_TYPE_STR  :
-         ycalc_pushstr (__FUNCTION__, x_calc->s);
+         rc = ycalc_pushstr (__FUNCTION__, x_calc->s);
          DEBUG_YCALC   yLOG_value   ("pushstr"   , s_nstack);
          break;
       case G_TYPE_REF  :
-         ycalc_pushref (__FUNCTION__, x_calc->r, x_calc->s);
+         rc = ycalc_pushref (__FUNCTION__, x_calc->r, x_calc->s);
          DEBUG_YCALC   yLOG_value   ("pushref"   , s_nstack);
          break;
       case G_TYPE_FUNC :
@@ -887,7 +975,7 @@ ycalc_execute_trusted   (tDEP_ROOT *a_deproot, char *a_type, double *a_value, ch
          ycalc_error_set (YCALC_ERROR_EXEC_STEP, NULL);
          break;
       }
-      if (ycalc_error_true ()) {
+      if (rc < 0 || ycalc_error_true ()) {
          DEBUG_YCALC   yLOG_value   ("ERROR"     , g_error);
          DEBUG_YCALC   yLOG_info    ("myCALC.me" , myCALC.me);
          break;

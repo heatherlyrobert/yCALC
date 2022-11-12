@@ -27,12 +27,12 @@ const tyCALC_TYPES  g_ycalc_types [YCALC_MAX_TYPE] = {
    {  YCALC_DATA_ADDR   , "address"    , '&', 'y', '-', 'y', '-', "address pointer to use in other formulas"           },
    {  YCALC_DATA_CADDR  , "calc-addr"  , '!', 'y', 'y', 'y', 'a', "calculated address pointer to use in formulas"      },
    {  YCALC_DATA_RANGE  , "range"      , '&', 'y', '-', 'y', '-', "range pointer to use in other formulas"             },
-   {  YCALC_DATA_VAR    , "variable"   , 'Ô', '-', '-', 'y', '-', "variable title"                                     },
-   {  YCALC_DATA_VAR    , "variable"   , 'Õ', '-', '-', 'y', '-', "variable title"                                     },
-   {  YCALC_DATA_VAR    , "variable"   , '×', '-', '-', 'y', '-', "variable title"                                     },
-   {  YCALC_DATA_VAR    , "variable"   , 'Ö', '-', '-', 'y', '-', "variable title"                                     },
-   {  YCALC_DATA_VAR    , "row_var"    , 'Ø', '-', '-', 'y', '-', "variable title"                                     },
-   {  YCALC_DATA_VAR    , "col_var"    , 'Ù', '-', '-', 'y', '-', "variable title"                                     },
+   {  YCALC_DATA_VAR    , "variable"   , 'Ô', '-', '-', '-', '-', "variable title"                                     },
+   {  YCALC_DATA_VAR    , "variable"   , 'Õ', '-', '-', '-', '-', "variable title"                                     },
+   {  YCALC_DATA_VAR    , "variable"   , '×', '-', '-', '-', '-', "variable title"                                     },
+   {  YCALC_DATA_VAR    , "variable"   , 'Ö', '-', '-', '-', '-', "variable title"                                     },
+   {  YCALC_DATA_VAR    , "row_var"    , 'Ø', '-', '-', '-', '-', "variable title"                                     },
+   {  YCALC_DATA_VAR    , "col_var"    , 'Ù', '-', '-', '-', '-', "variable title"                                     },
    {  YCALC_DATA_INTERN , "internal"   , '®', '-', '-', '-', '-', "an actual internal range to use in other formulas"  },
    {  YCALC_DATA_MERGED , "merged"     , '<', '-', '-', 'y', '-', "empty cell used to present merged information"      },
    {  YCALC_DATA_ERROR  , "error"      , ' ', 'y', 'y', 'y', 'e', "error status"                                       },
@@ -69,6 +69,7 @@ const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR] = {
    { YCALC_ERROR_EXEC_VAL  , 'e' , "#e/val"   , "expected a string, but given a value"               },
    { YCALC_ERROR_EXEC_STR  , 'e' , "#e/str"   , "expected a value, but given a string"               },
    { YCALC_ERROR_EXEC_REF  , 'e' , "#e/ref"   , "calculated dependence is to illegal location"       },
+   { YCALC_ERROR_EXEC_VAR  , 'e' , "#e/var"   , "requested variable not defined"                     },
    { YCALC_ERROR_EXEC_CIR  , 'e' , "#e/cir"   , "calculated dependence creates a cirlular loop"      },
    { YCALC_ERROR_EXEC_ARG  , 'e' , "#e/arg"   , "function arguments are invalid/unknown"             },
    { YCALC_ERROR_EXEC_FMT  , 'e' , "#e/fmt"   , "input data format could not be interpreted"         },
@@ -76,11 +77,11 @@ const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR] = {
    { YCALC_ERROR_EXEC_BRNG , 'e' , "#e/beg"   , "beginning of range not legal"                       },
    { YCALC_ERROR_EXEC_ERNG , 'e' , "#e/end"   , "end of range not legal"                             },
    { YCALC_ERROR_EXEC_MISS , 'e' , "#e/mis"   , "lookup or index function can not find result"       },
-   { YCALC_ERROR_EXEC_PTR  , 'e' , "#e/ptr"   , "expected val/str, but given non-deref pointer"      },
-   { YCALC_ERROR_EXEC_IND  , 'e' , "#e/ind"   , "attempt to dereference a non-pointer value"         },
-   { YCALC_ERROR_EXEC_MAL  , 'e' , "#e/ind"   , "attempt to dereference malformed pointer ref"       },
+   { YCALC_ERROR_EXEC_PTR  , 'e' , "#e/nod"   , "expected val/str, but given non-deref pointer"      },
+   { YCALC_ERROR_EXEC_IND  , 'e' , "#e/nop"   , "attempt to dereference a non-pointer value"         },
+   { YCALC_ERROR_EXEC_MAL  , 'e' , "#e/mal"   , "attempt to dereference malformed pointer ref"       },
    { YCALC_ERROR_EXEC_NULL , 'e' , "#e/nul"   , "attempt to dereference a null pointer"              },
-   { YCALC_ERROR_EXEC_PTRR , 'e' , "#e/ptR"   , "pointer dereferencing not valid on endoint"         },
+   { YCALC_ERROR_EXEC_PERR , 'e' , "#e/per"   , "attempt to dereference a pointer to an error"       },
    { YCALC_ERROR_EXEC_NADA , 'e' , "#e/bnk"   , "reference points to blank cell, no value"           },
    { YCALC_ERROR_EXEC_ERR  , 'e' , "#e/err"   , "reference points to error cell, no value"           },
    { YCALC_ERROR_EXEC_HUH  , 'e' , "#e/huh"   , "found something wierd in the exex stack"            },
@@ -1147,6 +1148,12 @@ yCALC_handle            (char *a_label)
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   DEBUG_YCALC   yLOG_point   ("a_label"    , a_label);
+   --rce;  if (a_label == NULL) {
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YCALC   yLOG_info    ("a_label"    , a_label);
    /*---(get label)----------------------*/
    rc = ycalc_call_who_named  (a_label, YCALC_FULL, &x_owner, &x_deproot);
    DEBUG_YCALC   yLOG_value   ("who_named"  , rc);
@@ -1219,6 +1226,8 @@ yCALC_handle            (char *a_label)
    if (*x_type == YCALC_DATA_VAR) {
       rc = ycalc_bulid_variable (x_deproot, a_label, b, x, y, z, x_source, x_type, x_value, x_string);
       DEBUG_YCALC   yLOG_value   ("variable"  , rc);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return 0;
    }
    /*---(build)--------------------------*/
    if (strchr (YCALC_GROUP_RPN , *x_type) != NULL) {
@@ -1246,15 +1255,20 @@ yCALC_handle            (char *a_label)
       rc = ycalc_call_reaper (&x_owner, &x_deproot);
       DEBUG_YCALC   yLOG_value   ("reaper"    , rc);
       DEBUG_YCALC   yLOG_point   ("x_owner"   , x_owner);
+      DEBUG_YCALC   yLOG_point   ("x_deproot" , x_deproot);
    }
    /*---(call printer)-------------------*/
    if (x_owner != NULL) {
+      DEBUG_YCALC   yLOG_note    ("check for merge");
       if (*x_type == YCALC_DATA_MERGED) {
          DEBUG_YCALC   yLOG_note    ("merged, find source");
          DEBUG_YCALC   yLOG_point   ("x_deproot" , x_deproot);
          rc = ycalc__merge_leftmost (x_deproot, &x_origin);
-         x_owner = x_origin->owner;
+         DEBUG_YCALC   yLOG_point   ("x_origin"  , x_origin);
+         if (x_origin != NULL)  x_owner = x_origin->owner;
       }
+      DEBUG_YCALC   yLOG_point   ("x_owner"   , x_owner);
+      DEBUG_YCALC   yLOG_note    ("calling printer");
       rc = myCALC.e_printer (x_owner);
       DEBUG_YCALC   yLOG_value   ("printer"   , rc);
       --rce;  if (rc < 0) {
@@ -1313,52 +1327,52 @@ ycalc__sort_prep   (char *a_list)
    char        rc          =  0;            /* return code                    */
    void       *x_owner     = NULL;
    /*---(header)-------------------------*/
-   DEBUG_SORT    yLOG_enter   (__FUNCTION__);
+   DEBUG_YSORT   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_SORT    yLOG_point   ("a_list"    , a_list);
+   DEBUG_YSORT   yLOG_point   ("a_list"    , a_list);
    --rce;  if (a_list == NULL) {
-      DEBUG_SORT    yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YSORT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_SORT    yLOG_info    ("a_list"    , a_list);
+   DEBUG_YSORT   yLOG_info    ("a_list"    , a_list);
    /*---(initialize)---------------------*/
-   DEBUG_SORT    yLOG_note    ("initialize");
+   DEBUG_YSORT   yLOG_note    ("initialize");
    for (i = 0; i < 1000; ++i)  s_array [i] = 0;
    s_narray = 0;
    /*---(parse/load)---------------------*/
-   DEBUG_SORT    yLOG_note    ("load the array");
+   DEBUG_YSORT   yLOG_note    ("load the array");
    strlcpy (x_list, a_list,  LEN_RECD);
    strlcpy (a_list, "#PREP", LEN_RECD);
    p = strtok_r (x_list, q, &r);
    s_narray = 0;
    --rce;  while (p != NULL) {
-      DEBUG_SORT    yLOG_info    ("parse"     , p);
+      DEBUG_YSORT   yLOG_info    ("parse"     , p);
       rc = myCALC.e_who_named  (p, YCALC_LOOK, &x_owner, NULL);
-      DEBUG_SORT    yLOG_value   ("who_named" , rc);
+      DEBUG_YSORT   yLOG_value   ("who_named" , rc);
       if (rc < 0)  {
-         DEBUG_SORT    yLOG_note    ("could not find owner, EXITING");
-         DEBUG_SORT    yLOG_exitr   (__FUNCTION__, rce);
+         DEBUG_YSORT   yLOG_note    ("could not find owner, EXITING");
+         DEBUG_YSORT   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
       rc = myCALC.e_addresser (x_owner, &b, &x, &y, &z);
-      DEBUG_SORT    yLOG_value   ("addresser" , rc);
+      DEBUG_YSORT   yLOG_value   ("addresser" , rc);
       if (rc < 0)  {
-         DEBUG_SORT    yLOG_note    ("could not parse, EXITING");
-         DEBUG_SORT    yLOG_exitr   (__FUNCTION__, rce);
+         DEBUG_YSORT   yLOG_note    ("could not parse, EXITING");
+         DEBUG_YSORT   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
-      DEBUG_SORT    yLOG_complex ("parts"     , "b=%04d, x=%04d, y=%04d, z=%04d", b, x, y, z);
+      DEBUG_YSORT   yLOG_complex ("parts"     , "b=%04d, x=%04d, y=%04d, z=%04d", b, x, y, z);
       ++b;
       ++x;
       ++y;
       ++z;
-      DEBUG_SORT    yLOG_complex ("inserted"  , "b=%04d, x=%04d, y=%04d, z=%04d", b, x, y, z);
+      DEBUG_YSORT   yLOG_complex ("inserted"  , "b=%04d, x=%04d, y=%04d, z=%04d", b, x, y, z);
       s_array [s_narray] = (b * s_bf) + (x * s_xf) + (y * s_yf) + z;
-      DEBUG_SORT    yLOG_pair    (s_narray         , s_array [s_narray]);
+      DEBUG_YSORT   yLOG_pair    (s_narray         , s_array [s_narray]);
       p = strtok_r (NULL  , q, &r);
       ++s_narray;
    }
-   DEBUG_SORT    yLOG_exit    (__FUNCTION__);
+   DEBUG_YSORT   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -1371,14 +1385,14 @@ ycalc__sort_itself (void)
    long        b           =  0;            /* comparison entry two           */
    int         tele        = -1;            /* teleport point to speed sort   */
    /*---(header)-------------------------*/
-   DEBUG_SORT    yLOG_enter   (__FUNCTION__);
+   DEBUG_YSORT   yLOG_enter   (__FUNCTION__);
    /*---(sort)---------------------------*/
    i = 1;
    while (i < s_narray) {
       /*---(load vars)-------------------*/
       a = s_array [i - 1];
       b = s_array [i];
-      DEBUG_SORT    yLOG_complex ("current"   , "compare i,%3d (t,%3d) =  a,%10d to b,%10d", i, tele, a, b);
+      DEBUG_YSORT   yLOG_complex ("current"   , "compare i,%3d (t,%3d) =  a,%10d to b,%10d", i, tele, a, b);
       /*---(compare)---------------------*/
       if (i == 0 || a <= b) {
          if (tele >= 0) {
@@ -1394,12 +1408,12 @@ ycalc__sort_itself (void)
       s_array [i]     = a;
       a = s_array [i - 1];
       b = s_array [i];
-      DEBUG_SORT    yLOG_complex ("swapped"   , "now     i,%3d (t,%3d) =  a,%10d to b,%10d", i, tele, a, b);
+      DEBUG_YSORT   yLOG_complex ("swapped"   , "now     i,%3d (t,%3d) =  a,%10d to b,%10d", i, tele, a, b);
       /*---(update)----------------------*/
       if (tele < 0) tele = i;
       if (i > 1) --i;
    }
-   DEBUG_SORT    yLOG_exit    (__FUNCTION__);
+   DEBUG_YSORT   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -1419,10 +1433,10 @@ ycalc__sort_wrap   (char *a_list)
    tDEP_ROOT  *x_deproot   = NULL;
    char        x_label     [LEN_LABEL];     /* label for sorted entry         */
    /*---(header)-------------------------*/
-   DEBUG_SORT    yLOG_enter   (__FUNCTION__);
+   DEBUG_YSORT   yLOG_enter   (__FUNCTION__);
    strlcpy (a_list, ",", LEN_RECD);
    for (i = 0; i < s_narray; ++i) {
-      DEBUG_SORT    yLOG_value   ("value"   , s_array[i]);
+      DEBUG_YSORT   yLOG_value   ("value"   , s_array[i]);
       x_rem  = s_array [i];
       b      = x_rem / s_bf;
       x_rem -= b * s_bf;
@@ -1435,19 +1449,19 @@ ycalc__sort_wrap   (char *a_list)
       --x;
       --y;
       --z;
-      DEBUG_SORT    yLOG_complex ("parts"     , "b=%04d, x=%04d, y=%04d, z=%04d", b, x, y, z);
+      DEBUG_YSORT   yLOG_complex ("parts"     , "b=%04d, x=%04d, y=%04d, z=%04d", b, x, y, z);
       rc = ycalc_call_who_at (b, x, y, z, YCALC_LOOK, &x_owner, &x_deproot);
       if      (x_owner   == NULL)   sprintf (x_label, "[#%d]", i);
       else if (rc        <  0   )   sprintf (x_label, "<#%d>", i);
       else if (x_deproot != NULL)   strlcpy (x_label, ycalc_call_labeler (x_deproot), LEN_LABEL);
       else                          sprintf (x_label, "{#%d}", i);
-      DEBUG_SORT    yLOG_info    ("label"   , x_label);
+      DEBUG_YSORT   yLOG_info    ("label"   , x_label);
       strlcat (a_list, x_label, LEN_RECD);
       strlcat (a_list, ","    , LEN_RECD);
    }
-   DEBUG_SORT    yLOG_info    ("final"     , a_list);
+   DEBUG_YSORT   yLOG_info    ("final"     , a_list);
    /*---(complete)-----------------------*/
-   DEBUG_SORT    yLOG_exit    (__FUNCTION__);
+   DEBUG_YSORT   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -1474,10 +1488,10 @@ ycalc__audit_sort  (char *a_list)
    char        rce         = -10;           /* return code for errors         */
    char        rc          =  0;            /* return code                    */
    /*---(header)-------------------------*/
-   DEBUG_SORT    yLOG_enter   (__FUNCTION__);
+   DEBUG_YSORT   yLOG_enter   (__FUNCTION__);
    /*---(defense: null)------------------*/
    --rce;  if (a_list  == NULL)  {
-      DEBUG_SORT    yLOG_exit    (__FUNCTION__);
+      DEBUG_YSORT   yLOG_exit    (__FUNCTION__);
       return rce;
    }
    /*---(sort)---------------------------*/
@@ -1485,7 +1499,7 @@ ycalc__audit_sort  (char *a_list)
    if (rc == 0)   rc = ycalc__sort_itself ();
    if (rc == 0)   rc = ycalc__sort_wrap   (a_list);
    /*---(complete)-----------------------*/
-   DEBUG_SORT    yLOG_exit    (__FUNCTION__);
+   DEBUG_YSORT   yLOG_exit    (__FUNCTION__);
    return rc;
 }
 
@@ -1503,20 +1517,20 @@ ycalc__audit_disp_range    (tDEP_ROOT *a_range, char a_start, char *a_list)
    tDEP_LINK  *n           = NULL;
    char        rce         = -10;
    /*---(setup)--------------------------*/
-   DEBUG_SORT    yLOG_char    ("a_start"   , a_start);
+   DEBUG_YSORT   yLOG_char    ("a_start"   , a_start);
    --rce;  switch (a_start) {
    case 'R' :  n = a_range->reqs; break;
    case 'P' :  n = a_range->pros; break;
    default         :  return rce;
    }
-   DEBUG_SORT    yLOG_info    ("a_list"    , a_list);
+   DEBUG_YSORT   yLOG_info    ("a_list"    , a_list);
    /*---(walk the list)------------------*/
    while (n != NULL) {
       strlcat (a_list, ycalc_call_labeler (n->target), LEN_RECD);
       strlcat (a_list, ","                           , LEN_RECD);
       n = n->next;
    }
-   DEBUG_SORT    yLOG_info    ("a_list"    , a_list);
+   DEBUG_YSORT   yLOG_info    ("a_list"    , a_list);
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -1530,31 +1544,31 @@ ycalc__audit_disp_master   (tDEP_ROOT *a_me, char *a_list, char a_start, char *a
    char        rce         = -10;
    uchar       x_label     [LEN_LABEL] = "";
    /*---(header)-------------------------*/
-   DEBUG_SORT    yLOG_enter   (__FUNCTION__);
+   DEBUG_YSORT   yLOG_enter   (__FUNCTION__);
    /*---(defenses)-----------------------*/
-   DEBUG_SORT    yLOG_point   ("a_list"    , a_list);
+   DEBUG_YSORT   yLOG_point   ("a_list"    , a_list);
    --rce;  if (a_list  == NULL) {
-      DEBUG_SORT    yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YSORT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    strlcpy (a_list, "-", LEN_RECD);   /* special for a null list */
-   DEBUG_SORT    yLOG_info    ("a_list"    , a_list);
-   DEBUG_SORT    yLOG_point   ("a_me"      , a_me);
+   DEBUG_YSORT   yLOG_info    ("a_list"    , a_list);
+   DEBUG_YSORT   yLOG_point   ("a_me"      , a_me);
    --rce;  if (a_me    == NULL) {
-      DEBUG_SORT    yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_YSORT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(setup)--------------------------*/
    strlcpy (a_list, ",", LEN_RECD);
-   DEBUG_SORT    yLOG_char    ("a_start"   , a_start);
+   DEBUG_YSORT   yLOG_char    ("a_start"   , a_start);
    --rce;  switch (a_start) {
    case 'R' :  n = a_me->reqs; break;
    case 'P' :  n = a_me->pros; break;
    default         :  return rce;
    }
-   DEBUG_SORT    yLOG_info    ("a_list"    , a_list);
+   DEBUG_YSORT   yLOG_info    ("a_list"    , a_list);
    /*---(walk the list)------------------*/
-   DEBUG_SORT    yLOG_info    ("a_types"   , a_types);
+   DEBUG_YSORT   yLOG_info    ("a_types"   , a_types);
    while (n != NULL) {
       if (strchr (a_types, n->type) != 0) {
          strlcpy (x_label, ycalc_call_labeler (n->target), LEN_LABEL);
@@ -1573,8 +1587,8 @@ ycalc__audit_disp_master   (tDEP_ROOT *a_me, char *a_list, char a_start, char *a
    /*---(catch empty)--------------------*/
    if (strcmp (a_list, ",") == 0)   strlcpy (a_list, ".", LEN_RECD);
    else  ycalc__audit_sort (a_list);
-   DEBUG_SORT    yLOG_info    ("a_list"    , a_list);
-   DEBUG_SORT    yLOG_exit    (__FUNCTION__);
+   DEBUG_YSORT   yLOG_info    ("a_list"    , a_list);
+   DEBUG_YSORT   yLOG_exit    (__FUNCTION__);
    /*---(complete)-----------------------*/
    return 0;
 }

@@ -58,8 +58,8 @@ extern char YCALC_GROUP_FPRE   [20];
 #define     G_DEP_REQUIRE         'R'
 #define     G_DEP_PROVIDE         'p'
 
-#define     G_DEP_POINTER         'P'
-#define     G_DEP_TARGET          't'
+#define     G_DEP_POINTER         '&'
+#define     G_DEP_TARGET          'T'
 
 #define     G_DEP_RANGE           ':'
 #define     G_DEP_ENTRY           '.'
@@ -76,11 +76,14 @@ extern char YCALC_GROUP_FPRE   [20];
 #define     G_DEP_CALCREF         'A'
 #define     G_DEP_ADDRESS         'a'
 
-#define     G_DEP_TITLE           'T'
-#define     G_DEP_CONTENT         'c'
+#define     G_DEP_CONTENT         'C'
+#define     G_DEP_TITLE           't'
 
 #define     G_DEP_WATCHER         'W'
 #define     G_DEP_STALKED         's'
+
+#define     G_DEP_CALL            ' '
+#define     G_DEP_DEST            '´'
 
 
 char*       yCALC_version           (void);
@@ -101,6 +104,7 @@ char        yCALC_create            (char a_type, char *a_source, char *a_target
 char        yCALC_delete            (char a_type, char *a_source, char *a_target);
 char        yCALC_range             (void *a_source, int b1, int x1, int y1, int b2, int x2, int y2);
 
+char        yCALC_variable          (char *a_name, char *a_real);
 char        yCALC_handle            (char *a_label);
 char        yCALC_exec              (char *a_label);
 
@@ -135,7 +139,10 @@ char        yCALC_show_rpn          (void *a_deproot, int *a_nrpn, char *a_rpn);
 char        yCALC_show_reqs         (void *a_deproot, int *a_nreq, char *a_reqs);
 char        yCALC_show_pros         (void *a_deproot, int *a_npro, char *a_pros);
 
+char        yCALC_var_dump          (void *f);
+char        yCALC_deps_dump         (void *f);
 
+char        yCALC_merge_source      (void *a_deproot, void **a_owner);
 
 #endif
 /*===[[ END ]]================================================================*/

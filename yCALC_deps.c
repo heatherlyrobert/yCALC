@@ -34,6 +34,9 @@ tDEP_INFO   g_dep_info [MAX_DEPTYPE] = {
    {  G_DEP_WATCHER, G_DEP_STALKED, G_DEP_DIRPRO , "watcher, watches another cell for properties"       ,  0  ,  0  ,  0   },
    {  G_DEP_STALKED, G_DEP_WATCHER, G_DEP_DIRREQ , "observed, provides information to another cell"     ,  0  ,  0  ,  0   },
 
+   {  G_DEP_CALL   , G_DEP_DEST   , G_DEP_DIRPRO , "watcher, watches another cell for properties"       ,  0  ,  0  ,  0   },
+   {  G_DEP_DEST   , G_DEP_CALL   , G_DEP_DIRREQ , "observed, provides information to another cell"     ,  0  ,  0  ,  0   },
+
    {  G_DEP_BLANK  , G_DEP_BLANK  , G_DEP_DIRNONE, "newly created dependency, not yet assigned"         ,  0  ,  0  ,  0   },
 
    /*----type------  ---match----- ---dir--------  ---description--------------------------------------- index count total */
@@ -1064,6 +1067,7 @@ ycalc_deps_deltitle     (tDEP_ROOT **a_deproot)
    tDEP_LINK  *x_next      = NULL;
    char        rc          =    0;
    tDEP_LINK  *x_deproot   = NULL;
+   void       *x_other     = NULL;
    /*---(header)-------------------------*/
    DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(defense: null pointers)---------*/
@@ -1092,8 +1096,13 @@ ycalc_deps_deltitle     (tDEP_ROOT **a_deproot)
       } else {
          DEBUG_YCALC   yLOG_note    ("going for the delete");
          x_deproot =  x_next->target;
+         x_other   =  x_next->target->owner;
          DEBUG_YCALC   yLOG_point   ("x_deproot" , x_deproot);
+         DEBUG_YCALC   yLOG_point   ("x_other"   , x_other);
          rc = ycalc_deps_delete (G_DEP_CONTENT, &(x_deproot), a_deproot, a_deproot);
+         DEBUG_YCALC   yLOG_note    ("then, cleanup as necessary");
+         rc = ycalc_call_reaper (&x_other, &x_deproot);
+         DEBUG_YCALC   yLOG_value   ("reaper"    , rc);
       }
       x_next = x_next->next;
    }
@@ -1389,7 +1398,7 @@ ycalc_deps_wipe_reqs    (void **a_owner, tDEP_ROOT **a_deproot)
 static void  o___MERGING_________o () { return; }
 
 char         /*-> find the merge source --------------[ leaf   [gp.420.113.30]*/ /*-[01.0000.306.#]-*/ /*-[--.---.---.--]-*/
-ycalc__merge_source     (void *a_deproot, void **a_source)
+yCALC_merge_source      (void *a_deproot, void **a_owner)
 {  /*---(design notes)--------------------------------------------------------*/
    /* identify the source of the current cells merge                          */
    /*---(locals)-----------+-----+-----+-*/
@@ -1405,12 +1414,8 @@ ycalc__merge_source     (void *a_deproot, void **a_source)
       return rce;
    }
    x_deproot = (tDEP_ROOT *) a_deproot;
-   DEBUG_YCALC   yLOG_point   ("a_source"  , a_source);
-   --rce;  if (a_source  == NULL) {
-      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
-      return rce;
-   }
-   *a_source = NULL;
+   DEBUG_YCALC   yLOG_point   ("a_owner"   , a_owner);
+   if (a_owner   != NULL)  *a_owner   = NULL;
    /*---(find head)----------------------*/
    x_next = x_deproot->pros;
    while (x_next != NULL) {
@@ -1427,7 +1432,7 @@ ycalc__merge_source     (void *a_deproot, void **a_source)
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   *a_source = x_next->target;
+   if (a_owner   != NULL)  *a_owner   = x_next->target->owner;
    /*---(complete)-----------------------*/
    DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -1526,6 +1531,75 @@ yCALC_show_pros         (void *a_deproot, int *a_npro, char *a_pros)
    x_deproot = (tDEP_ROOT *) a_deproot;
    if (a_npro != NULL)  *a_npro = x_deproot->npro;
    if (a_pros != NULL)  yCALC_disp_pros (x_deproot, a_pros);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                          reporting                           ----===*/
+/*====================------------------------------------====================*/
+static void  o___REPORTS_________o () { return; }
+
+char 
+yCALC_deps_dump         (void *f)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        t           [LEN_RECD]  = "";
+   tDEP_LINK  *x_cur       = NULL;
+   FILE       *x_file      = NULL;
+   int         c           =    0;
+   void       *x_owner     = NULL;
+   char      **x_source    = NULL;
+   char       *x_type      = NULL;
+   char        x_save      =  '·';
+   char        x_pre       [LEN_TERSE] = "";
+   char        x_suf       [LEN_TERSE] = "";
+   /*---(prepare)------------------------*/
+   x_file = f;
+   /*---(print)--------------------------*/
+   fprintf (f, "#! parsing åÏ--··Ï··Ï---------··Ï---------··Ï··Ï------------------------··Ï---------··Ï---------··Ï··Ï------------------------··æ\n");
+   fprintf (f, "#! titles  åseq··t··source······owner·······t··content····················target······owner·······t··content····················æ\n");
+   fprintf (f, "\n");
+   fprintf (f, "# count = %d\n" , myCALC.dcount);
+   x_cur = myCALC.dhead;
+   while (x_cur != NULL) {
+      if (c % 26 == 0)  fprintf (f, "\n#--  t  source----  owner-----  t  content------------------  target----  owner-----  t  content------------------  ´\n");
+      if (strchr (S_DEP_REQS, x_cur->type) != NULL) {
+         strcpy (x_pre , "");
+         strcpy (x_suf , "  ");
+         fprintf (f, "\n");
+      } else {
+         strcpy (x_pre , "  ");
+         strcpy (x_suf , "");
+      }
+      fprintf (f, "%3d  %c", c++, x_cur->type);
+      if (x_cur->source == NULL) {
+         fprintf (f, "  %-10.10p  %-10.10s  %c  %-25.25s", NULL, "····", '·', "····");
+      } else {
+         x_owner = x_cur->source->owner;
+         if (x_owner == NULL) {
+            fprintf (f, "  %-8.8p  %-10.10s  %c  %-25.25s", x_cur->source, "····", '·', "····");
+         } else {
+            myCALC.e_pointer (x_owner, &x_source, &x_type, NULL, NULL);
+            fprintf (f, "  %-8.8p  %s%-8.8s%s  %c  %-25.25s", x_cur->source, x_pre, ycalc_call_labeler (x_cur->source), x_suf, *x_type, *x_source);
+         }
+      }
+      if (x_cur->target == NULL) {
+         fprintf (f, "  %-8.8p  %-10.10s  %c  %-25.25s", NULL, "····", '·', "····");
+      } else {
+         x_owner = x_cur->target->owner;
+         if (x_owner == NULL) {
+            fprintf (f, "  %-8.8p  %-10.10s  %c  %-25.25s", x_cur->target, "····", '·', "····");
+         } else {
+            myCALC.e_pointer (x_owner, &x_source, &x_type, NULL, NULL);
+            fprintf (f, "  %-8.8p  %s%-8.8s%s  %c  %-25.25s", x_cur->target, x_pre, ycalc_call_labeler (x_cur->target), x_suf, *x_type, *x_source);
+         }
+      }
+      fprintf (f, "  ´\n");
+      x_cur = x_cur->dnext;  
+   }
+   /*---(complete)-----------------------*/
    return 0;
 }
 

@@ -435,6 +435,7 @@ ycalc_xcscr         (void)
 void    /*-> tbd --------------------------------[ ------ [fv.320.000.03]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_crd           (void)
 {
+   /* 2 sin (1/2 angle) */
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, a / 2.0);
@@ -574,6 +575,18 @@ ycalc_apor          (void)
 }
 
 void    /*-> tbd --------------------------------[ ------ [fv.320.000.03]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_fsag          (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval (__FUNCTION__);
+   a = fabs (a);
+   while (a > 360)  a -= 360;
+   ycalc_pushval (__FUNCTION__, a / 2.0);
+   ycalc_sec     ();
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.000.03]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_csg           (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
@@ -592,6 +605,72 @@ ycalc_csgr          (void)
    return;
 }
 
+void    /*-> tbd --------------------------------[ ------ [fv.320.000.03]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_arc           (void)
+{
+   /*   2÷ * (angle / 360) */
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, 2.0 * 3.1415927 * (a / 360.0));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.000.03]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_arcr          (void)
+{
+   /*   radians are arc length */
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.000.03]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_los           (void)
+{
+   /*   2÷ * (angle / 360) */  /* height, radius */
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval (__FUNCTION__);
+   a = fabs (a);
+   while (a > 360)  a -= 360;
+   ycalc_pushval (__FUNCTION__, a / 2.0);
+   ycalc_tan     ();
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.000.03]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_los2          (void)  /* a = height, b = radius */
+{
+   /*   2÷ * (angle / 360) */  /* height, radius */
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, sqrt (2 * a * b));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.000.03]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_xsag2         (void)
+{
+   /*   losÆ / (2 * radius)*/  /* line-of-sight max, radius */
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);   /* radius */
+   ycalc_sqr     ();
+   a = ycalc_popval (__FUNCTION__);   /* line of sight squared */
+   ycalc_pushval (__FUNCTION__, a / (2.0 * b));
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.000.03]*/ /*-[00.0000.01#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_xsag          (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval (__FUNCTION__);
+   a = fabs (a);
+   while (a > 360)  a -= 360;
+   ycalc_pushval (__FUNCTION__, a / 2.0);
+   ycalc_xsec    ();
+   return;
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -605,7 +684,7 @@ ycalc_asin          (void)
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, asin(a) * RAD2DEG);
-   ycalc_pushval (__FUNCTION__, 3);
+   ycalc_pushval (__FUNCTION__, 6);
    ycalc_rround ();
    return;
 }
@@ -616,7 +695,7 @@ ycalc_asinr         (void)
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, asin(a));
-   ycalc_pushval (__FUNCTION__, 3);
+   ycalc_pushval (__FUNCTION__, 6);
    ycalc_rround ();
    return;
 }
@@ -627,7 +706,7 @@ ycalc_acos          (void)
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, acos(a) * RAD2DEG);
-   ycalc_pushval (__FUNCTION__, 3);
+   ycalc_pushval (__FUNCTION__, 6);
    ycalc_rround ();
    return;
 }
@@ -638,7 +717,7 @@ ycalc_acosr         (void)
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, acos(a));
-   ycalc_pushval (__FUNCTION__, 3);
+   ycalc_pushval (__FUNCTION__, 6);
    ycalc_rround ();
    return;
 }
@@ -649,7 +728,7 @@ ycalc_atan          (void)
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, atan(a) * RAD2DEG);
-   ycalc_pushval (__FUNCTION__, 3);
+   ycalc_pushval (__FUNCTION__, 6);
    ycalc_rround ();
    return;
 }
@@ -660,7 +739,7 @@ ycalc_atanr         (void)
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, atan(a));
-   ycalc_pushval (__FUNCTION__, 3);
+   ycalc_pushval (__FUNCTION__, 6);
    ycalc_rround ();
    return;
 }
@@ -672,7 +751,7 @@ ycalc_atan2         (void)
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, atan2 (b,a) * RAD2DEG);
-   ycalc_pushval (__FUNCTION__, 3);
+   ycalc_pushval (__FUNCTION__, 6);
    ycalc_rround ();
    return;
 }
@@ -684,7 +763,19 @@ ycalc_atanr2        (void)
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, atan2 (b,a));
-   ycalc_pushval (__FUNCTION__, 3);
+   ycalc_pushval (__FUNCTION__, 6);
+   ycalc_rround ();
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_acrd2         (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   a = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, asin((a / 2.0) / b) * RAD2DEG * 2);
+   ycalc_pushval (__FUNCTION__, 6);
    ycalc_rround ();
    return;
 }

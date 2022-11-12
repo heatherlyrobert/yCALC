@@ -378,6 +378,8 @@ ycalc__build_function   (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    char        rc          =    0;
    int         x_len       =    0;
    int         i           =    0;
+   char        x_var       [LEN_TERSE] = "";
+   tDEP_ROOT  *x_ref       = NULL;
    /*---(check for function)-------------*/
    DEBUG_YCALC   yLOG_note    ("check for function");
    x_len = strlen (a_token);
@@ -400,6 +402,31 @@ ycalc__build_function   (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
       /*---(update type)-----------------*/
       DEBUG_YCALC   yLOG_note    ("mark type");
       a_calc->t = G_TYPE_FUNC;
+      /*---(check special)---------------*/
+      if (strchr ("ий", a_token [0]) != NULL) {
+         DEBUG_YCALC   yLOG_note    ("special var/func overlap");
+         switch (a_token [0]) {
+         case 'и' : strcpy (x_var, "x");  break;
+         case 'й' : strcpy (x_var, "y");  break;
+         }
+         /*---(find token)---------------------*/
+         rc = ycalc_call_who_named (x_var, YCALC_FULL, NULL, &x_ref);
+         DEBUG_YCALC   yLOG_value   ("who"       , rc);
+         DEBUG_YCALC   yLOG_point   ("x_ref"     , x_ref);
+         if (rc < 0 && x_ref == NULL) {
+            rc = YCALC_ERROR_BUILD_REF;
+            DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rc);
+            return 0;
+         }
+         /*---(set dependency)-----------------*/
+         rc = ycalc_deps_create (G_DEP_REQUIRE, &a_deproot, &x_ref);
+         DEBUG_YCALC   yLOG_value   ("rc"        , rc);
+         if (rc < 0) {
+            rc = YCALC_ERROR_BUILD_CIR;
+            DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rc);
+            return 0;
+         }
+      }
       /*---(complete)--------------------*/
       DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return 1;
@@ -500,18 +527,18 @@ ycalc__build_value      (tDEP_ROOT *a_thing, tCALC *a_calc, char *a_token)
    int         x_len       =    0;
    int         i           =    0;
    char       *x_valid     = "0123456789.-+";    /* only digits               */
+   double      v           =  0.0;
    /*---(check for function)-------------*/
    DEBUG_YCALC   yLOG_note    ("check for value");
-   /*---(check for name quality)---------*/
-   x_len = strlen (a_token);
-   for (i = 0; i < x_len; ++i) {
-      if (strchr (x_valid, a_token [i]) != NULL)  continue;
-      DEBUG_YCALC   yLOG_note    ("found a bad character");
-      return 0;
-   }
    /*---(header)-------------------------*/
    DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
-   a_calc->v = atof (a_token);
+   rc = strl2num (a_token, &v, LEN_LABEL);
+   DEBUG_YCALC   yLOG_value   ("strl2num"  , rc);
+   if (rc < 0)  {
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return 0;
+   }
+   a_calc->v = v;
    DEBUG_YCALC   yLOG_double  ("value"     , a_calc->v);
    /*---(update type)-----------------*/
    DEBUG_YCALC   yLOG_note    ("mark type");
@@ -722,6 +749,7 @@ ycalc_bulid_variable    (tDEP_ROOT *a_deproot, char *a_label, short b, short x, 
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
+   void       *x_other     = NULL;
    tDEP_ROOT  *x_ref       = NULL;
    /*---(header)-------------------------*/
    DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
@@ -741,7 +769,7 @@ ycalc_bulid_variable    (tDEP_ROOT *a_deproot, char *a_label, short b, short x, 
    }
    DEBUG_YCALC   yLOG_complex ("dest"      , "%2du, %3dx, %3dy, %3dz", b, x, y, z);
    /*---(get destination)----------------*/
-   rc = ycalc_call_who_at (b, x, y, z, YCALC_FULL, NULL, &x_ref);
+   rc = ycalc_call_who_at (b, x, y, z, YCALC_FULL, &x_other, &x_ref);
    DEBUG_YCALC   yLOG_value   ("who_at"    , rc);
    --rce;  if (rc < 0) {
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
@@ -752,17 +780,20 @@ ycalc_bulid_variable    (tDEP_ROOT *a_deproot, char *a_label, short b, short x, 
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(set dependency)-----------------*/
-   /*> rc = ycalc_deps_create (G_DEP_REQUIRE, &a_deproot, &x_ref);                    <*/
-   rc = ycalc_deps_create (G_DEP_CONTENT, &x_ref, &a_deproot);
-   DEBUG_YCALC   yLOG_value   ("rc"        , rc);
-   if (rc < 0) {
-      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rc);
-      return rc;
-   }
    /*---(save variable)------------------*/
    rc = ycalc_call_newvar ('v', *a_source, a_label, x_ref, a_type, a_value, a_string);
    DEBUG_YCALC   yLOG_value   ("newvar"    , rc);
+   if (rc < 0) {
+      /*---(call reaper)--------------------*/
+      DEBUG_YCALC   yLOG_note    ("then, cleanup as necessary");
+      rc = ycalc_call_reaper (&x_other, &x_ref);
+      DEBUG_YCALC   yLOG_value   ("reaper"    , rc);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(set dependency)-----------------*/
+   rc = ycalc_deps_create (G_DEP_CONTENT, &x_ref, &a_deproot);
+   DEBUG_YCALC   yLOG_value   ("rc"        , rc);
    if (rc < 0) {
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rc);
       return rc;

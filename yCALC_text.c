@@ -21,8 +21,8 @@ ycalc_concat       (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    if (s == NULL)  s = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strncpy (t, s,   LEN_RECD);
-   strncat (t, r,   LEN_RECD);
+   strlcpy (t, s,   LEN_RECD);
+   strlcat (t, r,   LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, t);
    /*---(clean up)-----------------------*/
@@ -43,10 +43,10 @@ ycalc_concatplus   (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    if (s == NULL)  s = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strncpy (t, s,   LEN_RECD);
+   strlcpy (t, s,   LEN_RECD);
    if (r [0] != '\0') {
-      strncat (t, ",", LEN_RECD);
-      strncat (t, r,   LEN_RECD);
+      strlcat (t, ",", LEN_RECD);
+      strlcat (t, r,   LEN_RECD);
    }
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, t);
@@ -66,7 +66,7 @@ ycalc_lower        (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strncpy (t, r, LEN_RECD);
+   strlcpy (t, r, LEN_RECD);
    len = strlen(t);
    int i;
    for (i = 0; i < len; ++i) t[i] = tolower(t[i]);
@@ -88,7 +88,7 @@ ycalc_upper        (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
    len = strlen(r);
-   strncpy (t, r, LEN_RECD);
+   strlcpy (t, r, LEN_RECD);
    int i;
    for (i = 0; i < len; ++i) t[i] = toupper(t[i]);
    /*---(return result)------------------*/
@@ -160,7 +160,7 @@ ycalc_left         (void)
    if (n     <  0  )  n = 0;
    /*---(process)------------------------*/
    len = strlen (r);
-   strncpy (t, r, LEN_RECD);
+   strlcpy (t, r, LEN_RECD);
    if (n >= len)  n = len;
    t[n] = '\0';
    /*---(return result)------------------*/
@@ -526,6 +526,39 @@ ycalc_value        (void)
 }
 
 void    /*-> tbd --------------------------------[ ------ [fv.420.000.12]*/ /*-[10.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_unhex        (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   /*---(get arguments)------------------*/
+   r = ycalc_popstr (__FUNCTION__);
+   /*---(defense)------------------------*/
+   if (r == NULL)  r = strndup (g_nada, LEN_RECD);
+   /*---(process)------------------------*/
+   sprintf (t, "õ%s", r);
+   strl2hex (t, &a, 0);
+   /*---(return result)------------------*/
+   ycalc_pushval (__FUNCTION__, a);
+   /*---(clean up)-----------------------*/
+   free (r);
+   /*---(complete)-----------------------*/
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.420.000.12]*/ /*-[10.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_hex          (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   /*---(get arguments)------------------*/
+   a = ycalc_popval (__FUNCTION__);
+   /*---(process)------------------------*/
+   strl4hex (a, t, 1, 'x', LEN_LABEL);
+   /*---(return result)------------------*/
+   ycalc_pushstr (__FUNCTION__, t + 1);
+   /*---(complete)-----------------------*/
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.420.000.12]*/ /*-[10.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_salpha       (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
@@ -821,6 +854,27 @@ ycalc_replace      (void)
    /*---(clean up)-----------------------*/
    free (q);
    free (r);
+   free (s);
+   /*---(complete)-----------------------*/
+   return;
+}
+
+void
+ycalc_ditto       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   int         i           =   0;
+   /*---(get arguments)------------------*/
+   n = ycalc_popval (__FUNCTION__);
+   s = ycalc_popstr (__FUNCTION__);
+   /*---(defense)------------------------*/
+   if (s == NULL)  s = strndup (g_nada, LEN_RECD);
+   if (n     <  0  )  n = 0;
+   strcpy (t, "");
+   for (i = 0; i < n; ++i)   strlcat (t, s, LEN_RECD);
+   /*---(return result)------------------*/
+   ycalc_pushstr (__FUNCTION__, t);
+   /*---(clean up)-----------------------*/
    free (s);
    /*---(complete)-----------------------*/
    return;

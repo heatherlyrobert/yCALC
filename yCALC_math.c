@@ -113,7 +113,6 @@ void    /*-> tbd --------------------------------[ ------ [fv.320.010.02]*/ /*-[
 ycalc_power_of_2   (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
-   int   i = 0;
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, a * a);
    return;
@@ -123,7 +122,6 @@ void    /*-> tbd --------------------------------[ ------ [fv.320.010.02]*/ /*-[
 ycalc_power_of_3   (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
-   int   i = 0;
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, a * a * a);
    return;
@@ -133,9 +131,58 @@ void    /*-> tbd --------------------------------[ ------ [fv.320.010.02]*/ /*-[
 ycalc_power_of_4   (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
-   int   i = 0;
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, a * a * a * a);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.010.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_power_of     (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   int         i           =    0;
+   char        rc          =    0;
+   char        x_label     [LEN_LABEL] = "";
+   tDEP_ROOT  *x_ref       = NULL;
+   /*---(get variable)-------------------*/
+   r = ycalc_popstr (__FUNCTION__);
+   rc = yCALC_variable (r, x_label);
+   if (rc < 0) {
+      ycalc_error_set (YCALC_ERROR_EXEC_VAR , "x");
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
+   DEBUG_YCALC   yLOG_info    ("x_label"   , x_label);
+   /*---(get ref)------------------------*/
+   ycalc_call_who_named (x_label, YCALC_FULL, NULL, &x_ref);
+   DEBUG_YCALC   yLOG_point   ("x_ref"      , x_ref);
+   if (x_ref == NULL) {
+      ycalc_error_set (YCALC_ERROR_EXEC_NULL, x_ref);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return;
+   }
+   ycalc_pushref (__FUNCTION__, x_ref, x_label);
+   /*---(call power)---------------------*/
+   ycalc_power   ();
+   /*---(complete)-----------------------*/
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.010.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_power_of_x   (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc_pushstr (__FUNCTION__, "x");
+   ycalc_power_of   ();
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.320.010.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_power_of_y   (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc_pushstr (__FUNCTION__, "y");
+   ycalc_power_of   ();
    return;
 }
 

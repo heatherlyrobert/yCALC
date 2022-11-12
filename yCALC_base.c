@@ -2,6 +2,12 @@
 #include    "yCALC.h"
 #include    "yCALC_priv.h"
 
+/*
+ * metis § ····· § trig formula for line of site distance above arc to end points         § M453JT §  · §
+ * metis § ····· § exsag is from arc to line of site height to end points                 § M453K8 §  · §
+ * metis § ····· § los (line of sight) is distance one can see given height and radius    § M453LC §  · §
+ *
+ */
 
 
 tLOCAL      myCALC;
@@ -49,6 +55,8 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "Æ"          ,  1, ycalc_power_of_2        , 'f', "n:n"    , 'm', "x raised to the power of 2"                        },
    { "Ç"          ,  1, ycalc_power_of_3        , 'f', "n:n"    , 'm', "x raised to the power of 3"                        },
    { "È"          ,  1, ycalc_power_of_4        , 'f', "n:n"    , 'm', "x raised to the power of 4"                        },
+   { "É"          ,  1, ycalc_power_of_x        , 'f', "n:n"    , 'm', "x raised to the power of 4"                        },
+   { "Ê"          ,  1, ycalc_power_of_y        , 'f', "n:n"    , 'm', "x raised to the power of 4"                        },
    { "abs"        ,  3, ycalc_abs               , 'f', "n:n"    , 'm', "ansi-c fabs() removes negative sign"               },
    { "sign"       ,  4, ycalc_sign              , 'f', "n:n"    , 'm', "neg = -1, pos = +1, zero = 0"                      },
    { "trunc"      ,  5, ycalc_trunc             , 'f', "n:n"    , 'm', "truncate to the nearest integer value"             },
@@ -71,10 +79,10 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "<"          ,  1, ycalc_lesser            , 'o', "t:nn"   , 'l', "T if x lesser than y, else F"                      },
    { ">="         ,  2, ycalc_gequal            , 'o', "t:nn"   , 'l', "T if x greater than or equal to y, else F"         },
    { "<="         ,  2, ycalc_lequal            , 'o', "t:nn"   , 'l', "T if x lesser than or equal to y, else F"          },
-   { "#="         ,  2, ycalc_sequal            , 'o', "t:ss"   , 'l', "T if n are m are equal, else F"                    },
-   { "#!"         ,  2, ycalc_snotequal         , 'o', "t:ss"   , 'l', "T if n not equal m, else F"                        },
-   { "#<"         ,  2, ycalc_slesser           , 'o', "t:ss"   , 'l', "T if n greater than m, else F"                     },
-   { "#>"         ,  2, ycalc_sgreater          , 'o', "t:ss"   , 'l', "T if n lesser than m, else F"                      },
+   { "›="         ,  2, ycalc_sequal            , 'o', "t:ss"   , 'l', "T if n are m are equal, else F"                    },
+   { "›!"         ,  2, ycalc_snotequal         , 'o', "t:ss"   , 'l', "T if n not equal m, else F"                        },
+   { "›<"         ,  2, ycalc_slesser           , 'o', "t:ss"   , 'l', "T if n greater than m, else F"                     },
+   { "›>"         ,  2, ycalc_sgreater          , 'o', "t:ss"   , 'l', "T if n lesser than m, else F"                      },
    /*---(locgical operators)--------------*/
    { "!"          ,  1, ycalc_not               , 'o', "t:n"    , 'l', "T if x F, else F"                                  },
    { "&&"         ,  2, ycalc_and               , 'o', "t:nn"   , 'l', "T if both x and y are T, else F"                   },
@@ -102,8 +110,8 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "|"          ,  1, ycalc_bit_or            , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
    { "^"          ,  1, ycalc_bit_xor           , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
    /*---(string operators)----------------*/
-   { "#"          ,  1, ycalc_concat            , 'o', "s:ss"   , 's', "m concatinated to the end of n"                    },
-   { "##"         ,  2, ycalc_concatplus        , 'o', "s:ss"   , 's', "m concatinated to the end of n (with a space)"     },
+   { "›"          ,  1, ycalc_concat            , 'o', "s:ss"   , 's', "m concatinated to the end of n"                    },
+   { "››"         ,  2, ycalc_concatplus        , 'o', "s:ss"   , 's', "m concatinated to the end of n (with a space)"     },
    /*---(string functions)----------------*/
    { "len"        ,  3, ycalc_len               , 'f', "n:s"    , 's', "length of n"                                       },
    { "left"       ,  4, ycalc_left              , 'f', "s:sn"   , 's', "left x characters of n"                            },
@@ -120,20 +128,25 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "print"      ,  5, ycalc_printstr          , 'f', "s:a"    , 's', "gyges trimmed print string of cell a"              },
    { "p"          ,  1, ycalc_printstr          , 'f', "s:a"    , 's', "gyges trimmed print string of cell a"              },
    { "printnum"   ,  8, ycalc_printnum          , 'f', "n:a"    , 's', "gyges trimmed print string as value of cell a"     },
-   { "n"          ,  1, ycalc_printnum          , 'f', "n:a"    , 's', "gyges trimmed print string as value of cell a"     },
+   { "pn"         ,  2, ycalc_printnum          , 'f', "n:a"    , 's', "gyges trimmed print string as value of cell a"     },
    { "lpad"       ,  4, ycalc_lpad              , 'f', "s:sn"   , 's', "add whitespace to start of n until x length"       },
    { "rpad"       ,  4, ycalc_rpad              , 'f', "s:sn"   , 's', "add whitespace to end of n until x length"         },
    { "lppad"      ,  5, ycalc_lppad             , 'f', "s:an"   , 's', "add whitespace to start of printable till x len"   },
    { "rppad"      ,  5, ycalc_rppad             , 'f', "s:an"   , 's', "add whitespace to end of printable till x len"     },
    { "find"       ,  4, ycalc_find              , 'f', "s:ss"   , 's', "find m within n"                                   },
    { "replace"    ,  7, ycalc_replace           , 'f', "s:sssn" , 's', "replace m with o within n, x times"                },
+   { "ditto"      ,  5, ycalc_ditto             , 'f', "s:sn"   , 's', "replace m with o within n, x times"                },
    /*---(conversion functions)------------*/
    { "lower"      ,  5, ycalc_lower             , 'f', "s:s"    , 'c', "change all chars in n to lower case"               },
    { "upper"      ,  5, ycalc_upper             , 'f', "s:s"    , 'c', "change all chars in n to upper case"               },
-   { "ascii"      ,  4, ycalc_char              , 'f', "s:n"    , 'c', "change x into an ascii character with that code"   },
+   { "ascii"      ,  5, ycalc_char              , 'f', "s:n"    , 'c', "change x into an ascii character with that code"   },
    { "code"       ,  4, ycalc_code              , 'f', "n:s"    , 'c', "return ascii value of first char in n"             },
-   { "val"        ,  3, ycalc_value             , 'f', "n:s"    , 'c', "ansi-c atof() to convert text number into value"   },
+   { "v"          ,  1, ycalc_value             , 'f', "n:s"    , 'c', "ansi-c atof() to convert text number into value"   },
    { "value"      ,  5, ycalc_value             , 'f', "n:s"    , 'c', "ansi-c atof() to convert text number into value"   },
+   { "atoi"       ,  4, ycalc_value             , 'f', "n:s"    , 'c', "ansi-c atof() to convert text number into value"   },
+   { "atof"       ,  4, ycalc_value             , 'f', "n:s"    , 'c', "ansi-c atof() to convert text number into value"   },
+   { "xtoi"       ,  4, ycalc_unhex             , 'f', "n:s"    , 'c', "ansi-c atof() to convert text number into value"   },
+   { "itox"       ,  4, ycalc_hex               , 'f', "s:n"    , 'c', "ansi-c atof() to convert text number into value"   },
    { "salpha"     ,  6, ycalc_salpha            , 'f', "s:s"    , 'c', "change all non-alphabetic chars in n to '_'"       },
    { "salphac"    ,  7, ycalc_salphac           , 'f', "s:s"    , 'c', "remove all non-alphabetic chars in n"              },
    { "salnum"     ,  6, ycalc_salnum            , 'f', "s:s"    , 'c', "change all non-alphanumeric chars in n to '_'"     },
@@ -150,12 +163,13 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "ssevenc"    ,  7, ycalc_ssevenc           , 'f', "s:s"    , 'c', "remove all non-7bit safe chars in n"               },
    /*---(object audit functions)----------*/
    { "type"       ,  4, ycalc_type              , 'f', "n:a"    , 'i', "returns the type character as a value"             },
-   { "t"          ,  1, ycalc_type              , 'f', "n:a"    , 'i', "returns the type character as a value"             },
    { "isblank"    ,  7, ycalc_isblank           , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
    { "isvalue"    ,  7, ycalc_isvalue           , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
    { "istext"     ,  6, ycalc_istext            , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
    { "iscalc"     ,  6, ycalc_iscalc            , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
    { "islit"      ,  5, ycalc_islit             , 'f', "t:a"    , 'i', "T if cell a is numeric value"                      },
+   { "ispoint"    ,  7, ycalc_ispoint           , 'f', "t:a"    , 'i', "T if cell a is cell or range pointer"              },
+   { "iserror"    ,  7, ycalc_iserror           , 'f', "t:a"    , 'i', "T if cell a is in error status"                    },
    { "upos"       ,  4, ycalc_upos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
    { "tab"        ,  3, ycalc_upos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
    { "xpos"       ,  4, ycalc_xpos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
@@ -164,14 +178,11 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "row"        ,  3, ycalc_ypos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
    { "zpos"       ,  4, ycalc_zpos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
    { "dep"        ,  3, ycalc_zpos              , 'f', "n:a"    , 'i', "T if cell a is numeric value"                      },
-   { "ispoint"    ,  7, ycalc_ispoint           , 'f', "t:a"    , 'i', "T if cell a is cell or range pointer"              },
-   { "iserror"    ,  7, ycalc_iserror           , 'f', "t:a"    , 'i', "T if cell a is in error status"                    },
    { "me"         ,  2, ycalc_me                , 'f', "a:"     , 'i', "identifies the current cell for use"               },
    { "label"      ,  5, ycalc_label             , 'f', "s:a"    , 'i', "cell label of cell requested"                      },
    { "formula"    ,  7, ycalc_formula           , 'f', "s:a"    , 'i', "formula source of cell a"                          },
    { "f"          ,  1, ycalc_formula           , 'f', "s:a"    , 'i', "formula source of cell a"                          },
    { "rpn"        ,  3, ycalc_rpn               , 'f', "s:a"    , 'i', "rpn version of cell a formula"                     },
-   { "r"          ,  1, ycalc_rpn               , 'f', "s:a"    , 'i', "rpn version of cell a formula"                     },
    { "ncalc"      ,  5, ycalc_ncalc             , 'f', "n:a"    , 'i', "count of formula tokens in cell a "                },
    { "nrpn"       ,  4, ycalc_ncalc             , 'f', "n:a"    , 'i', "count of formula tokens in cell a "                },
    { "reqs"       ,  4, ycalc_reqs              , 'f', "s:a"    , 'i', "list of cells required by cell a"                  },
@@ -182,7 +193,9 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "*:"         ,  2, ycalc_pointer           , 'o', "a:a"    , 'i', "indirect access using pointer-like interface"      },
    /*---(trig functions)------------------*/
    { "rad"        ,  3, ycalc_radians           , 'f', "n:n"    , 't', "translate x degrees into radians"                  },
+   { "Í"          ,  1, ycalc_radians           , 'f', "n:n"    , 't', "translate x degrees into radians"                  },
    { "deg"        ,  3, ycalc_degrees           , 'f', "n:n"    , 't', "translate x radians into degrees"                  },
+   { "Ì"          ,  1, ycalc_degrees           , 'f', "n:n"    , 't', "translate x radians into degrees"                  },
    { "pi"         ,  2, ycalc_pi                , 'f', "n:"     , 't', "value of PI to 7 decimal places"                   },
    { "hypot"      ,  5, ycalc_hypot             , 'f', "n:nn"   , 't', "hypotenuse length given sides x and y"             },
    { "side"       ,  4, ycalc_side              , 'f', "n:nn"   , 't', "side length given hypotenuse and other side"       },
@@ -210,8 +223,8 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "xcsc"       ,  4, ycalc_xcsc              , 'f', "n:n"    , 't', "external cosecant (degrees)"                       },
    { "xcscr"      ,  5, ycalc_xcscr             , 'f', "n:n"    , 't', "external cosecant (radians)"                       },
    /*-------*/
-   { "vsin"       ,  4, ycalc_vsin              , 'f', "n:n"    , 't', "versed sine (degrees)"                             },
-   { "vsinr"      ,  5, ycalc_vsinr             , 'f', "n:n"    , 't', "versed sine (radians)"                             },
+   { "siv"        ,  3, ycalc_vsin              , 'f', "n:n"    , 't', "versed sine (degrees)"                             },
+   { "sivr"       ,  4, ycalc_vsinr             , 'f', "n:n"    , 't', "versed sine (radians)"                             },
    { "vcos"       ,  4, ycalc_vcos              , 'f', "n:n"    , 't', "versed cosine (degrees)"                           },
    { "vcosr"      ,  5, ycalc_vcosr             , 'f', "n:n"    , 't', "versed cosine (radians)"                           },
    { "csin"       ,  4, ycalc_csin              , 'f', "n:n"    , 't', "coversed sine (degrees)"                           },
@@ -219,8 +232,8 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "ccos"       ,  4, ycalc_ccos              , 'f', "n:n"    , 't', "coversed cosine (degrees)"                         },
    { "ccosr"      ,  5, ycalc_ccosr             , 'f', "n:n"    , 't', "coversed cosine (radians)"                         },
    /*-------*/
-   { "hvsin"      ,  5, ycalc_hvsin             , 'f', "n:n"    , 't', "half-versed sine (degrees)"                        },
-   { "hvsinr"     ,  6, ycalc_hvsinr            , 'f', "n:n"    , 't', "half-versed sine (radians)"                        },
+   { "hsiv"       ,  4, ycalc_hvsin             , 'f', "n:n"    , 't', "half-versed sine (degrees)"                        },
+   { "hsivr"      ,  5, ycalc_hvsinr            , 'f', "n:n"    , 't', "half-versed sine (radians)"                        },
    { "hvcos"      ,  5, ycalc_hvcos             , 'f', "n:n"    , 't', "half-versed cosine (degrees)"                      },
    { "hvcosr"     ,  6, ycalc_hvcosr            , 'f', "n:n"    , 't', "half-versed cosine (radians)"                      },
    { "hcsin"      ,  5, ycalc_hcsin             , 'f', "n:n"    , 't', "half-coversed sine (degrees)"                      },
@@ -228,15 +241,21 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "hccos"      ,  5, ycalc_hccos             , 'f', "n:n"    , 't', "half-coversed cosine (degrees)"                    },
    { "hccosr"     ,  6, ycalc_hccosr            , 'f', "n:n"    , 't', "half-coversed cosine (radians)"                    },
    /*-------*/
-   { "ê"          ,  1, ycalc_crd               , 'f', "n:n"    , 't', "chord (degrees)"                                   },
    { "crd"        ,  3, ycalc_crd               , 'f', "n:n"    , 't', "chord (degrees)"                                   },
    { "crdr"       ,  4, ycalc_crdr              , 'f', "n:n"    , 't', "chord (radians)"                                   },
    { "sag"        ,  3, ycalc_sag               , 'f', "n:n"    , 't', "sagitta (degrees)"                                 },
    { "sagr"       ,  4, ycalc_sagr              , 'f', "n:n"    , 't', "sagitta (radians)"                                 },
-   { "apoth"      ,  5, ycalc_apo               , 'f', "n:n"    , 't', "apothem (degrees)"                                 },
-   { "apothr"     ,  6, ycalc_apor              , 'f', "n:n"    , 't', "apothem (radians)"                                 },
-   { "cosag"      ,  5, ycalc_csg               , 'f', "n:n"    , 't', "cosagitta (degrees)"                               },
-   { "cosagr"     ,  6, ycalc_csgr              , 'f', "n:n"    , 't', "cosagitta (radians)"                               },
+   { "apo"        ,  3, ycalc_apo               , 'f', "n:n"    , 't', "apothem (degrees)"                                 },
+   { "apo"        ,  4, ycalc_apor              , 'f', "n:n"    , 't', "apothem (radians)"                                 },
+   { "csag"       ,  4, ycalc_csg               , 'f', "n:n"    , 't', "long sagitta (degrees)"                            },
+   { "csagr"      ,  5, ycalc_csgr              , 'f', "n:n"    , 't', "long sagitta (radians)"                            },
+   { "fsag"       ,  4, ycalc_fsag              , 'f', "n:n"    , 't', "long sagitta (degrees)"                            },
+   { "arc"        ,  3, ycalc_arc               , 'f', "n:n"    , 't', "arc length given angle (degrees)"                  },
+   { "arcr"       ,  4, ycalc_arcr              , 'f', "n:n"    , 't', "arc length given angle (radians)"                  },
+   { "los"        ,  3, ycalc_los               , 'f', "n:n"    , 't', "line of sight (height, radius)"                    },
+   { "los2"       ,  4, ycalc_los2              , 'f', "n:nn"   , 't', "line of sight (height, radius)"                    },
+   { "xsag"       ,  4, ycalc_xsag              , 'f', "n:n"    , 't', "watch tower height (ex-sagitta) (line of sight max, radius)"    },
+   { "xsag2"      ,  5, ycalc_xsag2             , 'f', "n:nn"   , 't', "watch tower height (ex-sagitta) (line of sight max, radius)"    },
    { "hcrd"       ,  4, ycalc_hcrd              , 'f', "n:n"    , 't', "half chord (degrees)"                              },
    { "hcrdr"      ,  5, ycalc_hcrdr             , 'f', "n:n"    , 't', "half chord (radians)"                              },
    { "scrd"       ,  4, ycalc_scrd              , 'f', "n:n"    , 't', "supplemental chord (degrees)"                      },
@@ -253,8 +272,8 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "atan"       ,  4, ycalc_atan              , 'f', "n:n"    , 't', "arctangent in degrees"                             },
    { "atanr"      ,  5, ycalc_atanr             , 'f', "n:n"    , 't', "arctangent in radians"                             },
    { "atan2"      ,  5, ycalc_atan2             , 'f', "n:nn"   , 't', "arctangent in degrees given sides x and y"         },
-   { "è"          ,  1, ycalc_atanr2            , 'f', "n:nn"   , 't', "arctangent in radians given sides x and y"         },
    { "atanr2"     ,  6, ycalc_atanr2            , 'f', "n:nn"   , 't', "arctangent in radians given sides x and y"         },
+   { "acrd2"      ,  5, ycalc_acrd2             , 'f', "n:nn"   , 't', "arc-chord in degrees given chord len and radius"   },
    /*---(range info functions)------------*/
    { "dist"       ,  4, ycalc_dist              , 'f', "v:r"    , 'r', "geometric distance between beg and end locations"  },
    { "tabs"       ,  4, ycalc_tabs              , 'f', "v:r"    , 'r', "number of tabs in range"                           },
@@ -266,7 +285,6 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "levels"     ,  6, ycalc_levels            , 'f', "v:r"    , 'r', "number of rows in range"                           },
    { "z_size"     ,  6, ycalc_levels            , 'f', "v:r"    , 'r', "number of rows in range"                           },
    { "sum"        ,  3, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     },
-   { "s"          ,  1, ycalc_sum               , 'f', "v:r"    , 'r', "sum of numeric cells in range"                     },
 
    { "every"      ,  5, ycalc_every             , 'f', "v:r"    , 'r', "count of every cell in range"                      },
    { "used"       ,  4, ycalc_used              , 'f', "v:r"    , 'r', "count of filled cells in range"                    , "" },
@@ -340,7 +358,6 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "addr"       ,  4, ycalc_address           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
    { "address"    ,  7, ycalc_address           , 'f', "r:vvv"  , 'a', "create a reference relative to current"            },
    /*---(lookup functions)----------------*/
-   { "v"          ,  1, ycalc_vlookup           , 'f', "r:rsv"  , 'f', "contents of cell x to right of one matching n"     },
    { "vlook"      ,  5, ycalc_vlookup           , 'f', "r:rsv"  , 'f', "contents of cell x to right of one matching n"     },
    { "vpre"       ,  4, ycalc_vprefix           , 'f', "r:rsv"  , 'f', "contents of cell x to right of one matching n"     },
    { "vmatch"     ,  6, ycalc_vmatch            , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
@@ -349,7 +366,6 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "vclose"     ,  6, ycalc_vclose            , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
    { "vover"      ,  5, ycalc_vover             , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
    { "vunder"     ,  6, ycalc_vunder            , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
-   { "h"          ,  1, ycalc_hlookup           , 'f', "r:rsv"  , 'f', "contents of cell x below one matching n"     },
    { "hlook"      ,  5, ycalc_hlookup           , 'f', "r:rsv"  , 'f', "contents of cell x below one matching n"     },
    { "hpre"       ,  4, ycalc_vprefix           , 'f', "r:rsv"  , 'f', "contents of cell x below one matching n"     },
    { "hmatch"     ,  6, ycalc_hmatch            , 'f', "r:rvv"  , 'f', "contents of cell x to right of one matching n"     },
@@ -380,19 +396,15 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    /*---(date functions)------------------*/
    { "today"      ,  5, ycalc_now               , 'f', "v:"     , 'd', "current unix epoch (time number) in seconds"       },
    { "now"        ,  3, ycalc_now               , 'f', "v:"     , 'd', "current unix epoch (time number) in seconds"       },
-   { "year"       ,  4, ycalc_year              , 'f', "v:v"    , 'd', "year number of time number"                        },
-   { "month"      ,  5, ycalc_month             , 'f', "v:v"    , 'd', "month number (0-11) of time number"                },
+   { "yrs"        ,  3, ycalc_year              , 'f', "v:v"    , 'd', "year number of time number"                        },
    { "mon"        ,  3, ycalc_month             , 'f', "v:v"    , 'd', "month number (0-11) of time number"                },
    { "day"        ,  3, ycalc_day               , 'f', "v:v"    , 'd', "day number (0-31) of time number"                  },
-   { "hour"       ,  4, ycalc_hour              , 'f', "v:v"    , 'd', "hour number (0-23) of time number"                 },
    { "hrs"        ,  3, ycalc_hour              , 'f', "v:v"    , 'd', "hour number (0-23) of time number"                 },
-   { "minute"     ,  6, ycalc_minute            , 'f', "v:v"    , 'd', "minute number (0-59) of time number"               },
    { "mns"        ,  3, ycalc_minute            , 'f', "v:v"    , 'd', "minute number (0-59) of time number"               },
-   { "second"     ,  6, ycalc_second            , 'f', "v:v"    , 'd', "second number (0-59) of time number"               },
    { "sec"        ,  3, ycalc_second            , 'f', "v:v"    , 'd', "second number (0-59) of time number"               },
-   { "weekday"    ,  7, ycalc_weekday           , 'f', "v:v"    , 'd', "weekday number (0-6) of time number"               },
-   { "weeknum"    ,  7, ycalc_weeknum           , 'f', "v:v"    , 'd', "week number (0-54) of time number"                 },
-   { "daynum"     ,  6, ycalc_daynum            , 'f', "v:v"    , 'd', "week number (0-54) of time number"                 },
+   { "dow"        ,  7, ycalc_weekday           , 'f', "v:v"    , 'd', "weekday number (0-6) of time number"               },
+   { "woy"        ,  7, ycalc_weeknum           , 'f', "v:v"    , 'd', "week number (0-54) of time number"                 },
+   { "doy"        ,  6, ycalc_daynum            , 'f', "v:v"    , 'd', "week number (0-54) of time number"                 },
    { "datevalue"  ,  9, ycalc_timevalue         , 'f', "v:s"    , 'd', "converts string format date to epoch number"       },
    { "dv"         ,  2, ycalc_timevalue         , 'f', "v:s"    , 'd', "converts string format date to epoch number"       },
    { "date"       ,  4, ycalc_date              , 'f', "v:vvv"  , 'd', "turns year, month, day values into eqoch number"   },
@@ -423,7 +435,7 @@ yCALC_version       (void)
 #elif  __GNUC__  > 0
    strlcpy (t, "[gnu gcc    ]", 15);
 #elif  __HEPH__  > 0
-   strncpy (t, "[hephaestus ]", 15);
+   strlcpy (t, "[hephaestus ]", 15);
 #else
    strlcpy (t, "[unknown    ]", 15);
 #endif
