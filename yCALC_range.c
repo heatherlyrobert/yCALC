@@ -1458,9 +1458,8 @@ ycalc__lookup_makedep   (char u, short x, short y, short z)
 }
 
 void    /*-> search left column in range --------[ ------ [fv.A71.030.E7]*/ /*-[01.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-ycalc__lookup_common  (char a_dir, char a_type, char a_match)
+ycalc__lookup_common  (char *a_func, char a_dir, char a_type, char a_match)
 {
-   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----------+-*/
    char        rc          = 0;
    int         u_cur, x_cur, y_cur, z_cur;
@@ -1480,6 +1479,7 @@ ycalc__lookup_common  (char a_dir, char a_type, char a_match)
    int         x_len       =   0;
    int         x_ind       =   0;
    int         x_cnt       =   0;
+   DEBUG_YCALC   yLOG_enter   (a_func);
    DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    DEBUG_YCALC   yLOG_char    ("a_dir"      , a_dir);
    s_deproot_last = NULL;
@@ -1493,12 +1493,14 @@ ycalc__lookup_common  (char a_dir, char a_type, char a_match)
    default  :
                ycalc_error_set (YCALC_ERROR_EXEC_ARG , YCALC_ERROR_INTERN);
                DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+               DEBUG_YCALC   yLOG_exit    (a_func);
                return;
    }
    if (x_ind < 0) {
       DEBUG_YCALC   yLOG_note    ("requested negative position");
       ycalc_error_set (YCALC_ERROR_EXEC_ARG , YCALC_ERROR_ARG4);
       DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_exit    (a_func);
       return;
    }
    DEBUG_YCALC   yLOG_value   ("x_off"      , x_off);
@@ -1523,12 +1525,14 @@ ycalc__lookup_common  (char a_dir, char a_type, char a_match)
       DEBUG_YCALC   yLOG_note    ("a_type tot legal");
       ycalc_error_set (YCALC_ERROR_EXEC_ARG , YCALC_ERROR_INTERN);
       DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_exit    (a_func);
       return;
    }
    if (a_match == 0 || strchr ("=>:+~[]", a_match) == NULL) {
       DEBUG_YCALC   yLOG_note    ("a_match tot legal");
       ycalc_error_set (YCALC_ERROR_EXEC_ARG , YCALC_ERROR_INTERN);
       DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_exit    (a_func);
       return;
    }
    /*---(prepare)------------------------*/
@@ -1536,6 +1540,7 @@ ycalc__lookup_common  (char a_dir, char a_type, char a_match)
    DEBUG_YCALC   yLOG_point   ("x_deproot"  , x_deproot);
    if (x_deproot == NULL) {
       DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_exit    (a_func);
       return;
    }
    u_cur = s_ranges [x_deproot->range].bb;
@@ -1550,7 +1555,7 @@ ycalc__lookup_common  (char a_dir, char a_type, char a_match)
    case 'h'  :  y_end = y_beg;  break;
    default   :  break;
    }
-   DEBUG_YCALC   yLOG_complex ("loops"     , "b1=%4d, e1=%4d, b2=%4d, e2=%4d"                , x_beg, x_end, y_beg, y_end);
+   DEBUG_YCALC   yLOG_complex ("loops"     , "bx=%4d, ex=%4d, by=%4d, ey=%4d"                , x_beg, x_end, y_beg, y_end);
    /*---(process)------------------------*/
    for (x_cur = x_beg; x_cur <= x_end; ++x_cur) {
       for (y_cur = y_beg; y_cur <= y_end; ++y_cur) {
@@ -1657,66 +1662,69 @@ ycalc__lookup_common  (char a_dir, char a_type, char a_match)
          /*---(return)-------------------*/
          ycalc__lookup_makedep   (u_cur, x_cur + x_off, y_cur + y_off, z_cur);
          DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+         DEBUG_YCALC   yLOG_exit    (a_func);
          return 0;
       }
-      if (rc < 0) break;
    }
    /*---(check for numerics)-------------*/
    if (a_type == '9' && strchr ("=[", a_match) == NULL && x_found == 'y') {
       ycalc__lookup_makedep   (u_cur, x, y, z_cur);
       DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_exit    (a_func);
       return 0;
    }
    if (a_dir  == 'c') {
       ycalc_pushval (__FUNCTION__, x_cnt);
       DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_exit    (a_func);
       return 0;
    }
    /*---(nothing found)------------------*/
    ycalc_error_set (YCALC_ERROR_EXEC_MISS, NULL);
    /*---(complete)-----------------------*/
    DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (a_func);
    return;
 }
 
-void ycalc_vlookup       (void)  { return ycalc__lookup_common ('v', 's', '='); }
-void ycalc_vprefix       (void)  { return ycalc__lookup_common ('v', 's', '>'); }
-void ycalc_vmatch        (void)  { return ycalc__lookup_common ('v', '9', '='); }
-void ycalc_vrange        (void)  { return ycalc__lookup_common ('v', '9', ':'); }
-void ycalc_vabout        (void)  { return ycalc__lookup_common ('v', '9', '+'); }
-void ycalc_vclose        (void)  { return ycalc__lookup_common ('v', '9', '~'); }
-void ycalc_vover         (void)  { return ycalc__lookup_common ('v', '9', '['); }
-void ycalc_vunder        (void)  { return ycalc__lookup_common ('v', '9', ']'); }
+void ycalc_vlookup       (void)  { return ycalc__lookup_common (__FUNCTION__, 'v', 's', '='); }
+void ycalc_vprefix       (void)  { return ycalc__lookup_common (__FUNCTION__, 'v', 's', '>'); }
+void ycalc_vmatch        (void)  { return ycalc__lookup_common (__FUNCTION__, 'v', '9', '='); }
+void ycalc_vrange        (void)  { return ycalc__lookup_common (__FUNCTION__, 'v', '9', ':'); }
+void ycalc_vabout        (void)  { return ycalc__lookup_common (__FUNCTION__, 'v', '9', '+'); }
+void ycalc_vclose        (void)  { return ycalc__lookup_common (__FUNCTION__, 'v', '9', '~'); }
+void ycalc_vover         (void)  { return ycalc__lookup_common (__FUNCTION__, 'v', '9', '['); }
+void ycalc_vunder        (void)  { return ycalc__lookup_common (__FUNCTION__, 'v', '9', ']'); }
 
-void ycalc_hlookup       (void)  { return ycalc__lookup_common ('h', 's', '='); }
-void ycalc_hprefix       (void)  { return ycalc__lookup_common ('h', 's', '>'); }
-void ycalc_hmatch        (void)  { return ycalc__lookup_common ('h', '9', '='); }
-void ycalc_hrange        (void)  { return ycalc__lookup_common ('h', '9', ':'); }
-void ycalc_habout        (void)  { return ycalc__lookup_common ('h', '9', '+'); }
-void ycalc_hclose        (void)  { return ycalc__lookup_common ('h', '9', '~'); }
-void ycalc_hover         (void)  { return ycalc__lookup_common ('h', '9', '['); }
-void ycalc_hunder        (void)  { return ycalc__lookup_common ('h', '9', ']'); }
+void ycalc_hlookup       (void)  { return ycalc__lookup_common (__FUNCTION__, 'h', 's', '='); }
+void ycalc_hprefix       (void)  { return ycalc__lookup_common (__FUNCTION__, 'h', 's', '>'); }
+void ycalc_hmatch        (void)  { return ycalc__lookup_common (__FUNCTION__, 'h', '9', '='); }
+void ycalc_hrange        (void)  { return ycalc__lookup_common (__FUNCTION__, 'h', '9', ':'); }
+void ycalc_habout        (void)  { return ycalc__lookup_common (__FUNCTION__, 'h', '9', '+'); }
+void ycalc_hclose        (void)  { return ycalc__lookup_common (__FUNCTION__, 'h', '9', '~'); }
+void ycalc_hover         (void)  { return ycalc__lookup_common (__FUNCTION__, 'h', '9', '['); }
+void ycalc_hunder        (void)  { return ycalc__lookup_common (__FUNCTION__, 'h', '9', ']'); }
 
-void ycalc_rlookup       (void)  { return ycalc__lookup_common ('r', 's', '='); }
-void ycalc_rprefix       (void)  { return ycalc__lookup_common ('r', 's', '>'); }
-void ycalc_rmatch        (void)  { return ycalc__lookup_common ('r', '9', '='); }
-void ycalc_rrange        (void)  { return ycalc__lookup_common ('r', '9', ':'); }
-void ycalc_rabout        (void)  { return ycalc__lookup_common ('r', '9', '+'); }
-void ycalc_rclose        (void)  { return ycalc__lookup_common ('r', '9', '~'); }
-void ycalc_rover         (void)  { return ycalc__lookup_common ('r', '9', '['); }
-void ycalc_runder        (void)  { return ycalc__lookup_common ('r', '9', ']'); }
+void ycalc_rlookup       (void)  { return ycalc__lookup_common (__FUNCTION__, 'r', 's', '='); }
+void ycalc_rprefix       (void)  { return ycalc__lookup_common (__FUNCTION__, 'r', 's', '>'); }
+void ycalc_rmatch        (void)  { return ycalc__lookup_common (__FUNCTION__, 'r', '9', '='); }
+void ycalc_rrange        (void)  { return ycalc__lookup_common (__FUNCTION__, 'r', '9', ':'); }
+void ycalc_rabout        (void)  { return ycalc__lookup_common (__FUNCTION__, 'r', '9', '+'); }
+void ycalc_rclose        (void)  { return ycalc__lookup_common (__FUNCTION__, 'r', '9', '~'); }
+void ycalc_rover         (void)  { return ycalc__lookup_common (__FUNCTION__, 'r', '9', '['); }
+void ycalc_runder        (void)  { return ycalc__lookup_common (__FUNCTION__, 'r', '9', ']'); }
 
-void ycalc_ilookup       (void)  { return ycalc__lookup_common ('i', 's', '='); }
-void ycalc_iprefix       (void)  { return ycalc__lookup_common ('i', 's', '>'); }
-void ycalc_imatch        (void)  { return ycalc__lookup_common ('i', '9', '='); }
-void ycalc_irange        (void)  { return ycalc__lookup_common ('i', '9', ':'); }
-void ycalc_iabout        (void)  { return ycalc__lookup_common ('i', '9', '+'); }
+void ycalc_ilookup       (void)  { return ycalc__lookup_common (__FUNCTION__, 'i', 's', '='); }
+void ycalc_iprefix       (void)  { return ycalc__lookup_common (__FUNCTION__, 'i', 's', '>'); }
+void ycalc_imatch        (void)  { return ycalc__lookup_common (__FUNCTION__, 'i', '9', '='); }
+void ycalc_irange        (void)  { return ycalc__lookup_common (__FUNCTION__, 'i', '9', ':'); }
+void ycalc_iabout        (void)  { return ycalc__lookup_common (__FUNCTION__, 'i', '9', '+'); }
 
-void ycalc_clookup       (void)  { return ycalc__lookup_common ('c', 's', '='); }
-void ycalc_cprefix       (void)  { return ycalc__lookup_common ('c', 's', '>'); }
-void ycalc_cmatch        (void)  { return ycalc__lookup_common ('c', '9', '='); }
-void ycalc_crange        (void)  { return ycalc__lookup_common ('c', '9', ':'); }
-void ycalc_cabout        (void)  { return ycalc__lookup_common ('c', '9', '+'); }
+void ycalc_clookup       (void)  { return ycalc__lookup_common (__FUNCTION__, 'c', 's', '='); }
+void ycalc_cprefix       (void)  { return ycalc__lookup_common (__FUNCTION__, 'c', 's', '>'); }
+void ycalc_cmatch        (void)  { return ycalc__lookup_common (__FUNCTION__, 'c', '9', '='); }
+void ycalc_crange        (void)  { return ycalc__lookup_common (__FUNCTION__, 'c', '9', ':'); }
+void ycalc_cabout        (void)  { return ycalc__lookup_common (__FUNCTION__, 'c', '9', '+'); }
 
 void
 ycalc_entry             (void)

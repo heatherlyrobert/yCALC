@@ -201,6 +201,36 @@ ycalc__deps_free        (tDEP_LINK **a_dep)
    return 0;
 }
 
+char         /*-> destroy a single dependency --------[ leaf   [fp.B42.102.E0]*/ /*-[11.0000.034.5]-*/ /*-[--.---.---.--]-*/
+ycalc__deps_freepair    (tDEP_LINK **a_dep)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         =  -10;
+   tDEP_LINK  *x_dep       = NULL;
+   tDEP_LINK  *x_match     = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YCALC   yLOG_senter  (__FUNCTION__);
+   /*---(defense: null cell)-------------*/
+   DEBUG_YCALC   yLOG_spoint  (a_dep);
+   --rce;  if (a_dep       == NULL) {
+      DEBUG_YCALC   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YCALC   yLOG_spoint  (*a_dep);
+   --rce;  if (*a_dep      == NULL) {
+      DEBUG_YCALC   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   x_dep   = *a_dep;
+   x_match = (*a_dep)->match;
+   ycalc__deps_free (&x_dep);
+   ycalc__deps_free (&x_match);
+   *a_dep = NULL;
+   /*---(complete)-----------------------*/
+   DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -309,7 +339,8 @@ ycalc__deps_purge       (void)
    ycalc__seq_clear ();
    /*---(disconnect dependent cells)-----*/
    x_stamp = rand ();
-   rc = yCALC_seq_downdown (x_stamp, ycalc__deproot_wipe);
+   /*> rc = yCALC_seq_downdown (x_stamp, ycalc__deproot_wipe);                        <*/
+   rc = yCALC_seq_downup   (x_stamp, ycalc__deproot_wipe);
    DEBUG_YCALC   yLOG_note    ("AFTER SEQUENCED DEPROOT DELETE");
    DEBUG_YCALC   yLOG_point   ("rroot"     , myCALC.rroot);
    DEBUG_YCALC   yLOG_point   ("rhead"     , myCALC.rhead);
@@ -352,6 +383,7 @@ ycalc__deps_purge       (void)
    while (l_curr != NULL) {
       l_next = l_curr->dprev;
       ycalc__deps_free (&l_curr);
+      /*> ycalc__deps_freepair (&l_curr);                                             <*/
       l_curr = l_next;
       ++c;
    }
@@ -772,6 +804,7 @@ ycalc__deps_delete_req  (char a_type, char a_index, tDEP_ROOT **a_source, tDEP_R
       if (x_next->target == *a_target) {
          DEBUG_YCALC   yLOG_note    ("found existing");
          rc = ycalc__deps_free (&x_next);
+         /*> rc = ycalc__deps_freepair (&x_next);                                     <*/
          if (rc != 0)  {
             DEBUG_YCALC   yLOG_note    ("deletion failed");
             DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
@@ -812,6 +845,7 @@ ycalc__deps_delete_pro  (char a_type, char a_index, tDEP_ROOT **a_source, tDEP_R
       if (x_next->target == *a_target) {
          DEBUG_YCALC   yLOG_note    ("found existing");
          rc = ycalc__deps_free (&x_next);
+         /*> rc = ycalc__deps_freepair (&x_next);                                     <*/
          if (rc != 0)  {
             DEBUG_YCALC   yLOG_note    ("deletion failed");
             DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
@@ -1060,7 +1094,7 @@ ycalc_deps_delcalcref   (tDEP_ROOT *a_deproot)
 }
 
 char         /*-> remove a two-way dependency --------[ ------ [ge.833.132.31]*/ /*-[02.0000.10#.!]-*/ /*-[--.---.---.--]-*/
-ycalc_deps_deltitle     (tDEP_ROOT **a_deproot)
+ycalc_deps_delvar       (tDEP_ROOT **a_deproot)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         =  -10;
@@ -1325,6 +1359,7 @@ ycalc_deps_wipe_reqs    (void **a_owner, tDEP_ROOT **a_deproot)
    void       *x_owner     = NULL;
    char        rce         =  -10;
    char        rc          = 0;
+   char        t           [LEN_RECD] = "";
    /*---(filter)-------------------------*/
    if (a_deproot  == NULL)  return 0;
    if (*a_deproot == NULL)  return 0;
@@ -1337,6 +1372,10 @@ ycalc_deps_wipe_reqs    (void **a_owner, tDEP_ROOT **a_deproot)
    /*---(reqs)---------------------------*/
    DEBUG_YCALC   yLOG_info    ("owned by"  , ycalc_call_labeler (*a_deproot));
    DEBUG_YCALC   yLOG_value   ("nreq"      , (*a_deproot)->nreq);
+   /*---(BEG DEBUGGING)------------------*/
+   yCALC_show_reqs  (*a_deproot, NULL, t);
+   DEBUG_YCALC   yLOG_info    ("reqs"      , t);
+   /*---(END DEBUGGING)------------------*/
    x_next = (*a_deproot)->reqs;
    while (x_next != NULL) {
       DEBUG_YCALC    yLOG_point   ("x_next"      , x_next);
@@ -1364,8 +1403,12 @@ ycalc_deps_wipe_reqs    (void **a_owner, tDEP_ROOT **a_deproot)
    /*---(unhook from ranges)-------------*/
    DEBUG_YCALC   yLOG_value   ("npro"      , (*a_deproot)->npro);
    ycalc_range_unhook (a_owner, a_deproot);
-   DEBUG_YCALC   yLOG_point   ("*a_deproot", *a_deproot);
+   /*---(BEG DEBUGGING)------------------*/
+   /*> yCALC_show_pros  (*a_deproot, NULL, t);                                        <* 
+    *> DEBUG_YCALC   yLOG_info    ("pros"      , t);                                  <*/
+   /*---(END DEBUGGING)------------------*/
    /*---(check if rooted)----------------*/
+   DEBUG_YCALC   yLOG_point   ("*a_deproot", *a_deproot);
    if (*a_deproot != NULL) {
       DEBUG_YCALC   yLOG_value   ("npro"      , (*a_deproot)->npro);
       DEBUG_YCALC   yLOG_point   ("pros"      , (*a_deproot)->pros);

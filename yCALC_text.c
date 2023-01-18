@@ -398,13 +398,19 @@ ycalc_printstr     (void)
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(get arguments)------------------*/
    r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_PRINT);
+   DEBUG_YCALC   yLOG_point   ("r"         , r);
+   DEBUG_YCALC   yLOG_info    ("r"         , r);
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
+   DEBUG_YCALC   yLOG_info    ("r"         , r);
    strltrim (r, ySTR_BOTH, LEN_RECD);
+   DEBUG_YCALC   yLOG_info    ("r"         , r);
    ycalc_pushstr (__FUNCTION__, r);
+   DEBUG_YCALC   yLOG_note    ("pushed");
    /*---(clean up)-----------------------*/
    free (r);
+   DEBUG_YCALC   yLOG_note    ("freed");
    /*---(complete)-----------------------*/
    return;
 }

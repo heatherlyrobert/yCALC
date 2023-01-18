@@ -73,43 +73,43 @@ ycalc__seq_clear        (void)
 }
 
 char         /*-> add a cell to calculation level ----[ leaf   [fe.D54.215.70]*/ /*-[01.0000.015.6]-*/ /*-[--.---.---.--]-*/
-ycalc__seq_add          (char a_level, tDEP_ROOT *a_deproot)
+ycalc__seq_add          (short a_level, tDEP_ROOT *a_deproot)
 {
    /*---(locals)-----------+-----------+-*/
    char        rce         = -10;
    /*---(header)-------------------------*/
-   DEBUG_YCALC   yLOG_senter  (__FUNCTION__);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(defense : level)----------------*/
-   DEBUG_YCALC   yLOG_svalue  ("a_level"   , a_level);
+   DEBUG_YCALC   yLOG_value   ("a_level"   , a_level);
    --rce;  if (a_level >= MAX_EXEC) {
-      DEBUG_YCALC   yLOG_snote   ("level greater than max");
-      DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
+      DEBUG_YCALC   yLOG_note    ("level greater than max");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(defense : cell)-----------------*/
-   DEBUG_YCALC   yLOG_spoint  (a_deproot);
+   DEBUG_YCALC   yLOG_point   ("a_deproot" , a_deproot);
    --rce;  if (a_deproot == NULL) {
       DEBUG_YCALC   yLOG_snote   ("NULL cell");
-      DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YCALC   yLOG_sinfo   ("label"     , ycalc_call_labeler (a_deproot));
-   DEBUG_YCALC   yLOG_spoint  (myCALC.rroot);
+   DEBUG_YCALC   yLOG_info    ("label"     , ycalc_call_labeler (a_deproot));
+   DEBUG_YCALC   yLOG_point   ("rroot"     , myCALC.rroot);
    --rce;  if (a_deproot == myCALC.rroot) {
-      DEBUG_YCALC   yLOG_snote   ("cell is root");
-      DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
+      DEBUG_YCALC   yLOG_note    ("cell is root");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return -(rce);
    }
    /*---(defense : already assigned)-----*/
-   DEBUG_YCALC   yLOG_svalue  ("slevel"    , a_deproot->slevel);
+   DEBUG_YCALC   yLOG_value   ("slevel"    , a_deproot->slevel);
    --rce;  if (a_deproot->slevel >= 0) {
-      DEBUG_YCALC   yLOG_snote   ("already assigned");
-      DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
+      DEBUG_YCALC   yLOG_note    ("already assigned");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return -(rce);
    }
    /*---(first item)---------------------*/
    if (s_heads [a_level] == NULL) {
-      DEBUG_YCALC   yLOG_snote   ("add as first");
+      DEBUG_YCALC   yLOG_note    ("add as first");
       s_heads [a_level] = a_deproot;
       a_deproot->slevel   = a_level;
       a_deproot->sprev    = NULL;
@@ -118,7 +118,7 @@ ycalc__seq_add          (char a_level, tDEP_ROOT *a_deproot)
    }
    /*---(add to tail)--------------------*/
    else {
-      DEBUG_YCALC   yLOG_snote   ("add to tail");
+      DEBUG_YCALC   yLOG_note    ("add to tail");
       s_tails [a_level]->snext = a_deproot;
       a_deproot->slevel   = a_level;
       a_deproot->sprev    = s_tails [a_level];
@@ -126,12 +126,12 @@ ycalc__seq_add          (char a_level, tDEP_ROOT *a_deproot)
       s_tails [a_level] = a_deproot;
    }
    /*---(update totals)------------------*/
-   DEBUG_YCALC   yLOG_snote   ("counts)");
+   DEBUG_YCALC   yLOG_note    ("counts)");
    ++(s_count [a_level]);
    ++s_total;
    if (a_level > s_max)  s_max = a_level;
    /*---(complete)-----------------------*/
-   DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -414,7 +414,14 @@ char         /*-> dependency-based wiping of cells ---[ ------ [gc.740.025.36]*/
 yCALC_seq_downup   (long a_stamp, void *a_consumer)    { return ycalc__seq_driver (myCALC.rroot, 'd', 'u', a_stamp, a_consumer); }
 
 char         /*-> dependency-based calculation all ---[ ------ [gc.840.026.38]*/ /*-[02.0000.402.1]-*/ /*-[--.---.---.--]-*/
-yCALC_calculate    (void)                              { return ycalc__seq_driver (myCALC.rroot, 'd', 'u', rand() , ycalc_execute_auto); }
+yCALC_calculate    (void)
+{
+   char        rc          =    0;
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
+   rc = ycalc__seq_driver (myCALC.rroot, 'd', 'u', rand() , ycalc_execute_auto);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+   return rc;
+}
 
 char         /*-> dependency-based calculation all ---[ ------ [gc.840.026.38]*/ /*-[02.0000.402.1]-*/ /*-[--.---.---.--]-*/
 yCALC_calc_from    (void *a_deproot)                   { return ycalc__seq_driver (a_deproot   , 'u', 'd', rand() , ycalc_execute_auto); }

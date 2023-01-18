@@ -216,19 +216,22 @@ ycalc_pushval           (char *a_func, double a_value)
       return 0;
    }
    /*---(update stack item)--------------*/
-   DEBUG_YCALC   yLOG_senter  (__FUNCTION__);
-   DEBUG_YCALC   yLOG_sint    (s_nstack);
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
+   /*> DEBUG_YCALC   yLOG_senter  (__FUNCTION__);                                     <*/
+   /*> DEBUG_YCALC   yLOG_sint    (s_nstack);                                         <*/
+   DEBUG_YCALC   yLOG_value   ("s_nstack"  , s_nstack);
    s_stack [s_nstack].typ = S_TYPE_NUM;
-   DEBUG_YCALC   yLOG_schar   (s_stack [s_nstack].typ);
+   DEBUG_YCALC   yLOG_value   ("typ"       , s_stack [s_nstack].typ);
    s_stack [s_nstack].ref = NULL;
    s_stack [s_nstack].num = a_value;
-   DEBUG_YCALC   yLOG_sint    (s_stack [s_nstack].num);
+   DEBUG_YCALC   yLOG_value   ("num"       , s_stack [s_nstack].num);
    s_stack [s_nstack].str = NULL;
    /*---(update stack counter)-----------*/
    ++s_nstack;
-   DEBUG_YCALC   yLOG_sint    (s_nstack);
+   DEBUG_YCALC   yLOG_value   ("s_nstack"  , s_nstack);
    /*---(complete)-----------------------*/
-   DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
+   /*> DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);                                     <*/
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -674,75 +677,100 @@ ycalc_popval_plus       (char *a_func, char a_what)
 char*        /*-> get an string off the stack --------[ ------ [fs.A40.20#.31]*/ /*-[02.0000.0#5.!]-*/ /*-[--.---.---.--]-*/
 ycalc_popstr_plus       (char *a_func, char a_what)
 {
+   char        rce         =  -10;
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(prepare)------------------------*/
-   if (s_nstack <= 0) {
+   DEBUG_YCALC   yLOG_value   ("s_nstack"  , s_nstack);
+   --rce;  if (s_nstack <= 0) {
       ycalc_error_set (YCALC_ERROR_STACK, NULL);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return strndup (g_nada, LEN_RECD);
    }
    /*---(prepare)------------------------*/
    --s_nstack;
    ycalc__exec_stack_grab (s_nstack);
    if (s_str != NULL)   { free (s_str); s_str = NULL; }
-   /*---(handle stack types)-------------*/
-   switch (s_typ) {
-   case S_TYPE_NUM :
-   case S_TYPE_STR :
+   /*---(handle wrong types)-------------*/
+   --rce;  switch (s_typ) {
+   case S_TYPE_NUM : case S_TYPE_STR :
+      DEBUG_YCALC   yLOG_note    ("found number/string, not compatible");
       ycalc_error_set (YCALC_ERROR_EXEC_REF, NULL);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return  strndup (g_nada, LEN_RECD);
       break;
    case S_TYPE_REF :
-      s_string = NULL;
-      if (myCALC.e_valuer  == NULL || myCALC.e_special == NULL) {
-         ycalc_error_set (YCALC_ERROR_CONF, NULL);
-         return  strndup (g_nada, LEN_RECD);
-      }
-      switch (a_what) {
-      case G_SPECIAL_SOURCE :
-         myCALC.e_special (s_ref->owner, G_SPECIAL_SOURCE, NULL, &s_string);
-         if (s_string == NULL) return  strndup (g_nada  , LEN_RECD);
-         else                  return  strndup (s_string, LEN_RECD);
-         break;
-      case G_SPECIAL_LABEL  :
-         return strndup (ycalc_call_labeler (s_ref), LEN_RECD);
-         break;
-      case G_SPECIAL_PRINT  :
-         myCALC.e_special (s_ref->owner, G_SPECIAL_PRINT , NULL, &s_string);
-         if (s_string == NULL) return  strndup (g_nada  , LEN_RECD);
-         else                  return  strndup (s_string, LEN_RECD);
-         break;
-      case G_SPECIAL_RPN    :
-         s_string = s_ref->rpn;
-         if (s_string == NULL) return  strndup (g_nada  , LEN_RECD);
-         else                  return  strndup (s_string, LEN_RECD);
-         break;
-      case G_SPECIAL_PROS   :
-         yCALC_disp_pros      (s_ref, s_list);
-         if (s_list   == NULL) return  strndup (g_nada  , LEN_RECD);
-         else                  return  strndup (s_list  , LEN_RECD);
-         break;
-      case G_SPECIAL_REQS   :
-         yCALC_disp_reqs      (s_ref, s_list);
-         if (s_list   == NULL) return  strndup (g_nada  , LEN_RECD);
-         else                  return  strndup (s_list  , LEN_RECD);
-         break;
-      case G_SPECIAL_LIKE   :
-         yCALC_disp_like      (s_ref, s_list);
-         if (s_list   == NULL) return  strndup (g_nada  , LEN_RECD);
-         else                  return  strndup (s_list  , LEN_RECD);
-         break;
-      default               :
-         myCALC.e_special (s_ref->owner, a_what, NULL, &s_string);
-         if (s_string == NULL) return  strndup (g_nada  , LEN_RECD);
-         else                  return  strndup (s_string, LEN_RECD);
-         break;
-      }
-   default  :
+      break;
+   default         :
+      DEBUG_YCALC   yLOG_note    ("found other non-ref, not compatible");
       ycalc_error_set (YCALC_ERROR_EXEC_HUH, NULL);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return strndup (g_nada, LEN_RECD);
       break;
    }
+   /*---(handle stack types)-------------*/
+   s_string = NULL;
+   if (myCALC.e_valuer  == NULL || myCALC.e_special == NULL) {
+      DEBUG_YCALC   yLOG_note    ("no e_valuer or e_special");
+      ycalc_error_set (YCALC_ERROR_CONF, NULL);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+      return  strndup (g_nada, LEN_RECD);
+   }
+   /*---(handle return types)------------*/
+   switch (a_what) {
+   case G_SPECIAL_SOURCE :
+      myCALC.e_special (s_ref->owner, G_SPECIAL_SOURCE, NULL, &s_string);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      if (s_string == NULL) return  strndup (g_nada  , LEN_RECD);
+      else                  return  strndup (s_string, LEN_RECD);
+      break;
+   case G_SPECIAL_LABEL  :
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      return strndup (ycalc_call_labeler (s_ref), LEN_RECD);
+      break;
+   case G_SPECIAL_PRINT  :
+      myCALC.e_special (s_ref->owner, G_SPECIAL_PRINT , NULL, &s_string);
+      DEBUG_YCALC   yLOG_point   ("s_string"  , s_string);
+      DEBUG_YCALC   yLOG_info    ("s_string"  , s_string);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      if (s_string == NULL) return  strdup (g_nada);
+      else                  return  strdup (s_string);
+      break;
+   case G_SPECIAL_RPN    :
+      s_string = s_ref->rpn;
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      if (s_string == NULL) return  strndup (g_nada  , LEN_RECD);
+      else                  return  strndup (s_string, LEN_RECD);
+      break;
+   case G_SPECIAL_PROS   :
+      yCALC_disp_pros      (s_ref, s_list);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      if (s_list   == NULL) return  strndup (g_nada  , LEN_RECD);
+      else                  return  strndup (s_list  , LEN_RECD);
+      break;
+   case G_SPECIAL_REQS   :
+      yCALC_disp_reqs      (s_ref, s_list);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      if (s_list   == NULL) return  strndup (g_nada  , LEN_RECD);
+      else                  return  strndup (s_list  , LEN_RECD);
+      break;
+   case G_SPECIAL_LIKE   :
+      yCALC_disp_like      (s_ref, s_list);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      if (s_list   == NULL) return  strndup (g_nada  , LEN_RECD);
+      else                  return  strndup (s_list  , LEN_RECD);
+      break;
+   default               :
+      myCALC.e_special (s_ref->owner, a_what, NULL, &s_string);
+      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      if (s_string == NULL) return  strndup (g_nada  , LEN_RECD);
+      else                  return  strndup (s_string, LEN_RECD);
+      break;
+   }
    /*---(complete)-----------------------*/
+   DEBUG_YCALC   yLOG_note    ("completely unhandled");
    ycalc_error_set (YCALC_ERROR_STACK, NULL);
+   --rce;
+   DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
    return strndup (g_nada, LEN_RECD);
 }
 

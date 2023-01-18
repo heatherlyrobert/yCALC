@@ -90,7 +90,7 @@ ycalc_build_errorcheck  (void)
 }
 
 char
-ycalc_call_propvar      (char *a_label, tDEP_ROOT *a_deproot)
+ycalc_vars__ripple      (char *a_label, tDEP_ROOT *a_deproot)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -110,7 +110,7 @@ ycalc_call_propvar      (char *a_label, tDEP_ROOT *a_deproot)
 }
 
 char
-ycalc_call_newvar       (char a_kind, char *a_name, char *a_label, tDEP_ROOT *a_deproot, char *a_type, double *a_value, char **a_string)
+ycalc_vars_new          (char a_kind, char *a_name, char *a_label, tDEP_ROOT *a_deproot, char *a_type, double *a_value, char **a_string)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -237,15 +237,59 @@ yCALC_variable          (char *a_name, char *a_real)
    return rce;
 }
 
-char 
-ycalc_call_delvar       (char *a_loc, tDEP_ROOT **a_deproot)
+char
+ycalc_vars__rem         (tVARS *a_cur)
 {
+   /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   /*---(header)-------------------------*/
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_YCALC   yLOG_point   ("a_cur"     , a_cur);
+   --rce;  if (a_cur == NULL) {
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(wipe)---------------------------*/
+   a_cur->kind = '-';
+   strlcpy (a_cur->name , "", LEN_LABEL);
+   strlcpy (a_cur->title  , "", LEN_LABEL);
+   ycalc_vars__ripple  (a_cur->content, NULL);
+   strlcpy (a_cur->content, "", LEN_LABEL);
+   /*---(out of linked list)-------------*/
+   DEBUG_YCALC   yLOG_point   ("s_hvar"    , s_hvar);
+   DEBUG_YCALC   yLOG_point   ("s_tvar"    , s_tvar);
+   DEBUG_YCALC   yLOG_value   ("s_nvar"    , s_nvar);
+   DEBUG_YCALC   yLOG_note    ("unlink");
+   if (a_cur->next != NULL)   a_cur->next->prev  = a_cur->prev;
+   else                       s_tvar             = a_cur->prev;
+   if (a_cur->prev != NULL)   a_cur->prev->next  = a_cur->next;
+   else                       s_hvar             = a_cur->next;
+   a_cur->next = a_cur->prev = NULL;
+   /*---(remove)-------------------------*/
+   --s_nvar;
+   DEBUG_YCALC   yLOG_point   ("s_hvar"    , s_hvar);
+   DEBUG_YCALC   yLOG_point   ("s_tvar"    , s_tvar);
+   DEBUG_YCALC   yLOG_value   ("s_nvar"    , s_nvar);
+   /*---(free)---------------------------*/
+   free (a_cur);
+   /*---(header)-------------------------*/
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char 
+ycalc_vars_del          (char *a_loc, tDEP_ROOT **a_deproot)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =  -10;
    int         i           =    0;
    tVARS      *x_cur       = NULL;
    tDEP_ROOT  *x_deproot   = NULL;
    /*---(header)-------------------------*/
    DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
    DEBUG_YCALC   yLOG_point   ("a_loc"     , a_loc);
    --rce;  if (a_loc == NULL) {
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
@@ -262,6 +306,7 @@ ycalc_call_delvar       (char *a_loc, tDEP_ROOT **a_deproot)
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(find var)-----------------------*/
    x_cur = s_hvar;
    while (x_cur != NULL) {
       /*---(filter)-------------------------*/
@@ -269,35 +314,20 @@ ycalc_call_delvar       (char *a_loc, tDEP_ROOT **a_deproot)
          x_cur = x_cur->next;
          continue;
       }
-      /*> ycalc_call_who_named  (x_cur->title, YCALC_LOOK, NULL, &x_deproot);         <*/
-      ycalc_deps_deltitle   (a_deproot);
-      /*---(propagate)----------------------*/
-      x_cur->kind = '-';
-      strlcpy (x_cur->name , "", LEN_LABEL);
-      strlcpy (x_cur->title  , "", LEN_LABEL);
-      ycalc_call_propvar      (x_cur->content, NULL);
-      strlcpy (x_cur->content, "", LEN_LABEL);
-      /*---(out of linked list)-------------*/
-      DEBUG_YCALC   yLOG_point   ("s_hvar"    , s_hvar);
-      DEBUG_YCALC   yLOG_point   ("s_tvar"    , s_tvar);
-      DEBUG_YCALC   yLOG_note    ("unlink");
-      if (x_cur->next != NULL)   x_cur->next->prev  = x_cur->prev;
-      else                       s_tvar             = x_cur->prev;
-      if (x_cur->prev != NULL)   x_cur->prev->next  = x_cur->next;
-      else                       s_hvar             = x_cur->next;
-      --s_nvar;
-      x_cur->next = x_cur->prev = NULL;
-      free (x_cur);
-      x_cur = NULL;
+      rc = ycalc_deps_delvar  (a_deproot);
+      DEBUG_YCALC   yLOG_value   ("deps"      , rc);
+      rc = ycalc_vars__rem (x_cur);
+      DEBUG_YCALC   yLOG_value   ("remvar"    , rc);
       DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return 0;
    }
+   /*---(never found)--------------------*/
    DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
    return rce;
 }
 
 char 
-yCALC_var_dump          (void *f)
+yCALC_vars_dump          (void *f)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
@@ -320,6 +350,42 @@ yCALC_var_dump          (void *f)
       x_cur = x_cur->next;  
    }
    /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+ycalc_vars_wrap         (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tVARS      *x_cur       = NULL;
+   tDEP_ROOT  *x_deproot   = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
+   /*---(walk variables)-----------------*/
+   x_cur = s_hvar;
+   while (x_cur != NULL) {
+      /*---(get deproot)--------------------*/
+      DEBUG_YCALC   yLOG_info    ("title"      , x_cur->title);
+      DEBUG_YCALC   yLOG_info    ("content"    , x_cur->content);
+      rc = ycalc_call_who_named  (s_hvar->title, YCALC_LOOK, NULL, &x_deproot);
+      DEBUG_YCALC   yLOG_value   ("who_named"  , rc);
+      DEBUG_YCALC   yLOG_point   ("x_deproot"  , x_deproot);
+      /*---(real)---------------------------*/
+      if (x_deproot != NULL) {
+         rc = ycalc_deps_delvar (&x_deproot);
+         DEBUG_YCALC   yLOG_value   ("deps"      , rc);
+      }
+      /*---(destroy)------------------------*/
+      rc = ycalc_vars__rem (x_cur);
+      DEBUG_YCALC   yLOG_value   ("remvar"    , rc);
+      /*---(next)---------------------------*/
+      x_cur = s_hvar;
+      /*---(done)---------------------------*/
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -443,6 +509,7 @@ yCALC_enable            (void *a_owner)
    x_deproot->btype = *x_type;
    DEBUG_YCALC   yLOG_char    ("btype"     , x_deproot->btype);
    /*---(complete)-----------------------*/
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -571,6 +638,20 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
    }
    strlcpy (x_label, ycalc_call_labeler (*a_deproot), LEN_LABEL);
    DEBUG_YCALC   yLOG_info    ("label"     , x_label);
+   /*---(check type)---------------------*/
+   rc = myCALC.e_valuer ((*a_deproot)->owner, &x_type, NULL, NULL);
+   DEBUG_YCALC   yLOG_value   ("valuer"    , rc);
+   DEBUG_YCALC   yLOG_char    ("type"      , x_type);
+   DEBUG_YCALC   yLOG_info    ("valid"     , YCALC_GROUP_DEPS);
+   --rce;  if (rc < 0) {
+      DEBUG_YCALC   yLOG_note    ("valuer blew, dont touch");
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(check for variable)-------------*/
+   /*> if (x_type == YCALC_DATA_VAR) {                                                <* 
+    *>    rc = ycalc_vars_del (x_label, a_deproot);                                <* 
+    *> }                                                                              <*/
    /*---(check reqs)---------------------*/
    DEBUG_YCALC   yLOG_value   ("nreq"      , (*a_deproot)->nreq);
    --rce;  if ((*a_deproot)->nreq > 0) {

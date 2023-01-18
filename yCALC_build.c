@@ -744,7 +744,7 @@ ycalc_build_ripple      (tDEP_ROOT *a_deproot, char a_kind)
 }
 
 char
-ycalc_bulid_variable    (tDEP_ROOT *a_deproot, char *a_label, short b, short x, short y, short z, char **a_source, char *a_type, double *a_value, char **a_string)
+ycalc_build_variable    (tDEP_ROOT *a_deproot, char *a_label, short b, short x, short y, short z, char **a_source, char *a_type, double *a_value, char **a_string)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -781,7 +781,7 @@ ycalc_bulid_variable    (tDEP_ROOT *a_deproot, char *a_label, short b, short x, 
       return rce;
    }
    /*---(save variable)------------------*/
-   rc = ycalc_call_newvar ('v', *a_source, a_label, x_ref, a_type, a_value, a_string);
+   rc = ycalc_vars_new ('v', *a_source, a_label, x_ref, a_type, a_value, a_string);
    DEBUG_YCALC   yLOG_value   ("newvar"    , rc);
    if (rc < 0) {
       /*---(call reaper)--------------------*/

@@ -1163,6 +1163,14 @@ yCALC_handle            (char *a_label)
    }
    DEBUG_YCALC   yLOG_point   ("x_owner"    , x_owner);
    DEBUG_YCALC   yLOG_point   ("x_deproot"  , x_deproot);
+   /*---(variables)----------------------*/
+   if (x_deproot != NULL) {
+      DEBUG_YCALC   yLOG_point   ("btype"      , x_deproot->btype);
+      if (x_deproot->btype == YCALC_DATA_VAR) {
+         DEBUG_YCALC   yLOG_note    ("delete existing var status");
+         rc = ycalc_vars_del (a_label, &x_deproot);
+      }
+   }
    /*---(fill pointers)------------------*/
    rc = myCALC.e_pointer (x_owner, &x_source, &x_type, &x_value, &x_string);
    DEBUG_YCALC   yLOG_value   ("pointer"    , rc);
@@ -1184,13 +1192,6 @@ yCALC_handle            (char *a_label)
    --rce;  if (rc < 0) {
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
-   }
-   /*---(remove variable)----------------*/
-   rc = ycalc_call_delvar (a_label, &x_deproot);
-   if (x_deproot == NULL) {
-      DEBUG_YCALC   yLOG_note    ("title removed and reaped, nothing more to do");
-      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
-      return 0;
    }
    /*---(merges)-------------------------*/
    if (*x_type == YCALC_DATA_MERGED || *x_type == YCALC_DATA_PMERGE) {
@@ -1224,10 +1225,19 @@ yCALC_handle            (char *a_label)
    DEBUG_YCALC   yLOG_info    ("valid"     , YCALC_GROUP_RPN);
    /*---(variables)----------------------*/
    if (*x_type == YCALC_DATA_VAR) {
-      rc = ycalc_bulid_variable (x_deproot, a_label, b, x, y, z, x_source, x_type, x_value, x_string);
+      rc = ycalc_build_variable (x_deproot, a_label, b, x, y, z, x_source, x_type, x_value, x_string);
       DEBUG_YCALC   yLOG_value   ("variable"  , rc);
-      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
-      return 0;
+      /*> /+---BEG TESTING NEW CODE----------+/                                       <* 
+       *> DEBUG_YCALC   yLOG_note    ("calling printer");                             <* 
+       *> rc = myCALC.e_printer (x_owner);                                            <* 
+       *> DEBUG_YCALC   yLOG_value   ("printer"   , rc);                              <* 
+       *> --rce;  if (rc < 0) {                                                       <* 
+       *>    DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);                          <* 
+       *>    return rce;                                                              <* 
+       *> }                                                                           <* 
+       *> /+---END TESTING NEW CODE----------+/                                       <* 
+       *> DEBUG_YCALC   yLOG_exit    (__FUNCTION__);                                  <* 
+       *> return 0;                                                                   <*/
    }
    /*---(build)--------------------------*/
    if (strchr (YCALC_GROUP_RPN , *x_type) != NULL) {

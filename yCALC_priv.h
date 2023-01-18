@@ -3,46 +3,62 @@
 #define YCALC_priv_hguard loaded
 
 
-/*===[[ BEG_HEADER ]]=========================================================*/
-/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-12345678901-*/
 
-/*===[[ ONE_LINERS ]]=========================================================*/
-
+/*===[[ HEADER BEG ]]=========================================================*/
+/*                      ´·········1·········2·········3·········4·········5·········6·········7*/
+/*--------- 12345678901 ´123456789-123456789-123456789-123456789-123456789-123456789-123456789-*/
+/*········· ··········· ´·····························´········································*/
+#define     P_NAME      "yCALC"
+/*········· ··········· ´·····························´········································*/
 #define     P_FOCUS     "RS (run-time support)"
 #define     P_NICHE     "ca (calculation)"
 #define     P_SUBJECT   "calculation engine"
 #define     P_PURPOSE   "fast, powerful, flexible, shared calculation engine"
-
+/*········· ··········· ´·····························´········································*/
 #define     P_NAMESAKE  "kottus-hecatoncheires (hundred-handed)"
+#define     P_PRONOUNCE ""
 #define     P_HERITAGE  "kottus, big-limbed, is one of the three hecatoncheires" 
+#define     P_BRIEFLY   "one-hundred handed monster"
 #define     P_IMAGERY   "ugly, impossibly powerful, one-hundred handed, fifty headed giant"
 #define     P_REASON    ""
-
+/*········· ··········· ´·····························´········································*/
 #define     P_ONELINE   P_NAMESAKE " " P_SUBJECT
-
+/*········· ··········· ´·····························´········································*/
+#define     P_HOMEDIR   "/home/system/yCALC.calculation_engine"
 #define     P_BASENAME  "ylibCALC.so"
-#define     P_FULLPATH  ""
-#define     P_SUFFIX    ""
-#define     P_CONTENT   ""
-
+#define     P_FULLPATH  "/usr/local/lib64/libyCALC.so"
+#define     P_SUFFIX    "···"
+#define     P_CONTENT   "···"
+/*········· ··········· ´·····························´········································*/
 #define     P_SYSTEM    "gnu/linux   (powerful, ubiquitous, technical, and hackable)"
 #define     P_LANGUAGE  "ansi-c      (wicked, limitless, universal, and everlasting)"
+#define     P_COMPILER  "gcc 11.3.0"
 #define     P_CODESIZE  "large       (appoximately 10,000 slocl)"
-#define     P_DEPENDS   "none"
-
+/*········· ··········· ´·····························´········································*/
+#define     P_DEPSTDC   "stdio,stdlib,string,math,time.malloc"
+#define     P_DEPPOSIX  ""
+#define     P_DEPCORE   "yURG,yLOG,ySTR"
+#define     P_DEPVIKEYS ""
+#define     P_DEPOTHER  "yRPN"
+#define     P_DEPGRAPH  ""
+#define     P_DEPHEAD   ""
+/*········· ··········· ´·····························´········································*/
 #define     P_AUTHOR    "heatherlyrobert"
 #define     P_CREATED   "2014-10"
-
+/*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "0.X = reading for full gyges use"
 #define     P_VERMINOR  "0.5 = find pernicious memory and malloc troubles"
-#define     P_VERNUM    "0.5m"
-#define     P_VERTXT    "small catch-up on string symbols from # to ›"
-
+#define     P_VERNUM    "0.5n"
+#define     P_VERTXT    "fixed shutdown troubles with seqfault !!!!"
+/*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
 #define     P_REMINDER  "there are many better options, but i *own* every byte of this one"
+/*········· ··········· ´·····························´········································*/
+/*--------- 12345678901 ´123456789-123456789-123456789-123456789-123456789-123456789-123456789-*/
+/*                      ´·········1·········2·········3·········4·········5·········6·········7*/
+/*===[[ HEADER END ]]=========================================================*/
 
-/*===[[ END_HEADER ]]=========================================================*/
 
 
 #include    <stdio.h>
@@ -51,10 +67,10 @@
 #include    <math.h>  
 #include    <time.h>         /* C_ANSI : time, strftime, localtime            */
 
+#include    <yLOG.h>                    /* heatherly program logger            */
 #include    <yURG.h>                    /* heatherly program logger            */
 #include    <ySTR.h>
 #include    <yRPN.h>
-#include    <yLOG.h>                    /* heatherly program logger            */
 #include    "yCALC.h"
 
 
@@ -221,9 +237,9 @@ struct      cDEP_LINK  {
    tDEP_LINK  *dnext;         /* pointer to next dependency in full list      */
    /*---(done)---------------------------*/
 };
-static tDEP_LINK     *s_hdep;
-static tDEP_LINK     *s_tdep;
-static int       s_ndep;
+/*> extern static tDEP_LINK     *s_hdep;                                              <*/
+/*> extern static tDEP_LINK     *s_tdep;                                              <*/
+/*> extern static int       s_ndep;                                                   <*/
 
 #define     G_DEP_ROOT           'r'
 #define     G_DEP_UNROOT         'u'
@@ -247,7 +263,7 @@ struct cDEP_INFO {
    int         count;                  /* current count of type               */
    int         total;                  /* total of type ever created          */
 };
-tDEP_INFO   g_dep_info [MAX_DEPTYPE];
+extern tDEP_INFO   g_dep_info [MAX_DEPTYPE];
 
 #define     G_DEP_DIRNONE        ' '
 #define     G_DEP_DIRREQ         '>'
@@ -472,7 +488,7 @@ char*       ycalc__unit_deps        (char *a_question, char *a_label);
 char        ycalc_deps_create       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target);
 char        ycalc_deps_delete       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target, void **a_owner);
 char        ycalc_deps_delcalcref   (tDEP_ROOT *a_deproot);
-char        ycalc_deps_deltitle     (tDEP_ROOT **a_deproot);
+char        ycalc_deps_delvar       (tDEP_ROOT **a_deproot);
 char        ycalc_deps_wipe_reqs    (void **a_owner, tDEP_ROOT **a_deproot);
 
 char        ycalc__deps_rooting     (tDEP_ROOT *a_curr, char a_type);
@@ -522,7 +538,7 @@ char        ycalc_build_detail      (void *a_owner, tDEP_ROOT *a_deproot, char *
 char        ycalc_build_owner       (void *a_owner, tDEP_ROOT *a_deproot);
 char        ycalc_build_label       (char *a_label);
 char        ycalc_build_ripple      (tDEP_ROOT *a_deproot, char a_kind);
-char        ycalc_bulid_variable    (tDEP_ROOT *a_deproot, char *a_label, short b, short x, short y, short z, char **a_source, char *a_type, double *a_value, char **a_string);
+char        ycalc_build_variable    (tDEP_ROOT *a_deproot, char *a_label, short b, short x, short y, short z, char **a_source, char *a_type, double *a_value, char **a_string);
 char        ycalc_build_findfunc    (char *a_token);
 
 
@@ -542,6 +558,9 @@ char        ycalc_pushref           (char *a_func, void *a_thing, char *a_label)
 /*---(popping)------------------------*/
 double      ycalc_popval            (char *a_func);
 char*       ycalc_popstr            (char *a_func);
+tDEP_ROOT*  ycalc_popref            (char *a_func);
+int         ycalc_popval_plus       (char *a_func, char a_what);
+char*       ycalc_popstr_plus       (char *a_func, char a_what);
 /*---(running)------------------------*/
 char        ycalc_execute_trusted   (tDEP_ROOT *a_deproot, char *a_type, double *a_value, char **a_string);
 char        ycalc_execute_detail    (tDEP_ROOT *a_deproot, char **a_source, char *a_type, double *a_value, char **a_string);
@@ -581,18 +600,22 @@ char*       ycalc__unit_mock        (char *a_question, char *a_label);
 
 /*===[ SEQ ]==============================================*/
 char        ycalc__seq_clear        (void);
-char        ycalc__seq_add          (char a_level, tDEP_ROOT *a_deproot);
+char        ycalc__seq_add          (short a_level, tDEP_ROOT *a_deproot);
 char        ycalc__seq_del          (tDEP_ROOT *a_deproot);
 char        ycalc__seq_recursion    (int a_level, tDEP_LINK *a_dep, char a_dir, long a_stamp);
 char        ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, long a_stamp, void *a_consumer);
 char        ycalc__seq_list         (char *a_list);
+char*       ycalc__unit_seq         (char *a_question, void *a_point);
 
 
+char        ycalc_vars_new          (char a_kind, char *a_name, char *a_label, tDEP_ROOT *a_deproot, char *a_type, double *a_value, char **a_string);
+char        yCALC_variable          (char *a_name, char *a_real);
+char        ycalc_vars__ripple      (char *a_label, tDEP_ROOT *a_deproot);
+char        ycalc_vars__rem         (tVARS *a_cur);
+char        ycalc_vars_del          (char *a_loc, tDEP_ROOT **a_deproot);
+char        ycalc_vars_wrap         (void);
 
 /*===[ CALLS ]============================================*/
-char        ycalc_call_newvar       (char a_kind, char *a_name, char *a_label, tDEP_ROOT *a_deproot, char *a_type, double *a_value, char **a_string);
-char        yCALC_variable          (char *a_name, char *a_real);
-char        ycalc_call_delvar       (char *a_loc, tDEP_ROOT **a_deproot);
 char        ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot);
 char        ycalc_call_who_named    (char *a_label,       char a_force, void **a_owner, void **a_deproot);
 char        ycalc_call_who_at       (int b, int x, int y, int z, char a_force, void **a_owner, void **a_deproot);
@@ -952,5 +975,7 @@ void        ycalc_bit_right         (void);
 void        ycalc_bit_and           (void);
 void        ycalc_bit_or            (void);
 void        ycalc_bit_xor           (void);
+
+char*       ycalc__unit_base        (char *a_question, int a_num);
 
 #endif
