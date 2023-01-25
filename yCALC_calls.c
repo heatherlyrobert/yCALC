@@ -4,7 +4,6 @@
 
 
 
-
 /*> char    (*myCALC.e_consumer )   (void *a_owner, void *a_deproot, int a_seq, int a_lvl);   <*/
 
 /*> char    (*myCALC.e_enabler  )   (void *a_owner, void *a_deproot);                                                      <* 
@@ -509,7 +508,6 @@ yCALC_enable            (void *a_owner)
    x_deproot->btype = *x_type;
    DEBUG_YCALC   yLOG_char    ("btype"     , x_deproot->btype);
    /*---(complete)-----------------------*/
-   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 

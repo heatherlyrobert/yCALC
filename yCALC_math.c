@@ -96,6 +96,32 @@ ycalc_unaryminus   (void)
 /*====================------------------------------------====================*/
 static void  o___MATH____________o () { return; }
 
+void
+ycalc_scipos       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   int   i = 0;
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   c = 1;
+   for (i = 0; i <  a; ++i)  c *= 10;
+   ycalc_pushval (__FUNCTION__, b * c);
+   return;
+}
+
+void
+ycalc_scineg       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   int   i = 0;
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   c = 1;
+   for (i = 0; i <  a; ++i)  c /= 10;
+   ycalc_pushval (__FUNCTION__, b * c);
+   return;
+}
+
 void    /*-> tbd --------------------------------[ ------ [fv.320.010.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_power        (void)
 {

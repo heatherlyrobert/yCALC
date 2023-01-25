@@ -10,6 +10,7 @@
  */
 
 
+
 tLOCAL      myCALC;
 
 double      a, b, c, d, e;
@@ -51,6 +52,9 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "-:"         ,  2, ycalc_unaryminus        , 'o', "n:n"    , 'm', "ansi-c unary minus"                                },
    { "+:"         ,  2, ycalc_noop              , 'o', "n:n"    , 'm', "ansi-c unary plus (no effect)"                     },
    /*---(mathmatical functions)-----------*/
+   { "Ë"          ,  1, ycalc_scipos            , 'f', "n:nn"   , 'm', "x raised to the power of 10Ê"                      },
+   { "Ë-"         ,  2, ycalc_scineg            , 'f', "n:nn"   , 'm', "x raised to the power of 10Ê"                      },
+   { "Ë+"         ,  2, ycalc_scipos            , 'f', "n:nn"   , 'm', "x raised to the power of 10Ê"                      },
    { "exp"        ,  3, ycalc_power             , 'f', "n:nn"   , 'm', "x raised to the power of y"                        },
    { "Æ"          ,  1, ycalc_power_of_2        , 'f', "n:n"    , 'm', "x raised to the power of 2"                        },
    { "Ç"          ,  1, ycalc_power_of_3        , 'f', "n:n"    , 'm', "x raised to the power of 3"                        },
@@ -79,10 +83,10 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "<"          ,  1, ycalc_lesser            , 'o', "t:nn"   , 'l', "T if x lesser than y, else F"                      },
    { ">="         ,  2, ycalc_gequal            , 'o', "t:nn"   , 'l', "T if x greater than or equal to y, else F"         },
    { "<="         ,  2, ycalc_lequal            , 'o', "t:nn"   , 'l', "T if x lesser than or equal to y, else F"          },
-   { "›="         ,  2, ycalc_sequal            , 'o', "t:ss"   , 'l', "T if n are m are equal, else F"                    },
-   { "›!"         ,  2, ycalc_snotequal         , 'o', "t:ss"   , 'l', "T if n not equal m, else F"                        },
-   { "›<"         ,  2, ycalc_slesser           , 'o', "t:ss"   , 'l', "T if n greater than m, else F"                     },
-   { "›>"         ,  2, ycalc_sgreater          , 'o', "t:ss"   , 'l', "T if n lesser than m, else F"                      },
+   { "©="         ,  2, ycalc_sequal            , 'o', "t:ss"   , 'l', "T if n are m are equal, else F"                    },
+   { "©!"         ,  2, ycalc_snotequal         , 'o', "t:ss"   , 'l', "T if n not equal m, else F"                        },
+   { "©<"         ,  2, ycalc_slesser           , 'o', "t:ss"   , 'l', "T if n greater than m, else F"                     },
+   { "©>"         ,  2, ycalc_sgreater          , 'o', "t:ss"   , 'l', "T if n lesser than m, else F"                      },
    /*---(locgical operators)--------------*/
    { "!"          ,  1, ycalc_not               , 'o', "t:n"    , 'l', "T if x F, else F"                                  },
    { "&&"         ,  2, ycalc_and               , 'o', "t:nn"   , 'l', "T if both x and y are T, else F"                   },
@@ -110,8 +114,8 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "|"          ,  1, ycalc_bit_or            , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
    { "^"          ,  1, ycalc_bit_xor           , 'f', "t:nn"   , 'l', "T if either x or y is T, else F"                   },
    /*---(string operators)----------------*/
-   { "›"          ,  1, ycalc_concat            , 'o', "s:ss"   , 's', "m concatinated to the end of n"                    },
-   { "››"         ,  2, ycalc_concatplus        , 'o', "s:ss"   , 's', "m concatinated to the end of n (with a space)"     },
+   { "©"          ,  1, ycalc_concat            , 'o', "s:ss"   , 's', "m concatinated to the end of n"                    },
+   { "©©"         ,  2, ycalc_concatplus        , 'o', "s:ss"   , 's', "m concatinated to the end of n (with a space)"     },
    /*---(string functions)----------------*/
    { "len"        ,  3, ycalc_len               , 'f', "n:s"    , 's', "length of n"                                       },
    { "left"       ,  4, ycalc_left              , 'f', "s:sn"   , 's', "left x characters of n"                            },
@@ -625,9 +629,12 @@ yCALC_cleanse           (void)
    /*---(header)-------------------------*/
    DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(shutdown)-----------------------*/
+   ycalc_vars_wrap   ();
    ycalc_exec_wrap   ();
    ycalc_deps_wrap   ();
    ycalc__seq_clear  ();
+   /*---(set the dep root)---------------*/
+   ycalc_call_who_named ("ROOT", YCALC_FULL, &myCALC.mroot, &myCALC.rroot);
    /*---(complete)-----------------------*/
    DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -890,11 +897,11 @@ ycalc__unit_loud        (void)
    char       *x_args [2]  = { "yCALC_unit", "@@kitchen" };
    yURG_logger (x_argc, x_args);
    yURG_urgs   (x_argc, x_args);
-   yURG_name   ("kitchen", YURG_ON);
-   yURG_name   ("apis"   , YURG_ON);
-   yURG_name   ("ystr"   , YURG_ON);
-   yURG_name   ("yrpn"   , YURG_ON);
-   yURG_name   ("ycalc"  , YURG_ON);
+   yURG_by_name   ("kitchen", YURG_ON);
+   yURG_by_name   ("apis"   , YURG_ON);
+   yURG_by_name   ("ystr"   , YURG_ON);
+   yURG_by_name   ("yrpn"   , YURG_ON);
+   yURG_by_name   ("ycalc"  , YURG_ON);
    DEBUG_YCALC   yLOG_info     ("yCALC"    , yCALC_version   ());
    myCALC.trouble = YCALC_ERROR_NONE;
    yCALC_init ('g');

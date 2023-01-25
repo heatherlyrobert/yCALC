@@ -48,8 +48,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "0.X = reading for full gyges use"
 #define     P_VERMINOR  "0.5 = find pernicious memory and malloc troubles"
-#define     P_VERNUM    "0.5n"
-#define     P_VERTXT    "fixed shutdown troubles with seqfault !!!!"
+#define     P_VERNUM    "0.5o"
+#define     P_VERTXT    "added scientific notation operators Ë, Ë-, and Ë+"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -379,12 +379,12 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 #define     YCALC_ERROR_BUILD_REF  '@'
 #define     YCALC_ERROR_BUILD_DEP  'd'
 #define     YCALC_ERROR_BUILD_LIK  '~'
-#define     YCALC_ERROR_BUILD_CIR  'c'
 #define     YCALC_ERROR_BUILD_PNT  '&'
 #define     YCALC_ERROR_BUILD_RNG  ':'
 #define     YCALC_ERROR_BUILD_TOK  '?'
 #define     YCALC_ERROR_BUILD_DUP  '"'
 #define     YCALC_ERROR_BUILD_FNC  'x'
+#define     YCALC_ERROR_BUILD_ROO  '['
 
 #define     YCALC_ERROR_EXEC_STEP  '-'
 #define     YCALC_ERROR_EXEC_STR   'S'
@@ -638,6 +638,8 @@ void        ycalc_increment         (void);
 void        ycalc_decrement         (void);
 void        ycalc_unaryminus        (void);
 /*---(mathmatical)--------------------*/
+void        ycalc_scipos            (void);
+void        ycalc_scineg            (void);
 void        ycalc_power             (void);
 void        ycalc_power_of_2        (void);
 void        ycalc_power_of_3        (void);
