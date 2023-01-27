@@ -697,8 +697,8 @@ ycalc_deps_create       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target
    DEBUG_YCALC   yLOG_value   ("circle rc" , rc);
    --rce;  if (rc  <  0) {
       DEBUG_YCALC   yLOG_note    ("request would cause a circular reference");
-      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
-      return rce;
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, -100);
+      return -100;
    }
    /*---(check if target needs unroot)---*/
    DEBUG_YCALC   yLOG_note    ("check target for unrooting");

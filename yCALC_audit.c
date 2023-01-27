@@ -64,6 +64,7 @@ const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR] = {
    { YCALC_ERROR_BUILD_TOK , 'b' , "#b/tok"   , "rpn token could not be recognized"                  },
    { YCALC_ERROR_BUILD_DUP , 'b' , "#b/dup"   , "duplicate variable so can not be created"           },
    { YCALC_ERROR_BUILD_FNC , 'b' , "#b/fnc"   , "variable would mask a function by name name"        },
+   { YCALC_ERROR_BUILD_CIR , 'b' , "#b/cir"   , "formula contains a circular reference"              },
    { YCALC_ERROR_BUILD_ROO , 'b' , "#b/roo"   , "can not root a cell into the dependency tree"       },
    { YCALC_ERROR_STACK     , 'e' , "#e/stk"   , "execution stack under or over run"                  },
    { YCALC_ERROR_EXEC_VAL  , 'e' , "#e/val"   , "expected a string, but given a value"               },
@@ -921,7 +922,6 @@ ycalc__classify_content   (char **a_source, char *a_type, double *a_value)
       else if (*a_source [0] == '®')  *a_type = YCALC_DATA_INTERN;
       else if (*a_source [0] == '=')  *a_type = YCALC_DATA_NFORM;
       else if (*a_source [0] == '#')  *a_type = YCALC_DATA_SFORM;
-      else if (*a_source [0] == '~')  *a_type = YCALC_DATA_NLIKE;
       else if (*a_source [0] == '~')  *a_type = YCALC_DATA_NLIKE;
       /*--> can not distinquish num-like vs str-like until build  */
       DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
@@ -1832,18 +1832,21 @@ ycalc_pointer       (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
    tDEP_ROOT  *x_ref       = NULL;
    tCALC      *x_calc      = NULL;
    char       *x_string    = NULL;
    tDEP_ROOT  *x_final     = NULL;
+   char       *x_type      = NULL;
    /*---(header)-------------------------*/
    DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(get the reference)--------------*/
    x_ref = ycalc_popref (__FUNCTION__);
    DEBUG_YCALC   yLOG_point   ("x_ref"     , x_ref);
-   if (x_ref == NULL) {
+   --rce;  if (x_ref == NULL) {
       ycalc_error_set (YCALC_ERROR_EXEC_MAL, NULL);
-      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return;
    }
    DEBUG_YCALC   yLOG_char    ("->btype"    , x_ref->btype);
@@ -1852,48 +1855,55 @@ ycalc_pointer       (void)
    /*---(dereference)--------------------*/
    x_calc = x_ref->chead;
    DEBUG_YCALC   yLOG_point   ("x_calc"    , x_calc);
-   if (x_calc == NULL) {
+   --rce;  if (x_calc == NULL) {
       ycalc_error_set (YCALC_ERROR_EXEC_MAL, x_ref);
-      DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return;
    }
    DEBUG_YCALC   yLOG_char    ("x_calc->t" , x_calc->t);
    /*---(check for address)--------------*/
-   if (x_ref->btype == YCALC_DATA_ADDR) {
+   --rce;  if (x_ref->btype == YCALC_DATA_ADDR) {
       DEBUG_YCALC   yLOG_note    ("returning redirection for literal address");
       if (x_ref->ncalc != 1) {
          ycalc_error_set (YCALC_ERROR_EXEC_MAL, x_ref);
-         DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return;
       }
       if (x_calc->t != G_TYPE_REF) {
          ycalc_error_set (YCALC_ERROR_EXEC_IND, x_ref);
-         DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return;
       }
       DEBUG_YCALC   yLOG_point   ("x_calc->r"  , x_calc->r);
       if (x_calc->r == NULL) {
          ycalc_error_set (YCALC_ERROR_EXEC_NULL, x_ref);
-         DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return;
       }
+      /*> rc = myCALC.e_pointer (x_calc->r->owner, NULL, &x_type, NULL, NULL);        <* 
+       *> DEBUG_YCALC   yLOG_char    ("type"      , x_type);                          <* 
+       *> if (rc < 0 || x_type == YCALC_DATA_ERROR) {                                 <* 
+       *>    ycalc_error_set (YCALC_ERROR_EXEC_PERR, x_ref);                          <* 
+       *>    DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);                          <* 
+       *>    return;                                                                  <* 
+       *> }                                                                           <*/
       /*---(push reference back)------------*/
       DEBUG_YCALC   yLOG_info    ("x_calc->s"  , x_calc->s);
       ycalc_pushref (__FUNCTION__, x_calc->r, x_calc->s);
    }
    /*---(check for calc-address)---------*/
-   if (x_ref->btype == YCALC_DATA_CADDR) {
+   --rce;  if (x_ref->btype == YCALC_DATA_CADDR) {
       DEBUG_YCALC   yLOG_note    ("returning redirection for calculated address");
       if (myCALC.e_valuer == NULL) {
          ycalc_error_set (YCALC_ERROR_CONF, NULL);
-         DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return;
       }
       myCALC.e_valuer (x_ref->owner, NULL, NULL, &x_string);
       DEBUG_YCALC   yLOG_point   ("x_string"   , x_string);
       if (x_string == NULL) {
          ycalc_error_set (YCALC_ERROR_CONF, NULL);
-         DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return;
       }
       DEBUG_YCALC   yLOG_info    ("x_string"  , x_string);
@@ -1901,39 +1911,53 @@ ycalc_pointer       (void)
       DEBUG_YCALC   yLOG_point   ("x_final"    , x_final);
       if (x_final == NULL) {
          ycalc_error_set (YCALC_ERROR_EXEC_NULL, x_final);
-         DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return;
       }
+      /*> rc = myCALC.e_pointer (x_final->owner, NULL, &x_type, NULL, NULL);          <* 
+       *> DEBUG_YCALC   yLOG_char    ("type"      , x_type);                          <* 
+       *> if (rc < 0 || x_type == YCALC_DATA_ERROR) {                                 <* 
+       *>    ycalc_error_set (YCALC_ERROR_EXEC_PERR, x_ref);                          <* 
+       *>    DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);                          <* 
+       *>    return;                                                                  <* 
+       *> }                                                                           <*/
       /*---(push reference back)------------*/
       ycalc_pushref (__FUNCTION__, x_final, x_string);
    }
    /*---(check for range)----------------*/
-   else if (x_ref->btype == YCALC_DATA_RANGE) {
+   --rce;  if (x_ref->btype == YCALC_DATA_RANGE) {
       DEBUG_YCALC   yLOG_note    ("returning redirection for literal range");
       if (x_ref->ncalc != 3) {
          ycalc_error_set (YCALC_ERROR_EXEC_MAL, x_ref);
-         DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return;
       }
       x_calc = x_calc->next->next;
       DEBUG_YCALC   yLOG_point   ("x_calc"    , x_calc);
       if (x_calc == NULL) {
          ycalc_error_set (YCALC_ERROR_EXEC_MAL, x_ref);
-         DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return;
       }
       DEBUG_YCALC   yLOG_char    ("x_calc->t" , x_calc->t);
       if (x_calc->t != G_TYPE_REF) {
          ycalc_error_set (YCALC_ERROR_EXEC_IND, x_ref);
-         DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return;
       }
       DEBUG_YCALC   yLOG_point   ("x_calc->r"  , x_calc->r);
       if (x_calc->r == NULL) {
          ycalc_error_set (YCALC_ERROR_EXEC_NULL, x_ref);
-         DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return;
       }
+      /*> rc = myCALC.e_pointer (x_calc->r->owner, NULL, &x_type, NULL, NULL);        <* 
+       *> DEBUG_YCALC   yLOG_char    ("type"      , x_type);                          <* 
+       *> if (rc < 0 || x_type == YCALC_DATA_ERROR) {                                 <* 
+       *>    ycalc_error_set (YCALC_ERROR_EXEC_PERR, x_ref);                          <* 
+       *>    DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);                          <* 
+       *>    return;                                                                  <* 
+       *> }                                                                           <*/
       /*---(push reference back)------------*/
       DEBUG_YCALC   yLOG_info    ("x_calc->s"  , x_calc->s);
       ycalc_pushref (__FUNCTION__, x_calc->r, x_calc->s);

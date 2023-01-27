@@ -422,7 +422,9 @@ ycalc__build_function   (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
          rc = ycalc_deps_create (G_DEP_REQUIRE, &a_deproot, &x_ref);
          DEBUG_YCALC   yLOG_value   ("rc"        , rc);
          if (rc < 0) {
-            rc = YCALC_ERROR_BUILD_ROO;
+            if (rc == -100)  rc = YCALC_ERROR_BUILD_CIR;
+            /*> else             rc = YCALC_ERROR_BUILD_ROO;                          <*/
+            else             rc = YCALC_ERROR_BUILD_CIR;
             DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rc);
             return 0;
          }
@@ -496,7 +498,9 @@ ycalc__build_reference  (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    rc = ycalc_deps_create (G_DEP_REQUIRE, &a_deproot, &x_ref);
    DEBUG_YCALC   yLOG_value   ("rc"        , rc);
    if (rc < 0) {
-      rc = YCALC_ERROR_BUILD_ROO;
+      if (rc == -100)  rc = YCALC_ERROR_BUILD_CIR;
+      /*> else             rc = YCALC_ERROR_BUILD_ROO;                                <*/
+      else             rc = YCALC_ERROR_BUILD_CIR;
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }

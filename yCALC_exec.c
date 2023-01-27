@@ -318,13 +318,13 @@ ycalc_pushref           (char *a_func, void *a_thing, char *a_label)
    DEBUG_YCALC   yLOG_char    ("btype"     , x_deproot->btype);
    DEBUG_YCALC   yLOG_info    ("string"    , *x_string);
    --rce;  if (x_deproot->btype == YCALC_DATA_ERROR || x_type == YCALC_DATA_ERROR) {
-      ycalc_error_set (YCALC_ERROR_EXEC_PERR, x_deproot);
+      ycalc_error_set (YCALC_ERROR_EXEC_ERR , x_deproot);
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    --rce;  if (x_string != NULL && *x_string != NULL) {
       if (strncmp ("#b/", *x_string, 3) == 0 || strncmp ("#e/", *x_string, 3) == 0) {
-         ycalc_error_set (YCALC_ERROR_EXEC_PERR, x_deproot);
+         ycalc_error_set (YCALC_ERROR_EXEC_ERR , x_deproot);
          DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
@@ -572,7 +572,7 @@ ycalc_popref            (char *a_func)
       DEBUG_YCALC   yLOG_char    ("type"      , x_type);
       DEBUG_YCALC   yLOG_char    ("btype"     , s_ref->btype);
       if (s_ref->btype == YCALC_DATA_ERROR || x_type == YCALC_DATA_ERROR) {
-         ycalc_error_set (YCALC_ERROR_EXEC_PERR, s_ref);
+         ycalc_error_set (YCALC_ERROR_EXEC_ERR , s_ref);
          DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return NULL;
       }
