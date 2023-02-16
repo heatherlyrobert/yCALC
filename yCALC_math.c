@@ -104,7 +104,8 @@ ycalc_scipos       (void)
    a = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
    c = 1;
-   for (i = 0; i <  a; ++i)  c *= 10;
+   if (a >= 0) { for (i = 0; i <  a; ++i)  c *= 10; }
+   else        { for (i = 0; i >  a; --i)  c /= 10; }
    ycalc_pushval (__FUNCTION__, b * c);
    return;
 }
@@ -172,7 +173,7 @@ ycalc_power_of     (void)
    tDEP_ROOT  *x_ref       = NULL;
    /*---(get variable)-------------------*/
    r = ycalc_popstr (__FUNCTION__);
-   rc = yCALC_variable (r, x_label);
+   rc = yCALC_variable (r, x_label, NULL);
    if (rc < 0) {
       ycalc_error_set (YCALC_ERROR_EXEC_VAR , "x");
       DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
@@ -451,12 +452,34 @@ ycalc_slesser      (void)
 }
 
 void    /*-> tbd --------------------------------[ ------ [fv.220.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_slequal      (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   r = ycalc_popstr (__FUNCTION__);
+   s = ycalc_popstr (__FUNCTION__);
+   if (strcmp (s, r) <= 0) ycalc_pushval (__FUNCTION__, TRUE );
+   else                    ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_sgreater     (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    r = ycalc_popstr (__FUNCTION__);
    s = ycalc_popstr (__FUNCTION__);
    if (strcmp (s, r) >  0) ycalc_pushval (__FUNCTION__, TRUE );
+   else                    ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_sgequal      (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   r = ycalc_popstr (__FUNCTION__);
+   s = ycalc_popstr (__FUNCTION__);
+   if (strcmp (s, r) >= 0) ycalc_pushval (__FUNCTION__, TRUE );
    else                    ycalc_pushval (__FUNCTION__, FALSE);
    return;
 }
@@ -907,13 +930,64 @@ ycalc_timezonesec   (void)
 static void  o___BITWISE_________o () { return; }
 
 static unsigned int   x, y;
+static char           w           [LEN_HUND] = "";
 
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_bit_not     (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
-   m = ycalc_popval (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, ~ m);
+   x = ycalc_popval (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, ~ x);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_bit_notplus  (void)
+{
+   int         i           =    0;
+   int         l           =    0;
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   x = ycalc_popval (__FUNCTION__);
+   y = ycalc_popval (__FUNCTION__);
+   x *= 4;
+   DEBUG_YCALC   yLOG_value   ("x"         , x);
+   DEBUG_YCALC   yLOG_value   ("y"         , y);
+   /*---(build binary)---------*/
+   strcpy (t, "");
+   while (y > 0) {
+      if (y % 2 == 0)   strcat (t, "0");
+      else              strcat (t, "1");
+      y /= 2;
+   }
+   DEBUG_YCALC   yLOG_info    ("reverse"   , t);
+   l = strlen (t);
+   DEBUG_YCALC   yLOG_value   ("l"         , l);
+   for (i = 0; i < l; ++i)  w [l - i - 1] = t [i];
+   w [l] = '\0';
+   DEBUG_YCALC   yLOG_info    ("binary"    , w);
+   /*---(flip bits)------------*/
+   for (i = 0; i < l; ++i)  {
+      if (w [i] == '1')  w [i] = '0';
+      else               w [i] = '1';
+   }
+   DEBUG_YCALC   yLOG_info    ("flipped"   , w);
+   /*---(pad out)--------------*/
+   l = x - l;
+   DEBUG_YCALC   yLOG_value   ("l"         , l);
+   if (l > 0)  sprintf (t, "%*.*s%s", l, l, YSTR_ONES, w);
+   else        strcpy  (t, w);
+   DEBUG_YCALC   yLOG_info    ("padded"    , t);
+   /*---(back to number)-------*/
+   y = 0;
+   x = 1;
+   l = strlen (t);
+   for (i = l - 1; i >= 0; --i) {
+      if (t [i] == '1')  y += x;
+      DEBUG_YCALC   yLOG_complex ("step"      , "%d, %c, %d, %d", i, t [i], x, y);
+      x *= 2;
+   }
+   DEBUG_YCALC   yLOG_value   ("y"         , y);
+   ycalc_pushval (__FUNCTION__, y);
    return;
 }
 

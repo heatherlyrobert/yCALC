@@ -4,6 +4,7 @@
 #ifndef YCALC_HGUARD
 #define YCALC_HGUARD loaded
 
+#include    <ySTR_solo.h>
 
 
 #define       YCALC_GYGES        's'
@@ -18,6 +19,7 @@
 #define     YCALC_DATA_NUM        'n'
 #define     YCALC_DATA_NFORM      '='
 #define     YCALC_DATA_NLIKE      '9'
+#define     YCALC_DATA_MATH       '¼'
 #define     YCALC_DATA_ADDR       '&'
 #define     YCALC_DATA_CADDR      '!'
 #define     YCALC_DATA_RANGE      ':'
@@ -104,7 +106,7 @@ char        yCALC_create            (char a_type, char *a_source, char *a_target
 char        yCALC_delete            (char a_type, char *a_source, char *a_target);
 char        yCALC_range             (void *a_source, int b1, int x1, int y1, int b2, int x2, int y2);
 
-char        yCALC_variable          (char *a_name, char *a_real);
+char        yCALC_variable          (char *a_name, char r_real [LEN_LABEL], char r_label [LEN_LABEL]);
 char        yCALC_handle            (char *a_label);
 char        yCALC_exec              (char *a_label);
 
@@ -143,6 +145,9 @@ char        yCALC_vars_dump         (void *f);
 char        yCALC_deps_dump         (void *f);
 
 char        yCALC_merge_source      (void *a_deproot, void **a_owner);
+
+char        yCALC_vars_status       (char a_size, short a_wide, char a_list [LEN_RECD]);
+char*       yCALC__unit             (char *a_question, char *a_label);
 
 #endif
 /*===[[ END ]]================================================================*/

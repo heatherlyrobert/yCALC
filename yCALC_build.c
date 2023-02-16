@@ -553,7 +553,63 @@ ycalc__build_value      (tDEP_ROOT *a_thing, tCALC *a_calc, char *a_token)
 }
 
 char
-ycalc__build_step       (tDEP_ROOT *a_deproot, char *a_token)
+ycalc__build_step       (tDEP_ROOT *a_deproot, char a_type, char *a_token)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   tCALC      *x_calc      = NULL;          /* current calculation element    */
+   char        x_type      =  '-';
+   char        t           [LEN_LABEL] = "";
+   /*---(header)-------------------------*/
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
+   /*---(create and null)-----------------*/
+   DEBUG_YCALC   yLOG_note    ("allocate calc entry");
+   x_calc   = ycalc__build_new (a_deproot);
+   DEBUG_YCALC   yLOG_value   ("calc step" , a_deproot->ncalc);
+   /*---(tweak type)----------------------*/
+   x_type = a_type;
+   if (strcmp (a_token, "..") == 0)  x_type = 'r';
+   DEBUG_YCALC   yLOG_char    ("x_type"    , x_type);
+   if (strchr (YSTR_NUMBER, x_type) != NULL)  x_type = YRPN_FUNC;
+   /*---(select type)---------------------*/
+   switch (x_type) {
+   case YRPN_CHAR   :
+      rc = ycalc__build_char      (a_deproot, x_calc, a_token);
+      break;
+   case YRPN_STR    :
+      rc = ycalc__build_string    (a_deproot, x_calc, a_token);
+      break;
+   case YRPN_INT    : case YRPN_FLOAT  : case YRPN_MONGO  :
+   case YRPN_BIN    : case YRPN_HEX    : case YRPN_OCT    :
+      rc = ycalc__build_value     (a_deproot, x_calc, a_token);
+      break;
+   case 'r'         :
+      rc = ycalc__build_range     (a_deproot, x_calc, a_token);
+      break;
+   case YRPN_OPER   : case YRPN_FUNC   :
+      rc = ycalc__build_function  (a_deproot, x_calc, a_token);
+      break;
+   case YRPN_VARS   : case YRPN_LOCAL  :
+      rc = yCALC_variable (a_token, t, NULL);
+      if (rc < 0)  rc = YCALC_ERROR_EXEC_VAR;
+      else         rc = ycalc__build_reference (a_deproot, x_calc, a_token);
+      break;
+   case YRPN_ADDR   :
+      rc = ycalc__build_reference (a_deproot, x_calc, a_token);
+      break;
+   default   :
+      rc = YCALC_ERROR_BUILD_TOK;
+      break;
+   }
+   /*---(report out)-----------------------*/
+   if (rc == 1)  DEBUG_YCALC   yLOG_complex ("element"   , "typ=%c, val=%F, str=%-9p, ref=%-9p, fnc=%-9p", x_calc->t, x_calc->v, x_calc->s, x_calc->r, x_calc->f);
+   /*---(complete)-------------------------*/
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+   return rc;
+}
+
+char
+ycalc__build_step_OLD   (tDEP_ROOT *a_deproot, char *a_token)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
@@ -593,11 +649,14 @@ ycalc__build_like       (tDEP_ROOT *a_deproot, char **a_source, char *a_type, ch
    char       *x_type      = NULL;
    char        x_work      [LEN_RECD];
    char        x_rpn       [LEN_RECD];
+   char        x_label     [LEN_LABEL] = "";
    /*---(header)-------------------------*/
    DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(check for reference)------------*/
    DEBUG_YCALC   yLOG_note    ("look for like reference");
-   rc = ycalc_call_who_named (*a_source + 1, YCALC_FULL, &x_owner, &x_ref);
+   strlcpy  (x_label, *a_source + 1, LEN_LABEL);
+   strltrim (x_label, ySTR_BOTH    , LEN_LABEL);
+   rc = ycalc_call_who_named (x_label, YCALC_FULL, &x_owner, &x_ref);
    DEBUG_YCALC   yLOG_value   ("who_named" , rc);
    if (rc < 0) {
       rc = YCALC_ERROR_BUILD_LIK;
@@ -824,7 +883,9 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
    char        x_work      [LEN_RECD]  = "";;
    char        x_rpn       [LEN_RECD]  = "";;
    int         x_nrpn      =    0;
-   char       *p           = NULL;           /* strtok current pointer         */
+   char       *p           = NULL;
+   char       *q           = "\x0FŒ";
+   char       *r           = NULL;
    int         x_len       =    0;
    char        t           [LEN_LABEL] = "";;
    tDEP_ROOT  *x_ref       = NULL;
@@ -858,11 +919,13 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
          DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
-      rc = yRPN_interpret (&x_work, &x_rpn, &x_nrpn, LEN_RECD, 0);
+      /*> rc = yRPN_interpret (&x_work, &x_rpn, &x_nrpn, LEN_RECD, 0);                <*/
+      rc = yRPN_gyges (&x_work, &x_rpn, &x_nrpn, LEN_RECD, 0);
       DEBUG_YCALC   yLOG_value   ("interpret" , rc);
    } else {
       strlcpy (x_source, *a_source, LEN_RECD);
-      rc = yRPN_interpret (x_source, &x_rpn, &x_nrpn, LEN_RECD, 0);
+      /*> rc = yRPN_interpret (x_source, &x_rpn, &x_nrpn, LEN_RECD, 0);               <*/
+      rc = yRPN_gyges (x_source, &x_rpn, &x_nrpn, LEN_RECD, 0);
       DEBUG_YCALC   yLOG_value   ("interpret" , rc);
    }
    /*---(generate rpn)-------------------*/
@@ -885,7 +948,8 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
    a_deproot->nrpn = x_nrpn;
    DEBUG_YCALC   yLOG_info    ("rpn"       , a_deproot->rpn);
    /*---(initialize)-------------------------*/
-   p = ycalc__build_strtok (x_rpn);
+   /*> p = ycalc__build_strtok (x_rpn);                                               <*/
+   p = strtok_r (x_rpn, q, &r);
    --rce;  if (p == NULL) {
       ycalc_error_finalize (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, "empty");
       a_deproot->btype = YCALC_DATA_ERROR;
@@ -895,14 +959,19 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
    /*---(process tokens)---------------------*/
    while (p != NULL) {
       DEBUG_YCALC   yLOG_info    ("token"     , p);
-      rc = ycalc__build_step (a_deproot, p);
+      DEBUG_YCALC   yLOG_char    ("type"      , p [0]);
+      DEBUG_YCALC   yLOG_info    ("symbol"    , p + 2);
+      /*> rc = ycalc__build_step (a_deproot, p);                                      <*/
+      rc = ycalc__build_step (a_deproot, p [0], p + 2);
       if (rc != 1) {
-         ycalc_error_finalize (rc, a_type, a_value, a_string, p);
+         /*> ycalc_error_finalize (rc, a_type, a_value, a_string, p);                 <*/
+         ycalc_error_finalize (rc, a_type, a_value, a_string, p + 2);
          a_deproot->btype = YCALC_DATA_ERROR;
          DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
-      p = ycalc__build_strtok (NULL);
+      /*> p = ycalc__build_strtok (NULL);                                             <*/
+      p = strtok_r (NULL , q, &r);
    }
    /*---(complete)-------------------------*/
    DEBUG_YCALC   yLOG_exit    (__FUNCTION__);

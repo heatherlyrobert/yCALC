@@ -24,6 +24,7 @@ const tyCALC_TYPES  g_ycalc_types [YCALC_MAX_TYPE] = {
    {  YCALC_DATA_NUM    , "number"     , ' ', '-', '-', '-', '=', "numeric literal presented in various formats"       },
    {  YCALC_DATA_NFORM  , "num-form"   , '=', 'y', 'y', 'y', '=', "numeric formula"                                    },
    {  YCALC_DATA_NLIKE  , "num-like"   , '~', 'y', 'y', 'y', '=', "numeric formula derived from another cell"          },
+   {  YCALC_DATA_MATH   , "num-math"   , '¼', 'y', 'y', 'y', '=', "purer mathmatical notation numeric formula"         },
    {  YCALC_DATA_ADDR   , "address"    , '&', 'y', '-', 'y', '-', "address pointer to use in other formulas"           },
    {  YCALC_DATA_CADDR  , "calc-addr"  , '!', 'y', 'y', 'y', 'a', "calculated address pointer to use in formulas"      },
    {  YCALC_DATA_RANGE  , "range"      , '&', 'y', '-', 'y', '-', "range pointer to use in other formulas"             },
@@ -31,8 +32,8 @@ const tyCALC_TYPES  g_ycalc_types [YCALC_MAX_TYPE] = {
    {  YCALC_DATA_VAR    , "variable"   , 'Õ', '-', '-', '-', '-', "variable title"                                     },
    {  YCALC_DATA_VAR    , "variable"   , '×', '-', '-', '-', '-', "variable title"                                     },
    {  YCALC_DATA_VAR    , "variable"   , 'Ö', '-', '-', '-', '-', "variable title"                                     },
-   {  YCALC_DATA_VAR    , "row_var"    , 'Ø', '-', '-', '-', '-', "variable title"                                     },
-   {  YCALC_DATA_VAR    , "col_var"    , 'Ù', '-', '-', '-', '-', "variable title"                                     },
+   /*> {  YCALC_DATA_VAR    , "row_var"    , 'Ø', '-', '-', '-', '-', "variable title"                                     },   <*/
+   /*> {  YCALC_DATA_VAR    , "col_var"    , 'Ù', '-', '-', '-', '-', "variable title"                                     },   <*/
    {  YCALC_DATA_INTERN , "internal"   , '®', '-', '-', '-', '-', "an actual internal range to use in other formulas"  },
    {  YCALC_DATA_MERGED , "merged"     , '<', '-', '-', 'y', '-', "empty cell used to present merged information"      },
    {  YCALC_DATA_ERROR  , "error"      , ' ', 'y', 'y', 'y', 'e', "error status"                                       },
@@ -63,12 +64,14 @@ const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR] = {
    { YCALC_ERROR_BUILD_RNG , 'b' , "#b/rng"   , "can not create range with given coords"             },
    { YCALC_ERROR_BUILD_TOK , 'b' , "#b/tok"   , "rpn token could not be recognized"                  },
    { YCALC_ERROR_BUILD_DUP , 'b' , "#b/dup"   , "duplicate variable so can not be created"           },
+   { YCALC_ERROR_BUILD_VAR , 'b' , "#b/var"   , "illegal variable name"                              },
    { YCALC_ERROR_BUILD_FNC , 'b' , "#b/fnc"   , "variable would mask a function by name name"        },
    { YCALC_ERROR_BUILD_CIR , 'b' , "#b/cir"   , "formula contains a circular reference"              },
    { YCALC_ERROR_BUILD_ROO , 'b' , "#b/roo"   , "can not root a cell into the dependency tree"       },
    { YCALC_ERROR_STACK     , 'e' , "#e/stk"   , "execution stack under or over run"                  },
    { YCALC_ERROR_EXEC_VAL  , 'e' , "#e/val"   , "expected a string, but given a value"               },
    { YCALC_ERROR_EXEC_STR  , 'e' , "#e/str"   , "expected a value, but given a string"               },
+   { YCALC_ERROR_EXEC_NUM  , 'e' , "#e/num"   , "not a valid number representation"                  },
    { YCALC_ERROR_EXEC_REF  , 'e' , "#e/ref"   , "calculated dependence is to illegal location"       },
    { YCALC_ERROR_EXEC_VAR  , 'e' , "#e/var"   , "requested variable not defined"                     },
    { YCALC_ERROR_EXEC_CIR  , 'e' , "#e/cir"   , "calculated dependence creates a cirlular loop"      },
@@ -923,6 +926,7 @@ ycalc__classify_content   (char **a_source, char *a_type, double *a_value)
       else if (*a_source [0] == '=')  *a_type = YCALC_DATA_NFORM;
       else if (*a_source [0] == '#')  *a_type = YCALC_DATA_SFORM;
       else if (*a_source [0] == '~')  *a_type = YCALC_DATA_NLIKE;
+      else if (*a_source [0] == '¼')  *a_type = YCALC_DATA_MATH;
       /*--> can not distinquish num-like vs str-like until build  */
       DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return 0;
@@ -1767,6 +1771,102 @@ ycalc_rpn           (void)
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_RPN);
    ycalc_pushstr (__FUNCTION__, r);
+   free (r);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_rpn_basic     (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_SOURCE);
+   yRPN_gyges (r, NULL, NULL, LEN_RECD, 0);
+   yRPN_get   (YRPN_SHUNTED, t, NULL);
+   ycalc_pushstr (__FUNCTION__, t);
+   free (r);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_rpn_tokens    (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_SOURCE);
+   yRPN_gyges (r, NULL, NULL, LEN_RECD, 0);
+   yRPN_get   (YRPN_TOKENS , t, NULL);
+   ycalc_pushstr (__FUNCTION__, t);
+   free (r);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_rpn_parsed    (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_SOURCE);
+   yRPN_gyges (r, NULL, NULL, LEN_RECD, 0);
+   yRPN_get   (YRPN_PARSED , t, NULL);
+   ycalc_pushstr (__FUNCTION__, t);
+   free (r);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_rpn_detail    (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_SOURCE);
+   yRPN_gyges (r, NULL, NULL, LEN_RECD, 0);
+   yRPN_get   (YRPN_DETAIL , t, NULL);
+   ycalc_pushstr (__FUNCTION__, t);
+   free (r);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_rpn_debug     (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_SOURCE);
+   yRPN_gyges (r, NULL, NULL, LEN_RECD, 0);
+   yRPN_get   (YRPN_DEBUG  , t, NULL);
+   ycalc_pushstr (__FUNCTION__, t);
+   free (r);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_rpn_pretty    (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_SOURCE);
+   yRPN_gyges (r, NULL, NULL, LEN_RECD, 0);
+   yRPN_get   (YRPN_PRETTY , t, NULL);
+   ycalc_pushstr (__FUNCTION__, t);
+   free (r);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_rpn_mathy     (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_SOURCE);
+   yRPN_gyges (r, NULL, NULL, LEN_RECD, 0);
+   yRPN_get   (YRPN_MATHY  , t, NULL);
+   ycalc_pushstr (__FUNCTION__, t);
+   free (r);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_rpn_exact     (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   r = ycalc_popstr_plus (__FUNCTION__, G_SPECIAL_SOURCE);
+   yRPN_gyges (r, NULL, NULL, LEN_RECD, 0);
+   yRPN_get   (YRPN_EXACT  , t, NULL);
+   ycalc_pushstr (__FUNCTION__, t);
    free (r);
    return;
 }

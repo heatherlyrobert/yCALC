@@ -24,6 +24,11 @@
 tVARS   *s_hvar   = NULL;
 tVARS   *s_tvar   = NULL;
 int      s_nvar   = 0;
+int      s_nmac   = 0;
+int      s_nloc   = 0;
+int      s_ngre   = 0;
+int      s_nspe   = 0;
+int      s_nnor   = 0;
 
 
 /*> char                                                                              <* 
@@ -109,6 +114,112 @@ ycalc_vars__ripple      (char *a_label, tDEP_ROOT *a_deproot)
 }
 
 char
+ycalc_vars_legal        (uchar a_name [LEN_LABEL], char *a_kind)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   int         l           =    0;
+   uchar       x_pre       =  '-';
+   char        i           =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_YCALC   yLOG_point   ("a_name"    , a_name);
+   --rce;  if (a_name == NULL) {
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YCALC   yLOG_info    ("a_name"    , a_name);
+   l = strlen (a_name);
+   DEBUG_YCALC   yLOG_value   ("l"         , l);
+   --rce;  if (l <= 0 || l > 10) {
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(prepare)------------------------*/
+   x_pre = a_name [0];
+   /*---(local)--------------------------*/
+   --rce;  if (x_pre == G_CHAR_LOCAL) {
+      DEBUG_YCALC   yLOG_note    ("local version");
+      if (l != 2) {
+         DEBUG_YCALC   yLOG_note    ("local variable limited to 2 chars");
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      if (a_kind != NULL)  *a_kind = 'l';
+   }
+   /*---(macro)--------------------------*/
+   else if (x_pre == '@') {
+      DEBUG_YCALC   yLOG_note    ("macro version");
+      if (l != 2) {
+         DEBUG_YCALC   yLOG_note    ("macro variable limited to 2 chars");
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      if (strchr (YSTR_UPLOW YSTR_NUMBER YSTR_GREEK, a_name [1]) == NULL) {
+         DEBUG_YCALC   yLOG_note    ("greek 2nd char [0-9A-Za-zË-ˇ] only");
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      if (a_kind != NULL)  *a_kind = 'm';
+   }
+   /*---(special)------------------------*/
+   else if (strchr ("ïÆ", x_pre) != NULL) {
+      DEBUG_YCALC   yLOG_note    ("special version");
+      if (l != 1) {
+         DEBUG_YCALC   yLOG_note    ("special variable limited to 1 char");
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      if (a_kind != NULL)  *a_kind = 's';
+   }
+   /*---(greek)--------------------------*/
+   else if (strchr (YSTR_GREEK, x_pre) != NULL) {
+      DEBUG_YCALC   yLOG_note    ("greek version");
+      if (l >  3) {
+         DEBUG_YCALC   yLOG_note    ("greek variable limited to 1-3 chars");
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      if (l >= 2 && strchr (YSTR_UPLOW YSTR_NUMBER YSTR_SUBS, a_name [1]) == NULL) {
+         DEBUG_YCALC   yLOG_note    ("greek 2nd char [0-9A-Za-z¿¡¬√ƒ≈] only");
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      if (l == 3 && strchr (YSTR_SUBS, a_name [2]) == NULL) {
+         DEBUG_YCALC   yLOG_note    ("greek 3rd char [¿¡¬√ƒ≈] only");
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      if (a_kind != NULL)  *a_kind = 'g';
+   }
+   /*---(normal)-------------------------*/
+   else if (strchr (YSTR_UPLOW, x_pre) != NULL) {
+      DEBUG_YCALC   yLOG_note    ("normal version");
+      for (i = 1; i < l; ++i) {
+         if (strchr (YSTR_ALNUM YSTR_SUBS, a_name [i]) == NULL) {
+            DEBUG_YCALC   yLOG_value   ("failed on" , i);
+            DEBUG_YCALC   yLOG_note    ("normal variable [0-9A-Za-z_¿¡¬√ƒ≈] chars only");
+            DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+            return rce;
+         }
+      }
+      if (a_kind != NULL)  *a_kind = 'n';
+   }
+   /*---(trouble)------------------------*/
+   else  {
+      DEBUG_YCALC   yLOG_note    ("variable must start with [A-Za-zË-ˇ] chars only");
+      if (a_kind != NULL)  *a_kind = '-';
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
 ycalc_vars_new          (char a_kind, char *a_name, char *a_label, tDEP_ROOT *a_deproot, char *a_type, double *a_value, char **a_string)
 {
    /*---(locals)-----------+-----+-----+-*/
@@ -119,6 +230,7 @@ ycalc_vars_new          (char a_kind, char *a_name, char *a_label, tDEP_ROOT *a_
    int         l           =    0;
    tVARS      *x_new       = NULL;
    int         x_tries     =    0;
+   char        x_kind      =  '-';
    /*---(header)-------------------------*/
    DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -140,22 +252,30 @@ ycalc_vars_new          (char a_kind, char *a_name, char *a_label, tDEP_ROOT *a_
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (x_name, a_name + 1, LEN_LABEL);
+   strlcpy  (x_name, a_name + 1, LEN_LABEL);
    strlddel (x_name, '∑', LEN_LABEL);
    strltrim (x_name, ySTR_BOTH, LEN_LABEL);
    DEBUG_YCALC   yLOG_info    ("x_name"    , x_name);
-   /*---(check functions)----------------*/
-   rc = ycalc_build_findfunc (x_name);
-   DEBUG_YCALC   yLOG_value   ("findfunc"  , rc);
-   --rce;  if (rc >  0) {
-      DEBUG_YCALC   yLOG_note    ("would mask a function");
-      ycalc_error_finalize (YCALC_ERROR_BUILD_FNC , a_type, a_value, a_string, x_name);
-      a_deproot->btype = YCALC_DATA_ERROR;
+   /*---(check name)---------------------*/
+   rc = ycalc_vars_legal (x_name, &x_kind);
+   DEBUG_YCALC   yLOG_value   ("legal"     , rc);
+   --rce;  if (rc < 0) {
+      ycalc_error_finalize (YCALC_ERROR_BUILD_VAR , a_type, a_value, a_string, x_name);
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(check functions)----------------*/
+   /*> rc = ycalc_build_findfunc (x_name);                                                    <* 
+    *> DEBUG_YCALC   yLOG_value   ("findfunc"  , rc);                                         <* 
+    *> --rce;  if (rc >  0) {                                                                 <* 
+    *>    DEBUG_YCALC   yLOG_note    ("would mask a function");                               <* 
+    *>    ycalc_error_finalize (YCALC_ERROR_BUILD_FNC , a_type, a_value, a_string, x_name);   <* 
+    *>    a_deproot->btype = YCALC_DATA_ERROR;                                                <* 
+    *>    DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);                                     <* 
+    *>    return rce;                                                                         <* 
+    *> }                                                                                      <*/
    /*---(check variables)----------------*/
-   rc = yCALC_variable (x_name, t);
+   rc = yCALC_variable (x_name, t, NULL);
    DEBUG_YCALC   yLOG_value   ("findvar"   , rc);
    --rce;  if (rc >= 0) {
       DEBUG_YCALC   yLOG_note    ("variable already exists");
@@ -190,11 +310,19 @@ ycalc_vars_new          (char a_kind, char *a_name, char *a_label, tDEP_ROOT *a_
       s_tvar         = x_new;
    }
    /*---(add)----------------------------*/
-   x_new->kind  = a_kind;
+   x_new->kind  = x_kind;
    strlcpy (x_new->name , x_name , LEN_LABEL);
    strlcpy (x_new->title  , a_label, LEN_LABEL);
    strlcpy (x_new->content, ycalc_call_labeler (a_deproot), LEN_LABEL);
+   /*---(cummulate)----------------------*/
    ++s_nvar;
+   switch (x_kind) {
+   case 'm'  : ++s_nmac;   break;
+   case 'l'  : ++s_nloc;   break;
+   case 'g'  : ++s_ngre;   break;
+   case 's'  : ++s_nspe;   break;
+   case 'n'  : ++s_nnor;   break;
+   }
    DEBUG_YCALC   yLOG_value   ("s_nvar"    , s_nvar);
    /*---(propagate)----------------------*/
    ycalc_build_errorcheck  ();
@@ -204,7 +332,7 @@ ycalc_vars_new          (char a_kind, char *a_name, char *a_label, tDEP_ROOT *a_
 }
 
 char 
-yCALC_variable          (char *a_name, char *a_real)
+yCALC_variable          (char *a_name, char r_real [LEN_LABEL], char r_label [LEN_LABEL])
 {
    char        rce         =  -10;
    tVARS      *x_cur       = NULL;
@@ -216,8 +344,8 @@ yCALC_variable          (char *a_name, char *a_real)
       return rce;
    }
    DEBUG_YCALC   yLOG_snote   (a_name);
-   DEBUG_YCALC   yLOG_spoint  (a_real);
-   --rce;  if (a_real == NULL) {
+   DEBUG_YCALC   yLOG_spoint  (r_real);
+   --rce;  if (r_real == NULL) {
       DEBUG_YCALC   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
@@ -227,8 +355,9 @@ yCALC_variable          (char *a_name, char *a_real)
          x_cur = x_cur->next;  
          continue;
       }
-      strlcpy (a_real, x_cur->content, LEN_LABEL);
-      DEBUG_YCALC   yLOG_snote   (a_real);
+      strlcpy (r_real, x_cur->content, LEN_LABEL);
+      if (r_label != NULL)  strlcpy (r_label, x_cur->title, LEN_LABEL);
+      DEBUG_YCALC   yLOG_snote   (r_real);
       DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
       return 0;
    }
@@ -241,6 +370,7 @@ ycalc_vars__rem         (tVARS *a_cur)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
+   char        x_kind      =  '-';
    /*---(header)-------------------------*/
    DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -249,7 +379,10 @@ ycalc_vars__rem         (tVARS *a_cur)
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
+   /*---(save)---------------------------*/
+   x_kind = a_cur->kind;
    /*---(wipe)---------------------------*/
+   x_kind = a_cur->kind;
    a_cur->kind = '-';
    strlcpy (a_cur->name , "", LEN_LABEL);
    strlcpy (a_cur->title  , "", LEN_LABEL);
@@ -267,6 +400,13 @@ ycalc_vars__rem         (tVARS *a_cur)
    a_cur->next = a_cur->prev = NULL;
    /*---(remove)-------------------------*/
    --s_nvar;
+   switch (x_kind) {
+   case 'm'  : --s_nmac;   break;
+   case 'l'  : --s_nloc;   break;
+   case 'g'  : --s_ngre;   break;
+   case 's'  : --s_nspe;   break;
+   case 'n'  : --s_nnor;   break;
+   }
    DEBUG_YCALC   yLOG_point   ("s_hvar"    , s_hvar);
    DEBUG_YCALC   yLOG_point   ("s_tvar"    , s_tvar);
    DEBUG_YCALC   yLOG_value   ("s_nvar"    , s_nvar);
@@ -348,6 +488,26 @@ yCALC_vars_dump          (void *f)
       fprintf (f, "%3d  %c  %-20.20s  %-7.7s  %-7.7s  ¥\n", c++, x_cur->kind, x_cur->name, x_cur->title, x_cur->content);
       x_cur = x_cur->next;  
    }
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+yCALC_vars_status       (char a_size, short a_wide, char a_list [LEN_RECD])
+{
+   uchar       x_all       [LEN_LABEL] = "";
+   uchar       x_mac       [LEN_LABEL] = "";
+   uchar       x_loc       [LEN_LABEL] = "";
+   uchar       x_gre       [LEN_LABEL] = "";
+   uchar       x_spe       [LEN_LABEL] = "";
+   uchar       x_nor       [LEN_LABEL] = "";
+   strlpadn (s_nvar, x_all , '.', '>', 4);
+   strlpadn (s_nnor, x_nor , '.', '>', 3);
+   strlpadn (s_ngre, x_gre , '.', '>', 2);
+   strlpadn (s_nmac, x_mac , '.', '>', 2);
+   strlpadn (s_nloc, x_loc , '.', '>', 2);
+   strlpadn (s_nspe, x_spe , '.', '>', 1);
+   sprintf (a_list, "∑vars    %4sa %3sn %2sg %2sm %2sl %1ss ¥", x_all, x_nor, x_gre, x_mac, x_loc, x_spe);
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -786,7 +946,7 @@ ycalc_call_who_named    (char *a_label, char a_force, void **a_owner, void **a_d
       return rce;
    }
    /*---(check variables)----------------*/
-   rc = yCALC_variable (a_label, x_label);
+   rc = yCALC_variable (a_label, x_label, NULL);
    DEBUG_YCALC   yLOG_value   ("findvar"   , rc);
    if (rc < 0)  strlcpy (x_label, a_label, LEN_LABEL);
    /*---(callback)-----------------------*/

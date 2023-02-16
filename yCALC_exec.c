@@ -870,7 +870,7 @@ ycalc__exec_wrap        (char *a_type, double *a_value, char **a_string)
    }
    /*---(results)------------------------*/
    switch (*a_type) {
-   case YCALC_DATA_NFORM : case YCALC_DATA_NLIKE :
+   case YCALC_DATA_NFORM : case YCALC_DATA_NLIKE : case YCALC_DATA_MATH  :
       DEBUG_YCALC   yLOG_note    ("handling as numeric");
       *a_value = ycalc_popval (__FUNCTION__);
       --rce;  if (ycalc_error_true ()) {

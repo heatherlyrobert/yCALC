@@ -48,8 +48,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "0.X = reading for full gyges use"
 #define     P_VERMINOR  "0.5 = find pernicious memory and malloc troubles"
-#define     P_VERNUM    "0.5p"
-#define     P_VERTXT    "changed #e/per and #e/roo experiment back to #e/cir"
+#define     P_VERNUM    "0.5q"
+#define     P_VERTXT    "lot of operator updates/adds to support gyges"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -122,7 +122,7 @@ struct cCALC {
 
 extern int  g_nfunc;
 extern int  g_ndups;
-#define     MAX_FUNCS       1000
+#define     MAX_FUNCS        500
 struct  cFUNCS {
    char        name        [20];       /* operator symbol/name                */
    char        len;                    /* length of name                      */
@@ -383,6 +383,7 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 #define     YCALC_ERROR_BUILD_RNG  ':'
 #define     YCALC_ERROR_BUILD_TOK  '?'
 #define     YCALC_ERROR_BUILD_DUP  '"'
+#define     YCALC_ERROR_BUILD_VAR  '/'
 #define     YCALC_ERROR_BUILD_FNC  'x'
 #define     YCALC_ERROR_BUILD_CIR  'c'
 #define     YCALC_ERROR_BUILD_ROO  '['
@@ -390,6 +391,7 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 #define     YCALC_ERROR_EXEC_STEP  '-'
 #define     YCALC_ERROR_EXEC_STR   'S'
 #define     YCALC_ERROR_EXEC_VAL   'V'
+#define     YCALC_ERROR_EXEC_NUM   '#'
 #define     YCALC_ERROR_EXEC_REF   'I'
 #define     YCALC_ERROR_EXEC_VAR   'v'
 #define     YCALC_ERROR_EXEC_PTR   '*'
@@ -609,8 +611,9 @@ char        ycalc__seq_list         (char *a_list);
 char*       ycalc__unit_seq         (char *a_question, void *a_point);
 
 
+char        ycalc_vars_legal        (uchar a_name [LEN_LABEL], char *a_kind);
 char        ycalc_vars_new          (char a_kind, char *a_name, char *a_label, tDEP_ROOT *a_deproot, char *a_type, double *a_value, char **a_string);
-char        yCALC_variable          (char *a_name, char *a_real);
+char        yCALC_variable          (char *a_name, char r_real [LEN_LABEL], char r_label [LEN_LABEL]);
 char        ycalc_vars__ripple      (char *a_label, tDEP_ROOT *a_deproot);
 char        ycalc_vars__rem         (tVARS *a_cur);
 char        ycalc_vars_del          (char *a_loc, tDEP_ROOT **a_deproot);
@@ -673,6 +676,8 @@ void        ycalc_sequal            (void);
 void        ycalc_snotequal         (void);
 void        ycalc_sgreater          (void);
 void        ycalc_slesser           (void);
+void        ycalc_sgequal           (void);
+void        ycalc_slequal           (void);
 /*---(logical)------------------------*/
 void        ycalc_not               (void);
 void        ycalc_and               (void);
@@ -686,7 +691,15 @@ void        ycalc_ifs               (void);
 void        ycalc_within            (void);
 void        ycalc_approx            (void);
 void        ycalc_concat            (void);
-void        ycalc_concatplus        (void);
+void        ycalc_concatspace       (void);
+void        ycalc_concatcomma       (void);
+void        ycalc_remove            (void);
+void        ycalc_list              (void);
+void        ycalc_parse             (void);
+void        ycalc_mask              (void);
+void        ycalc_redact            (void);
+void        ycalc_substr            (void);
+void        ycalc_listitem          (void);
 /*---(string functions)----------------*/
 void        ycalc_len               (void);
 void        ycalc_left              (void);
@@ -755,6 +768,14 @@ void        ycalc_col               (void);
 void        ycalc_row               (void);
 void        ycalc_formula           (void);
 void        ycalc_rpn               (void);
+void        ycalc_rpn_basic         (void);
+void        ycalc_rpn_exact         (void);
+void        ycalc_rpn_tokens        (void);
+void        ycalc_rpn_parsed        (void);
+void        ycalc_rpn_detail        (void);
+void        ycalc_rpn_debug         (void);
+void        ycalc_rpn_pretty        (void);
+void        ycalc_rpn_mathy         (void);
 void        ycalc_ncalc             (void);
 void        ycalc_reqs              (void);
 void        ycalc_nreq              (void);
@@ -973,6 +994,7 @@ void        ycalc_timepart          (void);
 void        ycalc_timezonesec       (void);
 /*---(bitwise)------------------------*/
 void        ycalc_bit_not           (void);
+void        ycalc_bit_notplus       (void);
 void        ycalc_bit_left          (void);
 void        ycalc_bit_right         (void);
 void        ycalc_bit_and           (void);
