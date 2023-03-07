@@ -596,8 +596,8 @@ ycalc_within        (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
-   c = ycalc_popval (__FUNCTION__);
    b = ycalc_popval (__FUNCTION__);
+   c = ycalc_popval (__FUNCTION__);
    if (c >= b && c <= a) ycalc_pushval (__FUNCTION__, TRUE);
    else                  ycalc_pushval (__FUNCTION__, FALSE);
    return;

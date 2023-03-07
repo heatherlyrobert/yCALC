@@ -22,6 +22,7 @@
 #define     YCALC_DATA_MATH       '¼'
 #define     YCALC_DATA_ADDR       '&'
 #define     YCALC_DATA_CADDR      '!'
+#define     YCALC_DATA_RLIKE      '1'
 #define     YCALC_DATA_RANGE      ':'
 #define     YCALC_DATA_VAR        'Ö'
 #define     YCALC_DATA_INTERN     '®'

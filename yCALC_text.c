@@ -153,22 +153,28 @@ ycalc_list         (void)
 }
 
 void
-ycalc_parse        (void)
+ycalc__parse        (void)
 {
    int         l           =    0;
-   char        p           =    0;
+   char        d           =  ' ';
+   short       p           =    0;
    char        q           =    0;
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    /*---(get arguments)------------------*/
+   r = ycalc_popstr (__FUNCTION__);
+   DEBUG_YCALC   yLOG_info    ("r"         , r);
    a = ycalc_popval (__FUNCTION__);
    DEBUG_YCALC   yLOG_value   ("a"         , a);
    s = ycalc_popstr (__FUNCTION__);
    DEBUG_YCALC   yLOG_info    ("s"         , s);
    /*---(defense)------------------------*/
    if (s == NULL)  s = strndup (g_nada, LEN_RECD);
+   if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(find)---------------------------*/
+   if (r [0] != '\0')  d = r [0];
+   DEBUG_YCALC   yLOG_char    ("d"         , d);
    l = strlen (s);
-   p = strldpos (s, '§', a    , LEN_RECD);
+   p = strldpos (s, d, a    , LEN_RECD);
    DEBUG_YCALC   yLOG_value   ("p"         , p);
    if (p < 0) {
       DEBUG_YCALC   yLOG_note    ("delimiter never found");
@@ -176,10 +182,10 @@ ycalc_parse        (void)
       else                  strcpy (t, "");
    } else {
       DEBUG_YCALC   yLOG_note    ("found delimiter");
-      ++p;
+      while (s [++p] == d) ;
       strlcpy  (t, s + p, LEN_RECD);
       DEBUG_YCALC   yLOG_info    ("t"         , t);
-      q = strldpos (t, '§', 0, LEN_RECD);
+      q = strldpos (t, d, 0, LEN_RECD);
       DEBUG_YCALC   yLOG_value   ("q"         , q);
       if (q >= 0)  t [q] = '\0';
    }
@@ -189,8 +195,25 @@ ycalc_parse        (void)
    ycalc_pushstr (__FUNCTION__, t);
    /*---(clean up)-----------------------*/
    free (s);
+   free (r);
    /*---(complete)-----------------------*/
    return;
+}
+
+void
+ycalc_parse        (void)
+{
+   ycalc_pushstr (__FUNCTION__, "§");
+   ycalc__parse  ();
+   return 0;
+}
+
+void
+ycalc_word         (void)
+{
+   ycalc_pushstr (__FUNCTION__, " ");
+   ycalc__parse  ();
+   return 0;
 }
 
 void
@@ -211,7 +234,7 @@ ycalc_mask         (void)
    l = strlen (t);
    for (i = 0; i < l; ++i) {
       p = strchr (r, t [i]);
-      if (p != NULL)  t [i] = '·';
+      if (p != NULL)  t [i] = '°';
    }
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, t);
@@ -240,7 +263,7 @@ ycalc_redact       (void)
    l = strlen (t);
    for (i = 0; i < l; ++i) {
       p = strchr (r, t [i]);
-      if (p == NULL)  t [i] = '·';
+      if (p == NULL)  t [i] = '°';
    }
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, t);
@@ -491,8 +514,7 @@ ycalc_beg          (void)
    if (n >= len)  n = len - 1;
    /*---(process)------------------------*/
    int i;
-   for (i = n; i < len; ++i) t[i - n] = r[i];
-   t [len - 1] = '\0';
+   for (i = n; i <= len; ++i) t[i - n] = r[i];
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, t);
    /*---(clean up)-----------------------*/
@@ -661,6 +683,26 @@ ycalc_printstr     (void)
    return;
 }
 
+void    /*-> tbd --------------------------------[ ------ [fv.420.000.12]*/ /*-[10.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_wrap         (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   /*---(get arguments)------------------*/
+   r = ycalc_popstr (__FUNCTION__);
+   /*---(defense)------------------------*/
+   if (r == NULL)  r = strndup (g_nada, LEN_RECD);
+   /*---(process)------------------------*/
+   DEBUG_YCALC   yLOG_info    ("r"         , r);
+   sprintf (t, "å%sæ", r);
+   DEBUG_YCALC   yLOG_info    ("t"         , t);
+   ycalc_pushstr (__FUNCTION__, t);
+   /*---(clean up)-----------------------*/
+   free (r);
+   DEBUG_YCALC   yLOG_note    ("freed");
+   /*---(complete)-----------------------*/
+   return;
+}
+
 void    /*-> tbd --------------------------------[ ------ [fv.420.010.22]*/ /*-[10.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_printnum     (void)
 {
@@ -810,6 +852,36 @@ ycalc_hex          (void)
    strl4hex (a, t, 1, 'x', LEN_LABEL);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, t + 1);
+   /*---(complete)-----------------------*/
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.420.000.12]*/ /*-[10.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_pint         (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   /*---(get arguments)------------------*/
+   a = ycalc_popval (__FUNCTION__);
+   /*---(process)------------------------*/
+   sprintf (t, "%d", (int) a);
+   /*---(return result)------------------*/
+   ycalc_pushstr (__FUNCTION__, t);
+   /*---(complete)-----------------------*/
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.420.000.12]*/ /*-[10.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_pintf        (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   /*---(get arguments)------------------*/
+   b = ycalc_popval (__FUNCTION__);
+   a = ycalc_popval (__FUNCTION__);
+   /*---(process)------------------------*/
+   sprintf (t, "%*d", (int) b, (int) a);
+   if ((int) a == 0)  t [(int) b -1] = '·';
+   /*---(return result)------------------*/
+   ycalc_pushstr (__FUNCTION__, t);
    /*---(complete)-----------------------*/
    return;
 }

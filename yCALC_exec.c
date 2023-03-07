@@ -399,6 +399,7 @@ ycalc_popval            (char *a_func)
       switch (s_type) {
       case YCALC_DATA_ADDR   : ycalc_error_set (YCALC_ERROR_EXEC_PTR , s_ref);    break;
       case YCALC_DATA_CADDR  : ycalc_error_set (YCALC_ERROR_EXEC_PTR , s_ref);    break;
+      case YCALC_DATA_RLIKE  : ycalc_error_set (YCALC_ERROR_EXEC_PTR , s_ref);    break;
       case YCALC_DATA_RANGE  : ycalc_error_set (YCALC_ERROR_EXEC_PTR , s_ref);    break;
       case YCALC_DATA_BLANK  : ycalc_error_set (YCALC_ERROR_EXEC_NADA, s_ref);    break;
       case YCALC_DATA_ERROR  : ycalc_error_set (YCALC_ERROR_EXEC_ERR , s_ref);    break;
@@ -482,6 +483,7 @@ ycalc_popstr            (char *a_func)
       switch (s_type) {
       case YCALC_DATA_ADDR   : ycalc_error_set (YCALC_ERROR_EXEC_PTR , s_ref);    break;
       case YCALC_DATA_CADDR  : ycalc_error_set (YCALC_ERROR_EXEC_PTR , s_ref);    break;
+      case YCALC_DATA_RLIKE  : ycalc_error_set (YCALC_ERROR_EXEC_PTR , s_ref);    break;
       case YCALC_DATA_RANGE  : ycalc_error_set (YCALC_ERROR_EXEC_PTR , s_ref);    break;
       case YCALC_DATA_BLANK  : ycalc_error_set (YCALC_ERROR_EXEC_NADA, s_ref);    break;
       case YCALC_DATA_ERROR  : ycalc_error_set (YCALC_ERROR_EXEC_ERR , s_ref);    break;
@@ -892,7 +894,7 @@ ycalc__exec_wrap        (char *a_type, double *a_value, char **a_string)
       }
       DEBUG_YCALC   yLOG_info    ("string"    , *a_string);
       break;
-   case YCALC_DATA_CADDR :
+   case YCALC_DATA_CADDR : case YCALC_DATA_RLIKE :
       DEBUG_YCALC   yLOG_note    ("handling as calc address");
       x_ref = ycalc_popref (__FUNCTION__);
       DEBUG_YCALC   yLOG_point   ("x_ref"     , x_ref);

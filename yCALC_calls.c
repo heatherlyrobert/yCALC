@@ -157,8 +157,8 @@ ycalc_vars_legal        (uchar a_name [LEN_LABEL], char *a_kind)
          DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
-      if (strchr (YSTR_UPLOW YSTR_NUMBER YSTR_GREEK, a_name [1]) == NULL) {
-         DEBUG_YCALC   yLOG_note    ("greek 2nd char [0-9A-Za-zш- ] only");
+      if (strchr (".ад" YSTR_UPLOW YSTR_NUMBER YSTR_GREEK, a_name [1]) == NULL) {
+         DEBUG_YCALC   yLOG_note    ("macro 2nd char [0-9A-Za-zш- .ад] only");
          DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
@@ -264,16 +264,6 @@ ycalc_vars_new          (char a_kind, char *a_name, char *a_label, tDEP_ROOT *a_
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(check functions)----------------*/
-   /*> rc = ycalc_build_findfunc (x_name);                                                    <* 
-    *> DEBUG_YCALC   yLOG_value   ("findfunc"  , rc);                                         <* 
-    *> --rce;  if (rc >  0) {                                                                 <* 
-    *>    DEBUG_YCALC   yLOG_note    ("would mask a function");                               <* 
-    *>    ycalc_error_finalize (YCALC_ERROR_BUILD_FNC , a_type, a_value, a_string, x_name);   <* 
-    *>    a_deproot->btype = YCALC_DATA_ERROR;                                                <* 
-    *>    DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);                                     <* 
-    *>    return rce;                                                                         <* 
-    *> }                                                                                      <*/
    /*---(check variables)----------------*/
    rc = yCALC_variable (x_name, t, NULL);
    DEBUG_YCALC   yLOG_value   ("findvar"   , rc);

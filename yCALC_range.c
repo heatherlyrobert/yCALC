@@ -34,14 +34,21 @@ static int     s_used     = 0;
 static int     s_numbers  = 0;
 static int     s_nlit     = 0;
 static int     s_nform    = 0;
+static int     s_nmath    = 0;
 static int     s_nlike    = 0;
 /*---(alpha)----------------*/
 static int     s_strings  = 0;
 static int     s_slit     = 0;
 static int     s_sform    = 0;
 static int     s_slike    = 0;
-/*---(other)----------------*/
+/*---(pointers)-------------*/
 static int     s_pointers = 0;
+static int     s_nref     = 0;
+static int     s_ncref    = 0;
+static int     s_rlike    = 0;
+static int     s_nrref    = 0;
+/*---(other)----------------*/
+static int     s_vars     = 0;
 static int     s_merges   = 0;
 static int     s_blanks   = 0;
 static int     s_errors   = 0;
@@ -139,12 +146,20 @@ ycalc_range_label       (int n)
 int
 ycalc_range_size        (int n)
 {
-   int         b, x, y, z;
+   int         b, x, y, z, t;
+   DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    s_b = b = s_ranges [n].eb - s_ranges [n].bb + 1;
+   DEBUG_YCALC   yLOG_complex ("univers"   , "%4d, %4db, %4de", b, s_ranges [n].bb, s_ranges [n].eb);
    s_x = x = s_ranges [n].ex - s_ranges [n].bx + 1;
+   DEBUG_YCALC   yLOG_complex ("x"         , "%4d, %4db, %4de", x, s_ranges [n].bx, s_ranges [n].ex);
    s_y = y = s_ranges [n].ey - s_ranges [n].by + 1;
+   DEBUG_YCALC   yLOG_complex ("y"         , "%4d, %4db, %4de", y, s_ranges [n].by, s_ranges [n].ey);
    s_z = z = s_ranges [n].ez - s_ranges [n].bz + 1;
-   return b * x * y * z;
+   DEBUG_YCALC   yLOG_complex ("z"         , "%4d, %4db, %4de", z, s_ranges [n].bz, s_ranges [n].ez);
+   t = b * x * y * z;
+   DEBUG_YCALC   yLOG_value   ("t"         , t);
+   DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
+   return t;
 }
 
 char
@@ -554,9 +569,10 @@ ycalc__range_gather     (char *a_func)
    /*---(initialize)---------------------*/
    s_every    = ycalc_range_size (x_deproot->range);
    s_used     = 0;
-   s_numbers  = s_nlit     = s_nform    = s_nlike    =  0;
+   s_numbers  = s_nlit     = s_nform    = s_nmath    = s_nlike    =  0;
    s_strings  = s_slit     = s_sform    = s_slike    =  0;
-   s_pointers = s_merges   = s_blanks   = 0;
+   s_pointers = s_nref     = s_ncref    = s_rlike    = s_nrref    = 0;
+   s_vars     = s_merges   = s_blanks   = 0;
    s_errors   = s_unknown  = 0;
    s_total    = 0.0;
    s_min      =   S_MAX;
@@ -581,6 +597,7 @@ ycalc__range_gather     (char *a_func)
          case YCALC_DATA_NUM   :   ++s_nlit;   break;
          case YCALC_DATA_NFORM :   ++s_nform;  break;
          case YCALC_DATA_NLIKE :   ++s_nlike;  break;
+         case YCALC_DATA_MATH  :   ++s_nmath;  break;
          }
          s_total += x_value;
          if (x_value < s_min)  s_min = x_value;
@@ -600,7 +617,17 @@ ycalc__range_gather     (char *a_func)
       } else if (strchr (YCALC_GROUP_POINT, x_type) != NULL) {
          ++s_used;
          ++s_pointers;
+         switch (x_type) {
+         case YCALC_DATA_ADDR  :   ++s_nref;   break;
+         case YCALC_DATA_CADDR :   ++s_ncref;  break;
+         case YCALC_DATA_RLIKE :   ++s_rlike;  break;
+         case YCALC_DATA_RANGE :   ++s_nrref;  break;
+         }
          DEBUG_YCALC   yLOG_value   ("pointer"   , s_pointers);
+      } else if (x_type == YCALC_DATA_VAR) {
+         ++s_used;
+         ++s_vars;
+         DEBUG_YCALC   yLOG_value   ("vars"      , s_vars);
       } else if (x_type == YCALC_DATA_ERROR) {
          ++s_used;
          ++s_errors;
@@ -608,6 +635,7 @@ ycalc__range_gather     (char *a_func)
       } else if (x_type == YCALC_DATA_MERGED) {
          ++s_used;
          ++s_merges;
+         DEBUG_YCALC   yLOG_value   ("merges"    , s_merges);
       } else if (x_type == YCALC_DATA_BLANK) {
          ++s_used;
          ++s_blanks;
@@ -695,6 +723,15 @@ ycalc_nform       (void)
 }
 
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_nmath       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_nmath);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_nlike       (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
@@ -740,11 +777,56 @@ ycalc_slike       (void)
 }
 
 void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_nref        (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_nref);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_ncref       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_ncref);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_rlikes      (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_rlike);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_nrref       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_nrref);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_pointers    (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, s_pointers);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_vars        (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc__range_gather (__FUNCTION__);
+   ycalc_pushval (__FUNCTION__, s_vars);
    return;
 }
 
@@ -794,11 +876,11 @@ ycalc_literals    (void)
 }
 
 void
-ycalc_forms       (void)
+ycalc_calcs       (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, s_nform + s_sform);
+   ycalc_pushval (__FUNCTION__, s_nform + s_nmath + s_sform);
    return;
 }
 
@@ -807,16 +889,16 @@ ycalc_likes       (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, s_nlike + s_slike);
+   ycalc_pushval (__FUNCTION__, s_nlike + s_slike + s_rlike);
    return;
 }
 
 void
-ycalc_calcs       (void)
+ycalc_forms       (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    ycalc__range_gather (__FUNCTION__);
-   ycalc_pushval (__FUNCTION__, s_nform + s_nlike + s_sform + s_slike);
+   ycalc_pushval (__FUNCTION__, s_nform + s_nmath + s_nlike + s_sform + s_slike + s_rlike);
    return;
 }
 
@@ -1320,6 +1402,7 @@ void ycalc_abs_x         (void)  { return ycalc__rel_driver ("am/_x__"); }
 void ycalc_abs_y         (void)  { return ycalc__rel_driver ("am/__y_"); }
 void ycalc_abs_xy        (void)  { return ycalc__rel_driver ("am/_xy_"); }
 void ycalc_abs_bxy       (void)  { return ycalc__rel_driver ("am/bxy_"); }
+void ycalc_address       (void)  { return ycalc__rel_driver ("am/bxy_"); }
 
 void ycalc_ru            (void)  { return ycalc__rel_driver ("r_/b___"); }
 void ycalc_rx            (void)  { return ycalc__rel_driver ("r_/_x__"); }
@@ -1332,7 +1415,6 @@ void ycalc_ax            (void)  { return ycalc__rel_driver ("a_/_x__"); }
 void ycalc_ay            (void)  { return ycalc__rel_driver ("a_/__y_"); }
 void ycalc_axy           (void)  { return ycalc__rel_driver ("a_/_xy_"); }
 void ycalc_auxy          (void)  { return ycalc__rel_driver ("a_/bxy_"); }
-void ycalc_address       (void)  { return ycalc__rel_driver ("a_/bxy_"); }
 
 /*> void                                                                              <* 
  *> ycalc__abs_driver    (char *a_type)                                               <* 
@@ -1688,6 +1770,7 @@ ycalc__lookup_common  (char *a_func, char a_dir, char a_type, char a_match)
 }
 
 void ycalc_vlookup       (void)  { return ycalc__lookup_common (__FUNCTION__, 'v', 's', '='); }
+void ycalc_vref          (void)  { ycalc_pushval (__FUNCTION__, 0);  return ycalc_vlookup (); }
 void ycalc_vprefix       (void)  { return ycalc__lookup_common (__FUNCTION__, 'v', 's', '>'); }
 void ycalc_vmatch        (void)  { return ycalc__lookup_common (__FUNCTION__, 'v', '9', '='); }
 void ycalc_vrange        (void)  { return ycalc__lookup_common (__FUNCTION__, 'v', '9', ':'); }
@@ -1697,6 +1780,7 @@ void ycalc_vover         (void)  { return ycalc__lookup_common (__FUNCTION__, 'v
 void ycalc_vunder        (void)  { return ycalc__lookup_common (__FUNCTION__, 'v', '9', ']'); }
 
 void ycalc_hlookup       (void)  { return ycalc__lookup_common (__FUNCTION__, 'h', 's', '='); }
+void ycalc_href          (void)  { ycalc_pushval (__FUNCTION__, 0);  return ycalc_hlookup (); }
 void ycalc_hprefix       (void)  { return ycalc__lookup_common (__FUNCTION__, 'h', 's', '>'); }
 void ycalc_hmatch        (void)  { return ycalc__lookup_common (__FUNCTION__, 'h', '9', '='); }
 void ycalc_hrange        (void)  { return ycalc__lookup_common (__FUNCTION__, 'h', '9', ':'); }

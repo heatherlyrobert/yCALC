@@ -48,8 +48,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "0.X = reading for full gyges use"
 #define     P_VERMINOR  "0.5 = find pernicious memory and malloc troubles"
-#define     P_VERNUM    "0.5q"
-#define     P_VERTXT    "lot of operator updates/adds to support gyges"
+#define     P_VERNUM    "0.5r"
+#define     P_VERTXT    "fixed couple small issues with variable creation"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -696,6 +696,7 @@ void        ycalc_concatcomma       (void);
 void        ycalc_remove            (void);
 void        ycalc_list              (void);
 void        ycalc_parse             (void);
+void        ycalc_word              (void);
 void        ycalc_mask              (void);
 void        ycalc_redact            (void);
 void        ycalc_substr            (void);
@@ -714,6 +715,7 @@ void        ycalc_strim             (void);
 void        ycalc_etrim             (void);
 void        ycalc_mtrim             (void);
 void        ycalc_printstr          (void);
+void        ycalc_wrap              (void);
 void        ycalc_printnum          (void);
 void        ycalc_lpad              (void);
 void        ycalc_rpad              (void);
@@ -730,6 +732,8 @@ void        ycalc_code              (void);
 void        ycalc_value             (void);
 void        ycalc_unhex             (void);
 void        ycalc_hex               (void);
+void        ycalc_pint              (void);
+void        ycalc_pintf             (void);
 void        ycalc_salpha            (void);
 void        ycalc_salphac           (void);
 void        ycalc_salnum            (void);
@@ -746,16 +750,32 @@ void        ycalc_sseven            (void);
 void        ycalc_ssevenc           (void);
 /*---(object audit functions)----------*/
 void        ycalc_type              (void);
+void        ycalc_typealpha         (void);
+void        ycalc_typestr           (void);
 void        ycalc_isblank           (void);
-void        ycalc_isvalue           (void);
-void        ycalc_istext            (void);
-void        ycalc_isnum             (void);
-void        ycalc_isfor             (void);
 void        ycalc_isstr             (void);
-void        ycalc_ismod             (void);
-void        ycalc_iscalc            (void);
+void        ycalc_isslit            (void);
+void        ycalc_isscalc           (void);
+void        ycalc_isslike           (void);
+void        ycalc_isvalue           (void);
+void        ycalc_isnum             (void);
+void        ycalc_isnlit            (void);
+void        ycalc_isncalc           (void);
+void        ycalc_isnmath           (void);
+void        ycalc_isnlike           (void);
+void        ycalc_istext            (void);
 void        ycalc_islit             (void);
+void        ycalc_iscalc            (void);
+void        ycalc_islike            (void);
+void        ycalc_isform            (void);
+void        ycalc_isaddr            (void);
+void        ycalc_isnref            (void);
+void        ycalc_iscref            (void);
+void        ycalc_isrlike           (void);
+void        ycalc_isrange           (void);
 void        ycalc_ispoint           (void);
+void        ycalc_isvar             (void);
+void        ycalc_ismerge           (void);
 void        ycalc_iserror           (void);
 void        ycalc_upos              (void);
 void        ycalc_xpos              (void);
@@ -871,6 +891,7 @@ void        ycalc_empties           (void);
 void        ycalc_numbers           (void);
 void        ycalc_nlit              (void);
 void        ycalc_nform             (void);
+void        ycalc_nmath             (void);
 void        ycalc_nlike             (void);
 
 void        ycalc_strings           (void);
@@ -879,6 +900,12 @@ void        ycalc_sform             (void);
 void        ycalc_slike             (void);
 
 void        ycalc_pointers          (void);
+void        ycalc_nref              (void);
+void        ycalc_ncref             (void);
+void        ycalc_rlikes            (void);
+void        ycalc_nrref             (void);
+
+void        ycalc_vars              (void);
 void        ycalc_merges            (void);
 void        ycalc_blanks            (void);
 void        ycalc_errors            (void);
@@ -933,6 +960,8 @@ void        ycalc_off_bxy           (void);
 void        ycalc_address           (void);
 
 void        ycalc_vlookup           (void);
+void        ycalc_vref              (void);
+void        ycalc_voffset           (void);
 void        ycalc_vprefix           (void);
 void        ycalc_vmatch            (void);
 void        ycalc_vrange            (void);
@@ -942,6 +971,7 @@ void        ycalc_vover             (void);
 void        ycalc_vunder            (void);
 
 void        ycalc_hlookup           (void);
+void        ycalc_href              (void);
 void        ycalc_hprefix           (void);
 void        ycalc_hmatch            (void);
 void        ycalc_hrange            (void);

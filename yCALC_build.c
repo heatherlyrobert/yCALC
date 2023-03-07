@@ -483,7 +483,11 @@ ycalc__build_reference  (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    DEBUG_YCALC   yLOG_info    ("a_token"  , a_token);
    DEBUG_YCALC   yLOG_note    ("look for reference");
    rc = ycalc_call_who_named (a_token, YCALC_FULL, NULL, &x_ref);
-   if (rc < 0)  return 0;
+   if (rc < 0)  {
+      rc = YCALC_ERROR_BUILD_REF;
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rc);
+      return rc;
+   }
    /*---(header)-------------------------*/
    DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(check reference)----------------*/
@@ -697,7 +701,7 @@ ycalc__build_like       (tDEP_ROOT *a_deproot, char **a_source, char *a_type, ch
    DEBUG_YCALC   yLOG_info    ("*x_source" , *x_source);
    /*---(check source type)--------------*/
    DEBUG_YCALC   yLOG_char    ("*x_type"   , *x_type);
-   if (strchr ("=#", *x_type) == NULL) {
+   if (strchr ("=#!", *x_type) == NULL) {
       rc = YCALC_ERROR_BUILD_LIK;
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
@@ -747,6 +751,12 @@ ycalc__build_like       (tDEP_ROOT *a_deproot, char **a_source, char *a_type, ch
    else if (*x_type == YCALC_DATA_SFORM) {
       DEBUG_YCALC   yLOG_note    ("source is string, classify as str-like");
       *a_type = YCALC_DATA_SLIKE;
+      a_deproot->btype = *a_type;
+      DEBUG_YCALC   yLOG_char    ("btype"     , a_deproot->btype);
+   }
+   else if (*x_type == YCALC_DATA_CADDR) {
+      DEBUG_YCALC   yLOG_note    ("source is calcref, classify as ref-like");
+      *a_type = YCALC_DATA_RLIKE;
       a_deproot->btype = *a_type;
       DEBUG_YCALC   yLOG_char    ("btype"     , a_deproot->btype);
    }
@@ -861,6 +871,13 @@ ycalc_build_variable    (tDEP_ROOT *a_deproot, char *a_label, short b, short x, 
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rc);
       return rc;
    }
+   /*---(check ref for range incl)-------*/
+   rc = ycalc_range_include (&x_ref, b, x, y, z);
+   DEBUG_YCALC   yLOG_value   ("ranges"    , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    /*---(complete)-------------------------*/
    DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return 0;
@@ -909,7 +926,7 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
       return rce;
    }
    /*---(check for like formulas)--------*/
-   --rce;  if (*a_type == YCALC_DATA_SLIKE || *a_type == YCALC_DATA_NLIKE) {
+   --rce;  if (*a_type == YCALC_DATA_SLIKE || *a_type == YCALC_DATA_NLIKE || *a_type == YCALC_DATA_RLIKE) {
       rc = ycalc__build_like (a_deproot, a_source, a_type, x_work);
       DEBUG_YCALC   yLOG_value   ("like"      , rc);
       DEBUG_YCALC   yLOG_char    ("*a_type"   , *a_type);

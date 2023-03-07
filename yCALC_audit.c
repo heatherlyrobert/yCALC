@@ -27,6 +27,7 @@ const tyCALC_TYPES  g_ycalc_types [YCALC_MAX_TYPE] = {
    {  YCALC_DATA_MATH   , "num-math"   , '¼', 'y', 'y', 'y', '=', "purer mathmatical notation numeric formula"         },
    {  YCALC_DATA_ADDR   , "address"    , '&', 'y', '-', 'y', '-', "address pointer to use in other formulas"           },
    {  YCALC_DATA_CADDR  , "calc-addr"  , '!', 'y', 'y', 'y', 'a', "calculated address pointer to use in formulas"      },
+   {  YCALC_DATA_RLIKE  , "cref-like"  , '~', 'y', 'y', 'y', 'a', "calculated address derived from another cell"       },
    {  YCALC_DATA_RANGE  , "range"      , '&', 'y', '-', 'y', '-', "range pointer to use in other formulas"             },
    {  YCALC_DATA_VAR    , "variable"   , 'Ô', '-', '-', '-', '-', "variable title"                                     },
    {  YCALC_DATA_VAR    , "variable"   , 'Õ', '-', '-', '-', '-', "variable title"                                     },
@@ -1173,6 +1174,15 @@ yCALC_handle            (char *a_label)
       if (x_deproot->btype == YCALC_DATA_VAR) {
          DEBUG_YCALC   yLOG_note    ("delete existing var status");
          rc = ycalc_vars_del (a_label, &x_deproot);
+         /*---(recreate deproot)--------*/
+         rc = ycalc_call_who_named  (a_label, YCALC_FULL, &x_owner, &x_deproot);
+         DEBUG_YCALC   yLOG_value   ("who_named"  , rc);
+         --rce;  if (rc < 0) {
+            DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+            return rce;
+         }
+         DEBUG_YCALC   yLOG_point   ("x_owner"    , x_owner);
+         DEBUG_YCALC   yLOG_point   ("x_deproot"  , x_deproot);
       }
    }
    /*---(fill pointers)------------------*/
@@ -1628,6 +1638,43 @@ ycalc_type          (void)
    return;
 }
 
+void
+ycalc_typealpha     (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   ycalc_type ();
+   ycalc_char ();
+   return;
+}
+
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_typestr       (void)
+{
+   char        b           =  0;
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   b = a;
+   switch (b) {
+   case YCALC_DATA_BLANK  :   strcpy (t, "blank");   break;
+   case YCALC_DATA_STR    :   strcpy (t, "slit");    break;
+   case YCALC_DATA_SFORM  :   strcpy (t, "scalc");   break;
+   case YCALC_DATA_SLIKE  :   strcpy (t, "slike");   break;
+   case YCALC_DATA_NUM    :   strcpy (t, "nlit");    break;
+   case YCALC_DATA_NFORM  :   strcpy (t, "ncalc");   break;
+   case YCALC_DATA_NLIKE  :   strcpy (t, "nlike");   break;
+   case YCALC_DATA_MATH   :   strcpy (t, "math");    break;
+   case YCALC_DATA_ADDR   :   strcpy (t, "ref");     break;
+   case YCALC_DATA_CADDR  :   strcpy (t, "cref");    break;
+   case YCALC_DATA_RLIKE  :   strcpy (t, "rlike");   break;
+   case YCALC_DATA_RANGE  :   strcpy (t, "rref");    break;
+   case YCALC_DATA_VAR    :   strcpy (t, "var");     break;
+   case YCALC_DATA_MERGED :   strcpy (t, "merged");  break;
+   case YCALC_DATA_ERROR  :   strcpy (t, "error");   break;
+   }
+   ycalc_pushstr (__FUNCTION__, t);
+   return;
+}
+
 void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_isblank       (void)
 {
@@ -1649,6 +1696,46 @@ ycalc_isvalue       (void)
 }
 
 void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_isnlit        (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if (a == YCALC_DATA_NUM    ) ycalc_pushval (__FUNCTION__, TRUE);
+   else                         ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_isncalc       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if (a == YCALC_DATA_NFORM  ) ycalc_pushval (__FUNCTION__, TRUE);
+   else                         ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_isnmath       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if (a == YCALC_DATA_MATH   ) ycalc_pushval (__FUNCTION__, TRUE);
+   else                         ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_isnlike       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if (a == YCALC_DATA_NLIKE  ) ycalc_pushval (__FUNCTION__, TRUE);
+   else                         ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_istext        (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
@@ -1658,8 +1745,61 @@ ycalc_istext        (void)
    return;
 }
 
-void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_isslit        (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if (a == YCALC_DATA_STR    ) ycalc_pushval (__FUNCTION__, TRUE);
+   else                         ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_isscalc       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if (a == YCALC_DATA_SFORM  ) ycalc_pushval (__FUNCTION__, TRUE);
+   else                         ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_isslike       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if (a == YCALC_DATA_SLIKE  ) ycalc_pushval (__FUNCTION__, TRUE);
+   else                         ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 ycalc_iscalc        (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if      (a == YCALC_DATA_NFORM  ) ycalc_pushval (__FUNCTION__, TRUE);
+   else if (a == YCALC_DATA_SFORM  ) ycalc_pushval (__FUNCTION__, TRUE);
+   else                              ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_islike        (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if      (a == YCALC_DATA_NLIKE  ) ycalc_pushval (__FUNCTION__, TRUE);
+   else if (a == YCALC_DATA_SLIKE  ) ycalc_pushval (__FUNCTION__, TRUE);
+   else if (a == YCALC_DATA_RLIKE  ) ycalc_pushval (__FUNCTION__, TRUE);
+   else                              ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void    /*-> tbd --------------------------------[ ------ [fv.220.010.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_isform        (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
@@ -1673,9 +1813,61 @@ ycalc_islit         (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
-   if (a == YCALC_DATA_ERROR)                     ycalc_pushval (__FUNCTION__, FALSE);
-   else if (strchr (YCALC_GROUP_CALC, a) == NULL) ycalc_pushval (__FUNCTION__, TRUE);
-   else                                           ycalc_pushval (__FUNCTION__, FALSE);
+   if      (a == YCALC_DATA_NUM  ) ycalc_pushval (__FUNCTION__, TRUE);
+   else if (a == YCALC_DATA_STR  ) ycalc_pushval (__FUNCTION__, TRUE);
+   else                            ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void         /*-> tbd --------------------------------[ ------ [gv.220.000.32]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_isnref        (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if      (a == YCALC_DATA_ADDR ) ycalc_pushval (__FUNCTION__, TRUE);
+   else                            ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void         /*-> tbd --------------------------------[ ------ [gv.220.000.32]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_iscref        (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if      (a == YCALC_DATA_CADDR) ycalc_pushval (__FUNCTION__, TRUE);
+   else                            ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void         /*-> tbd --------------------------------[ ------ [gv.220.000.32]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_isrlike       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if      (a == YCALC_DATA_RLIKE) ycalc_pushval (__FUNCTION__, TRUE);
+   else                            ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void         /*-> tbd --------------------------------[ ------ [gv.220.000.32]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_isaddr        (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if      (a == YCALC_DATA_ADDR ) ycalc_pushval (__FUNCTION__, TRUE);
+   else if (a == YCALC_DATA_CADDR) ycalc_pushval (__FUNCTION__, TRUE);
+   else if (a == YCALC_DATA_RLIKE) ycalc_pushval (__FUNCTION__, TRUE);
+   else                            ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_isrange       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if (a == YCALC_DATA_RANGE  ) ycalc_pushval (__FUNCTION__, TRUE);
+   else                         ycalc_pushval (__FUNCTION__, FALSE);
    return;
 }
 
@@ -1687,7 +1879,28 @@ ycalc_ispoint       (void)
    if      (a == YCALC_DATA_RANGE) ycalc_pushval (__FUNCTION__, TRUE);
    else if (a == YCALC_DATA_ADDR ) ycalc_pushval (__FUNCTION__, TRUE);
    else if (a == YCALC_DATA_CADDR) ycalc_pushval (__FUNCTION__, TRUE);
+   else if (a == YCALC_DATA_RLIKE) ycalc_pushval (__FUNCTION__, TRUE);
    else                            ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_isvar         (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if (a == YCALC_DATA_VAR  )   ycalc_pushval (__FUNCTION__, TRUE);
+   else                         ycalc_pushval (__FUNCTION__, FALSE);
+   return;
+}
+
+void         /*-> tbd --------------------------------[ ------ [gv.210.000.22]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+ycalc_ismerge       (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval_plus (__FUNCTION__, G_SPECIAL_TYPE);
+   if (a == YCALC_DATA_MERGED ) ycalc_pushval (__FUNCTION__, TRUE);
+   else                         ycalc_pushval (__FUNCTION__, FALSE);
    return;
 }
 
@@ -1992,7 +2205,7 @@ ycalc_pointer       (void)
       ycalc_pushref (__FUNCTION__, x_calc->r, x_calc->s);
    }
    /*---(check for calc-address)---------*/
-   --rce;  if (x_ref->btype == YCALC_DATA_CADDR) {
+   --rce;  if (x_ref->btype == YCALC_DATA_CADDR || x_ref->btype == YCALC_DATA_RLIKE) {
       DEBUG_YCALC   yLOG_note    ("returning redirection for calculated address");
       if (myCALC.e_valuer == NULL) {
          ycalc_error_set (YCALC_ERROR_CONF, NULL);
