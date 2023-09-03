@@ -164,6 +164,21 @@ ycalc_vars_legal        (uchar a_name [LEN_LABEL], char *a_kind)
       }
       if (a_kind != NULL)  *a_kind = 'm';
    }
+   /*---(registers)----------------------*/
+   else if (x_pre == (uchar) 'è') {
+      DEBUG_YCALC   yLOG_note    ("register version");
+      if (l != 2) {
+         DEBUG_YCALC   yLOG_note    ("register variable limited to 2 chars");
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      if (strchr ("∂" YSTR_LOWER YSTR_NUMBER YSTR_GREEK, a_name [1]) == NULL) {
+         DEBUG_YCALC   yLOG_note    ("macro 2nd char [0-9a-zË-ˇ∂] only");
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
+         return rce;
+      }
+      if (a_kind != NULL)  *a_kind = 'r';
+   }
    /*---(special)------------------------*/
    else if (strchr ("ïÆ", x_pre) != NULL) {
       DEBUG_YCALC   yLOG_note    ("special version");
