@@ -558,7 +558,7 @@ ycalc__deps_create_req  (char a_type, char a_index, tDEP_ROOT **a_source, tDEP_R
    DEBUG_YCALC   yLOG_info    ("target"    , ycalc_call_labeler (*a_target));
    DEBUG_YCALC   yLOG_value   ("src nreqs" , (*a_source)->nreq);
    x_next = (*a_source)->reqs;
-   DEBUG_YCALC   yLOG_value   ("src head"  , (*a_source)->reqs);
+   DEBUG_YCALC   yLOG_point   ("src head"  , (*a_source)->reqs);
    while (x_next != NULL) {
       DEBUG_YCALC   yLOG_info    ("check"     , ycalc_call_labeler (x_next->target));
       if (x_next->target == *a_target) {

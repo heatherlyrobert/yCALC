@@ -1560,13 +1560,14 @@ ycalc__audit_disp_range    (tDEP_ROOT *a_range, char a_start, char *a_list)
 }
 
 char         /*-> list dependencies ------------------[ leaf   [fe.740.424.60]*/ /*-[02.0000.034.!]-*/ /*-[--.---.---.--]-*/
-ycalc__audit_disp_master   (tDEP_ROOT *a_me, char *a_list, char a_start, char *a_types)
+ycalc__audit_disp_master   (tDEP_ROOT *a_me, char *a_list, char a_start, char *a_types, char a_extra)
 {  /*---(design notes)-------------------*/
    /* combined logic from the three accessors below as they were 90% the same */
    /*---(locals)-----------+-----------+-*/
    tDEP_LINK  *n           = NULL;
    char        rce         = -10;
    uchar       x_label     [LEN_LABEL] = "";
+   uchar       x_type      [LEN_TERSE] = "";
    /*---(header)-------------------------*/
    DEBUG_YSORT   yLOG_enter   (__FUNCTION__);
    /*---(defenses)-----------------------*/
@@ -1603,6 +1604,10 @@ ycalc__audit_disp_master   (tDEP_ROOT *a_me, char *a_list, char a_start, char *a
             strlcat (a_list, ","    , LEN_RECD);
          } else {
             strlcat (a_list, x_label, LEN_RECD);
+            if (a_extra == 'y') {
+               sprintf (x_type, "%c", n->type);
+               strlcat (a_list, x_type , LEN_RECD);
+            }
             strlcat (a_list, ","    , LEN_RECD);
          }
       }
@@ -1610,17 +1615,19 @@ ycalc__audit_disp_master   (tDEP_ROOT *a_me, char *a_list, char a_start, char *a
    }
    /*---(catch empty)--------------------*/
    if (strcmp (a_list, ",") == 0)   strlcpy (a_list, ".", LEN_RECD);
-   else  ycalc__audit_sort (a_list);
+   else if (a_extra == '-')  ycalc__audit_sort (a_list);
    DEBUG_YSORT   yLOG_info    ("a_list"    , a_list);
    DEBUG_YSORT   yLOG_exit    (__FUNCTION__);
    /*---(complete)-----------------------*/
    return 0;
 }
 
-char       yCALC_disp_reqs      (void *a_me, char *a_list) { return ycalc__audit_disp_master ((tDEP_ROOT *) a_me, a_list, 'R', S_DEP_REQS); }
-char       yCALC_disp_pros      (void *a_me, char *a_list) { return ycalc__audit_disp_master ((tDEP_ROOT *) a_me, a_list, 'P', S_DEP_PROS); }
-char       yCALC_disp_like      (void *a_me, char *a_list) { return ycalc__audit_disp_master ((tDEP_ROOT *) a_me, a_list, 'R', "S"       ); }
-char       yCALC_disp_copy      (void *a_me, char *a_list) { return ycalc__audit_disp_master ((tDEP_ROOT *) a_me, a_list, 'P', "l"       ); }
+char       yCALC_disp_reqs      (void *a_me, char *a_list) { return ycalc__audit_disp_master ((tDEP_ROOT *) a_me, a_list, 'R', S_DEP_REQS, '-'); }
+char       yCALC_disp_reqsplus  (void *a_me, char *a_list) { return ycalc__audit_disp_master ((tDEP_ROOT *) a_me, a_list, 'R', S_DEP_REQS, 'y'); }
+char       yCALC_disp_pros      (void *a_me, char *a_list) { return ycalc__audit_disp_master ((tDEP_ROOT *) a_me, a_list, 'P', S_DEP_PROS, '-'); }
+char       yCALC_disp_prosplus  (void *a_me, char *a_list) { return ycalc__audit_disp_master ((tDEP_ROOT *) a_me, a_list, 'P', S_DEP_PROS, 'y'); }
+char       yCALC_disp_like      (void *a_me, char *a_list) { return ycalc__audit_disp_master ((tDEP_ROOT *) a_me, a_list, 'R', "S"       , '-'); }
+char       yCALC_disp_copy      (void *a_me, char *a_list) { return ycalc__audit_disp_master ((tDEP_ROOT *) a_me, a_list, 'P', "l"       , '-'); }
 
 
 

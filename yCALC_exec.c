@@ -238,8 +238,10 @@ ycalc_pushval           (char *a_func, double a_value)
 char         /*-> add a string to the stack ----------[ ------ [gc.420.202.11]*/ /*-[01.0000.0#5.!]-*/ /*-[--.---.---.--]-*/
 ycalc_pushstr           (char *a_func, char *a_string)
 {
+   /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char       *p           = NULL;
+   /*---(header)-------------------------*/
    DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(defense: stack overflow)--------*/
    DEBUG_YCALC   yLOG_value   ("s_nstack"  , s_nstack);
@@ -258,11 +260,17 @@ ycalc_pushstr           (char *a_func, char *a_string)
    DEBUG_YCALC   yLOG_info    ("a_string"  , a_string);
    /*---(update stack item)--------------*/
    s_stack [s_nstack].typ = S_TYPE_STR;
+   DEBUG_YCALC   yLOG_char    ("typ"       , s_stack [s_nstack].typ);
    s_stack [s_nstack].ref = NULL;
+   DEBUG_YCALC   yLOG_point   ("ref"       , s_stack [s_nstack].ref);
    s_stack [s_nstack].num = 0;
+   DEBUG_YCALC   yLOG_value   ("num"       , s_stack [s_nstack].num);
    /*> if (s_stack[s_nstack].str != NULL) free (s_stack[s_nstack].str);               <*/
+   DEBUG_YCALC   yLOG_note    ("before");
+   /*> p = strndup (a_string, LEN_RECD);                                              <*/
    p = strndup (a_string, LEN_RECD);
-   DEBUG_YCALC   yLOG_point   ("p"         , p);
+   DEBUG_YCALC   yLOG_note    ("after");
+   /*> DEBUG_YCALC   yLOG_point   ("p"         , p);                                  <*/
    s_stack [s_nstack].str = p;
    /*---(update stack counter)-----------*/
    ++s_nstack;
@@ -314,10 +322,13 @@ ycalc_pushref           (char *a_func, void *a_thing, char *a_label)
       return rce;
    }
    rc = myCALC.e_pointer (x_deproot->owner, NULL, &x_type, NULL, &x_string);
-   DEBUG_YCALC   yLOG_char    ("type"      , x_type);
-   DEBUG_YCALC   yLOG_char    ("btype"     , x_deproot->btype);
+   DEBUG_YCALC   yLOG_complex ("type"      , "%c, %4d", *x_type, *x_type);
+   DEBUG_YCALC   yLOG_complex ("btype"     , "%c, %4d", x_deproot->btype, x_deproot->btype);
+   DEBUG_YCALC   yLOG_value   ("nreq"      , x_deproot->nreq);
+   DEBUG_YCALC   yLOG_value   ("npro"      , x_deproot->npro);
+   DEBUG_YCALC   yLOG_value   ("ncalc"     , x_deproot->ncalc);
    DEBUG_YCALC   yLOG_info    ("string"    , *x_string);
-   --rce;  if (x_deproot->btype == YCALC_DATA_ERROR || x_type == YCALC_DATA_ERROR) {
+   --rce;  if (x_deproot->btype == YCALC_DATA_ERROR || *x_type == YCALC_DATA_ERROR) {
       ycalc_error_set (YCALC_ERROR_EXEC_ERR , x_deproot);
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -330,6 +341,7 @@ ycalc_pushref           (char *a_func, void *a_thing, char *a_label)
       }
    }
    /*---(update stack item)--------------*/
+   DEBUG_YCALC   yLOG_value   ("s_nstack"  , s_nstack);
    s_stack[s_nstack].typ = S_TYPE_REF;
    s_stack[s_nstack].ref = a_thing;
    s_stack[s_nstack].num = 0;

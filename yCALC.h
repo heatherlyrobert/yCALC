@@ -117,6 +117,7 @@ char        yCALC_seq_down          (void *a_deproot, void *a_consumer);
 char        yCALC_seq_full          (void *a_consumer);
 char        yCALC_seq_downdown      (long a_stamp   , void *a_consumer);
 char        yCALC_seq_downup        (long a_stamp   , void *a_consumer);
+char        yCALC_seq_list          (char a_list [LEN_HUGE]);
 char        yCALC_seq_dump          (void *a_file);
 char        yCALC_garbage_collect   (void);
 
@@ -133,7 +134,9 @@ char        yCALC_stamp_set         (void *a_deproot, long a_stamp);
 
 /*--type--- ---name---------------- ---params---------------------------------*/
 char        yCALC_disp_reqs         (void *a_me, char *a_list);
+char        yCALC_disp_reqsplus     (void *a_me, char *a_list);
 char        yCALC_disp_pros         (void *a_me, char *a_list);
+char        yCALC_disp_prosplus     (void *a_me, char *a_list);
 char        yCALC_disp_like         (void *a_me, char *a_list);
 char        yCALC_disp_copy         (void *a_me, char *a_list);
 

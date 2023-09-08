@@ -571,44 +571,33 @@ yCALC_enable            (void *a_owner)
    int         x_tries     =    0;
    char       *x_type      = NULL;
    /*---(header)-------------------------*/
-   /*> DEBUG_YCALC   yLOG_senter  (__FUNCTION__);                                      <*/
    DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   /*> DEBUG_YCALC   yLOG_spoint  (a_owner);                                           <*/
    DEBUG_YCALC   yLOG_point   ("a_owner"   , __FUNCTION__);
    --rce;  if (a_owner == NULL) {
-      /*> DEBUG_YCALC   yLOG_snote   ("no owner pointer");                             <*/
-      /*> DEBUG_YCALC   yLOG_sexitr  (__FUNCTION__, rce);                              <*/
+      DEBUG_YCALC   yLOG_note    ("no owner pointer");
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(create)-------------------------*/
-   /*> DEBUG_YCALC   yLOG_snote   ("malloc");                                          <*/
    DEBUG_YCALC   yLOG_note    ("running malloc");
    while (x_new == NULL && x_tries < 10) {
-      /*> printf ("malloc () yCALC_enable\n");                                        <*/
       x_new = malloc (sizeof (tDEP_ROOT));
-      /*> printf ("......... yCALC_enable done\n");                                   <*/
       ++x_tries;
    }
-   /*> DEBUG_YCALC   yLOG_svalue  ("tries", x_tries);                                  <*/
    DEBUG_YCALC   yLOG_value   ("tries", x_tries);
-   /*> DEBUG_YCALC   yLOG_spoint  (x_new);                                             <*/
    DEBUG_YCALC   yLOG_point   ("x_new"     , "x_new");
    --rce;  if (x_new == NULL) {
-      /*> DEBUG_YCALC   yLOG_snote   ("FAILED");                                       <*/
-      /*> DEBUG_YCALC   yLOG_sexitr  (__FUNCTION__, rce);                              <*/
+      DEBUG_YCALC   yLOG_note    ("FAILED");
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    x_deproot = (tDEP_ROOT *) x_new;
    /*---(calc fields)--------------------*/
-   /*> DEBUG_YCALC   yLOG_snote   ("owner");                                           <*/
    DEBUG_YCALC   yLOG_note    ("owner");
    x_deproot->owner   = a_owner;
    x_deproot->range   = -1;
    /*---(calc fields)--------------------*/
-   /*> DEBUG_YCALC   yLOG_snote   ("calc");                                            <*/
    DEBUG_YCALC   yLOG_note    ("calc");
    x_deproot->nrpn    = 0;
    x_deproot->rpn     = NULL;
@@ -617,24 +606,20 @@ yCALC_enable            (void *a_owner)
    x_deproot->ctail   = NULL;
    x_deproot->cuse    = 0;
    /*---(dependencies)-------------------*/
-   /*> DEBUG_YCALC   yLOG_snote   ("deps");                                            <*/
    DEBUG_YCALC   yLOG_note    ("deps");
    x_deproot->reqs    = NULL;
    x_deproot->nreq    = 0;
    x_deproot->pros    = NULL;
    x_deproot->npro    = 0;
    /*---(sequencing)---------------------*/
-   /*> DEBUG_YCALC   yLOG_snote   ("seq");                                             <*/
    DEBUG_YCALC   yLOG_note    ("seq");
    x_deproot->slevel  = 0;
    x_deproot->snext   = NULL;
    x_deproot->sprev   = NULL;
    /*---(stamp)--------------------------*/
-   /*> DEBUG_YCALC   yLOG_snote   ("stamp");                                           <*/
    DEBUG_YCALC   yLOG_note    ("stamp");
    x_deproot->u       = 0;
    /*---(root doubly-linked list)--------*/
-   /*> DEBUG_YCALC   yLOG_snote   ("list");                                            <*/
    DEBUG_YCALC   yLOG_note    ("list");
    x_deproot->rprev   = NULL;
    x_deproot->rnext   = NULL;
@@ -649,17 +634,13 @@ yCALC_enable            (void *a_owner)
    }
    ++myCALC.rcount;
    /*---(save)---------------------------*/
-   /*> DEBUG_YCALC   yLOG_snote   ("save");                                            <*/
    DEBUG_YCALC   yLOG_note    ("save to owner");
-   /*> DEBUG_YCALC   yLOG_spoint  (myCALC.e_enabler);                                         <*/
-   DEBUG_YCALC   yLOG_point   ("myCALC.e_enabler" , myCALC.e_enabler);
+   DEBUG_YCALC   yLOG_point   ("e_enabler" , myCALC.e_enabler);
    --rce;  if (myCALC.e_enabler == NULL) {
-      /*> DEBUG_YCALC   yLOG_snote   ("no enabler set");                               <*/
-      /*> DEBUG_YCALC   yLOG_sexitr  (__FUNCTION__, rce);                              <*/
+      DEBUG_YCALC   yLOG_note    ("no enabler set");
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*> DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);                                      <*/
    DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    myCALC.e_enabler (a_owner, x_deproot);
    /*---(copy existing type)-------------*/
@@ -811,10 +792,6 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   /*---(check for variable)-------------*/
-   /*> if (x_type == YCALC_DATA_VAR) {                                                <* 
-    *>    rc = ycalc_vars_del (x_label, a_deproot);                                <* 
-    *> }                                                                              <*/
    /*---(check reqs)---------------------*/
    DEBUG_YCALC   yLOG_value   ("nreq"      , (*a_deproot)->nreq);
    --rce;  if ((*a_deproot)->nreq > 0) {
@@ -850,12 +827,9 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
       return rce;
    }
    --rce;  if (strchr (YCALC_GROUP_DEPS, x_type) != NULL) {
-      /*> if (x_type != YCALC_DATA_MERGED) {                                          <*/
       DEBUG_YCALC   yLOG_note    ("owner type requires dependencies");
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
-      /*> }                                                                           <*/
-      /*> DEBUG_YCALC   yLOG_note    ("now useless merge indicator, remove");          <*/
    }
    --rce;  if ((*a_deproot)->npro > 0 && x_type != YCALC_DATA_BLANK) {
       DEBUG_YCALC   yLOG_note    ("not blank, keep in range dependencies");

@@ -30,6 +30,7 @@ static      int         s_count     [MAX_EXEC];
 static      tDEP_ROOT  *s_heads     [MAX_EXEC];
 static      tDEP_ROOT  *s_tails     [MAX_EXEC];
 
+
 char         /*-> prepare for new calculation --------[ leaf   [fz.742.031.10]*/ /*-[01.0000.014.2]-*/ /*-[--.---.---.--]-*/
 ycalc__seq_clear        (void)
 {
@@ -434,7 +435,7 @@ yCALC_calc_from    (void *a_deproot)                   { return ycalc__seq_drive
 static void  o___REPORTING_______o () { return; }
 
 char         /*-> tbd --------------------------------[ leaf   [gc.630.122.30]*/ /*-[02.0000.00#.!]-*/ /*-[--.---.---.--]-*/
-ycalc__seq_list    (char *a_list)
+ycalc__seq_list    (char a_list [LEN_HUGE])
 {
    /*---(locals)-----------+-----------+-*/
    int         i           = 0;
@@ -442,22 +443,24 @@ ycalc__seq_list    (char *a_list)
    /*---(defenses)--------------------*/
    if (a_list  == NULL) return -1;     /* then no point                       */
    /*---(walk the list)---------------*/
-   strlcpy (a_list, "", LEN_RECD);
+   strlcpy (a_list, "", LEN_HUGE);
    for (i = 0; i <= s_max; ++i) {
       x_curr = s_heads [i];
       while (x_curr != NULL) {
-         strlcat (a_list, ycalc_call_labeler (x_curr), LEN_RECD);
-         strlcat (a_list, ",", LEN_RECD);
+         strlcat (a_list, ycalc_call_labeler (x_curr), LEN_HUGE);
+         strlcat (a_list, ",", LEN_HUGE);
          x_curr = x_curr->snext;
       }
-      strlcat (a_list, ";", LEN_RECD);
+      strlcat (a_list, ";", LEN_HUGE);
    }
    if (strcmp (a_list, "") == 0) {
-      strlcpy (a_list, "((nada))", LEN_RECD);
+      strlcpy (a_list, "((nada))", LEN_HUGE);
    }
    /*---(complete)--------------------*/
    return 0;
 }
+
+char yCALC_seq_list   (char *a_list)  { return ycalc__seq_list (a_list); }
 
 char         /*-> tbd --------------------------------[ leaf   [gc.630.122.30]*/ /*-[02.0000.00#.!]-*/ /*-[--.---.---.--]-*/
 yCALC_seq_dump          (void *a_file)
