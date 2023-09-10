@@ -115,15 +115,15 @@ ycalc_audit_init        (void)
    DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(object types)-------------------*/
    DEBUG_YCALC   yLOG_note    ("clear validation types");
-   strlcpy (YCALC_GROUP_ALL  , "", LEN_LABEL);
-   strlcpy (YCALC_GROUP_RPN  , "", LEN_LABEL);
-   strlcpy (YCALC_GROUP_CALC , "", LEN_LABEL);
-   strlcpy (YCALC_GROUP_DEPS , "", LEN_LABEL);
-   strlcpy (YCALC_GROUP_NUM  , "", LEN_LABEL);
-   strlcpy (YCALC_GROUP_STR  , "", LEN_LABEL);
-   strlcpy (YCALC_GROUP_ERR  , "", LEN_LABEL);
-   strlcpy (YCALC_GROUP_POINT, "", LEN_LABEL);
-   strlcpy (YCALC_GROUP_FPRE , "", LEN_LABEL);
+   ystrlcpy (YCALC_GROUP_ALL  , "", LEN_LABEL);
+   ystrlcpy (YCALC_GROUP_RPN  , "", LEN_LABEL);
+   ystrlcpy (YCALC_GROUP_CALC , "", LEN_LABEL);
+   ystrlcpy (YCALC_GROUP_DEPS , "", LEN_LABEL);
+   ystrlcpy (YCALC_GROUP_NUM  , "", LEN_LABEL);
+   ystrlcpy (YCALC_GROUP_STR  , "", LEN_LABEL);
+   ystrlcpy (YCALC_GROUP_ERR  , "", LEN_LABEL);
+   ystrlcpy (YCALC_GROUP_POINT, "", LEN_LABEL);
+   ystrlcpy (YCALC_GROUP_FPRE , "", LEN_LABEL);
    /*---(complete info table)------------*/
    DEBUG_YCALC   yLOG_note    ("build cell validation types");
    --rce;
@@ -244,11 +244,11 @@ ycalc_error_finalize    (char a_error, char *a_type, double *a_value, char **a_s
       break;
    }
    /*---(main message)-------------------*/
-   if (n < 0)    strlcpy (t, "#mystry", LEN_LABEL);
-   else          strlcpy (t, zCALC_errors [i].terse, LEN_LABEL);
+   if (n < 0)    ystrlcpy (t, "#mystry", LEN_LABEL);
+   else          ystrlcpy (t, zCALC_errors [i].terse, LEN_LABEL);
    /*---(note/token)---------------------*/
    if (strlen (a_note) > 0)  sprintf (s, "%-7s (%s)", t, a_note);
-   else                      strlcpy (s, t, LEN_RECD);
+   else                      ystrlcpy (s, t, LEN_RECD);
    /*---(save)---------------------------*/
    if (a_string != NULL)  *a_string = strdup (s);
    DEBUG_YCALC   yLOG_info    ("ERROR"     , s);
@@ -317,7 +317,7 @@ ycalc__merge_leftmost   (tDEP_ROOT *a_deproot, tDEP_ROOT **a_origin)
    *a_origin = NULL;
    x_next = a_deproot->pros;
    while (x_next != NULL) {
-      strlcpy (x_label, ycalc_call_labeler (x_next->target), LEN_LABEL);
+      ystrlcpy (x_label, ycalc_call_labeler (x_next->target), LEN_LABEL);
       DEBUG_YCALC   yLOG_complex ("look at"   , "%-10.10p, %c, %s", x_next, x_next->type, x_label);
       if (G_DEP_BLEED == x_next->type) {
          DEBUG_YCALC   yLOG_note    ("FOUND");
@@ -374,7 +374,7 @@ ycalc__unmerge_right    (tDEP_ROOT **a_deproot, int a_start)
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (x_label, ycalc_call_labeler (*a_deproot), LEN_LABEL);
+   ystrlcpy (x_label, ycalc_call_labeler (*a_deproot), LEN_LABEL);
    DEBUG_YCALC   yLOG_info    ("label"     , x_label);
    /*---(remove all)---------------------*/
    x_next = (*a_deproot)->reqs;
@@ -884,7 +884,7 @@ ycalc__classify_content   (char **a_source, char *a_type, double *a_value)
    DEBUG_YCALC   yLOG_info    ("*a_source"     , *a_source);
    DEBUG_YCALC   yLOG_char    ("prefix"        , *a_source [0]);
    /*---(merges)-------------------------*/
-   x_len = strllen (*a_source, LEN_RECD);
+   x_len = ystrllen (*a_source, LEN_RECD);
    DEBUG_YCALC   yLOG_value   ("x_len"     , x_len);
    if (x_len == 1) {
       if (*a_source [0] == '<') {
@@ -933,7 +933,7 @@ ycalc__classify_content   (char **a_source, char *a_type, double *a_value)
       return 0;
    }
    /*---(numbers)------------------------*/
-   rc = strl2num (*a_source, &x_value, LEN_RECD);
+   rc = ystrl2num (*a_source, &x_value, LEN_RECD);
    if (rc >= 0) {
       DEBUG_YCALC   yLOG_note    ("numeric literal");
       *a_type   = YCALC_DATA_NUM;
@@ -1365,8 +1365,8 @@ ycalc__sort_prep   (char *a_list)
    s_narray = 0;
    /*---(parse/load)---------------------*/
    DEBUG_YSORT   yLOG_note    ("load the array");
-   strlcpy (x_list, a_list,  LEN_RECD);
-   strlcpy (a_list, "#PREP", LEN_RECD);
+   ystrlcpy (x_list, a_list,  LEN_RECD);
+   ystrlcpy (a_list, "#PREP", LEN_RECD);
    p = strtok_r (x_list, q, &r);
    s_narray = 0;
    --rce;  while (p != NULL) {
@@ -1458,7 +1458,7 @@ ycalc__sort_wrap   (char *a_list)
    char        x_label     [LEN_LABEL];     /* label for sorted entry         */
    /*---(header)-------------------------*/
    DEBUG_YSORT   yLOG_enter   (__FUNCTION__);
-   strlcpy (a_list, ",", LEN_RECD);
+   ystrlcpy (a_list, ",", LEN_RECD);
    for (i = 0; i < s_narray; ++i) {
       DEBUG_YSORT   yLOG_value   ("value"   , s_array[i]);
       x_rem  = s_array [i];
@@ -1477,11 +1477,11 @@ ycalc__sort_wrap   (char *a_list)
       rc = ycalc_call_who_at (b, x, y, z, YCALC_LOOK, &x_owner, &x_deproot);
       if      (x_owner   == NULL)   sprintf (x_label, "[#%d]", i);
       else if (rc        <  0   )   sprintf (x_label, "<#%d>", i);
-      else if (x_deproot != NULL)   strlcpy (x_label, ycalc_call_labeler (x_deproot), LEN_LABEL);
+      else if (x_deproot != NULL)   ystrlcpy (x_label, ycalc_call_labeler (x_deproot), LEN_LABEL);
       else                          sprintf (x_label, "{#%d}", i);
       DEBUG_YSORT   yLOG_info    ("label"   , x_label);
-      strlcat (a_list, x_label, LEN_RECD);
-      strlcat (a_list, ","    , LEN_RECD);
+      ystrlcat (a_list, x_label, LEN_RECD);
+      ystrlcat (a_list, ","    , LEN_RECD);
    }
    DEBUG_YSORT   yLOG_info    ("final"     , a_list);
    /*---(complete)-----------------------*/
@@ -1550,8 +1550,8 @@ ycalc__audit_disp_range    (tDEP_ROOT *a_range, char a_start, char *a_list)
    DEBUG_YSORT   yLOG_info    ("a_list"    , a_list);
    /*---(walk the list)------------------*/
    while (n != NULL) {
-      strlcat (a_list, ycalc_call_labeler (n->target), LEN_RECD);
-      strlcat (a_list, ","                           , LEN_RECD);
+      ystrlcat (a_list, ycalc_call_labeler (n->target), LEN_RECD);
+      ystrlcat (a_list, ","                           , LEN_RECD);
       n = n->next;
    }
    DEBUG_YSORT   yLOG_info    ("a_list"    , a_list);
@@ -1576,7 +1576,7 @@ ycalc__audit_disp_master   (tDEP_ROOT *a_me, char *a_list, char a_start, char *a
       DEBUG_YSORT   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (a_list, "-", LEN_RECD);   /* special for a null list */
+   ystrlcpy (a_list, "-", LEN_RECD);   /* special for a null list */
    DEBUG_YSORT   yLOG_info    ("a_list"    , a_list);
    DEBUG_YSORT   yLOG_point   ("a_me"      , a_me);
    --rce;  if (a_me    == NULL) {
@@ -1584,7 +1584,7 @@ ycalc__audit_disp_master   (tDEP_ROOT *a_me, char *a_list, char a_start, char *a
       return rce;
    }
    /*---(setup)--------------------------*/
-   strlcpy (a_list, ",", LEN_RECD);
+   ystrlcpy (a_list, ",", LEN_RECD);
    DEBUG_YSORT   yLOG_char    ("a_start"   , a_start);
    --rce;  switch (a_start) {
    case 'R' :  n = a_me->reqs; break;
@@ -1596,25 +1596,25 @@ ycalc__audit_disp_master   (tDEP_ROOT *a_me, char *a_list, char a_start, char *a
    DEBUG_YSORT   yLOG_info    ("a_types"   , a_types);
    while (n != NULL) {
       if (strchr (a_types, n->type) != 0) {
-         strlcpy (x_label, ycalc_call_labeler (n->target), LEN_LABEL);
+         ystrlcpy (x_label, ycalc_call_labeler (n->target), LEN_LABEL);
          if (x_label [0] == (uchar) '®') {
-            strlcat (a_list, x_label, LEN_RECD);
-            strlcat (a_list, ","    , LEN_RECD);
+            ystrlcat (a_list, x_label, LEN_RECD);
+            ystrlcat (a_list, ","    , LEN_RECD);
             ycalc__audit_disp_range (n->target, a_start, a_list);
-            strlcat (a_list, ","    , LEN_RECD);
+            ystrlcat (a_list, ","    , LEN_RECD);
          } else {
-            strlcat (a_list, x_label, LEN_RECD);
+            ystrlcat (a_list, x_label, LEN_RECD);
             if (a_extra == 'y') {
                sprintf (x_type, "%c", n->type);
-               strlcat (a_list, x_type , LEN_RECD);
+               ystrlcat (a_list, x_type , LEN_RECD);
             }
-            strlcat (a_list, ","    , LEN_RECD);
+            ystrlcat (a_list, ","    , LEN_RECD);
          }
       }
       n = n->next;
    }
    /*---(catch empty)--------------------*/
-   if (strcmp (a_list, ",") == 0)   strlcpy (a_list, ".", LEN_RECD);
+   if (strcmp (a_list, ",") == 0)   ystrlcpy (a_list, ".", LEN_RECD);
    else if (a_extra == '-')  ycalc__audit_sort (a_list);
    DEBUG_YSORT   yLOG_info    ("a_list"    , a_list);
    DEBUG_YSORT   yLOG_exit    (__FUNCTION__);

@@ -48,7 +48,7 @@ ycalc__seq_clear        (void)
    while (x_next != NULL) {
       DEBUG_YCALC   yLOG_point   ("x_next"    , x_next);
       DEBUG_YCALC   yLOG_info    ("label"     , ycalc_call_labeler (x_next));
-      x_len = strllen (ycalc_call_labeler (x_next), LEN_LABEL);
+      x_len = ystrllen (ycalc_call_labeler (x_next), LEN_LABEL);
       DEBUG_YCALC   yLOG_value   ("x_len"     , x_len);
       DEBUG_YCALC   yLOG_point   ("rnext"     , x_next->rnext);
       x_next->slevel = -1;
@@ -334,7 +334,7 @@ ycalc__seq_driver       (tDEP_ROOT *a_deproot, char a_dir_rec, char a_dir_act, l
    DEBUG_YCALC   yLOG_value   ("subtotal"  , x_seq);
    ycalc__seq_list (x_list);
    DEBUG_YCALC   yLOG_value   ("seq_len"   , strlen (x_list));
-   DEBUG_YCALC   yLOG_value   ("seq_count" , strldcnt (x_list, ',', LEN_RECD));
+   DEBUG_YCALC   yLOG_value   ("seq_count" , ystrldcnt (x_list, ',', LEN_RECD));
    DEBUG_YCALC   yLOG_info    ("seq_order" , x_list);
    /*---(complete)-----------------------*/
    DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
@@ -443,18 +443,18 @@ ycalc__seq_list    (char a_list [LEN_HUGE])
    /*---(defenses)--------------------*/
    if (a_list  == NULL) return -1;     /* then no point                       */
    /*---(walk the list)---------------*/
-   strlcpy (a_list, "", LEN_HUGE);
+   ystrlcpy (a_list, "", LEN_HUGE);
    for (i = 0; i <= s_max; ++i) {
       x_curr = s_heads [i];
       while (x_curr != NULL) {
-         strlcat (a_list, ycalc_call_labeler (x_curr), LEN_HUGE);
-         strlcat (a_list, ",", LEN_HUGE);
+         ystrlcat (a_list, ycalc_call_labeler (x_curr), LEN_HUGE);
+         ystrlcat (a_list, ",", LEN_HUGE);
          x_curr = x_curr->snext;
       }
-      strlcat (a_list, ";", LEN_HUGE);
+      ystrlcat (a_list, ";", LEN_HUGE);
    }
    if (strcmp (a_list, "") == 0) {
-      strlcpy (a_list, "((nada))", LEN_HUGE);
+      ystrlcpy (a_list, "((nada))", LEN_HUGE);
    }
    /*---(complete)--------------------*/
    return 0;
@@ -479,7 +479,7 @@ yCALC_seq_dump          (void *a_file)
       x_curr = s_heads [i];
       while (x_curr != NULL) {
          ++c;
-         strlcpy (x_label, ycalc_call_labeler (x_curr), LEN_LABEL);
+         ystrlcpy (x_label, ycalc_call_labeler (x_curr), LEN_LABEL);
          fprintf (a_file, "   %4d  %-8.8s\n", c, x_label);
          x_curr = x_curr->snext;
       }
@@ -518,7 +518,7 @@ ycalc__unit_seq         (char *a_question, void *a_point)
       }
    }
    else if (strcmp (a_question, "level"       )   == 0) {
-      strlcpy (x_label, ycalc_call_labeler (x_root), LEN_RECD);
+      ystrlcpy (x_label, ycalc_call_labeler (x_root), LEN_RECD);
       if (x_root->slevel >= 0) snprintf (ycalc__unit_answer, LEN_RECD, "yCALC seq level  : %-5.5s  %2d", x_label, x_root->slevel);
       else                     snprintf (ycalc__unit_answer, LEN_RECD, "yCALC seq level  : %-5.5s  %2s", x_label, "--"          );
    }

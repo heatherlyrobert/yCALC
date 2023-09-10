@@ -21,8 +21,8 @@ ycalc_concat       (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    if (s == NULL)  s = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlcpy (t, s,   LEN_RECD);
-   strlcat (t, r,   LEN_RECD);
+   ystrlcpy (t, s,   LEN_RECD);
+   ystrlcat (t, r,   LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, t);
    /*---(clean up)-----------------------*/
@@ -43,9 +43,9 @@ ycalc_concatspace  (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    if (s == NULL)  s = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlcpy (t, s,   LEN_RECD);
-   strlcat (t, " ", LEN_RECD);
-   strlcat (t, r,   LEN_RECD);
+   ystrlcpy (t, s,   LEN_RECD);
+   ystrlcat (t, " ", LEN_RECD);
+   ystrlcat (t, r,   LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, t);
    /*---(clean up)-----------------------*/
@@ -66,10 +66,10 @@ ycalc_concatcomma  (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    if (s == NULL)  s = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlcpy (t, s,   LEN_RECD);
+   ystrlcpy (t, s,   LEN_RECD);
    if (r [0] != '\0') {
-      strlcat (t, ",", LEN_RECD);
-      strlcat (t, r,   LEN_RECD);
+      ystrlcat (t, ",", LEN_RECD);
+      ystrlcat (t, r,   LEN_RECD);
    }
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, t);
@@ -126,23 +126,23 @@ ycalc_list         (void)
    if (s == NULL)  s = strndup (g_nada, LEN_RECD);
    /*---(find)---------------------------*/
    l = strlen (s);
-   p = strldpos (s + 1, ',', a    , LEN_RECD);
+   p = ystrldpos (s + 1, ',', a    , LEN_RECD);
    DEBUG_YCALC   yLOG_value   ("p"         , p);
    if (p < 0) {
       DEBUG_YCALC   yLOG_note    ("delimiter never found");
-      if (a == 0 && l > 0)  strlcpy (t, s, LEN_RECD);
+      if (a == 0 && l > 0)  ystrlcpy (t, s, LEN_RECD);
       else                  strcpy (t, "");
    } else {
       DEBUG_YCALC   yLOG_note    ("found delimiter");
       ++p;
       ++p;
-      strlcpy  (t, s + p, LEN_RECD);
+      ystrlcpy  (t, s + p, LEN_RECD);
       DEBUG_YCALC   yLOG_info    ("t"         , t);
-      q = strldpos (t, ',', 0, LEN_RECD);
+      q = ystrldpos (t, ',', 0, LEN_RECD);
       DEBUG_YCALC   yLOG_value   ("q"         , q);
       if (q >= 0)  t [q] = '\0';
    }
-   strltrim (t, ySTR_BOTH, LEN_RECD);
+   ystrltrim (t, ySTR_BOTH, LEN_RECD);
    DEBUG_YCALC   yLOG_info    ("t"         , t);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, t);
@@ -174,22 +174,22 @@ ycalc__parse        (void)
    if (r [0] != '\0')  d = r [0];
    DEBUG_YCALC   yLOG_char    ("d"         , d);
    l = strlen (s);
-   p = strldpos (s, d, a    , LEN_RECD);
+   p = ystrldpos (s, d, a    , LEN_RECD);
    DEBUG_YCALC   yLOG_value   ("p"         , p);
    if (p < 0) {
       DEBUG_YCALC   yLOG_note    ("delimiter never found");
-      if (a == 0 && l > 0)  strlcpy (t, s, LEN_RECD);
+      if (a == 0 && l > 0)  ystrlcpy (t, s, LEN_RECD);
       else                  strcpy (t, "");
    } else {
       DEBUG_YCALC   yLOG_note    ("found delimiter");
       while (s [++p] == d) ;
-      strlcpy  (t, s + p, LEN_RECD);
+      ystrlcpy  (t, s + p, LEN_RECD);
       DEBUG_YCALC   yLOG_info    ("t"         , t);
-      q = strldpos (t, d, 0, LEN_RECD);
+      q = ystrldpos (t, d, 0, LEN_RECD);
       DEBUG_YCALC   yLOG_value   ("q"         , q);
       if (q >= 0)  t [q] = '\0';
    }
-   strltrim (t, ySTR_BOTH, LEN_RECD);
+   ystrltrim (t, ySTR_BOTH, LEN_RECD);
    DEBUG_YCALC   yLOG_info    ("t"         , t);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, t);
@@ -230,7 +230,7 @@ ycalc_mask         (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    if (s == NULL)  s = strndup (g_nada, LEN_RECD);
    /*---(mask)---------------------------*/
-   strlcpy (t, s, LEN_RECD);
+   ystrlcpy (t, s, LEN_RECD);
    l = strlen (t);
    for (i = 0; i < l; ++i) {
       p = strchr (r, t [i]);
@@ -259,7 +259,7 @@ ycalc_redact       (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    if (s == NULL)  s = strndup (g_nada, LEN_RECD);
    /*---(redact)-------------------------*/
-   strlcpy (t, s, LEN_RECD);
+   ystrlcpy (t, s, LEN_RECD);
    l = strlen (t);
    for (i = 0; i < l; ++i) {
       p = strchr (r, t [i]);
@@ -335,7 +335,7 @@ ycalc_lower        (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlcpy (t, r, LEN_RECD);
+   ystrlcpy (t, r, LEN_RECD);
    len = strlen(t);
    int i;
    for (i = 0; i < len; ++i) t[i] = tolower(t[i]);
@@ -357,7 +357,7 @@ ycalc_upper        (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
    len = strlen(r);
-   strlcpy (t, r, LEN_RECD);
+   ystrlcpy (t, r, LEN_RECD);
    int i;
    for (i = 0; i < len; ++i) t[i] = toupper(t[i]);
    /*---(return result)------------------*/
@@ -429,7 +429,7 @@ ycalc_left         (void)
    if (n     <  0  )  n = 0;
    /*---(process)------------------------*/
    len = strlen (r);
-   strlcpy (t, r, LEN_RECD);
+   ystrlcpy (t, r, LEN_RECD);
    if (n >= len)  n = len;
    t[n] = '\0';
    /*---(return result)------------------*/
@@ -561,7 +561,7 @@ ycalc_trim         (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strltrim (r, ySTR_BOTH, LEN_RECD);
+   ystrltrim (r, ySTR_BOTH, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -579,7 +579,7 @@ ycalc_ltrim        (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strltrim (r, ySTR_HEAD, LEN_RECD);
+   ystrltrim (r, ySTR_HEAD, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -597,7 +597,7 @@ ycalc_rtrim        (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strltrim (r, ySTR_TAIL, LEN_RECD);
+   ystrltrim (r, ySTR_TAIL, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -615,7 +615,7 @@ ycalc_strim        (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strltrim (r, ySTR_SINGLE, LEN_RECD);
+   ystrltrim (r, ySTR_SINGLE, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -633,7 +633,7 @@ ycalc_etrim        (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strltrim (r, ySTR_EVERY, LEN_RECD);
+   ystrltrim (r, ySTR_EVERY, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -651,7 +651,7 @@ ycalc_mtrim        (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strltrim (r, ySTR_MAX, LEN_RECD);
+   ystrltrim (r, ySTR_MAX, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -672,7 +672,7 @@ ycalc_printstr     (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
    DEBUG_YCALC   yLOG_info    ("r"         , r);
-   strltrim (r, ySTR_BOTH, LEN_RECD);
+   ystrltrim (r, ySTR_BOTH, LEN_RECD);
    DEBUG_YCALC   yLOG_info    ("r"         , r);
    ycalc_pushstr (__FUNCTION__, r);
    DEBUG_YCALC   yLOG_note    ("pushed");
@@ -714,8 +714,8 @@ ycalc_printnum     (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strltrim (r, ySTR_BOTH, LEN_RECD);
-   rc = strl2num (r, &a, LEN_RECD);
+   ystrltrim (r, ySTR_BOTH, LEN_RECD);
+   rc = ystrl2num (r, &a, LEN_RECD);
    if (rc < 0 ) ycalc_error_set (YCALC_ERROR_EXEC_NUM , NULL);
    else         ycalc_pushval (__FUNCTION__, a);
    /*> x_len = strlen (r);                                                            <* 
@@ -738,7 +738,7 @@ ycalc_lpad         (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    if (n     <  0  )  n = 0;
    /*---(process)------------------------*/
-   strlpad (r, t, '?', '>', n);
+   ystrlpad (r, t, '?', '>', n);
    ycalc_pushstr (__FUNCTION__, t);
    /*---(clean up)-----------------------*/
    free (r);
@@ -757,7 +757,7 @@ ycalc_rpad         (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    if (n     <  0  )  n = 0;
    /*---(process)------------------------*/
-   strlpad (r, t, '?', '<', n);
+   ystrlpad (r, t, '?', '<', n);
    ycalc_pushstr (__FUNCTION__, t);
    /*---(clean up)-----------------------*/
    free (r);
@@ -776,8 +776,8 @@ ycalc_lppad        (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    if (n     <  0  )  n = 0;
    /*---(process)------------------------*/
-   strltrim (r, ySTR_BOTH, LEN_RECD);
-   strlpad (r, t, '?', '>', n);
+   ystrltrim (r, ySTR_BOTH, LEN_RECD);
+   ystrlpad (r, t, '?', '>', n);
    ycalc_pushstr (__FUNCTION__, t);
    /*---(clean up)-----------------------*/
    free (r);
@@ -796,8 +796,8 @@ ycalc_rppad        (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    if (n     <  0  )  n = 0;
    /*---(process)------------------------*/
-   strltrim (r, ySTR_BOTH, LEN_RECD);
-   strlpad (r, t, '?', '<', n);
+   ystrltrim (r, ySTR_BOTH, LEN_RECD);
+   ystrlpad (r, t, '?', '<', n);
    ycalc_pushstr (__FUNCTION__, t);
    /*---(clean up)-----------------------*/
    free (r);
@@ -833,7 +833,7 @@ ycalc_unhex        (void)
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
    sprintf (t, "õ%s", r);
-   strl2hex (t, &a, 0);
+   ystrl2hex (t, &a, 0);
    /*---(return result)------------------*/
    ycalc_pushval (__FUNCTION__, a);
    /*---(clean up)-----------------------*/
@@ -849,7 +849,7 @@ ycalc_hex          (void)
    /*---(get arguments)------------------*/
    a = ycalc_popval (__FUNCTION__);
    /*---(process)------------------------*/
-   strl4hex (a, t, 1, 'x', LEN_LABEL);
+   ystrl4hex (a, t, 1, 'x', LEN_LABEL);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, t + 1);
    /*---(complete)-----------------------*/
@@ -895,7 +895,7 @@ ycalc_salpha       (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlmark  (r, ySTR_ALPHA, LEN_RECD);
+   ystrlmark  (r, ySTR_ALPHA, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -913,7 +913,7 @@ ycalc_salphac      (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlclean (r, ySTR_ALPHA, LEN_RECD);
+   ystrlclean (r, ySTR_ALPHA, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -931,7 +931,7 @@ ycalc_salnum       (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlmark  (r, ySTR_ALNUM, LEN_RECD);
+   ystrlmark  (r, ySTR_ALNUM, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -949,7 +949,7 @@ ycalc_salnumc      (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlclean (r, ySTR_ALNUM, LEN_RECD);
+   ystrlclean (r, ySTR_ALNUM, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -967,7 +967,7 @@ ycalc_sbasic       (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlmark  (r, ySTR_BASIC, LEN_RECD);
+   ystrlmark  (r, ySTR_BASIC, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -985,7 +985,7 @@ ycalc_sbasicc      (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlclean (r, ySTR_BASIC, LEN_RECD);
+   ystrlclean (r, ySTR_BASIC, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -1003,7 +1003,7 @@ ycalc_swrite       (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlmark  (r, ySTR_WRITE, LEN_RECD);
+   ystrlmark  (r, ySTR_WRITE, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -1021,7 +1021,7 @@ ycalc_swritec      (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlclean (r, ySTR_WRITE, LEN_RECD);
+   ystrlclean (r, ySTR_WRITE, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -1039,7 +1039,7 @@ ycalc_sexten       (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlmark  (r, ySTR_EXTEN, LEN_RECD);
+   ystrlmark  (r, ySTR_EXTEN, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -1057,7 +1057,7 @@ ycalc_sextenc      (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlclean (r, ySTR_EXTEN, LEN_RECD);
+   ystrlclean (r, ySTR_EXTEN, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -1075,7 +1075,7 @@ ycalc_sprint       (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlmark  (r, ySTR_PRINT, LEN_RECD);
+   ystrlmark  (r, ySTR_PRINT, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -1093,7 +1093,7 @@ ycalc_sprintc      (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlclean (r, ySTR_PRINT, LEN_RECD);
+   ystrlclean (r, ySTR_PRINT, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -1111,7 +1111,7 @@ ycalc_sseven       (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlmark  (r, ySTR_SEVEN, LEN_RECD);
+   ystrlmark  (r, ySTR_SEVEN, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -1129,7 +1129,7 @@ ycalc_ssevenc      (void)
    /*---(defense)------------------------*/
    if (r == NULL)  r = strndup (g_nada, LEN_RECD);
    /*---(process)------------------------*/
-   strlclean (r, ySTR_SEVEN, LEN_RECD);
+   ystrlclean (r, ySTR_SEVEN, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -1176,7 +1176,7 @@ ycalc_replace      (void)
    if (s == NULL)  s = strndup (g_nada, LEN_RECD);
    if (n     <  0  )  n = 0;
    /*---(process)------------------------*/
-   strlrepl (r, q, s, n, LEN_RECD);
+   ystrlrepl (r, q, s, n, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, r);
    /*---(clean up)-----------------------*/
@@ -1199,7 +1199,7 @@ ycalc_ditto       (void)
    if (s == NULL)  s = strndup (g_nada, LEN_RECD);
    if (n     <  0  )  n = 0;
    strcpy (t, "");
-   for (i = 0; i < n; ++i)   strlcat (t, s, LEN_RECD);
+   for (i = 0; i < n; ++i)   ystrlcat (t, s, LEN_RECD);
    /*---(return result)------------------*/
    ycalc_pushstr (__FUNCTION__, t);
    /*---(clean up)-----------------------*/

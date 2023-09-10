@@ -27,8 +27,8 @@ yCALC__unit           (char *a_question, char *a_label)
       if  (x_deproot->rpn == NULL || x_deproot->nrpn <= 0) {
          sprintf (ycalc__unit_answer, "yCALC rpn        : %-8.8s  ··  ··dåæ", a_label);
       } else {
-         strlcpy  (t, x_deproot->rpn, LEN_RECD);
-         strldchg (t, 0x0F, '´', LEN_RECD);
+         ystrlcpy  (t, x_deproot->rpn, LEN_RECD);
+         ystrldchg (t, 0x0F, '´', LEN_RECD);
          sprintf (ycalc__unit_answer, "yCALC rpn        : %-8.8s %2d  %2då%sæ", a_label, x_deproot->nrpn, strlen (t), t);
       }
    }

@@ -1210,7 +1210,7 @@ ycalc__unit_stack       (char *a_question, int a_num)
    tDEP_ROOT  *x_deproot   = NULL;
    char        x_label     [LEN_LABEL];
    /*---(initialize)---------------------*/
-   strlcpy (ycalc__unit_answer, "yCALC_unit, unknown request", 100);
+   ystrlcpy (ycalc__unit_answer, "yCALC_unit, unknown request", 100);
    /*---(string testing)-----------------*/
    if      (strncmp (a_question, "top"       , 20)  == 0) {
       if (s_nstack <= 0)   snprintf (ycalc__unit_answer, LEN_FULL, "STACK top   (%2d) : %c %8.2lf %-10p %-.30s", s_nstack, S_TYPE_EMPTY, 0.0, NULL, "---");
@@ -1222,7 +1222,7 @@ ycalc__unit_stack       (char *a_question, int a_num)
             break;
          case S_TYPE_REF :
             x_deproot = s_stack [s_nstack - 1].ref;
-            strlcpy (x_label, ycalc__mock_labeler (x_deproot->owner), LEN_LABEL);
+            ystrlcpy (x_label, ycalc__mock_labeler (x_deproot->owner), LEN_LABEL);
             snprintf (ycalc__unit_answer, LEN_FULL, "STACK top   (%2d) : %c %8.2lf %-10.10s %-.30s", s_nstack, s_stack [s_nstack - 1].typ, s_stack [s_nstack - 1].num, x_label, (s_stack [s_nstack - 1].str == NULL) ? "---" : s_stack [s_nstack - 1].str);
             break;
          }

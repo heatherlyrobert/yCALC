@@ -522,13 +522,13 @@ yCALC_version       (void)
 {
    char    t [20] = "";
 #if    __TINYC__ > 0
-   strlcpy (t, "[tcc built  ]", 15);
+   ystrlcpy (t, "[tcc built  ]", 15);
 #elif  __GNUC__  > 0
-   strlcpy (t, "[gnu gcc    ]", 15);
+   ystrlcpy (t, "[gnu gcc    ]", 15);
 #elif  __HEPH__  > 0
-   strlcpy (t, "[hephaestus ]", 15);
+   ystrlcpy (t, "[hephaestus ]", 15);
 #else
-   strlcpy (t, "[unknown    ]", 15);
+   ystrlcpy (t, "[unknown    ]", 15);
 #endif
    snprintf (yCALC_ver, 100, "%s   %s : %s", t, P_VERNUM, P_VERTXT);
    return yCALC_ver;
@@ -604,7 +604,7 @@ ycalc_status_update     (char a_step)
    /*---(position)-----------------------*/
    if (a_step == 0) {
       myCALC.status = '-';
-      strlcpy (myCALC.status_detail, "[ - --- - ]", LEN_LABEL);
+      ystrlcpy (myCALC.status_detail, "[ - --- - ]", LEN_LABEL);
       return 0;
    }
    /*---(position)-----------------------*/
@@ -943,7 +943,7 @@ ycalc__unit_base        (char *a_question, int a_num)
 {
    char        x_error     = '-';
    /*---(initialize)---------------------*/
-   strlcpy (ycalc__unit_answer, "yCALC_unit, unknown request", 100);
+   ystrlcpy (ycalc__unit_answer, "yCALC_unit, unknown request", 100);
    /*---(string testing)-----------------*/
    if      (strncmp(a_question, "error"     , 20)  == 0) {
       x_error = myCALC.trouble;

@@ -261,9 +261,9 @@ ycalc_deps_init         (void)
    myCALC.dhead  = NULL;
    myCALC.dtail  = NULL;
    myCALC.dcount = 0;
-   strlcpy (S_DEP_REQS, "" , 10);
-   strlcpy (S_DEP_PROS, "" , 10);
-   strlcpy (S_DEP_LIKE, "l", 10);
+   ystrlcpy (S_DEP_REQS, "" , 10);
+   ystrlcpy (S_DEP_PROS, "" , 10);
+   ystrlcpy (S_DEP_LIKE, "l", 10);
    /*---(complete info table)------------*/
    --rce;
    for (i = 0; i < MAX_DEPTYPE; ++i) {
@@ -937,7 +937,7 @@ ycalc_deps_delete       (char a_type, tDEP_ROOT **a_source, tDEP_ROOT **a_target
    }
    /*---(check on target)----------------*/
    DEBUG_YCALC   yLOG_note    ("review the target");
-   strlcpy (x_label, ycalc_call_labeler (*a_target), LEN_LABEL);
+   ystrlcpy (x_label, ycalc_call_labeler (*a_target), LEN_LABEL);
    DEBUG_YCALC   yLOG_info    ("target"    , x_label);
    x_next = (*a_target)->pros;
    while (x_next != NULL) {
@@ -1550,7 +1550,7 @@ yCALC_show_rpn          (void *a_deproot, int *a_nrpn, char *a_rpn)
    x_deproot = (tDEP_ROOT *) a_deproot;
    if (x_deproot->rpn == NULL)  return -2;
    if (a_nrpn != NULL)  *a_nrpn = x_deproot->nrpn;
-   if (a_rpn  != NULL)  strlcpy (a_rpn, x_deproot->rpn, LEN_RECD);
+   if (a_rpn  != NULL)  ystrlcpy (a_rpn, x_deproot->rpn, LEN_RECD);
    return 0;
 }
 
@@ -1668,8 +1668,8 @@ ycalc__unit_deps        (char *a_question, char *a_label)
    int         c           =    0;
    /*---(preprare)-----------------------*/
    strcpy (ycalc__unit_answer, "yCALC            : question not understood");
-   if (a_label == NULL)   strlcpy (x_label, "---"  , LEN_LABEL);
-   else                   strlcpy (x_label, a_label, LEN_LABEL);
+   if (a_label == NULL)   ystrlcpy (x_label, "---"  , LEN_LABEL);
+   else                   ystrlcpy (x_label, a_label, LEN_LABEL);
    rc = ycalc_call_who_named (x_label, YCALC_LOOK, &x_owner, &x_deproot);
    /*---(dependency list)----------------*/
    if      (strcmp (a_question, "count"    )      == 0) {

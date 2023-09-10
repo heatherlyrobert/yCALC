@@ -80,7 +80,7 @@ ycalc_build_errorcheck  (void)
    while (x_cur != NULL) {
       DEBUG_YCALC   yLOG_complex ("deproot"   , "%-10p, %c", x_cur, x_cur->btype);
       if (x_cur->btype == YCALC_DATA_ERROR) {
-         strlcpy (x_label, ycalc_call_labeler (x_cur), LEN_LABEL);
+         ystrlcpy (x_label, ycalc_call_labeler (x_cur), LEN_LABEL);
          DEBUG_YCALC   yLOG_info    ("HANDLE"    , x_label);
          rc = yCALC_handle (x_label);
          ++c;
@@ -267,9 +267,9 @@ ycalc_vars_new          (char a_kind, char *a_name, char *a_label, tDEP_ROOT *a_
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy  (x_name, a_name + 1, LEN_LABEL);
-   strlddel (x_name, '·', LEN_LABEL);
-   strltrim (x_name, ySTR_BOTH, LEN_LABEL);
+   ystrlcpy  (x_name, a_name + 1, LEN_LABEL);
+   ystrlddel (x_name, '·', LEN_LABEL);
+   ystrltrim (x_name, ySTR_BOTH, LEN_LABEL);
    DEBUG_YCALC   yLOG_info    ("x_name"    , x_name);
    /*---(check name)---------------------*/
    rc = ycalc_vars_legal (x_name, &x_kind);
@@ -316,9 +316,9 @@ ycalc_vars_new          (char a_kind, char *a_name, char *a_label, tDEP_ROOT *a_
    }
    /*---(add)----------------------------*/
    x_new->kind  = x_kind;
-   strlcpy (x_new->name , x_name , LEN_LABEL);
-   strlcpy (x_new->title  , a_label, LEN_LABEL);
-   strlcpy (x_new->content, ycalc_call_labeler (a_deproot), LEN_LABEL);
+   ystrlcpy (x_new->name , x_name , LEN_LABEL);
+   ystrlcpy (x_new->title  , a_label, LEN_LABEL);
+   ystrlcpy (x_new->content, ycalc_call_labeler (a_deproot), LEN_LABEL);
    /*---(cummulate)----------------------*/
    ++s_nvar;
    switch (x_kind) {
@@ -360,8 +360,8 @@ yCALC_variable          (char *a_name, char r_real [LEN_LABEL], char r_label [LE
          x_cur = x_cur->next;  
          continue;
       }
-      strlcpy (r_real, x_cur->content, LEN_LABEL);
-      if (r_label != NULL)  strlcpy (r_label, x_cur->title, LEN_LABEL);
+      ystrlcpy (r_real, x_cur->content, LEN_LABEL);
+      if (r_label != NULL)  ystrlcpy (r_label, x_cur->title, LEN_LABEL);
       DEBUG_YCALC   yLOG_snote   (r_real);
       DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
       return 0;
@@ -389,10 +389,10 @@ ycalc_vars__rem         (tVARS *a_cur)
    /*---(wipe)---------------------------*/
    x_kind = a_cur->kind;
    a_cur->kind = '-';
-   strlcpy (a_cur->name , "", LEN_LABEL);
-   strlcpy (a_cur->title  , "", LEN_LABEL);
+   ystrlcpy (a_cur->name , "", LEN_LABEL);
+   ystrlcpy (a_cur->title  , "", LEN_LABEL);
    ycalc_vars__ripple  (a_cur->content, NULL);
-   strlcpy (a_cur->content, "", LEN_LABEL);
+   ystrlcpy (a_cur->content, "", LEN_LABEL);
    /*---(out of linked list)-------------*/
    DEBUG_YCALC   yLOG_point   ("s_hvar"    , s_hvar);
    DEBUG_YCALC   yLOG_point   ("s_tvar"    , s_tvar);
@@ -506,12 +506,12 @@ yCALC_vars_status       (char a_size, short a_wide, char a_list [LEN_RECD])
    uchar       x_gre       [LEN_LABEL] = "";
    uchar       x_spe       [LEN_LABEL] = "";
    uchar       x_nor       [LEN_LABEL] = "";
-   strlpadn (s_nvar, x_all , '.', '>', 4);
-   strlpadn (s_nnor, x_nor , '.', '>', 3);
-   strlpadn (s_ngre, x_gre , '.', '>', 2);
-   strlpadn (s_nmac, x_mac , '.', '>', 2);
-   strlpadn (s_nloc, x_loc , '.', '>', 2);
-   strlpadn (s_nspe, x_spe , '.', '>', 1);
+   ystrlpadn (s_nvar, x_all , '.', '>', 4);
+   ystrlpadn (s_nnor, x_nor , '.', '>', 3);
+   ystrlpadn (s_ngre, x_gre , '.', '>', 2);
+   ystrlpadn (s_nmac, x_mac , '.', '>', 2);
+   ystrlpadn (s_nloc, x_loc , '.', '>', 2);
+   ystrlpadn (s_nspe, x_spe , '.', '>', 1);
    sprintf (a_list, "·vars    %4sa %3sn %2sg %2sm %2sl %1ss ´", x_all, x_nor, x_gre, x_mac, x_loc, x_spe);
    /*---(complete)-----------------------*/
    return 0;
@@ -780,7 +780,7 @@ ycalc_call_reaper       (void **a_owner, tDEP_ROOT **a_deproot)
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   strlcpy (x_label, ycalc_call_labeler (*a_deproot), LEN_LABEL);
+   ystrlcpy (x_label, ycalc_call_labeler (*a_deproot), LEN_LABEL);
    DEBUG_YCALC   yLOG_info    ("label"     , x_label);
    /*---(check type)---------------------*/
    rc = myCALC.e_valuer ((*a_deproot)->owner, &x_type, NULL, NULL);
@@ -927,7 +927,7 @@ ycalc_call_who_named    (char *a_label, char a_force, void **a_owner, void **a_d
    /*---(check variables)----------------*/
    rc = yCALC_variable (a_label, x_label, NULL);
    DEBUG_YCALC   yLOG_value   ("findvar"   , rc);
-   if (rc < 0)  strlcpy (x_label, a_label, LEN_LABEL);
+   if (rc < 0)  ystrlcpy (x_label, a_label, LEN_LABEL);
    /*---(callback)-----------------------*/
    rc = myCALC.e_who_named (x_label, a_force, &x_owner, &x_deproot);
    DEBUG_YCALC   yLOG_value   ("who named" , rc);

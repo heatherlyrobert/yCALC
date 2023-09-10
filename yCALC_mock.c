@@ -105,8 +105,8 @@ ycalc__mock_new_labeled  (char *a_label, void **a_owner)
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   rc = str6gyges  (a_label, 0, x_label, YSTR_LEGAL);
-   DEBUG_YCALC   yLOG_value   ("str6gyges" , rc);
+   rc = ystr6gyges  (a_label, 0, x_label, YSTR_LEGAL);
+   DEBUG_YCALC   yLOG_value   ("ystr6gyges" , rc);
    --rce;  if (rc < 0) {
       DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
@@ -137,7 +137,7 @@ ycalc__mock_new_at       (int b, int x, int y, int z, tMOCK **a_owner)
    tMOCK      *x_owner     = NULL;
    --rce;  if (a_owner  == NULL)  return rce;
    --rce;  if (*a_owner != NULL)  return rce;
-   rc = str4gyges  (b, x, y, z, 0, x_label, YSTR_LEGAL);
+   rc = ystr4gyges  (b, x, y, z, 0, x_label, YSTR_LEGAL);
    --rce;  if (rc < 0) return rce;
    x_owner = (tMOCK *) *a_owner;
    rc = ycalc__mock_new (&x_owner);
@@ -262,9 +262,9 @@ ycalc__mock_prepare     (void)
    if (rc == 0)  rc = yCALC_exist_config (ycalc__mock_enabler, ycalc__mock_pointer, ycalc__mock_reaper);
    if (rc == 0)  rc = yCALC_label_config (ycalc__mock_named  , ycalc__mock_whos_at, ycalc__mock_labeler);
    if (rc == 0)  rc = yCALC_value_config (ycalc__mock_valuer , ycalc__mock_address, ycalc__mock_special, ycalc__mock_printer);
-   str0gyges  (ycalc__mock_ystr_check);
+   ystr0gyges  (ycalc__mock_ystr_check);
    yRPN_init (YRPN_GYGES);
-   rc = yRPN_addr_config   (str2gyges, str4gyges, str6gyges, str8gyges, ycalc__mock_insider);
+   rc = yRPN_addr_config   (ystr2gyges, ystr4gyges, ystr6gyges, ystr8gyges, ycalc__mock_insider);
    DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
    return rc;
 }
@@ -469,7 +469,7 @@ ycalc__mock_whos_at     (int b, int x, int y, int z, char a_force, void **a_owne
    char        rc          =    0;
    char        x_label     [LEN_LABEL];
    /*---(legal)--------------------------*/
-   rc = str4gyges (b, x, y, z, 0, x_label, YSTR_LEGAL);
+   rc = ystr4gyges (b, x, y, z, 0, x_label, YSTR_LEGAL);
    if (rc == 0)  rc = ycalc__mock_named (x_label, a_force, a_owner, a_deproot);
    /*---(complete)-----------------------*/
    return rc;
@@ -628,7 +628,7 @@ ycalc__mock_address     (void *a_owner, int *b, int *x, int *y, int *z)
    DEBUG_YCALC   yLOG_spoint  (x_mock);
    DEBUG_YCALC   yLOG_snote   (x_mock->label);
    DEBUG_YCALC   yLOG_sexit   (__FUNCTION__);
-   str2gyges (x_mock->label, b, x, y, z, NULL, 0, YSTR_LEGAL);
+   ystr2gyges (x_mock->label, b, x, y, z, NULL, 0, YSTR_LEGAL);
    return 0;
 }
 
@@ -715,15 +715,15 @@ ycalc__mock_width    (void *a_owner, int *a_width, int *a_merge)
    s_owners [*a_merge] = x_owner;
    s_widths [*a_merge] = x_owner->width;
    /*---(look for mergse)----------------*/
-   rc = str2gyges (x_owner->label, &b, &x, &y, &b, NULL, 0, YSTR_LEGAL);
-   DEBUG_YCALC   yLOG_value   ("str2gyges" , rc);
+   rc = ystr2gyges (x_owner->label, &b, &x, &y, &b, NULL, 0, YSTR_LEGAL);
+   DEBUG_YCALC   yLOG_value   ("ystr2gyges" , rc);
    if (rc < 0)  {
       DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
       return 0;
    }
    DEBUG_YCALC   yLOG_complex ("owner"     , "%-10p, %-5s, %3db, %3dx, %3dy, %3dz, %3dw", x_owner, x_owner->label, b, x, y, z, x_owner->width);
    for (i = x + 1; i < x + 20; ++i) {
-      rc = str4gyges (b, i, y, z, 0, x_label, YSTR_LEGAL);
+      rc = ystr4gyges (b, i, y, z, 0, x_label, YSTR_LEGAL);
       if (rc < 0)  break;
       rc = ycalc__mock_whos_at (b, i, y, z, YCALC_LOOK, &x_owner, NULL);
       if (rc < 0)                              break;
@@ -804,17 +804,17 @@ ycalc__mock_printer     (void *a_owner)
    /*---(contents)-----------------------*/
    DEBUG_YCALC   yLOG_char    ("type"      , x_owner->type);
    if (strchr ("=n", x_owner->type) != NULL) {
-      strl4main (x_owner->value, s, x_owner->decs, x_owner->format, '-', LEN_RECD);
+      ystrl4main (x_owner->value, s, x_owner->decs, x_owner->format, '-', LEN_RECD);
    } else {
-      if      (x_owner->string != NULL)  strlcpy (s, x_owner->string, LEN_RECD);
-      else if (x_owner->source != NULL)  strlcpy (s, x_owner->source, LEN_RECD);
-      else                               strlcpy (s, ""             , LEN_RECD);
+      if      (x_owner->string != NULL)  ystrlcpy (s, x_owner->string, LEN_RECD);
+      else if (x_owner->source != NULL)  ystrlcpy (s, x_owner->source, LEN_RECD);
+      else                               ystrlcpy (s, ""             , LEN_RECD);
    }
    /*---(pad/trim)-----------------------*/
    ycalc__mock_width (x_owner, &w, &c);
    DEBUG_YCALC   yLOG_value   ("w"         , w);
    DEBUG_YCALC   yLOG_value   ("c"         , c);
-   strlpad (s, t, '!', x_owner->align, w - 1);
+   ystrlpad (s, t, '!', x_owner->align, w - 1);
    sprintf (x_out, "%s ", t);
    /*---(parse)--------------------------*/
    ycalc__mock_parse (x_out, c);
@@ -921,12 +921,12 @@ ycalc__mock_whole       (char *a_label, char *a_source, char a_format, char a_de
    }
    /*---(handle results)-----------------*/
    /*> if (strchr ("=n", x_owner->type) != NULL) {                                    <* 
-    *>    strl4main (x_owner->value, t, a_decs, a_format, LEN_RECD);                  <* 
+    *>    ystrl4main (x_owner->value, t, a_decs, a_format, LEN_RECD);                  <* 
     *> } else {                                                                       <* 
-    *>    if (x_owner->string != NULL)  strlcpy (t, x_owner->string, LEN_RECD);       <* 
-    *>    else                          strlcpy (t, x_owner->source, LEN_RECD);       <* 
+    *>    if (x_owner->string != NULL)  ystrlcpy (t, x_owner->string, LEN_RECD);       <* 
+    *>    else                          ystrlcpy (t, x_owner->source, LEN_RECD);       <* 
     *> }                                                                              <* 
-    *> strlpad (t, x_out, '?', a_align, a_width - 1);                                 <* 
+    *> ystrlpad (t, x_out, '?', a_align, a_width - 1);                                 <* 
     *> x_owner->print = strdup (x_out);                                               <*/
    /*---(complete)-----------------------*/
    DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
@@ -984,24 +984,24 @@ ycalc__unit_mock        (char *a_question, char *a_label)
    /*---(preprare)-----------------------*/
    strcpy (ycalc__unit_answer, "yCALC            : question not understood");
    /*---(label)--------------------------*/
-   if (a_label == NULL)   strlcpy (x_label, "---"  , LEN_LABEL);
-   else                   strlcpy (x_label, a_label, LEN_LABEL);
+   if (a_label == NULL)   ystrlcpy (x_label, "---"  , LEN_LABEL);
+   else                   ystrlcpy (x_label, a_label, LEN_LABEL);
    /*---(owner/deproot)------------------*/
    rc = ycalc__mock_named (x_label, YCALC_LOOK, &x_owner, &x_deproot);
    /*> printf ("mock_unit :: %s, rc %d, owner %p, deproot %p\n", x_label, rc, x_owner, x_deproot);   <*/
-   if (rc        <  0   )  strlcpy (x_rnote , "-----"   , LEN_LABEL);
-   else                    strlcpy (x_rnote , "good"    , LEN_LABEL);
-   if (x_owner   == NULL)  strlcpy (x_onote , "-----"   , LEN_LABEL);
-   else                    strlcpy (x_onote , "exists"  , LEN_LABEL);
-   if (x_deproot == NULL)  strlcpy (x_dnote , "-----"   , LEN_LABEL);
-   else                    strlcpy (x_dnote , "enabled" , LEN_LABEL);
+   if (rc        <  0   )  ystrlcpy (x_rnote , "-----"   , LEN_LABEL);
+   else                    ystrlcpy (x_rnote , "good"    , LEN_LABEL);
+   if (x_owner   == NULL)  ystrlcpy (x_onote , "-----"   , LEN_LABEL);
+   else                    ystrlcpy (x_onote , "exists"  , LEN_LABEL);
+   if (x_deproot == NULL)  ystrlcpy (x_dnote , "-----"   , LEN_LABEL);
+   else                    ystrlcpy (x_dnote , "enabled" , LEN_LABEL);
    /*---(string)-------------------------*/
-   if      (x_owner == NULL)                                  strlcpy (x_string, "", LEN_RECD );
-   else if (strchr ("&:®", x_owner->type)   != NULL)          strlcpy (x_string, x_owner->source, LEN_RECD );
-   else if (strchr ("ps#5E", x_owner->type) == NULL)          strlcpy (x_string, "", LEN_RECD );
-   else if (x_owner->string != NULL)                          strlcpy (x_string, x_owner->string, LEN_RECD );
-   else if (strchr ("ps", x_owner->type) != NULL && x_owner->source != NULL)  strlcpy (x_string, x_owner->source, LEN_RECD );
-   else                                                       strlcpy (x_string, "", LEN_RECD );
+   if      (x_owner == NULL)                                  ystrlcpy (x_string, "", LEN_RECD );
+   else if (strchr ("&:®", x_owner->type)   != NULL)          ystrlcpy (x_string, x_owner->source, LEN_RECD );
+   else if (strchr ("ps#5E", x_owner->type) == NULL)          ystrlcpy (x_string, "", LEN_RECD );
+   else if (x_owner->string != NULL)                          ystrlcpy (x_string, x_owner->string, LEN_RECD );
+   else if (strchr ("ps", x_owner->type) != NULL && x_owner->source != NULL)  ystrlcpy (x_string, x_owner->source, LEN_RECD );
+   else                                                       ystrlcpy (x_string, "", LEN_RECD );
    /*---(value)--------------------------*/
    if      (x_owner == NULL)              x_value = 0.0;
    else                                   x_value = x_owner->value;
@@ -1009,13 +1009,13 @@ ycalc__unit_mock        (char *a_question, char *a_label)
    if      (x_owner == NULL)              x_type  = '?';
    else                                   x_type  = x_owner->type;
    /*---(print)--------------------------*/
-   if      (x_owner == NULL)              strlcpy (x_print , "", LEN_RECD );
-   else if (x_owner->print  != NULL)      strlcpy (x_print , x_owner->print, LEN_RECD );
-   else                                   strlcpy (x_print , "", LEN_RECD );
+   if      (x_owner == NULL)              ystrlcpy (x_print , "", LEN_RECD );
+   else if (x_owner->print  != NULL)      ystrlcpy (x_print , x_owner->print, LEN_RECD );
+   else                                   ystrlcpy (x_print , "", LEN_RECD );
    /*---(rpn)----------------------------*/
-   if      (x_deproot == NULL)            strlcpy (x_rpn   , "", LEN_RECD );
-   else if (x_deproot->rpn  != NULL)      strlcpy (x_rpn   , x_deproot->rpn, LEN_RECD );
-   else                                   strlcpy (x_rpn   , "", LEN_RECD );
+   if      (x_deproot == NULL)            ystrlcpy (x_rpn   , "", LEN_RECD );
+   else if (x_deproot->rpn  != NULL)      ystrlcpy (x_rpn   , x_deproot->rpn, LEN_RECD );
+   else                                   ystrlcpy (x_rpn   , "", LEN_RECD );
    /*---(dependency list)----------------*/
    if      (strcmp (a_question, "count"    )      == 0) {
       x_owner  = myCALC.mhead; while (x_owner  != NULL) { ++x_fore; x_owner  = x_owner ->next; }

@@ -78,7 +78,7 @@ ycalc_range_wipe        (int n)
 {
    DEBUG_YCALC   yLOG_senter  (__FUNCTION__);
    DEBUG_YCALC   yLOG_sint    (n);
-   strlcpy (s_ranges [n].name, "", LEN_LABEL);
+   ystrlcpy (s_ranges [n].name, "", LEN_LABEL);
    s_ranges [n].ycalc                = NULL;
    s_ranges [n].bb = s_ranges [n].eb =  -10;
    s_ranges [n].bx = s_ranges [n].ex =  -10;
@@ -388,7 +388,7 @@ ycalc_range_add         (int bb, int eb, int bx, int ex, int by, int ey, int bz,
       return n;
    }
    sprintf (t, "®a%d", n + 1);
-   strlcpy (s_ranges [n].name, t, LEN_LABEL);
+   ystrlcpy (s_ranges [n].name, t, LEN_LABEL);
    DEBUG_YCALC    yLOG_info    ("range"     , t);
    /*---(assign boundaries---------------*/
    DEBUG_YCALC    yLOG_note    ("assign boundaries");
@@ -409,8 +409,8 @@ ycalc_range_add         (int bb, int eb, int bx, int ex, int by, int ey, int bz,
    DEBUG_YCALC   yLOG_char    ("*x_type"   , *x_type);
    x_range->btype = YCALC_DATA_INTERN;
    DEBUG_YCALC   yLOG_char    ("btype"     , x_range->btype);
-   str4gyges (bb, bx, by, bz, NULL, x_beg, YSTR_CHECK);
-   str4gyges (eb, ex, ey, ez, NULL, x_end, YSTR_CHECK);
+   ystr4gyges (bb, bx, by, bz, NULL, x_beg, YSTR_CHECK);
+   ystr4gyges (eb, ex, ey, ez, NULL, x_end, YSTR_CHECK);
    sprintf (t, "®%s..%s", x_beg, x_end);
    if (*x_source != NULL)  free (*x_source);
    *x_source = strdup (t);

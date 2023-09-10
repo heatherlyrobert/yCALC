@@ -106,7 +106,7 @@ ycalc__build_strtok     (char *a_str)
       x_str   = a_str;
       x_pos   = 0;
       x_next  = 0;
-      x_len   = strllen (a_str, LEN_RECD);
+      x_len   = ystrllen (a_str, LEN_RECD);
       x_lit   = '-';
       /*> printf ("   -- a_str = %p\n", a_str);                                       <*/
       /*> printf ("   -- x_str = %p <<%s>>\n", x_str, x_str);                         <*/
@@ -254,7 +254,7 @@ ycalc__build_char       (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    char        x_len       =    0;
    /*---(check for string)---------------*/
    DEBUG_YCALC   yLOG_note    ("check for character");
-   x_len = strllen (a_token, LEN_RECD);
+   x_len = ystrllen (a_token, LEN_RECD);
    if (a_token [0]         != '\'')  return  0;
    if (a_token [2]         != '\'')  return  0;
    if (x_len !=  3)                  return  0;
@@ -278,7 +278,7 @@ ycalc__build_string     (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    char        x_len       =    0;
    /*---(check for string)---------------*/
    DEBUG_YCALC   yLOG_note    ("check for literal string");
-   x_len = strllen (a_token, LEN_RECD);
+   x_len = ystrllen (a_token, LEN_RECD);
    if (a_token [0]         != '"')  return  0;
    if (a_token [x_len - 1] != '"')  return  0;
    /*---(header)-------------------------*/
@@ -540,7 +540,7 @@ ycalc__build_value      (tDEP_ROOT *a_thing, tCALC *a_calc, char *a_token)
    DEBUG_YCALC   yLOG_note    ("check for value");
    /*---(header)-------------------------*/
    DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
-   rc = strl2num (a_token, &v, LEN_LABEL);
+   rc = ystrl2num (a_token, &v, LEN_LABEL);
    DEBUG_YCALC   yLOG_value   ("strl2num"  , rc);
    if (rc < 0)  {
       DEBUG_YCALC   yLOG_exit    (__FUNCTION__);
@@ -658,8 +658,8 @@ ycalc__build_like       (tDEP_ROOT *a_deproot, char **a_source, char *a_type, ch
    DEBUG_YCALC   yLOG_enter   (__FUNCTION__);
    /*---(check for reference)------------*/
    DEBUG_YCALC   yLOG_note    ("look for like reference");
-   strlcpy  (x_label, *a_source + 1, LEN_LABEL);
-   strltrim (x_label, ySTR_BOTH    , LEN_LABEL);
+   ystrlcpy  (x_label, *a_source + 1, LEN_LABEL);
+   ystrltrim (x_label, ySTR_BOTH    , LEN_LABEL);
    rc = ycalc_call_who_named (x_label, YCALC_FULL, &x_owner, &x_ref);
    DEBUG_YCALC   yLOG_value   ("who_named" , rc);
    if (rc < 0) {
@@ -729,7 +729,7 @@ ycalc__build_like       (tDEP_ROOT *a_deproot, char **a_source, char *a_type, ch
    zo -= z;
    DEBUG_YCALC   yLOG_complex ("offset"    , "%3db, %3dx, %3dy, %3dz", bo, xo, yo, zo);
    /*---(adjust rpn)---------------------*/
-   strlcpy (x_work, *x_source, LEN_RECD);
+   ystrlcpy (x_work, *x_source, LEN_RECD);
    DEBUG_YCALC   yLOG_info    ("x_work"    , x_work);
    rc = yRPN_addr_normal (x_work, bo, xo, yo, zo, LEN_RECD, x_rpn);
    DEBUG_YCALC   yLOG_value   ("adj_rpn"   , rc);
@@ -739,7 +739,7 @@ ycalc__build_like       (tDEP_ROOT *a_deproot, char **a_source, char *a_type, ch
       return rc;
    }
    DEBUG_YCALC   yLOG_info    ("x_rpn"    , x_rpn);
-   strlcpy (a_rpn, x_rpn, LEN_RECD);
+   ystrlcpy (a_rpn, x_rpn, LEN_RECD);
    /*---(update type)--------------------*/
    DEBUG_YCALC   yLOG_char    ("*x_type"   , *x_type);
    if      (*x_type == YCALC_DATA_NFORM) {
@@ -788,7 +788,7 @@ ycalc_build_ripple      (tDEP_ROOT *a_deproot, char a_kind)
    DEBUG_YCALC   yLOG_value   ("src npros" , x_count);
    x_next = a_deproot->pros;
    while (x_next != NULL) {
-      strlcpy (x_label, ycalc_call_labeler (x_next->target), LEN_LABEL);
+      ystrlcpy (x_label, ycalc_call_labeler (x_next->target), LEN_LABEL);
       DEBUG_YCALC   yLOG_complex ("check"     , "%c, %s", x_next->type, x_label);
       if (strchr (YCALC_GROUP_CALC, x_next->target->btype) != NULL) {
          if (x_next->type == a_kind) {
@@ -808,7 +808,7 @@ ycalc_build_ripple      (tDEP_ROOT *a_deproot, char a_kind)
    /*---(walk through dependencies)------*/
    for (i = 0; i < n; ++i) {
       x_next = x_saved [i];
-      strlcpy (x_label, ycalc_call_labeler (x_next->target), LEN_LABEL);
+      ystrlcpy (x_label, ycalc_call_labeler (x_next->target), LEN_LABEL);
       rc = yCALC_handle (x_label);
    }
    /*---(complete)-------------------------*/
@@ -918,7 +918,7 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
       return rce;
    }
    /*---(length)-------------------------*/
-   x_len = strllen (*a_source, LEN_RECD);
+   x_len = ystrllen (*a_source, LEN_RECD);
    --rce;  if (x_len <= 1) {
       ycalc_error_finalize (YCALC_ERROR_BUILD_RPN , a_type, a_value, a_string, "empty");
       a_deproot->btype = YCALC_DATA_ERROR;
@@ -940,7 +940,7 @@ ycalc_build_trusted     (tDEP_ROOT *a_deproot, char **a_source, char *a_type, do
       rc = yRPN_gyges (&x_work, &x_rpn, &x_nrpn, LEN_RECD, 0);
       DEBUG_YCALC   yLOG_value   ("interpret" , rc);
    } else {
-      strlcpy (x_source, *a_source, LEN_RECD);
+      ystrlcpy (x_source, *a_source, LEN_RECD);
       /*> rc = yRPN_interpret (x_source, &x_rpn, &x_nrpn, LEN_RECD, 0);               <*/
       rc = yRPN_gyges (x_source, &x_rpn, &x_nrpn, LEN_RECD, 0);
       DEBUG_YCALC   yLOG_value   ("interpret" , rc);
@@ -1131,7 +1131,7 @@ ycalc__unit_build       (char *a_question, char *a_label)
    tDEP_ROOT  *x_deproot   = NULL;
    char        x_label     [LEN_LABEL];
    /*---(initialize)---------------------*/
-   strlcpy (ycalc__unit_answer, "yCALC_unit, unknown request", 100);
+   ystrlcpy (ycalc__unit_answer, "yCALC_unit, unknown request", 100);
    /*> /+---(string testing)-----------------+/                                                                                                                                                                                                                                  <* 
     *> if      (strncmp (a_question, "top"       , 20)  == 0) {                                                                                                                                                                                                                  <* 
     *>    if (s_nstack <= 0)   snprintf (ycalc__unit_answer, LEN_FULL, "STACK top   (%2d) : %c %8.2lf %-10p %-.30s", s_nstack, S_TYPE_EMPTY, 0.0, NULL, "---");                                                                                                                   <* 
@@ -1143,7 +1143,7 @@ ycalc__unit_build       (char *a_question, char *a_label)
     *>          break;                                                                                                                                                                                                                                                           <* 
     *>       case S_TYPE_REF :                                                                                                                                                                                                                                                   <* 
     *>          x_deproot = s_stack [s_nstack - 1].ref;                                                                                                                                                                                                                          <* 
-    *>          strlcpy (x_label, ycalc__mock_labeler (x_deproot->owner), LEN_LABEL);                                                                                                                                                                                            <* 
+    *>          ystrlcpy (x_label, ycalc__mock_labeler (x_deproot->owner), LEN_LABEL);                                                                                                                                                                                            <* 
     *>          snprintf (ycalc__unit_answer, LEN_FULL, "STACK top   (%2d) : %c %8.2lf %-10.10s %-.30s", s_nstack, s_stack [s_nstack - 1].typ, s_stack [s_nstack - 1].num, x_label, (s_stack [s_nstack - 1].str == NULL) ? "---" : s_stack [s_nstack - 1].str);                   <* 
     *>          break;                                                                                                                                                                                                                                                           <* 
     *>       }                                                                                                                                                                                                                                                                   <* 
