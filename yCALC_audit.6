@@ -1,0 +1,196 @@
+.TH yCALC_audit 6 2018-apr "linux" "interactive feel, usage, and navigation"
+
+.SH NAME
+yCALC \- fast, powerful, flexible, shared calculation engine
+
+.SH PATRON
+.B kottus-hecatoncheires
+(hundred-handed)
+ancient greek world-shattering giant
+
+.SH IMAGERY
+ugly, impossibly powerful, one-hundred handed, fifty-headed giant
+
+.SH SUMMARY
+yCALC is a clean, reliable, debuggable, and shared library for creating
+and executing fast, flexible byte-code calculations that can be used in any
+programming context (spreadsheet to system utility).
+
+.SH DOCUMENTATION FILES
+.nf
+yCALC (3)          interfacing applications with library
+yCALC_addr (6)     specifics of calculating addresses
+.B yCALC_audit (6)····specifics of auditing functions
+yCALC_bits (6)     specifics of bitwise operators
+yCALC_group (6)    specifics of grouping operators
+yCALC_logic (6)    specifics of logical operators
+yCALC_lookup (6)   specifics of range lookups
+yCALC_math (6)     specifics of mathmatical operators
+yCALC_mathy (6)    specifics of mathy format
+yCALC_range (6)    specifics of range/stats functions
+yCALC_text (6)     specifics of text/string functions
+yCALC_time (6)     specifics of time related functions
+yCALC_trig (6)     specifics of trigonometry functions
+yCALC (7)          decision rationale, scope, and objectives
+
+.SH TABLE OF CONTENTS
+.nf  
+a) overview        quick summary
+b) cell type       determining calculation type
+c) cell position   determining cell coordinates
+d) cell info       determining cell details
+e) range counts    counts of cell types within ranges
+
+.SH A) OVERVIEW
+audit is primarily about transparency, diagnosis, and auditing during run-time,
+although some of the functions can be very helpful in other ways.
+
+.SH B) CELL TYPE
+these functions allow discovery of the calculation result -- error, numeric,
+string, etc.  this can be useful for a macro to self-interrogate.
+
+.SS fifteen (15) result types
+.nf
+type----- char  description-------------------------------------
+blank      -    empty, no contents
+nlit       n    numeric literal
+ncalc      =    numeric calculation/formula
+nmath      ¼    advanced math calculation/formula
+nlike      9    like formula based on a numeric formula
+slit       s    string literal
+scalc      #    string calculation/formula
+slike      5    like formula based on a string formula
+ref        &    normal pointer reference
+cref       !    calculated/formula ponter reference
+rlike      ~    like formula based on a pointer formula
+rref       :    range reference (multiple cells)
+var        #    variable reference
+merge      <    cell used for string overflow
+error      E    calculation build or execution trouble
+
+.SS eight (8) useful result groups
+.nf
+group----  description----------- included-----------------------
+num        numeric results        nlit, ncalc, nmath, nlike
+str        string results         slit, scalc, slike
+ref        all cell references    ref, cref, rlike
+point      all pointers           ref, cref, rlike, rref
+lit        all literal types      nlit, slit
+form       all formulas           ncalc, scalc, cref
+like       all like formulas      nlike, slike, rlike
+calc       all calculated         ncalc, nlike, scalc, slike, cref, rlike
+
+.SS non-specific
+ways to get the cell type by identifier or description.
+
+.nf
+FUNC········ meaning-------- arity/prec usage---------- returns------
+t   type     type char/num     1    a   t  (0b5)        number (=)
+ta  ·        type char/str     1    a   ta (0b5)        string (#)
+ts  typestr  type desc         1    a   ts (0b5)        string (#)
+
+.SS testing for specific result type
+any of the "types" listed under "result types" is also a function which
+returns 1 of the requested target matches the type, or 0 if it does not.
+
+.nf
+example
+=blank (0a5)      will return 1 if 0a5 has no contents
+
+.SS testing for result group
+same as individual types, any of the "groups" listed under "result groups"
+is also a function which returns 1 of the requested target matches any type
+including in the group, or 0 if it does not.
+
+.nf
+example
+=calc (0c7)       will return 1 if 0c7 is a calculated entry
+
+.SH C) CELL POSITION
+often formulas need to gather location data for use in further calculations.
+
+.nf
+FUNC········ meaning-------- arity/prec usage---------- returns------
+u            get universe      1    a   u (Ad17)        10 (universe A)
+x            get x-pos         1    a   x (Ad17)        3  (column d)
+y            get y-pos         1    a   y (Ad17)        16 (row 17)
+me           pointer to        0    a   me ()           current cell
+label        label as str      1    a   label (Ad17)    "Ad17"
+
+.SH D) CELL INFORMATION
+deep details of a cell's data helps audit and debug particularly sticky problems
+without walking through code.  these are especially useful to diagnose check
+yCALC and yRPN troubles.
+
+.nf
+FUNC········ meaning-------- arity/prec usage---------- returns------
+f            get formula       1    a   f (Ad17)        = 0b16 + 15
+r            see rpn parse     1    a   r (Ad17)        @,0b16ŒI,15Œo,+
+nstep        calc step count   1    a   nstep (Ad17)    3
+nrpn         rpn token count   1    a   nrpn  (Ad17)    3
+nreq         count requires    1    a   nreq  (Ad17)    1
+reqs         list requires     1    a   reqs  (Ad17)    ,0b16,
+npro         count provides    1    a   npro  (Ad17)    0
+pros         list provides     1    a   pros  (Ad17)    .
+
+the "r" rpn parsing function has several variations to show various levels
+of detail and also alternate formatting of the function itself.  these are
+only really valuable on complicated formulas.  watch demos for examples.
+
+.nf
+FUNC········ meaning------------------------------
+shunted      shows exactly as yRPN pulled apart
+exact        as appears given to yRPN (helps debugging)
+tokens       shows tokens extracted
+parsed       parsing tokens
+detail       shows types assigned to tokens
+pretty       cleans up formula spacing and grouping (if needed)
+mathy        shows the mathy version of same formula
+
+.SH D) RANGE COUNTS
+additionally all the cell type functions are available as ¶counts¶ within
+ranges.  the function names are simply plural and the argument is a range
+rather that a cell reference.
+
+.SS fifteen (15) result types
+.nf
+type----- char  description-------------------------------------
+blanks     -    empty, no contents
+nlits      n    numeric literal
+ncalcs     =    numeric calculation/formula
+nmaths     ¼    advanced math calculation/formula
+nlikes     9    like formula based on a numeric formula
+slits      s    string literal
+scalcs     #    string calculation/formula
+slikes     5    like formula based on a string formula
+refs       &    normal pointer reference
+crefs      !    calculated/formula ponter reference
+rlikes     ~    like formula based on a pointer formula
+rrefs      :    range reference (multiple cells)
+vars       #    variable reference
+merges     <    cell used for string overflow
+errors     E    calculation build or execution trouble
+
+.SS eight (8) useful result groups
+.nf
+group----  description----------- included-----------------------
+nums       numeric results        nlit, ncalc, nmath, nlike
+strs       string results         slit, scalc, slike
+points     all pointers           ref, cref, rlike, rref
+lits       all literal types      nlit, slit
+forms      all formulas           ncalc, scalc, cref
+likes      all like formulas      nlike, slike, rlike
+calcs      all calculated         ncalc, nlike, scalc, slike, cref, rlike
+
+.SS additional functions
+.nf
+every      counts all cells (empty or not)
+used       counts all cells with contents
+
+.SH AUTHOR
+heatherly <jelloshrike at gmail dot com>
+
+.SH COLOPHON
+this page is part of a documentation package mean to make the use of the
+heatherly tools easier and faster
+

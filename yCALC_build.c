@@ -389,7 +389,7 @@ ycalc__build_function   (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
    for (i = 0; i < MAX_FUNCS; ++i) {
       DEBUG_YCALC   yLOG_complex ("check"     , "%3d, %-12.12s, %3d, %-10.10p   vs %-12.12s, %3d", i, g_ycalc_funcs[i].name, g_ycalc_funcs[i].len, g_ycalc_funcs[i].f, a_token, len);
       /*---(check for end)---------------*/
-      if (g_ycalc_funcs [i].f == NULL)                      break;
+      if (strcmp (g_ycalc_funcs [i].name, "((END))") == 0)  break;
       if (g_ycalc_funcs [i].len == 0   )                    break;
       /*---(check for length)------------*/
       if (x_len  != g_ycalc_funcs [i].len)                  continue;
@@ -398,6 +398,12 @@ ycalc__build_function   (tDEP_ROOT *a_deproot, tCALC *a_calc, char *a_token)
       if (strcmp (g_ycalc_funcs[i].name, a_token) != 0)     continue;
       /*---(found)-----------------------*/
       DEBUG_YCALC   yLOG_complex ("found it"  , "%3d, %-12.12s, %3d, %-10.10p   vs %-12.12s, %3d", i, g_ycalc_funcs[i].name, g_ycalc_funcs[i].len, g_ycalc_funcs[i].f, a_token, x_len);
+      if (g_ycalc_funcs[i].f == NULL) {
+         DEBUG_YCALC   yLOG_note    ("function present, but not implemented");
+         rc = YCALC_ERROR_BUILD_TBD;
+         DEBUG_YCALC   yLOG_exitr   (__FUNCTION__, rc);
+         return 0;
+      }
       a_calc->f = g_ycalc_funcs[i].f;
       /*---(update type)-----------------*/
       DEBUG_YCALC   yLOG_note    ("mark type");

@@ -1,0 +1,127 @@
+.TH yCALC_addr 6 2018-apr "linux" "interactive feel, usage, and navigation"
+
+.SH NAME
+yCALC \- fast, powerful, flexible, shared calculation engine
+
+.SH PATRON
+.B kottus-hecatoncheires
+(hundred-handed)
+ancient greek world-shattering giant
+
+.SH IMAGERY
+ugly, impossibly powerful, one-hundred handed, fifty-headed giant
+
+.SH SUMMARY
+yCALC is a clean, reliable, debuggable, and shared library for creating
+and executing fast, flexible byte-code calculations that can be used in any
+programming context (spreadsheet to system utility).
+
+.SH DOCUMENTATION FILES
+.nf
+yCALC (3)          interfacing applications with library
+.B yCALC_addr (6)·····specifics of calculating addresses
+yCALC_audit (6)    specifics of auditing functions
+yCALC_bits (6)     specifics of bitwise operators
+yCALC_group (6)    specifics of grouping operators
+yCALC_logic (6)    specifics of logical operators
+yCALC_lookup (6)   specifics of range lookups
+yCALC_math (6)     specifics of mathmatical operators
+yCALC_mathy (6)    specifics of mathy format
+yCALC_range (6)    specifics of range/stats functions
+yCALC_text (6)     specifics of text/string functions
+yCALC_time (6)     specifics of time related functions
+yCALC_trig (6)     specifics of trigonometry functions
+yCALC (7)          decision rationale, scope, and objectives
+
+.SH TABLE OF CONTENTS
+.nf  
+a) overview        quick summary
+b) absolute        direct pointer creation
+c) abs-to-self     moving absolute from current cell
+d) rel-to-self     moving relative to current cell
+e) abs-to-another  moving absolute from specific cell
+f) rel-to-another  moving relative to specific cell
+
+.SH A) OVERVIEW
+the section covers calculated references/addresses, an incredibly flexible
+and important ability.  if you are uncomfortable with pointers, this may not
+be digestable and you may want to watch the demos first.
+
+CAUTION > these functions return pointers, not values or strings.  but, in
+resolving a formula, the yCALC engine will attempt to get the string or
+numeric value to complete the formula.  type/error checking is tight, so
+if you request and string from a numeric cell, that is a ERROR, no automatic
+conversion is allowed.
+
+.SH B) ABSOLUTE
+absolute addresses simply specify the u (universe), x (column), and y (row)
+coordinates based on zero scales, i.e., column A is 0 and row 1 is 0.
+
+.nf
+FUNC········ meaning-------- arity/prec usage---------- returns------------
+addr         make ref          3    a   addr (1,5,9)    pointer to 1f10
+
+.SH B) ABS-TO-SELF
+absolute-to-self will replace one or more coordinates of the current cell
+to produce a pointer to a another cell.  absolute adjustments can only be
+positive and within accepable ranges.
+
+for examples, the current cell is 2g17
+
+.nf
+FUNC········ meaning-------- arity/prec example-1------ 
+ax           update x          1    a   aa (1) = 2b17   
+ay           update y          1    a   ay (4) = 2g3    
+axy          update x and y    2    a   axy (1,4) = 2b3 
+au           update u          1    a   au (5) = 5g17   
+auxy         update all        3    a   auxy (5,1,4) = 5b3
+
+.SH C) REL-TO-SELF
+relative-to-self will adjust one or more coordinates of the current cell to
+produce a pointer to a another cell.  relative adjustments are added to the
+current value, and can be either positive or negative.
+
+for examples, the current cell is 2g17
+
+.nf
+FUNC········ meaning-------- arity/prec example-1------  example-2----------
+rx           update x          1    a   Rx (2) = 2i17    Rx (-1) = 2f17
+ry           update y          1    a   Ry (4) = 2g21    Ry (-3) = 2g14
+rxy          update x and y    2    a   Rxy (2,4) = 2i21
+ru           update u          1    a   Ru (5) = 7g17    Ru (-2) = 0g17
+ruxy         update all        3    a   ruxy (5,2,4) = 7i21
+
+.SH D) ABS-TO-ANOTHER
+absolute-to-another will replace one or more coordinates of a given cell
+to produce a pointer to a another cell.  absolute adjustments can only be
+positive and within accepable ranges.
+
+for examples, the variable c points at 0e15, and contains !0f21
+
+.nf
+FUNC········ meaning-------- arity/prec example-1------  example-2---------
+a2x          update x          2    a   ax (c,1) = 0b15  ax (ác,1) = 0b21
+a2y          update y          2    a   ay (c,4) = 0e5   ay (ác,2) = 0f3
+a2xy         update x and y    3    a   axy (c,1,4) = 0b5
+a2u          update u          2    a   au (c,5) = 5e15  au (ác,5) = 5f21
+a2uxy        update all        4    a   aa (c,5,1,4) = 5b3
+
+aa and auxy are exactly the same as using the addr () function.
+
+.SH D) REL-TO-ANOTHER
+relative-to-another will update one or more coordinates of a given cell
+to produce a pointer to a another cell.  relative adjustments can be either
+positive or negative.
+
+for examples, the variable c points at 0e15, and contains !0f21
+
+.nf
+FUNC········ meaning-------- arity/prec example-1------  example-2---------
+r2x          update x          2    a   rx (c,1) = 0c15  rx (ác,1) = 0g21
+r2y          update y          2    a   ry (c,4) = 0e19  ry (ác,4) = 0f25
+r2xy         update x and y    3    a   rxy (c,1,4) = 0c19
+r2u          update u          2    a   ru (c,5) = 6e15  ru (ác,5) = 6f21
+r2uxy        update all        4    a   ra (c,5,1,4) = 6c19
+
+
+

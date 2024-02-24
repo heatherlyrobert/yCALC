@@ -1,0 +1,135 @@
+.TH yCALC_logic 6 2018-apr "linux" "interactive feel, usage, and navigation"
+
+.SH NAME
+yCALC \- fast, powerful, flexible, shared calculation engine
+
+.SH PATRON
+.B kottus-hecatoncheires
+(hundred-handed)
+ancient greek world-shattering giant
+
+.SH IMAGERY
+ugly, impossibly powerful, one-hundred handed, fifty headed-giant
+
+.SH SUMMARY
+yCALC is a clean, reliable, debuggable, and shared library for creating
+and executing fast, flexible byte-code calculations that can be used in any
+programming context (spreadsheet to system utility).
+
+.SH DOCUMENTATION FILES
+.nf
+yCALC (3)          interfacing applications with library
+yCALC_addr (6)     specifics of calculating addresses
+yCALC_audit (6)    specifics of auditing functions
+yCALC_bits (6)     specifics of bitwise operators
+yCALC_group (6)    specifics of grouping operators
+.B yCALC_logic (6)····specifics of logical operators
+yCALC_lookup (6)   specifics of range lookups
+yCALC_math (6)     specifics of mathmatical operators
+yCALC_mathy (6)    specifics of mathy format
+yCALC_range (6)    specifics of range/stats functions
+yCALC_text (6)     specifics of text/string functions
+yCALC_time (6)     specifics of time related functions
+yCALC_trig (6)     specifics of trigonometry functions
+yCALC (7)          decision rationale, scope, and objectives
+
+.SH TABLE OF CONTENTS
+.nf  
+a) overview        quick summary
+b) relational      six foundational comparisions
+c) joining         six major joining operators
+d) non-trad        non-traditional comparisions
+e) conditional     conditional functions
+d) string          raising to a power
+
+.SH A) OVERVIEW
+this document describes yCALC's logical operators, both numeric and string,
+and their use within the context of gyges (my spreadsheet) as an example. 
+
+.SH B) RELATIONAL
+i favor the six primary relational operators supported in most languages.
+they are shown in both numeric and string format.  all these operators return
+1 if true and 0 if false, exactly like c-language.
+
+.SS numeric versions (only works on two numbers)
+.nf
+OPER·· meaning-------- arity/prec   usage---  pretty version-----------
+à ==   equals            2    k     a == b    a à b
+Þ !=   not equal         2    k     c != d    c Þ d
+< <    lesser            2    j     e <  f    e < f
+Ü <=   lesser/equal      2    j     g <= h    g Ü h
+> >    greater           2    j     i >  j    i > j
+Ý >=   greater/equal     2    j     k >= l    k Ý l
+
+.SS string versions (only works on two strings)
+.nf
+OPER·· meaning-------- arity/prec   usage---
+©=     equals            2    k     a ©= b    
+©!     not equal         2    k     c ©! d    
+©<     lesser            2    j     e ©< f    
+©Ü     lesser/equal      2    j     g ©Ü h    
+©>     greater           2    j     i ©> j    
+©Ý     greater/equal     2    j     k ©Ý l    
+
+to stop inavertant trouble, yCALC will stop any attempt to mix and match
+numbers and strings will result in an error.  to accomplish a mix and match
+simply explicitly convert on or the other to a common format using numeric
+or string functions.
+
+.SH C) JOINING
+while the major joins can be stated in terms of each other, i chose to
+explicitly include the major six plus the negation operator.  with joining
+operators, i prefer to use the pretty version.  also, function versions are
+included to use as desired.
+
+.nf
+OPER·· meaning-------- arity/prec   usage---  unpretty version---------
+Ð &&   and               2    o     a Ð b     a && b    
+Ñ ||   or                2    o     c Ñ d     c || d    
+Ô !&   nand              2    o     e Ô f     e !& f    
+Õ !|   nor               2    o     g Õ h     g !| h    
+Ò &|   xor               2    o     i Ò j     i &| j    
+Ó |&   nxor              2    o     k Ó l     k |& l    
+! !    not               1    f     !m        !m
+
+.nf
+FUNC·· meaning-------- arity/prec   usage--------  same-as-------------
+and    and               2    o     and  (a, b)    a Ð b
+or     or                2    o     or   (c, d)    c Ñ d
+nand   nand              2    o     nand (e, f)    e Ô f
+nor    nor               2    o     nor  (g, h)    g Õ h
+xor    xor               2    o     xor  (i, j)    i Ò j
+nxor   nxor              2    o     nxor (k, l)    k Ó l
+not    not               1    o     not  (m)       !m
+
+.SH D) NON-TRADITIONAL
+
+.SS numeric versions (only works on two numbers)
+.nf
+OPER···· meaning-------- arity/prec usage------------------------------
+˜        between two       3    j   val ˜ (min, max)
+ß        plus or minus     3    j   val ß (trg, var)
+
+.nf
+FUNC···· meaning-------- arity/prec usage------------------------------
+range    between two       3    a   range (val, min, max)
+about    plus or minus     3    a   about (val, trg, var)
+
+
+.SS string versions (only works on two strings)
+.nf
+OPER···· meaning-------- arity/prec usage------------------------------
+â        substring         2    j   big  â small
+ã        in comma list     2    j   list ã item
+
+.nf
+FUNC···· meaning-------- arity/prec usage------------------------------
+strstr   substring         2    a   strstr (big, small)
+inlist   in comma list     2    a   inlist (list, item)
+
+.SH AUTHOR
+heatherly <jelloshrike at gmail dot com>
+
+.SH COLOPHON
+this page is part of a documentation package mean to make the use of the
+heatherly tools easier and faster

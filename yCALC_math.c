@@ -595,9 +595,9 @@ void    /*-> tbd --------------------------------[ ------ [fv.320.000.22]*/ /*-[
 ycalc_within        (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
-   a = ycalc_popval (__FUNCTION__);
-   b = ycalc_popval (__FUNCTION__);
-   c = ycalc_popval (__FUNCTION__);
+   a = ycalc_popval (__FUNCTION__);  /* maximum        */
+   b = ycalc_popval (__FUNCTION__);  /* minimum        */
+   c = ycalc_popval (__FUNCTION__);  /* value          */
    if (c >= b && c <= a) ycalc_pushval (__FUNCTION__, TRUE);
    else                  ycalc_pushval (__FUNCTION__, FALSE);
    return;

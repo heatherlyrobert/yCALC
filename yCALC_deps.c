@@ -1585,29 +1585,55 @@ yCALC_show_pros         (void *a_deproot, int *a_npro, char *a_pros)
 static void  o___REPORTS_________o () { return; }
 
 char 
-yCALC_deps_dump         (void *f)
+ycalc_deps_dump         (void *f, char a_scope)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        t           [LEN_RECD]  = "";
    tDEP_LINK  *x_cur       = NULL;
    FILE       *x_file      = NULL;
+   int         a           =    0;
    int         c           =    0;
+   int         u           =    0;
+   int         s           =    0;
    void       *x_owner     = NULL;
    char      **x_source    = NULL;
    char       *x_type      = NULL;
    char        x_save      =  '·';
    char        x_pre       [LEN_TERSE] = "";
    char        x_suf       [LEN_TERSE] = "";
+   char        x_label     [LEN_LABEL] = "";
+   char        x_sys       =  '-';
    /*---(prepare)------------------------*/
    x_file = f;
    /*---(print)--------------------------*/
-   fprintf (f, "#! parsing åÏ--··Ï··Ï---------··Ï---------··Ï··Ï------------------------··Ï---------··Ï---------··Ï··Ï------------------------··æ\n");
-   fprintf (f, "#! titles  åseq··t··source······owner·······t··content····················target······owner·······t··content····················æ\n");
+   fprintf (f, "#! parsing åÏ--··Ï··Ï-------------··Ï---------··Ï··Ï------------------------··Ï-------------··Ï---------··Ï··Ï------------------------··æ\n");
+   fprintf (f, "#! titles  åseq··t··source··········owner·······t··content····················target··········owner·······t··content····················æ\n");
    fprintf (f, "\n");
-   fprintf (f, "# count = %d\n" , myCALC.dcount);
+   fprintf (f, "# count = %d (user and system dependencies)\n" , myCALC.dcount);
+   fprintf (f, "# requested scope '%c' = %s\n" , a_scope, (a_scope == '-') ? "user deps only" : "all deps");
    x_cur = myCALC.dhead;
    while (x_cur != NULL) {
-      if (c % 26 == 0)  fprintf (f, "\n#--  t  source----  owner-----  t  content------------------  target----  owner-----  t  content------------------  ´\n");
+      /*---(filter)----------------------*/
+      ++a;
+      x_sys = '-';
+      strcpy (x_label, "");
+      if (x_cur->source != NULL)  strcpy (x_label, ycalc_call_labeler (x_cur->source));
+      if (x_label [0] == '¯')  x_sys = 'y';
+      strcpy (x_label, "");
+      if (x_cur->target != NULL)  strcpy (x_label, ycalc_call_labeler (x_cur->target));
+      if (x_label [0] == '¯')  x_sys = 'y';
+      if (x_sys == 'y') {
+         ++s;
+         if (a_scope != 'A') {
+            x_cur = x_cur->dnext;  
+            continue;
+         }
+      } else {
+         ++u;
+      }
+      /*---(headers)---------------------*/
+      if (c % 26 == 0)  fprintf (f, "\n#--  t  source--------  owner-----  t  content------------------  target--------  owner-----  t  content------------------  ´\n");
+      /*---(prepare)---------------------*/
       if (strchr (S_DEP_REQS, x_cur->type) != NULL) {
          strcpy (x_pre , "");
          strcpy (x_suf , "  ");
@@ -1616,7 +1642,9 @@ yCALC_deps_dump         (void *f)
          strcpy (x_pre , "  ");
          strcpy (x_suf , "");
       }
+      /*---(prefix)----------------------*/
       fprintf (f, "%3d  %c", c++, x_cur->type);
+      /*---(source)----------------------*/
       if (x_cur->source == NULL) {
          fprintf (f, "  %-10.10p  %-10.10s  %c  %-25.25s", NULL, "····", '·', "····");
       } else {
@@ -1628,6 +1656,7 @@ yCALC_deps_dump         (void *f)
             fprintf (f, "  %-8.8p  %s%-8.8s%s  %c  %-25.25s", x_cur->source, x_pre, ycalc_call_labeler (x_cur->source), x_suf, *x_type, *x_source);
          }
       }
+      /*---(target)----------------------*/
       if (x_cur->target == NULL) {
          fprintf (f, "  %-8.8p  %-10.10s  %c  %-25.25s", NULL, "····", '·', "····");
       } else {
@@ -1639,13 +1668,20 @@ yCALC_deps_dump         (void *f)
             fprintf (f, "  %-8.8p  %s%-8.8s%s  %c  %-25.25s", x_cur->target, x_pre, ycalc_call_labeler (x_cur->target), x_suf, *x_type, *x_source);
          }
       }
+      /*---(suffix)----------------------*/
       fprintf (f, "  ´\n");
+      /*---(next)------------------------*/
       x_cur = x_cur->dnext;  
+      /*---(done)------------------------*/
    }
+   /*---(footer)-------------------------*/
+   fprintf (f, "\n\n# shown = %d (%d all > %d user, %d sys)\n\n" , c, a, u, s);
    /*---(complete)-----------------------*/
    return 0;
 }
 
+char  yCALC_deps_dump_user    (void *f) { return ycalc_deps_dump (f, '-'); }
+char  yCALC_deps_dump_all     (void *f) { return ycalc_deps_dump (f, 'A'); }
 
 
 /*====================------------------------------------====================*/

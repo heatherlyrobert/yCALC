@@ -146,7 +146,8 @@ char        yCALC_show_reqs         (void *a_deproot, int *a_nreq, char *a_reqs)
 char        yCALC_show_pros         (void *a_deproot, int *a_npro, char *a_pros);
 
 char        yCALC_vars_dump         (void *f);
-char        yCALC_deps_dump         (void *f);
+char        yCALC_deps_dump_user    (void *f);
+char        yCALC_deps_dump_all     (void *f);
 
 char        yCALC_merge_source      (void *a_deproot, void **a_owner);
 

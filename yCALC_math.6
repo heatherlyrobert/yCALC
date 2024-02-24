@@ -1,0 +1,146 @@
+.TH yCALC_math 6 2018-apr "linux" "interactive feel, usage, and navigation"
+
+.SH NAME
+yCALC \- fast, powerful, flexible, shared calculation engine
+
+.SH PATRON
+.B kottus-hecatoncheires
+(hundred-handed)
+ancient greek world-shattering giant
+
+.SH IMAGERY
+ugly, impossibly powerful, one-hundred handed, fifty headed-giant
+
+.SH SUMMARY
+yCALC is a clean, reliable, debuggable, and shared library for creating
+and executing fast, flexible byte-code calculations that can be used in any
+programming context (spreadsheet to system utility).
+
+.SH DOCUMENTATION FILES
+.nf
+yCALC (3)          interfacing applications with library
+yCALC_addr (6)     specifics of calculating addresses
+yCALC_audit (6)    specifics of auditing functions
+yCALC_bits (6)     specifics of bitwise operators
+yCALC_group (6)    specifics of grouping operators
+yCALC_logic (6)    specifics of logical operators
+yCALC_lookup (6)   specifics of range lookups
+.B yCALC_math (6)∑∑∑∑∑specifics of mathmatical operators
+yCALC_mathy (6)    specifics of mathy format
+yCALC_range (6)    specifics of range/stats functions
+yCALC_text (6)     specifics of text/string functions
+yCALC_time (6)     specifics of time related functions
+yCALC_trig (6)     specifics of trigonometry functions
+yCALC (7)          decision rationale, scope, and objectives
+
+.SH TABLE OF CONTENTS
+.nf  
+a) overview        quick summary
+b) basics          basic mathmatics
+c) increment       outcome of increment and decrement
+d) powers          raising to a power
+e) roots           taking a root
+f) functions       additional math functions
+g) assignment      combination assignment/operator
+
+.SH A) OVERVIEW
+this document describes yCALC's mathmatical operators and their use within
+the context of gyges (my spreadsheet) as an example.  all operators are
+modeled on c-presedence and usage.  many additions are made for more
+natural mathmatical expression.
+
+.SH B) BASICS
+bread-and-butter operators, exactly as used in c-programming...
+
+.nf
+OPER∑∑∑∑ meaning-------- arity/prec usage---- example------------------
++        addition          2    h   a + b     5 + 8  == 13
+-        subtraction       2    h   a - b     8 - 5  ==  3
+*        multiplication    2    g   a * b     6 * 9  == 54
+¥        multiplication    2    g   a ¥ b     clearer in some situations
+/        division          2    g   a / b     54 / 6 == 9
+%        modulus           2    g   a % b     7 % 3  == 1
+-        unary minus       1    f   -b     changes the sign of 'b'
++        unary plus        1    f   +a     no impact (for completeness)
+
+.SH C) INCREMENT
+these intentionally work differently in yCALC than in gyges (my spreadsheet)
+agrios macros and in hephaestus (my compiler).
+
+.SS yCALC
+increment and decrement are translated to a+1 and a-1 respectively reguardless
+of prefix or postfix.  they are very different from c-language due to the
+recalculation of a spreadsheet vs linear action of a program.
+
+.SS agrios and hephaestus
+increment and decrement work exactly as in c-language and update the original
+before usage (prefix ++a and --a) or after usage (postfix a-- and b++).
+
+.SH D) POWERS
+i desired a more natural mathmatical expression and have the specific characters
+in my shrike font to accomodate that.  here are some...
+
+.nf
+OPER∑∑∑∑ meaning-------- arity/prec usage---- example------------------
+∆        squared           1    e   a∆        == a * a
+«        cubed             1    e   b«        == b * b * b
+»        power of 4        1    e   c»        == c * c * c * c
+`        arbitary power    2    e   d`5       == d * d * d * d * d
+…        to the x          2    e   e…        uses var x as power
+         to the y          2    e   f         uses var y as power
+
+.nf
+FUNC∑∑∑∑ meaning-------- arity/prec usage------- example---------------
+sqr      squared           1    a   sqr  (l)     == l * l
+cube     cubed             1    a   cube (m)     == m * m * m
+exp      arbitrary power   2    a   exp (h, i)   h raised to the i
+pow      arbitrary power   2    a   pow (h, i)   h raised to the i
+
+.SH E) ROOTS
+same as with powers, i desired a more natural mathmatical expression but only
+needed square root to be an operator.
+
+.nf
+OPER∑∑∑∑ meaning-------- arity/prec usage---- example------------------
+Œ        square root       1    e   (g+h)Œ    postfix version
+
+.nf
+FUNC∑∑∑∑ meaning-------- arity/prec usage------- example---------------
+sqrt     square root       1    a   sqrt (j)     square root of j
+cbrt     cube root         1    a   cbrt (k)     cube root of k
+
+.SH F) FUNCTIONS
+additionally, there are a few functions to round of the math category.
+
+.nf
+FUNC∑∑∑∑ meaning-------- arity/prec usage------- example---------------
+abs      absolute value    1    a   abs (a)      positive version
+sign     get sign          1    a   sign (b)     -1 for neg, 1 for pos
+trunc    trunc to int      1    a   trunc (c)    trunc to integer
+truncn   trunc to place    2    a   trunc (d,2)  trunc to two decimals
+round    round to int      1    a   round (e)    round to nearest int
+roundn   round to place    2    a   round (f,3)  round to three decimals
+floor    prev lowest int   1    a   floor (g)    works like trunc
+ceil     next highest int  1    a   ceil  (h)    works like trunc + 1
+rand     random number     0    a   rand ()      rand between 0 and 1
+randr    random in range   2    a   randr (1,5)  rand between 1 and 5
+
+.SH G) ASSIGNMENT
+assignments do not apply to gyges (because of recalculation vs execution),
+but do in agrios macros, hephaestus, and other applications.
+
+.nf
+OPER∑∑ meaning-------- arity/prec   usage-----------
+=      assign            2    r     a = 18
++=     plus/assign       2    r     a += 3
+-=     minus/assign      2    r     c -= 15
+*=     multi/assign      2    r     d *= 3.12
+/=     divide/assign     2    r     e /= 4
+%=     modulus/assign    2    r     f %= 2
+
+.SH AUTHOR
+heatherly <jelloshrike at gmail dot com>
+
+.SH COLOPHON
+this page is part of a documentation package mean to make the use of the
+heatherly tools easier and faster

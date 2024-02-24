@@ -48,8 +48,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "0.X = reading for full gyges use"
 #define     P_VERMINOR  "0.5 = find pernicious memory and malloc troubles"
-#define     P_VERNUM    "0.5u"
-#define     P_VERTXT    "updated ySTR functions to ¶ystr¶ prefix"
+#define     P_VERNUM    "0.5v"
+#define     P_VERTXT    "improved deps_dump reporting and added a scope element"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -124,13 +124,14 @@ extern int  g_nfunc;
 extern int  g_ndups;
 #define     MAX_FUNCS        500
 struct  cFUNCS {
-   char        name        [20];       /* operator symbol/name                */
-   char        len;                    /* length of name                      */
-   void   (*f) (void);                 /* function pointer                    */
-   char        type;                   /* type (func, op, or const)           */
-   char        terms       [10];       /* number of terms                     */
-   char        fcat;                   /* category                            */
-   char        desc        [60];       /* descriptive label                   */
+   char        name        [LEN_LABEL];  /* operator symbol/name              */
+   char        len;                      /* length of name                    */
+   void   (*f) (void);                   /* function pointer                  */
+   char        type;                     /* type (func, op, or const)         */
+   char        terms       [LEN_TERSE];  /* number of terms                   */
+   char        fcat;                     /* category                          */
+   char        dterm       [LEN_LABEL];  /* descriptive terms                 */
+   char        desc        [LEN_HUND];   /* descriptive label                 */
 };
 extern const tFUNCS  g_ycalc_funcs [MAX_FUNCS];
 
@@ -387,6 +388,7 @@ extern const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR];
 #define     YCALC_ERROR_BUILD_FNC  'x'
 #define     YCALC_ERROR_BUILD_CIR  'c'
 #define     YCALC_ERROR_BUILD_ROO  '['
+#define     YCALC_ERROR_BUILD_TBD  'T'
 
 #define     YCALC_ERROR_EXEC_STEP  '-'
 #define     YCALC_ERROR_EXEC_STR   'S'

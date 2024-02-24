@@ -69,6 +69,7 @@ const tyCALC_ERROR   zCALC_errors     [YCALC_MAX_ERROR] = {
    { YCALC_ERROR_BUILD_FNC , 'b' , "#b/fnc"   , "variable would mask a function by name name"        },
    { YCALC_ERROR_BUILD_CIR , 'b' , "#b/cir"   , "formula contains a circular reference"              },
    { YCALC_ERROR_BUILD_ROO , 'b' , "#b/roo"   , "can not root a cell into the dependency tree"       },
+   { YCALC_ERROR_BUILD_TBD , 'b' , "#b/tbd"   , "requested func/oper legal, but not implemented"     },
    { YCALC_ERROR_STACK     , 'e' , "#e/stk"   , "execution stack under or over run"                  },
    { YCALC_ERROR_EXEC_VAL  , 'e' , "#e/val"   , "expected a string, but given a value"               },
    { YCALC_ERROR_EXEC_STR  , 'e' , "#e/str"   , "expected a value, but given a string"               },
