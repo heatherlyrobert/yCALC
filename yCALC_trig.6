@@ -1,0 +1,255 @@
+.TH yCALC_trig 6 2018-apr "linux" "interactive feel, usage, and navigation"
+
+.SH NAME
+yCALC \- fast, powerful, flexible, shared calculation engine
+
+.SH PATRON
+.B kottus-hecatoncheires
+(hundred-handed)
+ancient greek world-shattering giant
+
+.SH IMAGERY
+ugly, impossibly powerful, one-hundred handed, fifty headed-giant
+
+.SH SUMMARY
+yCALC is a clean, reliable, debuggable, and shared library for creating
+and executing fast, flexible byte-code calculations that can be used in any
+programming context (spreadsheet to system utility).
+
+.SH DOCUMENTATION FILES
+.nf
+yCALC (3)          interfacing applications with library
+yCALC_addr (6)     specifics of calculating addresses
+yCALC_audit (6)    specifics of auditing functions
+yCALC_bits (6)     specifics of bitwise operators
+yCALC_group (6)    specifics of grouping operators
+yCALC_logic (6)    specifics of logical operators
+yCALC_lookup (6)   specifics of range lookups
+yCALC_math (6)     specifics of mathmatical operators
+yCALC_mathy (6)    specifics of mathy format
+yCALC_range (6)    specifics of range/stats functions
+yCALC_text (6)     specifics of text/string functions
+yCALC_time (6)     specifics of time related functions
+.B yCALC_trig (6)·····specifics of trigonometry functions
+yCALC (7)          decision rationale, scope, and objectives
+
+.SH TABLE OF CONTENTS
+.nf  
+a) overview        quick summary
+b) basics          basic six
+c) breakdown       parts of secant and cosecant
+d) old-school      helpful functions that people forget
+e) reversed        additional math functions
+
+.SH A) OVERVIEW
+as a spider roboticist, kinematics and trigonometry are vital.  not just the
+basics, but nearly every variation.  i beleive trig is not just a mathmatical
+tool, but also a way of seeing and parsing problems.
+
+many tranditional trig functions included here were created to simplify
+formulas by hiding nuisance and repetitive transformations.  i agree and
+require the same ability.
+
+while i support radians, i default to working in degrees.  as such, my functions
+differ just slightly from c-language standard by taking degrees.  if you want
+to use radians, just suffix the function name with an 'r'.
+
+.SH B) RELATIONS
+a few simple conversions and formulas to set the stage...
+
+.nf
+OPER···· meaning----------- arity/prec usage----------
+Ì        radians to degrees    1    e   rÌ
+Í        degrees to radians    1    e   dÍ
+
+.nf
+FUNC···· meaning----------- arity/prec usage----------
+deg      radians to degrees    1    a   deg (r)        
+rad      degrees to radians    1    a   rad (r)        
+pi       returns PI            0    a   pi ()
+hypot    uses two sides        2    a   h = hypot (a, b)
+side     finds last side       2    a   b = side (h, a)
+
+
+.SH B) BASICS
+these are the six (6) primary trig functions...
+
+      y Ï                                                       
+        |                                                       
+        |                                                       
+   csc  ³                                                       
+        |  ³   cot                                              
+        á   á ³                                                 
+        |        á                                              
+    ----+-----------Ï                                           
+        |           |  ³                                        
+        |         ´ |   á ³                                     
+        |           |        ³                                  
+        |       ´   |      á    ³                               
+        |           |              ³                            
+        |     ´     |        á        ³    tan ú                
+  sin ù |           |                    ³                      
+        |   ´       |         á             ³                   
+        |           |                          ³                
+        | ´         |          á                  ³             
+        | ï         |                                ³          
+ x Ï----+-----------+----------á------------------------³----Ï  
+        |    cos ý  |                                  sec   
+        |                                                       
+        Ï                                                       
+
+.nf
+FUNC···· meaning-------- arity/prec usage---------- radian-version--------
+sin      sine              1    a   sin (d)         sinr (r)
+cos      cosine            1    a   cos (d)         cosr (r)
+tan      tangent           1    a   tan (d)         tanr (r)
+cot      cotangent         1    a   cot (d)         cotr (r)
+sec      secant            1    a   sec (d)         secr (r)
+csc      cosecant          1    a   csc (d)         cscr (r)
+
+.nf
+FUNC···· meaning-------- arity/prec usage---------- 
+ù        sine              1    a   ù (d)         
+ý        cosine            1    a   ý (d)         
+ú        tangent           1    a   ú (d)         
+
+.SH C) BREAKDOWN
+there are several useful simplifying functions that save some formula
+complexity.
+
+      y Ï                                                       
+        |                                                       
+        |                                                       
+   csc  ³                                                       
+  xcsc  |  ³                                                    
+        á   á ³                                                 
+   cvs  |        á                                              
+    ----+-----------Ï                                           
+        |           |  ³                                        
+        |         ´ |   á ³                                     
+        |           |        ³                                  
+        |       ´   |      á    ³                               
+        |           |              ³                            
+        |     ´     |        á        ³                         
+  sin ù |           |                    ³                      
+        |   ´       |         á             ³                   
+        |           |                          ³                
+        | ´         |          á                  ³             
+        | ï         |                                ³          
+ x Ï----+-----------+----------á------------------------³----Ï  
+        |    cos ý  |    siv           xsec            sec   
+        |                                                       
+        Ï                                                       
+
+.nf
+secant has three parts and a complement...
+   FUNC···· meaning-------- arity/prec usage------ simplifier--------
+   cos      cosine            1    a   cos (d)
+   siv      versed sine       1    a   siv (d)     1 - cos (d)
+   xsec     ex-secant         1    a   xsec (d)    sec (d) - 1
+   cov      versed cosine     1    a   cov (d)     1 + cos (d)
+
+.nf
+cosecant also has three parts and a complement...
+   FUNC···· meaning-------- arity/prec usage------ simplifier--------
+   sin      sine              1    a   sin (d)
+   cvs      coversed sine     1    a   cvs (d)     1 - sin (d)
+   xcsc     ex-cosecant       1    a   xcsc (d)    csc (d) - 1
+   coc      coversed cosine   1    a   coc (d)     1 + sin (d)
+
+.SH D) OLD-SCHOOL
+many traditional trig functions were not just helpful, they represent an
+entirely different way of approaching the problems.  most ancient greek,
+roman, persian, etc mathematicians used chords, not sines.  we are myopic
+since we use only one viewpoint.
+
+      y Ï                                                       
+        |                                                       
+        |                                                       
+        |                                                       
+        ³                                                       
+        |  ³                                                    
+        Ï   Ï ³                                                 
+        |        Ï                                              
+    ----+-----------Ï                                           
+        |       ©   |  ³                                        
+  scrd  |  ©      ´ |©  Ï ³                                     
+      © |           | ©      ³                                  
+ ©      |       ´   |  ©   Ï    ³                               
+        |           |   ©sag©      ³                            
+        |     ´     |    ©   Ï        ³                         
+        |           | ©   ©              ³                      
+        |   ´  apo ©|      ©  Ï             ³                   
+        |       ©   |   crd ©                  ³                
+        | ´  ©      |        © Ï arc              ³             
+        | ï         |         ©                      ³          
+ x Ï----+-----------+----------Ï------------------------³----Ï  
+        |           |                                           
+        |                                                       
+        Ï                                                       
+
+.SS half-versed (ocean navigation)
+.nf
+FUNC···· meaning----------- arity/prec usage------ radians-----------
+hsiv     half-versed sin      1    a   hsiv (d)    hsivr (r)
+hcov     half-versed cos      1    a   hcos (d)    hcosr (r)
+hsic     half-coversed sin    1    a   hsic (d)    hsicr (r)
+hcoc     half-coversed cos    1    a   hcoc (d)    hcocr (r)
+
+.SS chord-related (greeks, persians, ...)
+.nf
+FUNC···· meaning----------- arity/prec usage------ radians-----------
+crd      chord length         1    a   crd (d)     crdr (r)
+scrd     supp chord length    1    a   scrd (d)    sscdr (r)
+hcrd     half chord length    1    a   hcrd (d)    hscdr (r)
+vcrd     versed chord len     1    a   vcrd (d)    vscdr (r)
+hvcrd    half versed chord    1    a   hvcrd (d)   hvscdr (r)
+
+.SS related
+.nf
+FUNC···· meaning----------- arity/prec usage------ radians-----------
+sag      saggita              1    a   sag (d)     sagr (r)
+apo      apothem              1    a   apo (d)     apor (r)
+arc      arc length           1    a   arc (d)     arcr (r)
+los      line-of-sight        1    a   los (d)     losr (r)
+los2     line-of-sight        1    a   los2 (h,r)
+xsag     ex-saggita           1    a   xsag (d)    xsagr (r)
+csag     co-saggita           1    a   csag (d)    csagr (r)
+fsag     full saggita         1    a   fsag (d)    fsagr (r)
+
+similar to secant, apothem plus sagitta plus ex-sagitta = full-sagita.
+additionally, full-sagitta is the secant of half the angle.
+
+.SH E) REVERSED
+working backward from a number to the angles' degrees (or radians) is the 
+work of arc functions.
+
+.nf
+o = opposite side length
+a = adjacent side length
+h = hypotenuse length
+l = chord length
+r = radius
+
+.nf
+i prefer the two argument functions...
+   FUNC···· meaning----------- arity/prec usage------------  radians---
+   asin2    arc-sine             2    a   d = asin2 (o,h)    r = asin2r
+   acos2    arc-cosine           2    a   d = acos2 (a,h)    r = acos2r
+   atan2    arc-tangent          2    a   d = atan2 (o,a)    r = atan2r
+   acrd2    arc-chord            2    a   d = atan2 (l,r)    r = acrd2r
+
+.nf
+but, these are more traditional...
+   FUNC···· meaning----------- arity/prec usage------------  radians---
+   asin     arc-sine             1    a   d = asin (o/h)     r = asinr
+   acos     arc-cosine           1    a   d = acos (a/h)     r = acosr
+   atan     arc-tangent          1    a   d = atan (o/a)     r = atanr
+
+.SH AUTHOR
+heatherly <jelloshrike at gmail dot com>
+
+.SH COLOPHON
+this page is part of a documentation package mean to make the use of the
+heatherly tools easier and faster
+

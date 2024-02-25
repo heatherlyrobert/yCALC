@@ -678,7 +678,7 @@ ycalc_xsag          (void)
 /*====================------------------------------------====================*/
 static void  o___INVERSE_________o () { return; }
 
-void    /*-> tbd --------------------------------[ ------ [fv.210.000.02]*/ /*-[00.0000.00#.!]-*/ /*-[--.---.---.--]-*/
+void
 ycalc_asin          (void)
 {
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
@@ -695,6 +695,32 @@ ycalc_asinr         (void)
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, asin(a));
+   ycalc_pushval (__FUNCTION__, 6);
+   ycalc_rround ();
+   return;
+}
+
+void
+ycalc_asin2         (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   c = b / a;
+   ycalc_pushval (__FUNCTION__, asin (c) * RAD2DEG);
+   ycalc_pushval (__FUNCTION__, 6);
+   ycalc_rround ();
+   return;
+}
+
+void
+ycalc_asin2r        (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   c = b / a;
+   ycalc_pushval (__FUNCTION__, asin (c));
    ycalc_pushval (__FUNCTION__, 6);
    ycalc_rround ();
    return;
@@ -717,6 +743,32 @@ ycalc_acosr         (void)
    DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
    a = ycalc_popval (__FUNCTION__);
    ycalc_pushval (__FUNCTION__, acos(a));
+   ycalc_pushval (__FUNCTION__, 6);
+   ycalc_rround ();
+   return;
+}
+
+void
+ycalc_acos2         (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   c = b / a;
+   ycalc_pushval (__FUNCTION__, acos (c) * RAD2DEG);
+   ycalc_pushval (__FUNCTION__, 6);
+   ycalc_rround ();
+   return;
+}
+
+void
+ycalc_acos2r        (void)
+{
+   DEBUG_YCALC   yLOG_info    ("running"   , __FUNCTION__);
+   a = ycalc_popval (__FUNCTION__);
+   b = ycalc_popval (__FUNCTION__);
+   c = b / a;
+   ycalc_pushval (__FUNCTION__, acos (c));
    ycalc_pushval (__FUNCTION__, 6);
    ycalc_rround ();
    return;

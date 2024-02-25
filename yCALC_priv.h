@@ -48,8 +48,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "0.--, reading for full gyges use"
 #define     P_VERMINOR  "0.5-, find pernicious memory and malloc troubles"
-#define     P_VERNUM    "0.5w"
-#define     P_VERTXT    "caught up all unit tests with current function name updates"
+#define     P_VERNUM    "0.5x"
+#define     P_VERTXT    "added asin2 and acos2, plus built the trig manual"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -871,8 +871,12 @@ void        ycalc_xsag              (void);
 void        ycalc_xsag2             (void);
 void        ycalc_asin              (void);
 void        ycalc_asinr             (void);
+void        ycalc_asin2             (void);
+void        ycalc_asin2r            (void);
 void        ycalc_acos              (void);
 void        ycalc_acosr             (void);
+void        ycalc_acos2             (void);
+void        ycalc_acos2r            (void);
 void        ycalc_atan              (void);
 void        ycalc_atanr             (void);
 void        ycalc_atan2             (void);
