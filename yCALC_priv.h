@@ -46,10 +46,10 @@
 #define     P_AUTHOR    "heatherlyrobert"
 #define     P_CREATED   "2014-10"
 /*········· ··········· ´·····························´········································*/
-#define     P_VERMAJOR  "0.X = reading for full gyges use"
-#define     P_VERMINOR  "0.5 = find pernicious memory and malloc troubles"
-#define     P_VERNUM    "0.5v"
-#define     P_VERTXT    "improved deps_dump reporting and added a scope element"
+#define     P_VERMAJOR  "0.--, reading for full gyges use"
+#define     P_VERMINOR  "0.5-, find pernicious memory and malloc troubles"
+#define     P_VERNUM    "0.5w"
+#define     P_VERTXT    "caught up all unit tests with current function name updates"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"

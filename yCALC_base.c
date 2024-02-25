@@ -92,10 +92,10 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "Ý"          ,  1, ycalc_gequal            , 'o', "b:nn"   , 'l', "num1 Ý num2"        , "T if x greater than or equal to y, else F"         },
    { "Ü"          ,  1, ycalc_lequal            , 'o', "b:nn"   , 'l', "num1 Ü num2"        , "T if x lesser than or equal to y, else F"          },
    { "˜"          ,  1, ycalc_within            , 'f', "b:nnn"  , 'l', "(val,min,max)"      , "if y is within the range of x to z, then T"        },
-   { "range"      ,  5, ycalc_within            , 'f', "b:nnn"  , 'l', "(val,min,max)"      , "if y is within the range of x to z, then T"        },
+   /*> { "range"      ,  5, ycalc_within            , 'f', "b:nnn"  , 'l', "(val,min,max)"      , "if y is within the range of x to z, then T"        },   <*/
    { "within"     ,  6, ycalc_within            , 'f', "b:nnn"  , 'l', "(val,min,max)"      , "xyz, true is y < x < zge of x to z, then T"        },
    { "ß"          ,  1, ycalc_approx            , 'f', "b:nnn"  , 'l', "(val,trg,var)"      , "if x is within the range of y +/- z, then T"       },
-   { "about"      ,  5, ycalc_approx            , 'f', "b:nnn"  , 'l', "(val,trg,var)"      , "if x is within the range of y +/- z, then T"       },
+   /*> { "about"      ,  5, ycalc_approx            , 'f', "b:nnn"  , 'l', "(val,trg,var)"      , "if x is within the range of y +/- z, then T"       },   <*/
    { "approx"     ,  6, ycalc_approx            , 'f', "b:nnn"  , 'l', "(val,trg,var)"      , "if x is within the range of y +/- z, then T"       },
    /*--RELATE-STR---*/  /*---func-to-call--------type--terms-----cat----desc-of-terms---------desc-of-function------------------------------------*/
    { "©="         ,  2, ycalc_sequal            , 'o', "b:ss"   , 'l', "str1 ©= str2"       , "T if n are m are equal, else F"                    },
@@ -405,13 +405,13 @@ const tFUNCS  g_ycalc_funcs [MAX_FUNCS] = {
    { "mean"       ,  4, ycalc_average           , 'f', "v:r"    , 'r', ""                   , "average of numeric cells in range"                 },
    { "min"        ,  3, ycalc_min               , 'f', "v:r"    , 'r', ""                   , "minimum value in range"                            },
    { "max"        ,  3, ycalc_max               , 'f', "v:r"    , 'r', ""                   , "maximum value in range"                            },
-   { "srange"     ,  6, ycalc_range             , 'f', "v:r"    , 'r', ""                   , "difference between min and max in range"           },
+   { "range"      ,  5, ycalc_range             , 'f', "v:r"    , 'r', ""                   , "difference between min and max in range"           },
    { "qtr0"       ,  4, ycalc_min               , 'f', "v:r"    , 'r', ""                   , "minimum value in range"                            },
    { "qtr1"       ,  4, ycalc_quarter1          , 'f', "v:r"    , 'r', ""                   , "first quarter value in range"                      },
    { "qtr2"       ,  4, ycalc_median            , 'f', "v:r"    , 'r', ""                   , "second quarter (average) value in range"           },
    { "qtr3"       ,  4, ycalc_quarter3          , 'f', "v:r"    , 'r', ""                   , "third quarter value in range"                      },
    { "qtr4"       ,  4, ycalc_max               , 'f', "v:r"    , 'r', ""                   , "maximum value in range"                            },
-   { "qrange"     ,  6, ycalc_rangeq            , 'f', "v:r"    , 'r', ""                   , "difference between q1 and q3 in range"             },
+   { "rangeq"     ,  6, ycalc_rangeq            , 'f', "v:r"    , 'r', ""                   , "difference between q1 and q3 in range"             },
    { "median"     ,  6, ycalc_median            , 'f', "v:r"    , 'r', ""                   , "median value in range"                             },
    { "mode"       ,  4, ycalc_mode              , 'f', "v:r"    , 'r', ""                   , "mode of range"                                     },
    { "stddev"     ,  6, ycalc_stddev            , 'f', "v:r"    , 'r', ""                   , "standard deviation in range"                       },
