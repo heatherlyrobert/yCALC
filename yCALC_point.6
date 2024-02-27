@@ -1,0 +1,154 @@
+.TH yCALC_point· 6 2018-apr "linux" "interactive feel, usage, and navigation"
+
+.SH NAME
+yCALC \- fast, powerful, flexible, shared calculation engine
+
+.SH PATRON
+.B kottus-hecatoncheires
+(hundred-handed)
+ancient greek world-shattering giant
+
+.SH IMAGERY
+ugly, impossibly powerful, one-hundred handed, fifty-headed giant
+
+.SH SUMMARY
+yCALC is a clean, reliable, debuggable, and shared library for creating
+and executing fast, flexible byte-code calculations that can be used in any
+programming context (spreadsheet to system utility).
+
+.SH SERIOUS FOREWARNING
+i am a crazy, selfish, dog-fooding c-programmer.  i set unrealistic and
+audacious goals, and therefore my software tends to be experimental, very
+personalized, and constantly evolving.
+
+my user-base is exactly one.  i never planned to share software with end-users,
+my intention is to expose my code to other programmers so we may learn from
+(and laugh at) each other.
+
+the point is not to be the best.  its to challenge myself and learn how to
+build fullsome, reliable, transparent, custom, and very maintainable software.
+it may not be universally liked, but i hand-coded very byte ;)
+
+.SH DOCUMENTATION FILES
+.nf
+yCALC (3)          interfacing applications with library
+yCALC (6)          interactive feel, usage, and navigation
+- yCALC_addr (6)     - specifics of calculating addresses
+- yCALC_audit (6)    - specifics of auditing functions
+- yCALC_bits (6)     - specifics of bitwise operators
+- yCALC_logic (6)    - specifics of logical operators
+- yCALC_lookup (6)   - specifics of range lookups
+- yCALC_math (6)     - specifics of mathmatical operators
+- yCALC_mathy (6)    - specifics of mathy format
+.B - yCALC_point (6)····- specifics of pointers and variables
+- yCALC_range (6)    - specifics of range/stats functions
+- yCALC_text (6)     - specifics of text/string functions
+- yCALC_time (6)     - specifics of time related functions
+- yCALC_trig (6)     - specifics of trigonometry functions
+yCALC (7)          decision rationale, scope, and objectives
+
+.SH TABLE OF CONTENTS
+.nf  
+a) overview        quick summary
+b) system labels   labels and addresses
+c) variables       creating a pointer reference
+d) pointers        referencing and dereferencing
+e) ranges          using pointers for ranges
+
+.SH A) OVERVIEW
+in most languages (outside assembler and c), pointer operations are often hidden
+beneath layers of defenses and not truly available to the programmer.  truly,
+variables and addresses are just pointers that hide some of the mechanics.
+
+as a c-language programmer, i am comfortable with the cost/benefit tradeoff
+of full-blown pointer use and included them in yCALC.
+
+.SH B) SYSTEM LABELS
+labels and cell addresses are pointers that resolve to a particular object
+or location.  for instance, gyges takes a cell label (0a1) and returns with
+the specific item for use in a formula.
+
+.SH C) VARIABLES
+variables are labels that are assigned to particular objects (visible or not)
+and the when used, the system resolves them to the correct item.
+
+.SS built in variables
+while its too much to cover here, i use yCALC to expose the inner workings of
+the host application by using standard variable names. for instance...
+   @a      refers to the text of the saved keyboard macro 'a'
+
+.SS local variables (agrios scripting)
+also too much for here, i use yCALC to create local variables for use within
+agrios (wild) macros.  for instance...
+   ç0      refers to the first argument to a function
+   çc      refers to the local variable 'c'
+   ç?      refers to a functions return code
+
+.SS user-defined variables
+variables are custom names for any item or location in the host application.
+in gyges, for total clarity, variables are publically defined by labeling
+the item they refer to.  it is likely easiest to watch the operator demo, but
+i will include an example here.
+
+in gyges, variables are a label put in a cell and preceeded by one of the
+four arrow operators below.  once entered, they are synonomous with the
+address to which they point, i.e., they can be used in place of the actual
+address.
+
+.nf
+OPER···· meaning-------- arity/prec usage------------------------------
+Ö        label rightward   -    -   Ötest
+Õ        label downward    -    -   Õe
+×        label leftward    -    -   ×ê
+Ô        label upward      -    -   Ôgoodness
+
+variables are by their nature much easier to read and understand than system
+assigned addresses and labels.  not perfect, but much easier to debug.
+  traditional    = 1c15 + (1d28 * 12)
+  variables      = salary + (bonus * 12)
+
+.SH D) POINTERS
+referencing and dereferencing pointers is difficult to explain separately and
+this text not help if you are not used to pointers ;)
+
+.nf
+OPER···· meaning-------- arity/prec usage------------------------------
+&        address-of        1    f   &0a1
+!        calc address      1    f   !auxy (1,5,20)
+á        dereference       1    f   ác    (preferred notation)
+*        dereference       1    f   *c    (traditional)
+
+.nf
+for example...
+   cell---- contents---- explanation------------------------------
+   0d5     +5            5
+   0c19    Õc            creates variable 'c' to point to 0c20
+   0c20    &0d5          creates a reference to 0d5 in 0c20
+
+.nf
+so, here's what can be done...
+   cell---- contents---- result-shown-----------------------------
+   0f1     #p(c)         &0d5
+   0f2     #p(ác)        5
+   0f3     =ác           5
+
+.SH E) RANGES
+points can also be to ranges.
+
+.nf
+Õrange
+&d5..g10
+=sum (árange)
+
+.nf
+OPER···· meaning-------- arity/prec usage------------------------------
+
+
+.SH AUTHOR
+.nf
+jelloshrike at gmail dot com
+www dot spidersdreaming dot com
+
+.SH COLOPHON
+this page is part of a documentation package mean to make the use of the
+heatherly tools easier and faster

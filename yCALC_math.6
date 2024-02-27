@@ -1,4 +1,4 @@
-.TH yCALC_math 6 2018-apr "linux" "interactive feel, usage, and navigation"
+.TH yCALC_math· 6 2018-apr "linux" "interactive feel, usage, and navigation"
 
 .SH NAME
 yCALC \- fast, powerful, flexible, shared calculation engine
@@ -9,39 +9,54 @@ yCALC \- fast, powerful, flexible, shared calculation engine
 ancient greek world-shattering giant
 
 .SH IMAGERY
-ugly, impossibly powerful, one-hundred handed, fifty headed-giant
+ugly, impossibly powerful, one-hundred handed, fifty-headed giant
 
 .SH SUMMARY
 yCALC is a clean, reliable, debuggable, and shared library for creating
 and executing fast, flexible byte-code calculations that can be used in any
 programming context (spreadsheet to system utility).
 
+.SH SERIOUS FOREWARNING
+i am a crazy, selfish, dog-fooding c-programmer.  i set unrealistic and
+audacious goals, and therefore my software tends to be experimental, very
+personalized, and constantly evolving.
+
+my user-base is exactly one.  i never planned to share software with end-users,
+my intention is to expose my code to other programmers so we may learn from
+(and laugh at) each other.
+
+the point is not to be the best.  its to challenge myself and learn how to
+build fullsome, reliable, transparent, custom, and very maintainable software.
+it may not be universally liked, but i hand-coded very byte ;)
+
 .SH DOCUMENTATION FILES
 .nf
 yCALC (3)          interfacing applications with library
-yCALC_addr (6)     specifics of calculating addresses
-yCALC_audit (6)    specifics of auditing functions
-yCALC_bits (6)     specifics of bitwise operators
-yCALC_group (6)    specifics of grouping operators
-yCALC_logic (6)    specifics of logical operators
-yCALC_lookup (6)   specifics of range lookups
-.B yCALC_math (6)·····specifics of mathmatical operators
-yCALC_mathy (6)    specifics of mathy format
-yCALC_range (6)    specifics of range/stats functions
-yCALC_text (6)     specifics of text/string functions
-yCALC_time (6)     specifics of time related functions
-yCALC_trig (6)     specifics of trigonometry functions
+yCALC (6)          interactive feel, usage, and navigation
+- yCALC_addr (6)     - specifics of calculating addresses
+- yCALC_audit (6)    - specifics of auditing functions
+- yCALC_bits (6)     - specifics of bitwise operators
+- yCALC_logic (6)    - specifics of logical operators
+- yCALC_lookup (6)   - specifics of range lookups
+.B - yCALC_math (6)·····- specifics of mathmatical operators
+- yCALC_mathy (6)    - specifics of mathy format
+- yCALC_point (6)    - specifics of pointers and variables
+- yCALC_range (6)    - specifics of range/stats functions
+- yCALC_text (6)     - specifics of text/string functions
+- yCALC_time (6)     - specifics of time related functions
+- yCALC_trig (6)     - specifics of trigonometry functions
 yCALC (7)          decision rationale, scope, and objectives
 
 .SH TABLE OF CONTENTS
 .nf  
 a) overview        quick summary
 b) basics          basic mathmatics
-c) increment       outcome of increment and decrement
-d) powers          raising to a power
-e) roots           taking a root
-f) functions       additional math functions
-g) assignment      combination assignment/operator
+c) grouping        forcing precedence
+d) increment       outcome of increment and decrement
+e) powers          raising to a power
+f) roots           taking a root
+g) functions       additional math functions
+h) assignment      combination assignment/operator
 
 .SH A) OVERVIEW
 this document describes yCALC's mathmatical operators and their use within
@@ -63,7 +78,25 @@ OPER···· meaning-------- arity/prec usage---- example------------------
 -        unary minus       1    f   -b     changes the sign of 'b'
 +        unary plus        1    f   +a     no impact (for completeness)
 
-.SH C) INCREMENT
+.SH C) GROUPING
+either due to clarity, complexity, or uncertainty, it can be important
+to specify the exact order of calculation.  this is done through grouping
+with parentheses.
+
+.nf
+OPER···· meaning-------- arity/prec usage------------------------------
+(        begin group       -    -   a * (b - c)            
+)        end group         -    -   a * (b - c)            
+
+.nf
+normal order  a * b - c    same as    (a * b) - c
+with parens   a * (b - c)  now does   a * (b - c)
+
+using parentheses forces all calculation "inside" to happen before
+applying outside operators.  this allows execution order to be
+specifically adjucted.
+
+.SH D) INCREMENT
 these intentionally work differently in yCALC than in gyges (my spreadsheet)
 agrios macros and in hephaestus (my compiler).
 
@@ -76,7 +109,7 @@ recalculation of a spreadsheet vs linear action of a program.
 increment and decrement work exactly as in c-language and update the original
 before usage (prefix ++a and --a) or after usage (postfix a-- and b++).
 
-.SH D) POWERS
+.SH E) POWERS
 i desired a more natural mathmatical expression and have the specific characters
 in my shrike font to accomodate that.  here are some...
 
@@ -96,7 +129,7 @@ cube     cubed             1    a   cube (m)     == m * m * m
 exp      arbitrary power   2    a   exp (h, i)   h raised to the i
 pow      arbitrary power   2    a   pow (h, i)   h raised to the i
 
-.SH E) ROOTS
+.SH F) ROOTS
 same as with powers, i desired a more natural mathmatical expression but only
 needed square root to be an operator.
 
@@ -109,7 +142,7 @@ FUNC···· meaning-------- arity/prec usage------- example---------------
 sqrt     square root       1    a   sqrt (j)     square root of j
 cbrt     cube root         1    a   cbrt (k)     cube root of k
 
-.SH F) FUNCTIONS
+.SH G) FUNCTIONS
 additionally, there are a few functions to round of the math category.
 
 .nf
@@ -125,7 +158,7 @@ ceil     next highest int  1    a   ceil  (h)    works like trunc + 1
 rand     random number     0    a   rand ()      rand between 0 and 1
 randr    random in range   2    a   randr (1,5)  rand between 1 and 5
 
-.SH G) ASSIGNMENT
+.SH H) ASSIGNMENT
 assignments do not apply to gyges (because of recalculation vs execution),
 but do in agrios macros, hephaestus, and other applications.
 
@@ -139,7 +172,9 @@ OPER·· meaning-------- arity/prec   usage-----------
 %=     modulus/assign    2    r     f %= 2
 
 .SH AUTHOR
-heatherly <jelloshrike at gmail dot com>
+.nf
+jelloshrike at gmail dot com
+www dot spidersdreaming dot com
 
 .SH COLOPHON
 this page is part of a documentation package mean to make the use of the

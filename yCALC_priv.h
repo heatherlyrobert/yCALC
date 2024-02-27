@@ -48,8 +48,8 @@
 /*········· ··········· ´·····························´········································*/
 #define     P_VERMAJOR  "0.--, reading for full gyges use"
 #define     P_VERMINOR  "0.5-, find pernicious memory and malloc troubles"
-#define     P_VERNUM    "0.5x"
-#define     P_VERTXT    "added asin2 and acos2, plus built the trig manual"
+#define     P_VERNUM    "0.5y"
+#define     P_VERTXT    "caught up unit testing"
 /*········· ··········· ´·····························´········································*/
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -59,6 +59,27 @@
 /*                      ´·········1·········2·········3·········4·········5·········6·········7*/
 /*===[[ HEADER END ]]=========================================================*/
 
+#define     P_LANDSCAPE "landscape (big picture)¦" \
+   "i am a single programmer who is growing, evolving, and maintaining a¦" \
+   "large, diverse, personal code-base (already over 600K lines), much of¦" \
+   "which is in use nearly everyday.  its a handful for me.¦"
+
+#define     P_OVERRIDE  "overriding focus¦" \
+   "when something goes wrong, my focus must be all about how fast and¦" \
+   "accurately i can diagnose, re-emerse, recreate/isolate the trouble," \
+   "repair, prevent, and get back to running correctly.¦
+
+#define     P_PILARS    "programming focus¦" \
+   "while i appreciate slick algorithms, efficient code paths, and quick¦" \
+   "results; i always attempt to build the following pilars into all code¦ \
+   "  1) unit testing, extensive unit testing built as soon as possible¦" \
+   "  2) integration testing, couple library testing with final applications¦" \
+   "  3) logging, paired with yLOG to produce verbose internal reporting¦" \
+   "  4) tracing, yLOG/yURG can show full enter/exit execution path¦" \
+   "  5) debugging, simpilfied formulas and actions so results are clearer¦" \
+   "  6) dumping, produce ad-hoc dumps for complex structures¦" \
+   "  7) auditing, produce detailed audit reports (no guessing)¦" \
+   "  8) config, provide display and status options to show internal states¦"
 
 
 #include    <stdio.h>
